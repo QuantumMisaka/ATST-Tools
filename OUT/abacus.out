@@ -1,0 +1,125 @@
+                                                                                     
+                              ABACUS v3.3.1
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: ae4e7ea06 (Mon Jul 31 17:24:00 2023 +0800)
+
+ Sun Aug 13 15:41:14 2023
+ MAKE THE DIR         : OUT.ABACUS/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Warning: the number of valence electrons in pseudopotential > 3 for Al: [Ne] 3s2 3p1
+ Warning: the number of valence electrons in pseudopotential > 11 for Au: [Xe] 4f14 5d10 6s1
+ Pseudopotentials with additional electrons can yield (more) accurate outcomes, but may be less efficient.
+ If you're confident that your chosen pseudopotential is appropriate, you can safely ignore this warning.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ UNIFORM GRID DIM     : 72 * 72 * 180
+ UNIFORM GRID DIM(BIG): 18 * 18 * 60
+ DONE(1.29899    SEC) : SETUP UNITCELL
+ DONE(1.33468    SEC) : SYMMETRY
+ DONE(1.44142    SEC) : INIT K-POINTS
+ ---------------------------------------------------------
+ Self-consistent calculations for electrons
+ ---------------------------------------------------------
+ SPIN    KPOINTS         PROCESSORS  NBASE       
+ 1       4               64          279         
+ ---------------------------------------------------------
+ Use Systematically Improvable Atomic bases
+ ---------------------------------------------------------
+ ELEMENT ORBITALS        NBASE       NATOM       XC          
+ Al      4s4p1d-7au      21          12          
+ Au      4s2p2d1f-7au    27          1           
+ ---------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ---------------------------------------------------------
+ -------------------------------------------
+ SELF-CONSISTENT : 
+ -------------------------------------------
+ START CHARGE      : atomic
+ DONE(14.5248    SEC) : INIT SCF
+ ITER   ETOT(eV)       EDIFF(eV)      DRHO       TIME(s)    
+ GE1    -2.633447e+04  0.000000e+00   4.181e-02  5.873e-01  
+ GE2    -2.633256e+04  1.915447e+00   3.398e-02  5.471e-01  
+ GE3    -2.633302e+04  -4.600407e-01  1.026e-02  5.594e-01  
+ GE4    -2.633307e+04  -5.641378e-02  4.316e-03  5.531e-01  
+ GE5    -2.633305e+04  2.167599e-02   3.325e-03  5.417e-01  
+ GE6    -2.633305e+04  -7.861590e-04  1.643e-03  5.621e-01  
+ GE7    -2.633305e+04  1.326384e-03   1.264e-03  5.567e-01  
+ GE8    -2.633305e+04  4.574932e-03   1.154e-03  5.537e-01  
+ GE9    -2.633305e+04  4.576656e-04   7.794e-04  5.433e-01  
+ GE10   -2.633305e+04  -8.533586e-04  5.820e-04  5.436e-01  
+ GE11   -2.633305e+04  -1.219526e-03  4.526e-04  5.449e-01  
+ GE12   -2.633305e+04  -6.659144e-04  2.659e-04  5.605e-01  
+ GE13   -2.633305e+04  -8.251301e-04  2.112e-04  5.504e-01  
+ GE14   -2.633305e+04  -4.492588e-04  1.350e-04  5.568e-01  
+ GE15   -2.633305e+04  -6.422330e-04  9.135e-05  5.424e-01  
+ GE16   -2.633305e+04  -2.722654e-04  3.841e-05  5.429e-01  
+ GE17   -2.633305e+04  -1.837276e-06  1.082e-05  5.438e-01  
+ GE18   -2.633305e+04  -1.643249e-05  8.665e-06  5.523e-01  
+ GE19   -2.633305e+04  -9.208275e-06  2.500e-06  5.446e-01  
+ GE20   -2.633305e+04  1.082452e-06   2.165e-06  5.657e-01  
+ GE21   -2.633305e+04  3.305416e-06   8.605e-07  5.491e-01  
+ GE22   -2.633305e+04  2.089582e-06   5.634e-07  5.504e-01  
+ GE23   -2.633305e+04  3.061497e-07   5.294e-07  5.564e-01  
+ GE24   -2.633305e+04  3.904806e-07   4.940e-07  5.517e-01  
+ GE25   -2.633305e+04  -1.180429e-06  2.058e-07  5.449e-01  
+ GE26   -2.633305e+04  -1.904221e-07  1.511e-07  5.435e-01  
+ GE27   -2.633305e+04  -2.891536e-07  4.749e-08  5.466e-01  
+ GE28   -2.633305e+04  -5.696823e-08  2.827e-08  5.450e-01  
+ GE29   -2.633305e+04  -1.230935e-08  2.245e-08  5.451e-01  
+ GE30   -2.633305e+04  -4.909508e-09  1.806e-08  5.584e-01  
+ GE31   -2.633305e+04  -2.478265e-08  8.546e-09  5.461e-01  
+
+  |CLASS_NAME---------|NAME---------------|TIME(Sec)-----|CALLS----|AVG------|PER%-------
+                       total               32.705         9         3.6       1e+02     %
+   Driver              reading             0.44634        1         0.45      1.4       %
+   Driver              driver_line         32.258         1         32        99        %
+   PW_Basis            setuptransform      0.75332        1         0.75      2.3       %
+   ORB_control         read_orb_first      0.1935         1         0.19      0.59      %
+   LCAO_Orbitals       Read_Orbitals       0.19347        1         0.19      0.59      %
+   ORB_control         set_orb_tables      12.529         1         13        38        %
+   ORB_gen_tables      gen_tables          12.529         1         13        38        %
+   ORB_table_phi       init_Table          9.2203         1         9.2       28        %
+   ORB_table_phi       cal_ST_Phi12_R      9.1653         664       0.014     28        %
+   ORB_table_beta      init_Table_Beta     2.9575         1         3         9         %
+   ORB_table_beta      VNL_PhiBeta_R       2.9394         314       0.0094    9         %
+   Ions                opt_ions            18.316         1         18        56        %
+   ESolver_KS_LCAO     Run                 17.741         1         18        54        %
+   ESolver_KS_LCAO     beforescf           0.13593        1         0.14      0.42      %
+   PW_Basis            recip2real          0.15522        225       0.00069   0.47      %
+   PW_Basis            gathers_scatterp    0.11653        225       0.00052   0.36      %
+   Potential           update_from_charge  0.39259        32        0.012     1.2       %
+   Potential           cal_v_eff           0.39172        32        0.012     1.2       %
+   PW_Basis            real2recip          0.29795        319       0.00093   0.91      %
+   PW_Basis            gatherp_scatters    0.23986        319       0.00075   0.73      %
+   PotXC               cal_v_eff           0.34034        32        0.011     1         %
+   XC_Functional       v_xc                0.33966        32        0.011     1         %
+   Symmetry            rhog_symmetry       0.77422        32        0.024     2.4       %
+   HSolverLCAO         solve               15.324         31        0.49      47        %
+   HamiltLCAO          updateHk            7.2232         124       0.058     22        %
+   OperatorLCAO        init                7.0954         248       0.029     22        %
+   Veff                contributeHk        7.0944         124       0.057     22        %
+   Gint_k              folding_vl_k        7.081          124       0.057     22        %
+   Gint_k              Distri              7.069          124       0.057     22        %
+   OperatorLCAO        folding_fixed       0.10686        124       0.00086   0.33      %
+   LCAO_nnr            folding_fixedH      0.10539        124       0.00085   0.32      %
+   HSolverLCAO         hamiltSolvePsiK     2.7345         124       0.022     8.4       %
+   DiagoElpa           elpa_solve          2.5631         124       0.021     7.8       %
+   ElecStateLCAO       psiToRho            5.3656         31        0.17      16        %
+    Local_Orbital_wfc  wfc_2d_to_grid      0.16261        128       0.0013    0.5       %
+   LCAO_Charge         cal_dk_k            0.21089        31        0.0068    0.64      %
+   Charge              mix_rho             0.1034         30        0.0034    0.32      %
+   Force_Stress_LCAO   getForceStress      0.56641        1         0.57      1.7       %
+   Force_LCAO_k        ftable_k            0.47151        1         0.47      1.4       %
+ ----------------------------------------------------------------------------------------
+
+ START  Time  : Sun Aug 13 15:41:14 2023
+ FINISH Time  : Sun Aug 13 15:41:47 2023
+ TOTAL  Time  : 33
+ SEE INFORMATION IN : OUT.ABACUS/
