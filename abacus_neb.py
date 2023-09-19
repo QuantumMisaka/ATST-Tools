@@ -1,5 +1,6 @@
 import os 
-from ase.neb import NEB, DyNEB
+from ase.neb import NEB
+from ase.dyneb import DyNEB
 from ase.autoneb import AutoNEB
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
@@ -16,7 +17,7 @@ from pathlib import Path
 class AbacusNEB:
     """Customize Abacus workflow for Nudged Elastic Band calculation"""
 
-    def __init__(self, initial, final, parameters, abacus='abacus', algorism="dyneb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8) -> None:
+    def __init__(self, initial, final, parameters, abacus='abacus', algorism="dyneb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=False) -> None:
         """Initialize initial and final states
 
         initial (Atoms object): relaxed starting image
@@ -50,6 +51,7 @@ class AbacusNEB:
         self.mpi = mpi
         self.omp = omp
         self.guess = guess
+        self.parallel = parallel
 
     def set_calculator(self):
         """Set Abacus calculators"""
@@ -82,9 +84,10 @@ class AbacusNEB:
                 images.append(image)
             images.append(self.final)
         if self.algorism == "dyneb":
+            # dynamic neb can only be performed by serial
             neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True)
         elif self.algorism in ["aseneb", "improvedtangent", "eb", "spline", "string"]:
-            neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, allow_shared_calculator=True)
+            neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, allow_shared_calculator=True, parallel=self.parallel)
         else:
             print("Error: NEB algorism not supported")
             print("Please choose algorism from 'dyneb', 'aseneb', 'improvedtangent', 'eb', 'spline', 'string', 'autoneb', ")
@@ -122,6 +125,40 @@ class AbacusNEB:
         """Given a trajectory containing many steps of a NEB, makes plots of each band in the series in a single PDF"""
         images = read(f'neb.traj@-{self.n_max + 2}:')
         return self._nebtools(images).plot_bands()
+
+# end class AbacusNEB
+# start subclass AbacusAutoNEB
+class AbacusAutoNEB(AbacusNEB):
+    """Abacus NEB with AutoNEB method"""
+    
+    def __init__(self, initial, final, parameters, abacus='abacus', algorism="aseneb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=False) -> None:
+        super(AbacusAutoNEB, self).__init__(initial, final, parameters, abacus, algorism, directory, mpi, omp, guess, n_max, parallel)
+    
+    def set_neb_chain(self, fmax=0.05, climb=True, interpolate=True):
+        """Set neb_chain, namely:
+        1. images defining path from initial to final state
+        2. neb object including the images and the implemented NEB method
+        
+        fmax (float): threshold (unit: eV/Angstrom) of the force convergence
+        climb (bool): climbing image NEB method
+        interpolate (bool): interpolate path linearly from initial to final state
+        """
+        if self.guess:
+            images = self.guess
+            for image in images:
+                image.calc = self.set_calculator()
+        else:
+            images = [self.initial]
+            for i in range(self.n_max):
+                image = self.initial.copy()
+                image.calc = self.set_calculator()
+                images.append(image)
+            images.append(self.final)
+        # need to be specified
+        neb = AutoNEB()
+        if interpolate:
+            neb.interpolate()
+        return neb
 
 
 if __name__ == '__main__':
