@@ -1,10 +1,11 @@
-from ase.neb import DyNEB
+import os 
+from ase.neb import NEB, DyNEB
+from ase.autoneb import AutoNEB
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.neb import NEBTools
 from ase.io import read, write
 from pathlib import Path
-import os 
 
 # os.environ['ABACUS_PP_PATH'] = '/home/james/example/PP'
 # os.environ['ABACUS_ORBITAL_PATH'] = '/home/james/example/ORB'
@@ -15,7 +16,7 @@ import os
 class AbacusNEB:
     """Customize Abacus workflow for Nudged Elastic Band calculation"""
 
-    def __init__(self, initial, final, parameters, abacus='abacus', directory='OUT', mpi=1, omp=1, guess=[], n_max=8) -> None:
+    def __init__(self, initial, final, parameters, abacus='abacus', algorism="dyneb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8) -> None:
         """Initialize initial and final states
 
         initial (Atoms object): relaxed starting image
@@ -23,16 +24,27 @@ class AbacusNEB:
         n_max (int): the number of images to interpolate between the initial and final images.
         parameters (dict): settings of input parameters
         abacus (str): Abacus executable file. Default: 'abacus'
+        algorism (str): NEB algorism. which can be
+        - 'aseneb'
+        - 'improvedtangent'
+        - 'eb'
+        - 'spline'
+        - 'string'
+        - 'autoneb'
+        - 'dyneb'
+        Default: 'dyneb'
+        
         directory (str): work directory
         mpi (int): number of MPI
         omp (int): number of OpenMP
-        guess (list): intermediate guesses. If set, not need to set n_max
+        guess (List(Atoms)): intermediate guesses. If set, not need to set n_max
         """
 
         self.initial = initial
         self.final = final
         self.n_max = n_max
         self.parameters = parameters
+        self.algorism = algorism
         self.abacus = abacus
         self.directory = directory
         self.mpi = mpi
@@ -49,9 +61,11 @@ class AbacusNEB:
 
         return calc
 
-    def set_images(self, fmax=0.05, climb=True, interpolate=True):
-        """Set images defining path from initial to final state
-
+    def set_neb_chain(self, fmax=0.05, climb=True, interpolate=True):
+        """Set neb_chain, namely:
+        1. images defining path from initial to final state
+        2. neb object including the images and the implemented NEB method
+        
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
         interpolate (bool): interpolate path linearly from initial to final state
@@ -67,8 +81,15 @@ class AbacusNEB:
                 image.calc = self.set_calculator()
                 images.append(image)
             images.append(self.final)
-        neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True,
-                    allow_shared_calculator=True)
+        if self.algorism == "dyneb":
+            neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True)
+        elif self.algorism in ["aseneb", "improvedtangent", "eb", "spline", "string"]:
+            neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, allow_shared_calculator=True)
+        else:
+            print("Error: NEB algorism not supported")
+            print("Please choose algorism from 'dyneb', 'aseneb', 'improvedtangent', 'eb', 'spline', 'string', 'autoneb', ")
+            print("AutoNEB method should be used by AbacusAutoNEB")
+            exit(1)
         if interpolate:
             neb.interpolate()
         
@@ -77,12 +98,12 @@ class AbacusNEB:
     def run(self, optimizer=FIRE, fmax=0.05, climb=True, interpolate=True):
         """Run Abacus NEB
 
-        optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported
+        optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported, recommend FIRE method
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
         interpolate (bool): interpolate path linearly from initial to final state
         """
-        neb = self.set_images(fmax, climb, interpolate)
+        neb = self.set_neb_chain(fmax, climb, interpolate)
         opt = optimizer(neb, trajectory='neb.traj', logfile='opt.log')
         opt.run(fmax)
 
@@ -103,35 +124,18 @@ class AbacusNEB:
         return self._nebtools(images).plot_bands()
 
 
-def guess_for_vac(initial, final, i_index, f_index, n_max):
-    i_xyz = initial.positions[i_index]
-    f_xyz = final.positions[f_index]
-    d = (f_xyz-i_xyz) / n_max
-    images = [initial]
-    for i in range(n_max):
-        image = initial.copy()
-        image.positions[i_index] += d*i
-        images.append(image)
-    images.append(final)
-    write('initial_guess.traj', images)
-
-    return images
-
-
 if __name__ == '__main__':
-    # Run
+    # Run a example: Au diffusion on Al(100) surface
     n_max = 5
     mpi = 64
     omp = 1
     abacus = 'abacus'
+    pseudo_dir = "/data/home/liuzq/example/PP"
+    basis_dir = "/data/home/liuzq/example/ORB"
     pp = {"Al": "Al_ONCV_PBE-1.0.upf",
           "Au": "Au_ONCV_PBE-1.0.upf", }
-    pseudo_dir = "/data/home/liuzq/example/PP"
-    #pseudo_dir = "/home/james/example/PP"
     basis = {"Al": "Al_gga_7au_100Ry_4s4p1d.orb",
              "Au": "Au_gga_7au_100Ry_4s2p2d1f.orb"}
-    basis_dir = "/data/home/liuzq/example/ORB"
-    #basis_dir = "/home/james/example/ORB"
     kpts = [2, 2, 1]
     parameters = {
         'calculation': 'scf',
@@ -156,14 +160,12 @@ if __name__ == '__main__':
 
     from ase.build import fcc100, add_adsorbate
     from ase.constraints import FixAtoms
-    from ase.calculators.emt import EMT
     from ase.optimize import QuasiNewton
     slab = fcc100('Al', size=(2, 2, 3))
     add_adsorbate(slab, 'Au', 1.7, 'hollow')
     slab.center(axis=2, vacuum=4.0)
     mask = [atom.tag > 1 for atom in slab]
     slab.set_constraint(FixAtoms(mask=mask))
-    # slab.calc = EMT()
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
     profile = AbacusProfile(
         argv=['mpirun', '-np', f'{mpi}', abacus])

@@ -12,7 +12,7 @@ NEB or CI-NEB method by ASE and ABACUS using ASE-ABACUS interfaces
 
 ## Developing
 - [ ] Add interface to read ABACUS STRU file
-- [ ] Better initial guess for CI-NEB
+- [ ] Flexible input for different NEB method in ASE
 - [ ] More test in surface reaction system
 
 
