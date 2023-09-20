@@ -24,7 +24,10 @@ NEB or CI-NEB method by ASE and ABACUS using ASE-ABACUS interfaces
 ## Developing
 - [x] Use interface to read ABACUS STRU file and ABACUS output
 - [x] Flexible input for different NEB method in ASE
+- [x] DyNEB implementation and test
+- [x] Now used optimum option: idpp + DyNEB + IT-NEB + CI-NEB method
 - [ ] More test in surface reaction system
 - [ ] Parallel computing during images relaxation
+- [ ] AutoNEB implementation
 
 

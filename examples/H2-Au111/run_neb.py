@@ -1,4 +1,4 @@
-# Run a example: Al diffusion on Cu(100) surface
+# Run a example: H2 dissociation on Au(111) surface
 # JamesMisaka in 2023-0919
 # An example for read running_relax.log for init and final information
 # Then do NEB calculation
@@ -26,13 +26,14 @@ n_max = 7
 mpi = 4
 omp = 16
 abacus = 'abacus'
-pseudo_dir = "/data/home/liuzq/example/PP"
-basis_dir = "/data/home/liuzq/example/ORB"
-pp = {"Ag": "Ag_ONCV_PBE-1.0.upf",
-        "Cu": "Cu_ONCV_PBE-1.0.upf", }
-basis = {"Ag": "Ag_gga_7au_100Ry_4s2p2d1f.orb",
-            "Cu": "Cu_gga_8au_100Ry_4s2p2d1f.orb"}
-kpts = [4, 4, 1]
+example_dir="/lustre/home/2201110432/example/abacus"
+pseudo_dir = f"{example_dir}/PP"
+basis_dir = f"{example_dir}/ORB"
+pp = {"H": "H_ONCV_PBE-1.0.upf",
+        "Au": "Au_ONCV_PBE-1.0.upf", }
+basis = {"H": "H_gga_6au_100Ry_2s1p.orb",
+            "Au": "Au_gga_7au_100Ry_4s2p2d1f.orb"}
+kpts = [3, 3, 1]
 parameters = {
     'calculation': 'scf',
     'xc': 'pbe',
@@ -74,7 +75,7 @@ final = read('final/OUT.final/running_relax.log', index=-1, format='abacus-out')
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=directory, mpi=mpi, omp=omp, abacus=abacus, 
-                n_max=n_max,)
+                algorism=algorism, n_max=n_max,)
 neb.run(optimizer=optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
 
 # Get barrier
