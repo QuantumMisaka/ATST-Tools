@@ -6,12 +6,15 @@ from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.io import read, write
 
-# set pythonpath
-ROOTPATH=os.path.abspath("../..")
-os.environ['PYTHONPATH'] = f'{ROOTPATH}'
+# set pythonpath: not useful
+# ROOTPATH=os.path.abspath("../..")
+# os.environ['PYTHONPATH'] = f'{ROOTPATH}'
 
 from abacus_neb import AbacusNEB
 
+directory = 'OUT'
+optimizer = BFGS # suited for CI-NEB
+interpolate = "linear" # linear or idpp
 n_max = 5
 mpi = 64
 omp = 1
@@ -42,6 +45,14 @@ parameters = {
     'basis_dir': basis_dir,
     'vdw_method': 'd3_bj',
     'cal_force': 1,
+    'cal_stress': 1,
+    'out_stru': 1,
+    'out_chg': 0,
+    'out_bandgap': 0,
+    'efield_flag': 0,
+    'dip_cor_flag': 0,
+    'efield_dir': 2,
+    'efield_pos_max': 0.6,
 }
 
 from ase.build import fcc100, add_adsorbate
@@ -70,8 +81,9 @@ initial = read('initial.traj')
 final = read('final.traj')
 
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
+                directory=directory,
                 mpi=mpi, omp=omp, abacus=abacus, n_max=n_max)
-neb.run(optimizer=BFGS, climb=False, interpolate=True, fmax=0.05)
+neb.run(optimizer=optimizer, climb=False, interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()

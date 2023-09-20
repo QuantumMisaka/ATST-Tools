@@ -1,10 +1,10 @@
 # Run a example: Al diffusion on Cu(100) surface
-# JamesMisaka in 2023-0920 update
-# An example for read running_relax.log for init and final information
+# JamesMisaka in 2023-0919
+# An example for read STRU and do init and final calculation
 # Then do NEB calculation
 
 import os 
-from ase.calculators.abacus import AbacusProfile
+from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS, QuasiNewton
 from ase.io import read, write
 #from pathlib import Path
@@ -16,24 +16,29 @@ from ase.io import read, write
 from abacus_neb import AbacusNEB
 
 # setting
-directory = 'OUT'
-#optimizer = FIRE # suited for CI-NEB
-optimizer = QuasiNewton
+# optimizer = FIRE # suited for CI-NEB
+init_directory = "INIT"
+final_directory = "FINAL"
+neb_directory = "OUT"
+optimizer = FIRE
 algorism = "improvedtangent" # IT-NEB is recommended
-interpolate = "idpp" # linear or idpp
 #dyneb=True  # default
+interpolate = "linear" # linear or idpp
 climb = True
 n_max = 7
 mpi = 4
 omp = 16
 abacus = 'abacus'
-pseudo_dir = "/data/home/liuzq/example/PP"
-basis_dir = "/data/home/liuzq/example/ORB"
-pp = {"Ag": "Ag_ONCV_PBE-1.0.upf",
-        "Cu": "Cu_ONCV_PBE-1.0.upf", }
-basis = {"Ag": "Ag_gga_7au_100Ry_4s2p2d1f.orb",
-            "Cu": "Cu_gga_8au_100Ry_4s2p2d1f.orb"}
-kpts = [4, 4, 1]
+# example_dir = "/lustre/home/2201110432/example/abacus"
+# pseudo_dir = f"{example_dir}/PP"
+# basis_dir = f"{example_dir}/ORB"
+pseudo_dir = "."
+basis_dir = "."
+pp = {"Li": "Li_ONCV_PBE-1.2.upf",
+        "Si": "Si_ONCV_PBE-1.2.upf", }
+basis = {"Li": "Li_gga_8au_100Ry_4s1p.orb",
+            "Si": "Si_gga_8au_100Ry_2s2p1d.orb"}
+kpts = [2, 2, 2]
 parameters = {
     'calculation': 'scf',
     'xc': 'pbe',
@@ -67,16 +72,27 @@ os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
-# Initial state read from ABACUS calculation result:
-initial = read('init/OUT.A/running_relax.log', index=-1, format='abacus-out')
+# Initial stru read from ABACUS, should do single point calculation
+initial = read('./initial_stru', format='abacus')
 
-# Final state read frome ABACUS calculation result:
-final = read('final/OUT.B/running_relax.log', index=-1, format='abacus-out')
+# Final stru read frome ABACUS mshould do single point calculation
+final = read('./final_stru', format='abacus')
+
+# relax calculation by abacus
+initial.calc = Abacus(profile=profile, directory=init_directory,
+                    **parameters)
+qn_init = optimizer(initial, trajectory='init_opt.traj')
+qn_init.run(fmax=0.05)
+
+final.calc = Abacus(profile=profile, directory=final_directory,
+                    **parameters)
+qn_final = optimizer(initial, trajectory='final_opt.traj')
+qn_final.run(fmax=0.05)
 
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
-                directory=directory, mpi=mpi, omp=omp, abacus=abacus, 
-                n_max=n_max,)
+                directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
+                algorism=algorism, n_max=n_max, )
 neb.run(optimizer=optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
 
 # Get barrier

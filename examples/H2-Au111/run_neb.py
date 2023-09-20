@@ -1,7 +1,6 @@
 # Run a example: Al diffusion on Cu(100) surface
-# JamesMisaka in 2023-0920 update
-# An example for read running_relax.log for init and final information
-# Then do NEB calculation
+# JamesMisaka in 2023-0919
+# Should do ABACUS calculation for init and final state first
 
 import os 
 from ase.calculators.abacus import AbacusProfile
@@ -16,12 +15,11 @@ from ase.io import read, write
 from abacus_neb import AbacusNEB
 
 # setting
-directory = 'OUT'
-#optimizer = FIRE # suited for CI-NEB
-optimizer = QuasiNewton
+directory = "OUT"
+optimizer = FIRE # suited for CI-NEB
 algorism = "improvedtangent" # IT-NEB is recommended
-interpolate = "idpp" # linear or idpp
 #dyneb=True  # default
+interpolate = "idpp" # linear or idpp
 climb = True
 n_max = 7
 mpi = 4
@@ -44,7 +42,6 @@ parameters = {
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
-    'scf_nmax': 300,
     'out_chg': 1,
     'out_bandgap': 1,
     'kpts': kpts,
@@ -58,8 +55,8 @@ parameters = {
     'out_stru': 1,
     'out_chg': 0,
     'out_bandgap': 0,
-    'efield_flag': 0,
-    'dip_cor_flag': 0,
+    'efield_flag': 1,
+    'dip_cor_flag': 1,
     'efield_dir': 2,
     'efield_pos_max': 0.6,
 }
