@@ -1,6 +1,7 @@
 # Run a example: Al diffusion on Cu(100) surface
 # JamesMisaka in 2023-0919
-# Should do ABACUS calculation for init and final state first
+# An example for read running_relax.log for init and final information
+# Then do NEB calculation
 
 import os 
 from ase.calculators.abacus import AbacusProfile
@@ -10,7 +11,7 @@ from ase.io import read, write
 
 # set pythonpath: not useful
 # ROOTPATH=os.path.abspath("../..")
-# os.environ['PYTHONPATH'] = f'{ROOTPATH}'
+# os.environ['PYTHONPATH'] = f'{ROOTPATH}:$PYTHONPATH'
 
 from abacus_neb import AbacusNEB
 
@@ -65,10 +66,10 @@ profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
 # Initial state read from ABACUS calculation result:
-initial = read('init/OUT.A/running_relax.log', index=-1, format='abacus-out')
+initial = read('init/OUT.init/running_relax.log', index=-1, format='abacus-out')
 
 # Final state read frome ABACUS calculation result:
-final = read('final/OUT.B/running_relax.log', index=-1, format='abacus-out')
+final = read('final/OUT.final/running_relax.log', index=-1, format='abacus-out')
 
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,

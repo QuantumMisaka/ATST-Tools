@@ -11,7 +11,7 @@ from ase.io import read, write
 
 # set pythonpath: not useful
 # ROOTPATH=os.path.abspath("../..")
-# os.environ['PYTHONPATH'] = f'{ROOTPATH}'
+# os.environ['PYTHONPATH'] = f'{ROOTPATH}:$PYTHONPATH'
 
 from abacus_neb import AbacusNEB
 

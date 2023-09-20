@@ -11,14 +11,14 @@ from ase.io import read, write
 
 # set pythonpath: not useful
 # ROOTPATH=os.path.abspath("../..")
-# os.environ['PYTHONPATH'] = f'{ROOTPATH}'
+# os.environ['PYTHONPATH'] = f'{ROOTPATH}:$PYTHONPATH'
 
 from abacus_neb import AbacusNEB
 
 # setting
 directory = 'OUT'
-#optimizer = FIRE # suited for CI-NEB
-optimizer = QuasiNewton
+optimizer = FIRE # suited for CI-NEB
+#optimizer = QuasiNewton
 algorism = "improvedtangent" # IT-NEB is recommended
 interpolate = "idpp" # linear or idpp
 #dyneb=True  # default
@@ -45,8 +45,8 @@ parameters = {
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
     'scf_nmax': 300,
-    'out_chg': 1,
-    'out_bandgap': 1,
+    'out_chg': 0,
+    'out_bandgap': 0,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,
@@ -76,7 +76,7 @@ final = read('final/OUT.B/running_relax.log', index=-1, format='abacus-out')
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=directory, mpi=mpi, omp=omp, abacus=abacus, 
-                n_max=n_max,)
+                algorism=algorism, n_max=n_max,)
 neb.run(optimizer=optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
 
 # Get barrier
