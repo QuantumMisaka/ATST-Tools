@@ -54,7 +54,7 @@ opt_parameters = {
     'scf_thr': 1e-6,
     'scf_nmax': 300,
     'relax_nmax': 400,
-    'relax_method': "bfgs",
+    'relax_method': "cg",
     'out_chg': 1,
     'out_bandgap': 1,
     'kpts': kpts,
