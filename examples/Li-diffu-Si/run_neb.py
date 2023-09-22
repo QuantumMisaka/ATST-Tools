@@ -1,4 +1,4 @@
-# Run a example: Al diffusion on Cu(100) surface
+# Run a example: Li diffusion on in Si
 # JamesMisaka in 2023-0919
 # An example for read STRU and do init and final calculation
 # Then do NEB calculation
@@ -23,10 +23,10 @@ neb_directory = "OUT"
 optimizer = FIRE
 algorism = "improvedtangent" # IT-NEB is recommended
 #dyneb=True  # default
-interpolate = "linear" # linear or idpp
+interpolate = "idpp" # linear or idpp
 climb = True
 n_max = 7
-mpi = 4
+mpi = 1
 omp = 16
 abacus = 'abacus'
 # example_dir = "/lustre/home/2201110432/example/abacus"
@@ -57,7 +57,6 @@ parameters = {
     'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
-    'vdw_method': 'd3_bj',
     'cal_force': 1,
     'cal_stress': 1,
     'out_stru': 1,

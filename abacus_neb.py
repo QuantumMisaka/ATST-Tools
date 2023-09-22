@@ -30,10 +30,11 @@ class AbacusNEB:
         abacus (str): Abacus executable file. Default: 'abacus'
         algorism (str): NEB algorism. which can be
         - 'aseneb': standard ase NEB
-        - 'improvedtangent' : IT-NEB (recommend by Sobereva)
+        - 'improvedtangent' : IT-NEB (recommended by Sobereva)
         - 'eb': climbing image elastic band method (in AutoNEB)
         - 'spline': 
         - 'string': 
+        
         Default: 'improvedtangent'
         
         dyneb (bool): dynamic NEB method. Default: True
@@ -41,7 +42,7 @@ class AbacusNEB:
         mpi (int): number of MPI
         omp (int): number of OpenMP
         guess (List(Atoms)): intermediate guesses. If set, not need to set n_max
-        parallel (bool): parallel calculation setting
+        parallel (bool): parallel calculation setting, will be false if use DyNEB
         """
 
         self.initial = initial
@@ -110,20 +111,21 @@ class AbacusNEB:
             print("Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string', ")
             print("AutoNEB method should be used by AbacusAutoNEB")
             exit(1)
-        if interpolate == 'idpp':
+        if interpolate in ['idpp','linear']:
             neb.interpolate(method=interpolate)
         elif interpolate:
-            neb.interpolate()
+            print("Warning: interpolate method not supported, using default linear interpolate")
+            neb.interpolate() # using default
         
         return neb
 
-    def run(self, optimizer=FIRE, fmax=0.05, climb=True, interpolate='linear'):
+    def run(self, optimizer=FIRE, fmax=0.05, climb=True, interpolate='idpp'):
         """Run Abacus NEB
 
         optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported, recommend FIRE method
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
-        interpolate (string): interpolate chain path, 'linear' or 'idpp' or None, default is 'linear'
+        interpolate (string): interpolate chain path, 'linear' or 'idpp' or None, default is 'idpp' for optimal guess chain
         """
         neb = self.set_neb_chain(fmax, climb, interpolate)
         opt = optimizer(neb, trajectory='neb.traj')
@@ -154,7 +156,7 @@ class AbacusNEB:
 class AbacusAutoNEB(AbacusNEB):
     """Abacus NEB with AutoNEB method"""
     
-    def __init__(self, initial, final, parameters, abacus='abacus', algorism="aseneb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=False) -> None:
+    def __init__(self, initial, final, parameters, abacus='abacus', algorism="eb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=False) -> None:
         super(AbacusAutoNEB, self).__init__(initial, final, parameters, abacus, algorism, directory, mpi, omp, guess, n_max, parallel)
     
     def set_neb_chain(self, fmax=0.05, climb=True, interpolate='idpp'):
