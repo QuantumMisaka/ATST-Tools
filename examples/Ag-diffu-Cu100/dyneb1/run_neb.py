@@ -29,24 +29,30 @@ omp = 16
 abacus = 'abacus'
 pseudo_dir = "/data/home/liuzq/example/PP"
 basis_dir = "/data/home/liuzq/example/ORB"
-pp = {"Ag": "Ag_ONCV_PBE-1.0.upf",
-        "Cu": "Cu_ONCV_PBE-1.0.upf", }
-basis = {"Ag": "Ag_gga_7au_100Ry_4s2p2d1f.orb",
-            "Cu": "Cu_gga_8au_100Ry_4s2p2d1f.orb"}
+pp = {
+      "H": "H_ONCV_PBE-1.0.upf",
+      "C": "C_ONCV_PBE-1.0.upf",
+      "O": "O_ONCV_PBE-1.0.upf",
+      "Fe": "Fe_ONCV_PBE-1.0.upf",
+}
+basis = {
+    "H": "H_gga_6au_100Ry_2s1p.orb",
+    "C": "C_gga_7au_100Ry_2s2p1d.orb",
+    "O": "O_gga_7au_100Ry_2s2p1d.orb",
+    "Fe": "Fe_gga_8au_100Ry_4s2p2d1f.orb",
+    }
 kpts = [4, 4, 1]
 parameters = {
     'calculation': 'scf',
     'xc': 'pbe',
     'ecutwfc': 100,
-    'smearing_method': 'gaussian',
-    'smearing_sigma': 0.002,
+    'smearing_method': 'mp',
+    'smearing_sigma': 0.008,
     'basis_type': 'lcao',
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
     'scf_nmax': 300,
-    'out_chg': 0,
-    'out_bandgap': 0,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,

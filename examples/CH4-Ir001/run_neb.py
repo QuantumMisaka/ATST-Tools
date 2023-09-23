@@ -1,8 +1,8 @@
-# Run a example:  N2 diffusion on Cu111 surface
-# JamesMisaka in 2023-0919
-# An example for read STRU and do init and final calculation
-# Then do NEB calculation
-# N2.stru and 2N.stru are generated from ASE and Edited by hand
+# Run a example: CH4 dissociation on Ir(001) surface
+# JamesMisaka in 2023-0922, ref by Sob 1KFP NEB6
+# An example for read STRU and do init and final calculation by ABACUS
+# Then do NEB calculation by ASE-ABACUS+
+
 
 import os 
 from ase.calculators.abacus import Abacus, AbacusProfile
@@ -17,17 +17,16 @@ from ase.io import read, write
 from abacus_neb import AbacusNEB
 
 # setting
-# optimizer = FIRE # suited for CI-NEB
+neb_optimizer = FIRE # suited for CI-NEB
+opt_optimizer = QuasiNewton # suited for local opt
 init_directory = "INIT"
 final_directory = "FINAL"
 neb_directory = "OUT"
-opt_optimizer = QuasiNewton
-neb_optimizer = FIRE
 algorism = "improvedtangent" # IT-NEB is recommended
 #dyneb=True  # default
 interpolate = "idpp" # linear or idpp
 climb = True
-n_max = 8
+n_max = 10
 mpi = 1
 omp = 16
 abacus = "abacus"
@@ -36,24 +35,32 @@ example_dir="/data/home/liuzq/example/"
 #example_dir="/home/james/example"
 pseudo_dir = f"{example_dir}/PP"
 basis_dir = f"{example_dir}/ORB"
-pp = {'N':'N_ONCV_PBE-1.0.upf',
-      'Cu':'Cu_ONCV_PBE-1.0.upf',}
-basis = {'N':'N_gga_7au_100Ry_2s2p1d.orb',
-         'Cu':'Cu_gga_8au_100Ry_4s2p2d1f.orb',}
-kpts = [3, 3, 1]
+pp = {
+    'Ir':'Au_ONCV_PBE-1.0.upf',
+      'H':'H_ONCV_PBE-1.0.upf',
+      'C':'C_ONCV_PBE-1.0.upf',
+      'O': 'O_ONCV_PBE-1.0.upf',
+      }
+basis = {
+    'Ir':'Ir_gga_7au_100Ry_4s2p2d1f.orb',
+         'H':'H_gga_6au_100Ry_2s1p.orb',
+         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+         'O': 'O_gga_7au_100Ry_2s2p1d.orb'
+         ,}
+kpts = [4, 4, 1]
+# for abacus to do relaxation
 
-# abacus do scf
 parameters = {
     'calculation': 'scf',
     'xc': 'pbe',
     'ecutwfc': 100,
-    'smearing_method': 'gaussian',
-    'smearing_sigma': 0.002,
+    'smearing_method': 'mp',
+    'smearing_sigma': 0.008,
     'basis_type': 'lcao',
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
-    'scf_nmax': 100,
+    'scf_nmax': 120,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,
@@ -68,21 +75,22 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 2,
-    'efield_pos_max': 0.7,
+    'efield_pos_max': 0.7
 }
 
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
-# Initial stru read from ABACUS, should do single point calculation
-initial = read('./N2-Cu.stru', format='abacus')
+# Initial stru read from ABACUS
+#initial = read('init/OUT.init/running_relax.log', format='abacus-out')
+initial = read('init/STRU', format='abacus')
 
-# Final stru read frome ABACUS mshould do single point calculation
-final = read('./2N-Cu.stru', format='abacus')
+# Final stru read from ABACUS
+#final = read('final/OUT.final/running_relax.log', format='abacus-out')
+final = read('final/STRU', format='abacus')
 
-
-# relax calculation by ase-abacus, abacus do scf
+# relax by ASE-ABACUS
 initial.calc = Abacus(profile=profile, directory=init_directory,
                     **parameters)
 qn_init = opt_optimizer(initial, trajectory='init_opt.traj')
@@ -92,6 +100,7 @@ final.calc = Abacus(profile=profile, directory=final_directory,
                     **parameters)
 qn_final = opt_optimizer(initial, trajectory='final_opt.traj')
 qn_final.run(fmax=0.05)
+
 
 
 # do neb calculation by DyNEB

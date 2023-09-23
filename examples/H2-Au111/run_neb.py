@@ -17,16 +17,17 @@ from abacus_neb import AbacusNEB
 
 # setting
 directory = "OUT"
-optimizer = FIRE # suited for CI-NEB
+neb_optimizer = FIRE # suited for CI-NEB
 algorism = "improvedtangent" # IT-NEB is recommended
 #dyneb=True  # default
 interpolate = "idpp" # linear or idpp
 climb = True
 n_max = 7
-mpi = 4
+mpi = 1
 omp = 16
 abacus = 'abacus'
-example_dir="/lustre/home/2201110432/example/abacus"
+#example_dir="/lustre/home/2201110432/example/abacus"
+example_dir="/data/home/liuzq/example/"
 pseudo_dir = f"{example_dir}/PP"
 basis_dir = f"{example_dir}/ORB"
 pp = {"H": "H_ONCV_PBE-1.0.upf",
@@ -44,8 +45,6 @@ parameters = {
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
-    'out_chg': 1,
-    'out_bandgap': 1,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,
@@ -60,23 +59,23 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 2,
-    'efield_pos_max': 0.6,
+    'efield_pos_max': 0.7,
 }
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
 # Initial state read from ABACUS calculation result:
-initial = read('init/OUT.init/running_relax.log', index=-1, format='abacus-out')
+initial = read('H2/OUT.init/running_relax.log', index=-1, format='abacus-out')
 
 # Final state read frome ABACUS calculation result:
-final = read('final/OUT.final/running_relax.log', index=-1, format='abacus-out')
+final = read('2H/OUT.final/running_relax.log', index=-1, format='abacus-out')
 
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=directory, mpi=mpi, omp=omp, abacus=abacus, 
                 algorism=algorism, n_max=n_max,)
-neb.run(optimizer=optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+neb.run(optimizer=neb_optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()

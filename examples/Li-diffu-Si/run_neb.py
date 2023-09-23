@@ -2,6 +2,7 @@
 # JamesMisaka in 2023-0919
 # An example for read STRU and do init and final calculation
 # Then do NEB calculation
+# Example from Colomb Academy for ABACUS catalysis practice
 
 import os 
 from ase.calculators.abacus import Abacus, AbacusProfile
@@ -50,8 +51,6 @@ parameters = {
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
     'scf_nmax': 300,
-    'out_chg': 1,
-    'out_bandgap': 1,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,

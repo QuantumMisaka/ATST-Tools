@@ -36,8 +36,6 @@ parameters = {
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
     'scf_thr': 1e-6,
-    'out_chg': 1,
-    'out_bandgap': 1,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,
