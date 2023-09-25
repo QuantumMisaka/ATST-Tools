@@ -24,8 +24,8 @@ neb_directory = "OUT"
 # should create optimizer for init and final independently -- 20230924
 # object of class should not be the same
 opt_optimizer = QuasiNewton
-# init_optimizer = QuasiNewton
-# final_optimizer = QuasiNewton 
+init_stru = 'N2-Cu.stru'
+final_stru = '2N-Cu.stru'
 neb_optimizer = FIRE
 algorism = "improvedtangent" # IT-NEB is recommended
 #dyneb=True  # default
@@ -80,10 +80,10 @@ profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
 # Initial stru read from ABACUS, should do single point calculation
-initial = read('./N2-Cu.stru', format='abacus')
+initial = read(init_stru, format='abacus')
 
 # Final stru read frome ABACUS mshould do single point calculation
-final = read('./2N-Cu.stru', format='abacus')
+final = read(final_stru, format='abacus')
 
 # fix is done by reading from STRU and do relax by ASE-ABACUS
 # in OUT directory, fix is done in print-out STRU
@@ -105,7 +105,8 @@ qn_final.run(fmax=0.05)
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
                 algorism=algorism, n_max=n_max,)
-neb.run(optimizer=neb_optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+neb.run(optimizer=neb_optimizer, climb=climb, 
+        interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()

@@ -80,9 +80,8 @@ initial = read(initial_result, index=-1, format='abacus-out')
 final = read(final_result, index=-1, format='abacus-out')
 
 # should set fix in ASE itself, fix information cannot be read from abacus-out
-fix_indices = [atom.index for atom in initial
-               [initial.get_scaled_positions()[:,2] < fix_height]]
-fix = FixAtoms(indices=fix_indices)
+mask = initial.get_scaled_positions()[:,2] < fix_height
+fix = FixAtoms(mask=mask)
 initial.set_constraint(fix)
 final.set_constraint(fix)
 

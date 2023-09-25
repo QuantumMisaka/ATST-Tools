@@ -53,6 +53,6 @@ out_mul            0  # print Mulliken charge and mag of atom in mulliken.txt
 efield_flag        0   # open added potential, if 0, all below useless
 dip_cor_flag       0   # open dipole correction
 efield_dir         2   # direction of dipole correction, 0,1,2 for x,y,z
-efield_pos_max     0.7 # max frac-pos of correction , default 0.5. should be in vaccum
+efield_pos_max     0.8 # max frac-pos of correction , default 0.5. should be in vaccum
 efield_pos_dec     0.1 # where the saw-like potential decreases, default 0.1
 efield_amp         0.0 # Amplitude of outer electric field , 0 for only dipole-corr

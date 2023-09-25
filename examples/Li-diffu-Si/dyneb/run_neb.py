@@ -91,7 +91,8 @@ qn_final.run(fmax=0.05)
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
                 algorism=algorism, n_max=n_max, )
-neb.run(optimizer=optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+neb.run(optimizer=optimizer, climb=climb, 
+        interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()

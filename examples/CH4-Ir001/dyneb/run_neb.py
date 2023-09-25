@@ -18,6 +18,7 @@ from abacus_neb import AbacusNEB
 
 # setting
 neb_optimizer = FIRE # suited for CI-NEB
+opt_optimizer = QuasiNewton # suited for geometry optimization
 init_directory = "INIT"
 final_directory = "FINAL"
 neb_directory = "OUT"
@@ -29,9 +30,11 @@ n_max = 8
 mpi = 1
 omp = 32
 abacus = "abacus"
-fix_height = 0.20 # define the height of fixed atoms
-initial_result = 'init/OUT.init/running_relax.log'
-final_result = 'final/OUT.final/running_relax.log'
+# fix_height = 0.20 # define the height of fixed atoms
+# init_result = 'init/OUT.init/running_relax.log'
+# final_result = 'final/OUT.final/running_relax.log'
+init_stru = 'init/STRU'
+final_stru = 'final/STRU'
 #example_dir = "/lustre/home/2201110432/example/abacus"
 example_dir="/data/home/liuzq/example/"
 #example_dir="/home/james/example"
@@ -56,8 +59,8 @@ parameters = {
     'calculation': 'scf',
     'xc': 'pbe',
     'ecutwfc': 100,
-    'smearing_method': 'mp',
-    'smearing_sigma': 0.008,
+    'smearing_method': 'gaussian',
+    'smearing_sigma': 0.002,
     'basis_type': 'lcao',
     'ks_solver': 'genelpa',
     'mixing_type': 'pulay',
@@ -90,23 +93,49 @@ profile = AbacusProfile(
 
 # Initial stru read from ABACUS
 # reading problem is fixed in https://gitlab.com/1041176461/ase-abacus/-/commit/25e8f02cdfa23d70b2862417fb14457d9672a532
-initial = read(initial_result,index=-1, format='abacus-out')
+# it is weird that ABACUS optimization result is not good
+# But it surely converged ? need more test
+# initial = read(init_result,index=-1, format='abacus-out')
 
 # Final stru read from ABACUS
-final = read(final_result,index=-1, format='abacus-out')
+# final = read(final_result,index=-1, format='abacus-out')
 
 # should set fix in ASE itself, fix information cannot be read from abacus-out
-fix_indices = [atom.index for atom in initial
-               [initial.get_scaled_positions()[:,2] < fix_height]]
-fix = FixAtoms(indices=fix_indices)
-initial.set_constraint(fix)
-final.set_constraint(fix)
+# mask = initial.get_scaled_positions()[:,2] < fix_height
+# fix = FixAtoms(mask=mask)
+# initial.set_constraint(fix)
+# final.set_constraint(fix)
+
+# so we change to use ASE as optimizer
+
+# Initial stru read from ABACUS, should do single point calculation
+initial = read(init_stru, format='abacus')
+
+# Final stru read frome ABACUS mshould do single point calculation
+final = read(final_stru, format='abacus')
+
+# fix is done by reading from STRU and do relax by ASE-ABACUS
+# in OUT directory, fix is done in print-out STRU
+# but it is in question whether the fix is effective ? need more test
+
+# relax calculation by ase-abacus, abacus do scf
+initial.calc = Abacus(profile=profile, directory=init_directory,
+                    **parameters)
+qn_init = opt_optimizer(initial, trajectory='init_opt.traj')
+qn_init.run(fmax=0.05)
+
+final.calc = Abacus(profile=profile, directory=final_directory,
+                    **parameters)
+qn_final = opt_optimizer(final, trajectory='final_opt.traj')
+qn_final.run(fmax=0.05)
+
 
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
                 algorism=algorism, n_max=n_max,)
-neb.run(optimizer=neb_optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+neb.run(optimizer=neb_optimizer, climb=climb, 
+        interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()

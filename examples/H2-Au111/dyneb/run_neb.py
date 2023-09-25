@@ -27,7 +27,7 @@ n_max = 8
 mpi = 4
 omp = 8
 abacus = 'abacus'
-fix_height = 0.18 # define the height of fixed atoms
+fix_height = 0.25 # define the height of fixed atoms
 initial_result = 'H2/OUT.init/running_relax.log'
 final_result = '2H/OUT.final/running_relax.log'
 #example_dir="/lustre/home/2201110432/example/abacus"
@@ -67,7 +67,7 @@ parameters = {
     'efield_flag': 0,
     'dip_cor_flag': 0,
     'efield_dir': 2,
-    'efield_pos_max': 0.7,
+    'efield_pos_max': 0.8,
 }
 
 
@@ -86,9 +86,8 @@ initial = read(initial_result, index=-1, format='abacus-out')
 final = read(final_result, index=-1, format='abacus-out')
 
 # should set fix in ASE itself, fix information cannot be read from abacus-out
-fix_indices = [atom.index for atom in initial
-               [initial.get_scaled_positions()[:,2] < fix_height]]
-fix = FixAtoms(indices=fix_indices)
+mask = initial.get_scaled_positions()[:,2] < fix_height
+fix = FixAtoms(mask=mask)
 initial.set_constraint(fix)
 final.set_constraint(fix)
 

@@ -93,7 +93,8 @@ final = read('FS/OUT.ABACUS/running_relax.log',index=-1, format='abacus-out')
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
                 directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
                 algorism=algorism, n_max=n_max,)
-neb.run(optimizer=neb_optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+neb.run(optimizer=neb_optimizer, climb=climb, 
+        interpolate=interpolate, fmax=0.05)
 
 # Get barrier
 barrier = neb.get_barriers()
