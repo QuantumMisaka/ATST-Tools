@@ -1,0 +1,27 @@
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 4,Total thread number: 16,Local thread limit: 128
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 2687 ON amd41 CANCELLED AT 2023-09-25T00:01:18 ***
+slurmstepd: error: *** STEP 2687.11 ON amd41 CANCELLED AT 2023-09-25T00:01:18 ***

@@ -1,0 +1,42 @@
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 8,Total thread number: 32,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 8,Total thread number: 32,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 8,Total thread number: 32,Local thread limit: 128
+WARNING: Total thread number on this node mismatches with hardware availability. This may cause poor performance.
+Info: Local MPI proc number: 4,OpenMP thread number: 8,Total thread number: 32,Local thread limit: 128
+Traceback (most recent call last):
+  File "/data/home/liuzq/WORK/ASE-NEB/H2-Au111/dyneb/run_neb.py", line 82, in <module>
+    neb.run(optimizer=neb_optimizer, climb=climb, interpolate=interpolate, fmax=0.05)
+  File "/data/home/liuzq/WORK/ASE-NEB/abacus_neb.py", line 156, in run
+    opt.run(fmax)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/optimize/optimize.py", line 275, in run
+    return Dynamics.run(self)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/optimize/optimize.py", line 158, in run
+    for converged in Dynamics.irun(self):
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/optimize/optimize.py", line 124, in irun
+    self.atoms.get_forces()
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/mep/neb.py", line 699, in get_forces
+    forces = super().get_forces()
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/mep/neb.py", line 415, in get_forces
+    forces[i - 1] = images[i].get_forces()
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/atoms.py", line 787, in get_forces
+    forces = self._calc.get_forces(self)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/calculators/abc.py", line 30, in get_forces
+    return self.get_property('forces', atoms)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/calculators/calculator.py", line 502, in get_property
+    self.calculate(atoms, [name], system_changes)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/calculators/genericfileio.py", line 142, in calculate
+    self.results = self.template.read_results(self.directory)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/calculators/abacus.py", line 139, in read_results
+    return read_abacus_results(open(path / f'running_{self.cal_name}.log', 'r'), index=-1)[0]
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/utils/__init__.py", line 487, in iofunc
+    obj = func(fd, *args, **kwargs)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/io/abacus.py", line 1680, in read_abacus_results
+    chunks = _get_abacus_chunks(fd, index, non_convergence_ok)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/utils/__init__.py", line 487, in iofunc
+    obj = func(fd, *args, **kwargs)
+  File "/data/softwares/miniconda3/envs/ase/lib/python3.9/site-packages/ase/io/abacus.py", line 1646, in _get_abacus_chunks
+    header_pattern.search(contents).group(1))
+AttributeError: 'NoneType' object has no attribute 'group'

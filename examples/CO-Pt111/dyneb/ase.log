@@ -1,0 +1,21 @@
+Loading mkl version 2023.2.0
+Loading tbb version 2021.10.0
+Loading compiler-rt version 2023.2.1
+Loading mpi version 2021.8.0
+
+Loading abacus/3.3.4-icc
+  Loading requirement: tbb/latest compiler-rt/latest mkl/latest mpi/latest
+                Step[ FC]     Time          Energy          fmax
+*Force-consistent energies used in optimization.
+BFGSLineSearch:    0[  0] 21:51:34  -211838.622950*       0.0364
+                Step[ FC]     Time          Energy          fmax
+*Force-consistent energies used in optimization.
+BFGSLineSearch:    0[  0] 22:03:09  -211834.767800*       6.4149
+BFGSLineSearch:    1[  1] 22:14:16  -211835.910020*       2.2634
+BFGSLineSearch:    2[  2] 22:26:37  -211836.200410*       1.3698
+BFGSLineSearch:    3[  3] 22:39:46  -211836.366480*       0.7454
+BFGSLineSearch:    4[  4] 22:52:26  -211836.408980*       0.3573
+BFGSLineSearch:    5[  5] 23:04:30  -211836.426820*       0.4939
+BFGSLineSearch:    6[  7] 23:27:47  -211836.436640*       0.1239
+BFGSLineSearch:    7[  8] 23:40:11  -211836.442180*       0.1161
+BFGSLineSearch:    8[  9] 23:50:52  -211836.444670*       0.1165

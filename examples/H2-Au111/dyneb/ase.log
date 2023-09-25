@@ -1,0 +1,11 @@
+Loading mkl version 2023.2.0
+Loading tbb version 2021.10.0
+Loading compiler-rt version 2023.2.1
+Loading mpi version 2021.8.0
+
+Loading abacus/3.3.4-icc
+  Loading requirement: tbb/latest compiler-rt/latest mkl/latest mpi/latest
+Notice: Dynamic NEB should be efficient in serial calculation
+----- Running Dynamic NEB -----
+----- improvedtangent method is being used -----
+----- Default scale_fmax = 1.0 -----

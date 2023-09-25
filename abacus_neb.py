@@ -1,13 +1,15 @@
 # JamesMisaka in 2023-09-20
 # parallel method and AutoNEB needed
 import os 
-from ase.neb import NEB, DyNEB
-from ase.autoneb import AutoNEB
+# from ase.neb import NEB, DyNEB, NEBTools # old ase
+from ase.mep.neb import NEB, DyNEB, NEBTools # newest ase
+# from ase.autoneb import AutoNEB
+from ase.mep.autoneb import AutoNEB # newest ase
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
-from ase.neb import NEBTools
 from ase.io import read, write
 from pathlib import Path
+from ase.parallel import world
 
 # os.environ['ABACUS_PP_PATH'] = '/home/james/example/PP'
 # os.environ['ABACUS_ORBITAL_PATH'] = '/home/james/example/ORB'
@@ -57,11 +59,8 @@ class AbacusNEB:
         self.omp = omp
         self.guess = guess
         if self.dyneb == True:
-            print("Dynamic NEB should be efficient in serial calculation")
-            print("set parallel flag to False")
-            self.parallel = False
-        else:
-            self.parallel = parallel
+            print("Notice: Dynamic NEB should be efficient in serial calculation")
+        self.parallel = parallel
             
 
     def set_calculator(self):
@@ -74,7 +73,7 @@ class AbacusNEB:
 
         return calc
 
-    def set_neb_chain(self, fmax=0.05, climb=True, interpolate='linear'):
+    def set_neb_chain(self, fmax=0.05, climb=True, interpolate='idpp', traj='neb.traj',):
         """Set neb_chain, namely:
         1. images defining path from initial to final state
         2. neb object including the images and the implemented NEB method
@@ -83,17 +82,31 @@ class AbacusNEB:
         climb (bool): climbing image NEB method
         interpolate (string): interpolate chain path, 'linear' or 'idpp' or None
         """
-        if self.guess:
+        # set images
+        # continuative running setting
+        if Path(traj).exists():
+            print(f"----- traj file {traj} exists !!! -----")
+            print(f"----- Read Trajectory from {traj}  -----")
+            images = read(f"{traj}@-{self.n_max + 2}:")
+            interpolate = None
+        elif self.guess:
             images = self.guess
-            for image in images:
-                image.calc = self.set_calculator()
+            interpolate = None
         else:
             images = [self.initial]
             for i in range(self.n_max):
                 image = self.initial.copy()
-                image.calc = self.set_calculator()
                 images.append(image)
             images.append(self.final)
+        # set calculator
+        for num, image in enumerate(images):
+            # for parallel
+            if self.parallel:
+                if world.rank == num & world.size:
+                    image.calc = self.set_calculator()
+            else:
+                image.calc = self.set_calculator()
+
         if self.algorism in ["aseneb", "improvedtangent", "eb", "spline", "string"]:
             if self.dyneb:
                 # dynamic neb can only be performed by serial
@@ -101,25 +114,30 @@ class AbacusNEB:
                 print(f"----- {self.algorism} method is being used -----")
                 print("----- Default scale_fmax = 1.0 -----")
                 neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True,
-                method=self.algorism, parallel=False, scale_fmax=1.0)
+                method=self.algorism, parallel=self.parallel, scale_fmax=1.0)
             else:
                 print("----- Running ASE-NEB -----")
                 print(f"----- {self.algorism} method is being used -----")
-                neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, allow_shared_calculator=True, parallel=self.parallel)
+                neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, parallel=self.parallel)
         else:
             print("Error: NEB algorism not supported")
             print("Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string', ")
             print("AutoNEB method should be used by AbacusAutoNEB")
             exit(1)
+        # set interpolate if not set to None
         if interpolate in ['idpp','linear']:
             neb.interpolate(method=interpolate)
+            # print-out guess information
+            write(f'{interpolate}-guess-{traj}', images, format='traj')
         elif interpolate:
-            print("Warning: interpolate method not supported, using default linear interpolate")
-            neb.interpolate() # using default
-        
+            print("---- Warning: interpolate method not supported, using default linear interpolate ----")
+            neb.interpolate(method="linear") # using default
+            write(f'linear-guess-{traj}', images, format='traj')
+        else:
+            print("---- images read from traj file or guess, no interpolate method is used ----")
         return neb
 
-    def run(self, optimizer=FIRE, fmax=0.05, climb=True, interpolate='idpp'):
+    def run(self, optimizer=FIRE, fmax=0.05, climb=True, interpolate='idpp', traj="neb.traj"):
         """Run Abacus NEB
 
         optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported, recommend FIRE method
@@ -127,8 +145,14 @@ class AbacusNEB:
         climb (bool): climbing image NEB method
         interpolate (string): interpolate chain path, 'linear' or 'idpp' or None, default is 'idpp' for optimal guess chain
         """
-        neb = self.set_neb_chain(fmax, climb, interpolate)
-        opt = optimizer(neb, trajectory='neb.traj')
+        # added continuative running
+        neb = self.set_neb_chain(fmax, climb, interpolate, traj)
+        if Path(traj).exists():
+            traj_restart = f"restart_{traj}"
+            print(f"----- OUT Trajectory change to {traj_restart}  -----")
+            opt = optimizer(neb, trajectory=traj_restart)
+        else:
+            opt = optimizer(neb, trajectory=traj)
         opt.run(fmax)
 
     def _nebtools(self, images):
@@ -156,7 +180,7 @@ class AbacusNEB:
 class AbacusAutoNEB(AbacusNEB):
     """Abacus NEB with AutoNEB method"""
     
-    def __init__(self, initial, final, parameters, abacus='abacus', algorism="eb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=False) -> None:
+    def __init__(self, initial, final, parameters, abacus='abacus', algorism="eb", directory='OUT', mpi=1, omp=1, guess=[], n_max=8, parallel=True) -> None:
         super(AbacusAutoNEB, self).__init__(initial, final, parameters, abacus, algorism, directory, mpi, omp, guess, n_max, parallel)
     
     def set_neb_chain(self, fmax=0.05, climb=True, interpolate='idpp'):
@@ -185,89 +209,4 @@ class AbacusAutoNEB(AbacusNEB):
             neb.interpolate()
         return neb
 
-
-if __name__ == '__main__':
-    # Run a example: Au diffusion on Al(100) surface
-    directory = 'OUT'
-    optimizer = BFGS # suited for IT-NEB
-    #optimizer = FIRE # suited for CI-NEB
-    interpolate = "linear" # linear or idpp
-    n_max = 5
-    mpi = 64
-    omp = 1
-    abacus = 'abacus'
-    pseudo_dir = "/data/home/liuzq/example/PP"
-    basis_dir = "/data/home/liuzq/example/ORB"
-    pp = {"Al": "Al_ONCV_PBE-1.0.upf",
-            "Au": "Au_ONCV_PBE-1.0.upf", }
-    basis = {"Al": "Al_gga_7au_100Ry_4s4p1d.orb",
-                "Au": "Au_gga_7au_100Ry_4s2p2d1f.orb"}
-    kpts = [2, 2, 1]
-    parameters = {
-        'calculation': 'scf',
-        'xc': 'pbe',
-        'ecutwfc': 100,
-        'smearing_method': 'gaussian',
-        'smearing_sigma': 0.01,
-        'basis_type': 'lcao',
-        'ks_solver': 'genelpa',
-        'mixing_type': 'pulay',
-        'scf_thr': 1e-6,
-        'out_chg': 1,
-        'out_bandgap': 1,
-        'kpts': kpts,
-        'pp': pp,
-        'basis': basis,
-        'pseudo_dir': pseudo_dir,
-        'basis_dir': basis_dir,
-        'vdw_method': 'd3_bj',
-        'cal_force': 1,
-        'cal_stress': 1,
-        'out_stru': 1,
-        'out_chg': 0,
-        'out_bandgap': 0,
-        'efield_flag': 0,
-        'dip_cor_flag': 0,
-        'efield_dir': 2,
-        'efield_pos_max': 0.6,
-    }
-
-    from ase.build import fcc100, add_adsorbate
-    from ase.constraints import FixAtoms
-    from ase.optimize import QuasiNewton
-    slab = fcc100('Al', size=(2, 2, 3))
-    add_adsorbate(slab, 'Au', 1.7, 'hollow')
-    slab.center(axis=2, vacuum=4.0)
-    mask = [atom.tag > 1 for atom in slab]
-    slab.set_constraint(FixAtoms(mask=mask))
-    os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(
-        argv=['mpirun', '-np', f'{mpi}', abacus])
-    slab.calc = Abacus(profile=profile, directory="INIT",
-                        **parameters)
-
-    qn = QuasiNewton(slab, trajectory='initial.traj')
-    qn.run(fmax=0.05)
-    slab[-1].x += slab.get_cell()[0, 0] / 2
-    qn = QuasiNewton(slab, trajectory='final.traj')
-    qn.run(fmax=0.05)
-    # Initial state:
-    initial = read('initial.traj')
-
-    # Final state:
-    final = read('final.traj')
-
-    neb = AbacusNEB(initial=initial, final=final, parameters=parameters,
-                    directory=directory,
-                    mpi=mpi, omp=omp, abacus=abacus, n_max=n_max)
-    neb.run(optimizer=optimizer, climb=False, 
-            interpolate=interpolate, fmax=0.05)
-
-    # Get barrier
-    barrier = neb.get_barriers()
-    print(barrier)
-    neb.plot_bands()
-
-    # Visualize the results
-    # os.system(f'ase gui neb.traj@-{n_max}:')
 
