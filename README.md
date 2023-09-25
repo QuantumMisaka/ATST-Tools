@@ -2,7 +2,7 @@
 NEB or CI-NEB workflow by ASE and ABACUS using ASE-ABACUS interfaces,
 Which use enhanced NEB method in ASE, like Dynamic NEB `DyNEB` or `AutoNEB`.
 
-Version v0.0.3
+Version v0.3.1
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
