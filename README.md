@@ -45,8 +45,9 @@ Version v0.3.1
 - [x] Make bottom atom fixed when read from `running*.log` of ABACUS
 - [x] Give an initial guess print-out of NEB images
 - [x] More test in surface reaction system
-- [ ] Parallel computing during images relaxation by `gpaw python`
 - [ ] More test in magnetic surface reaction system
+- [ ] Decoupling image generation and running part (key of next development)
+- [ ] Parallel computing during images relaxation by `gpaw python`
 - [ ] `AutoNEB` implementation
 
 
