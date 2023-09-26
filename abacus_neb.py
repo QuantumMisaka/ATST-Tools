@@ -9,13 +9,15 @@ from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.io import read, write
 from pathlib import Path
-from ase.parallel import world
+from ase.parallel import world, parprint, paropen
 
 # os.environ['ABACUS_PP_PATH'] = '/home/james/example/PP'
 # os.environ['ABACUS_ORBITAL_PATH'] = '/home/james/example/ORB'
 # print(os.environ.get('ABACUS_PP_PATH'))
 # print(os.environ.get('ABACUS_ORBITAL_PATH'))
 
+# parallel part need to do more
+# image creation part should be independent of workflow
 
 class AbacusNEB:
     """Customize Abacus workflow for Nudged Elastic Band calculation"""
@@ -66,11 +68,19 @@ class AbacusNEB:
     def set_calculator(self):
         """Set Abacus calculators"""
         os.environ['OMP_NUM_THREADS'] = f'{self.omp}'
-        profile = AbacusProfile(
-            argv=['mpirun', '-np', f'{self.mpi}', self.abacus])
-        calc = Abacus(profile=profile, directory=self.directory,
+        if self.parallel:
+            parprint("MPI cannnot be recursively used, so only omp number is effective")
+            profile = AbacusProfile(argv=self.abacus)
+        else:
+            profile = AbacusProfile(
+                argv=['mpirun', '-np', f'{self.mpi}', self.abacus])
+        # add parallel setting 20230926
+        if self.parallel:
+            out_directory = f"{self.directory}-rank{world.rank}"
+        else:
+            out_directory = self.directory
+        calc = Abacus(profile=profile, directory=out_directory,
                       **self.parameters)
-
         return calc
 
     def set_neb_chain(self, fmax=0.05, climb=True, interpolate='idpp', traj='neb.traj',):
@@ -84,7 +94,8 @@ class AbacusNEB:
         """
         # set images
         # continuative running setting
-        if Path(traj).exists():
+        if Path(traj).exists() and self.parallel == False:
+            # cannot do continuative running of traj file in parallel now
             print(f"----- traj file {traj} exists !!! -----")
             print(f"----- Read Trajectory from {traj}  -----")
             images = read(f"{traj}@-{self.n_max + 2}:")
@@ -101,6 +112,7 @@ class AbacusNEB:
         # set calculator
         for num, image in enumerate(images):
             # for parallel
+            # but we can only use one rank for one image
             if self.parallel:
                 if world.rank == num & world.size:
                     image.calc = self.set_calculator()
@@ -116,9 +128,14 @@ class AbacusNEB:
                 neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True,
                 method=self.algorism, parallel=self.parallel, scale_fmax=1.0)
             else:
-                print("----- Running ASE-NEB -----")
-                print(f"----- {self.algorism} method is being used -----")
-                neb = NEB(images, climb=climb, fmax=fmax, method=self.algorism, parallel=self.parallel)
+                if self.parallel:
+                    parprint("----- Parallel calculation is being used -----")
+                    parprint("----- Running ASE-NEB -----")
+                    parprint(f"----- {self.algorism} method is being used -----")
+                else:
+                    print("----- Running ASE-NEB -----")
+                    print(f"----- {self.algorism} method is being used -----")
+                neb = NEB(images, climb=climb, method=self.algorism, parallel=self.parallel)
         else:
             print("Error: NEB algorism not supported")
             print("Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string', ")
@@ -147,6 +164,7 @@ class AbacusNEB:
         """
         # added continuative running
         neb = self.set_neb_chain(fmax, climb, interpolate, traj)
+        world.barrier() # for read traj file properly
         if Path(traj).exists():
             traj_restart = f"restart_{traj}"
             print(f"----- OUT Trajectory change to {traj_restart}  -----")

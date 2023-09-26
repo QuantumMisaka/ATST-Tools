@@ -31,7 +31,9 @@ Version v0.3.1
 
 
 ## Next Examples
-- CO-Fe100: CO dissociation on Fe(100) surface, in this example we will focus on setting `magmom` during NEB calculation, which is important for spin-polarized magnetic system.
+- K-diffu-Fe5C2-510 : K diffusion on Fe5C2(510) surface, ,in this example we will focus on setting `magmom` during NEB calculation, which is important for spin-polarized magnetic system.
+- K2O-diffu-Fe5C2-510: likely as K-diffu-Fe5C2-510
+- CO-Fe100: CO dissociation on Fe(100) surface
 - CO-Fe5C2-510: CO dissociation on Fe5C2(510) surface. Which is the final goal.
 - `AutoNEB` implementation and test 
 
@@ -43,7 +45,7 @@ Version v0.3.1
 - [x] Make bottom atom fixed when read from `running*.log` of ABACUS
 - [x] Give an initial guess print-out of NEB images
 - [x] More test in surface reaction system
-- [x] Parallel computing during images relaxation by `gpaw python`
+- [ ] Parallel computing during images relaxation by `gpaw python`
 - [ ] More test in magnetic surface reaction system
 - [ ] `AutoNEB` implementation
 

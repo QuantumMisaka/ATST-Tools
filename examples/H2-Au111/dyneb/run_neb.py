@@ -74,9 +74,9 @@ parameters = {
 # below is fixed workflow for do ASE-NEB-ABACUS
 
 # set calculator
-os.environ['OMP_NUM_THREADS'] = f'{omp}'
-profile = AbacusProfile(
-    argv=['mpirun', '-np', f'{mpi}', abacus])
+# os.environ['OMP_NUM_THREADS'] = f'{omp}'
+# profile = AbacusProfile(
+#     argv=['mpirun', '-np', f'{mpi}', abacus])
 
 # Initial state read from ABACUS calculation result:
 # reading problem is fixed in https://gitlab.com/1041176461/ase-abacus/-/commit/25e8f02cdfa23d70b2862417fb14457d9672a532

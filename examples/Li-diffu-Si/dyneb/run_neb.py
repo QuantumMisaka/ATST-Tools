@@ -17,11 +17,14 @@ from ase.io import read, write
 from abacus_neb import AbacusNEB
 
 # setting
-# optimizer = FIRE # suited for CI-NEB
+#parallel = False
+#dyneb=True  # dyneb is not suitable for parallel running
 init_directory = "INIT"
 final_directory = "FINAL"
 neb_directory = "OUT"
-optimizer = FIRE
+init_stru = './initial_stru'
+final_stru = './final_stru'
+optimizer = FIRE # suited for CI-NEB
 algorism = "improvedtangent" # IT-NEB is recommended
 #dyneb=True  # default
 interpolate = "idpp" # linear or idpp
@@ -66,15 +69,17 @@ parameters = {
     'efield_dir': 2,
     'efield_pos_max': 0.6,
 }
+
+# setting for optimizaiton
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(
     argv=['mpirun', '-np', f'{mpi}', abacus])
 
 # Initial stru read from ABACUS, should do single point calculation
-initial = read('./initial_stru', format='abacus')
+initial = read(init_stru, format='abacus')
 
 # Final stru read frome ABACUS mshould do single point calculation
-final = read('./final_stru', format='abacus')
+final = read(final_stru, format='abacus')
 
 # relax calculation by abacus
 initial.calc = Abacus(profile=profile, directory=init_directory,
@@ -86,6 +91,8 @@ final.calc = Abacus(profile=profile, directory=final_directory,
                     **parameters)
 qn_final = optimizer(initial, trajectory='final_opt.traj')
 qn_final.run(fmax=0.05)
+
+# do not need to fix, so no fix part
 
 # do neb calculation by DyNEB
 neb = AbacusNEB(initial=initial, final=final, parameters=parameters,

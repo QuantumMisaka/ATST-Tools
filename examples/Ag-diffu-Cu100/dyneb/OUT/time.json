@@ -1,15 +1,15 @@
 {
-    "total": 279.139,
+    "total": 370.153,
     "sub": [
         {
             "class_name": " Local_Orbital_wfc",
             "sub": [
                 {
                 "name": "wfc_2d_to_grid",
-                "cpu_second": 1.04005,
-                "calls": 370,
-                "cpu_second_per_call": 0.002811,
-                "cpu_second_per_total": 0.003726
+                "cpu_second": 1.25102,
+                "calls": 380,
+                "cpu_second_per_call": 0.003292,
+                "cpu_second_per_total": 0.003380
                 }
             ]
         },
@@ -18,38 +18,38 @@
             "sub": [
                 {
                 "name": "Pulay_mixing",
-                "cpu_second": 3.85111,
-                "calls": 35,
-                "cpu_second_per_call": 0.110032,
-                "cpu_second_per_total": 0.013796
+                "cpu_second": 4.62532,
+                "calls": 36,
+                "cpu_second_per_call": 0.128481,
+                "cpu_second_per_total": 0.012496
                 },
                 {
                 "name": "atomic_rho",
-                "cpu_second": 0.143753,
+                "cpu_second": 0.109698,
                 "calls": 1,
-                "cpu_second_per_call": 0.143753,
-                "cpu_second_per_total": 0.000515
+                "cpu_second_per_call": 0.109698,
+                "cpu_second_per_total": 0.000296
                 },
                 {
                 "name": "mix_rho",
-                "cpu_second": 4.03517,
-                "calls": 35,
-                "cpu_second_per_call": 0.115291,
-                "cpu_second_per_total": 0.014456
+                "cpu_second": 4.84036,
+                "calls": 36,
+                "cpu_second_per_call": 0.134455,
+                "cpu_second_per_total": 0.013077
                 },
                 {
                 "name": "plain_mixing",
-                "cpu_second": 0.0755265,
+                "cpu_second": 0.107161,
                 "calls": 1,
-                "cpu_second_per_call": 0.075526,
-                "cpu_second_per_total": 0.000271
+                "cpu_second_per_call": 0.107161,
+                "cpu_second_per_total": 0.000290
                 },
                 {
                 "name": "set_rho_core",
-                "cpu_second": 0.00169697,
+                "cpu_second": 0.00174925,
                 "calls": 1,
-                "cpu_second_per_call": 0.001697,
-                "cpu_second_per_total": 0.000006
+                "cpu_second_per_call": 0.001749,
+                "cpu_second_per_total": 0.000005
                 }
             ]
         },
@@ -58,10 +58,10 @@
             "sub": [
                 {
                 "name": "rhog_dot_product",
-                "cpu_second": 0.0510462,
-                "calls": 36,
-                "cpu_second_per_call": 0.001418,
-                "cpu_second_per_total": 0.000183
+                "cpu_second": 0.0596084,
+                "calls": 37,
+                "cpu_second_per_call": 0.001611,
+                "cpu_second_per_total": 0.000161
                 }
             ]
         },
@@ -70,10 +70,10 @@
             "sub": [
                 {
                 "name": "elpa_solve",
-                "cpu_second": 114.706,
-                "calls": 360,
-                "cpu_second_per_call": 0.318628,
-                "cpu_second_per_total": 0.410929
+                "cpu_second": 160.006,
+                "calls": 370,
+                "cpu_second_per_call": 0.432450,
+                "cpu_second_per_total": 0.432272
                 }
             ]
         },
@@ -82,17 +82,17 @@
             "sub": [
                 {
                 "name": "driver_line",
-                "cpu_second": 279.134,
+                "cpu_second": 370.147,
                 "calls": 1,
-                "cpu_second_per_call": 279.134339,
-                "cpu_second_per_total": 0.999984
+                "cpu_second_per_call": 370.147409,
+                "cpu_second_per_total": 0.999986
                 },
                 {
                 "name": "reading",
-                "cpu_second": 0.00433174,
+                "cpu_second": 0.00518548,
                 "calls": 1,
-                "cpu_second_per_call": 0.004332,
-                "cpu_second_per_total": 0.000016
+                "cpu_second_per_call": 0.005185,
+                "cpu_second_per_total": 0.000014
                 }
             ]
         },
@@ -101,31 +101,31 @@
             "sub": [
                 {
                 "name": "Run",
-                "cpu_second": 261.638,
+                "cpu_second": 352.256,
                 "calls": 1,
-                "cpu_second_per_call": 261.637725,
-                "cpu_second_per_total": 0.937304
+                "cpu_second_per_call": 352.255787,
+                "cpu_second_per_total": 0.951650
                 },
                 {
                 "name": "beforescf",
-                "cpu_second": 1.09001,
+                "cpu_second": 1.01572,
                 "calls": 1,
-                "cpu_second_per_call": 1.090011,
-                "cpu_second_per_total": 0.003905
+                "cpu_second_per_call": 1.015716,
+                "cpu_second_per_total": 0.002744
                 },
                 {
                 "name": "beforesolver",
-                "cpu_second": 0.17495,
+                "cpu_second": 0.172761,
                 "calls": 1,
-                "cpu_second_per_call": 0.174950,
-                "cpu_second_per_total": 0.000627
+                "cpu_second_per_call": 0.172761,
+                "cpu_second_per_total": 0.000467
                 },
                 {
                 "name": "set_matrix_grid",
-                "cpu_second": 0.151749,
+                "cpu_second": 0.150679,
                 "calls": 1,
-                "cpu_second_per_call": 0.151749,
-                "cpu_second_per_total": 0.000544
+                "cpu_second_per_call": 0.150679,
+                "cpu_second_per_total": 0.000407
                 }
             ]
         },
@@ -134,10 +134,10 @@
             "sub": [
                 {
                 "name": "add_efield",
-                "cpu_second": 1.84117,
-                "calls": 37,
-                "cpu_second_per_call": 0.049761,
-                "cpu_second_per_total": 0.006596
+                "cpu_second": 2.10101,
+                "calls": 38,
+                "cpu_second_per_call": 0.055290,
+                "cpu_second_per_total": 0.005676
                 }
             ]
         },
@@ -146,10 +146,10 @@
             "sub": [
                 {
                 "name": "contributeHR",
-                "cpu_second": 0.969012,
+                "cpu_second": 0.96038,
                 "calls": 1,
-                "cpu_second_per_call": 0.969012,
-                "cpu_second_per_total": 0.003471
+                "cpu_second_per_call": 0.960380,
+                "cpu_second_per_total": 0.002595
                 }
             ]
         },
@@ -158,10 +158,10 @@
             "sub": [
                 {
                 "name": "psiToRho",
-                "cpu_second": 56.268,
-                "calls": 36,
-                "cpu_second_per_call": 1.562999,
-                "cpu_second_per_total": 0.201577
+                "cpu_second": 68.9709,
+                "calls": 37,
+                "cpu_second_per_call": 1.864078,
+                "cpu_second_per_total": 0.186331
                 }
             ]
         },
@@ -170,52 +170,52 @@
             "sub": [
                 {
                 "name": "allocate_k",
-                "cpu_second": 4.22688,
+                "cpu_second": 4.51425,
                 "calls": 1,
-                "cpu_second_per_call": 4.226880,
-                "cpu_second_per_total": 0.015143
+                "cpu_second_per_call": 4.514249,
+                "cpu_second_per_total": 0.012196
                 },
                 {
                 "name": "cal_edm_2d",
-                "cpu_second": 0.179051,
+                "cpu_second": 0.187647,
                 "calls": 1,
-                "cpu_second_per_call": 0.179051,
-                "cpu_second_per_total": 0.000641
+                "cpu_second_per_call": 0.187647,
+                "cpu_second_per_total": 0.000507
                 },
                 {
                 "name": "cal_foverlap_k",
-                "cpu_second": 0.191931,
+                "cpu_second": 0.209595,
                 "calls": 1,
-                "cpu_second_per_call": 0.191931,
-                "cpu_second_per_total": 0.000688
+                "cpu_second_per_call": 0.209595,
+                "cpu_second_per_total": 0.000566
                 },
                 {
                 "name": "cal_ftvnl_dphi_k",
-                "cpu_second": 0.00788842,
+                "cpu_second": 0.017305,
                 "calls": 1,
-                "cpu_second_per_call": 0.007888,
-                "cpu_second_per_total": 0.000028
+                "cpu_second_per_call": 0.017305,
+                "cpu_second_per_total": 0.000047
                 },
                 {
                 "name": "cal_fvl_dphi_k",
-                "cpu_second": 6.52022,
+                "cpu_second": 6.77072,
                 "calls": 1,
-                "cpu_second_per_call": 6.520224,
-                "cpu_second_per_total": 0.023358
+                "cpu_second_per_call": 6.770720,
+                "cpu_second_per_total": 0.018292
                 },
                 {
                 "name": "cal_fvnl_dbeta_k_new",
-                "cpu_second": 4.18594,
+                "cpu_second": 3.96731,
                 "calls": 1,
-                "cpu_second_per_call": 4.185940,
-                "cpu_second_per_total": 0.014996
+                "cpu_second_per_call": 3.967313,
+                "cpu_second_per_total": 0.010718
                 },
                 {
                 "name": "ftable_k",
-                "cpu_second": 15.1863,
+                "cpu_second": 15.5537,
                 "calls": 1,
-                "cpu_second_per_call": 15.186325,
-                "cpu_second_per_total": 0.054404
+                "cpu_second_per_call": 15.553699,
+                "cpu_second_per_total": 0.042020
                 }
             ]
         },
@@ -224,10 +224,10 @@
             "sub": [
                 {
                 "name": "getForceStress",
-                "cpu_second": 16.2755,
+                "cpu_second": 16.9308,
                 "calls": 1,
-                "cpu_second_per_call": 16.275492,
-                "cpu_second_per_total": 0.058306
+                "cpu_second_per_call": 16.930810,
+                "cpu_second_per_total": 0.045740
                 }
             ]
         },
@@ -236,31 +236,31 @@
             "sub": [
                 {
                 "name": "cal_force_cc",
-                "cpu_second": 5.20144e-07,
+                "cpu_second": 9.30158e-07,
                 "calls": 1,
                 "cpu_second_per_call": 0.000001,
                 "cpu_second_per_total": 0.000000
                 },
                 {
                 "name": "cal_force_ew",
-                "cpu_second": 0.16366,
+                "cpu_second": 0.197931,
                 "calls": 1,
-                "cpu_second_per_call": 0.163660,
-                "cpu_second_per_total": 0.000586
+                "cpu_second_per_call": 0.197931,
+                "cpu_second_per_total": 0.000535
                 },
                 {
                 "name": "cal_force_loc",
-                "cpu_second": 0.204469,
+                "cpu_second": 0.196937,
                 "calls": 1,
-                "cpu_second_per_call": 0.204469,
-                "cpu_second_per_total": 0.000732
+                "cpu_second_per_call": 0.196937,
+                "cpu_second_per_total": 0.000532
                 },
                 {
                 "name": "cal_force_scc",
-                "cpu_second": 0.119485,
+                "cpu_second": 0.206152,
                 "calls": 1,
-                "cpu_second_per_call": 0.119485,
-                "cpu_second_per_total": 0.000428
+                "cpu_second_per_call": 0.206152,
+                "cpu_second_per_total": 0.000557
                 }
             ]
         },
@@ -269,24 +269,24 @@
             "sub": [
                 {
                 "name": "cal_dpsir_ylm",
-                "cpu_second": 2.3541,
+                "cpu_second": 2.59688,
                 "calls": 1211,
-                "cpu_second_per_call": 0.001944,
-                "cpu_second_per_total": 0.008433
+                "cpu_second_per_call": 0.002144,
+                "cpu_second_per_total": 0.007016
                 },
                 {
                 "name": "cal_dpsirr_ylm",
-                "cpu_second": 0.692852,
+                "cpu_second": 0.747959,
                 "calls": 1211,
-                "cpu_second_per_call": 0.000572,
-                "cpu_second_per_total": 0.002482
+                "cpu_second_per_call": 0.000618,
+                "cpu_second_per_total": 0.002021
                 },
                 {
                 "name": "cal_psir_ylm",
-                "cpu_second": 8.43844,
-                "calls": 87192,
-                "cpu_second_per_call": 0.000097,
-                "cpu_second_per_total": 0.030230
+                "cpu_second": 9.97829,
+                "calls": 89614,
+                "cpu_second_per_call": 0.000111,
+                "cpu_second_per_total": 0.026957
                 }
             ]
         },
@@ -295,31 +295,31 @@
             "sub": [
                 {
                 "name": "cal_gint",
-                "cpu_second": 92.1082,
-                "calls": 73,
-                "cpu_second_per_call": 1.261756,
-                "cpu_second_per_total": 0.329973
+                "cpu_second": 111.154,
+                "calls": 75,
+                "cpu_second_per_call": 1.482050,
+                "cpu_second_per_total": 0.300292
                 },
                 {
                 "name": "cal_gint_force",
-                "cpu_second": 6.52022,
+                "cpu_second": 6.77071,
                 "calls": 1,
-                "cpu_second_per_call": 6.520216,
-                "cpu_second_per_total": 0.023358
+                "cpu_second_per_call": 6.770713,
+                "cpu_second_per_total": 0.018292
                 },
                 {
                 "name": "cal_gint_rho",
-                "cpu_second": 40.5079,
-                "calls": 36,
-                "cpu_second_per_call": 1.125220,
-                "cpu_second_per_total": 0.145118
+                "cpu_second": 49.416,
+                "calls": 37,
+                "cpu_second_per_call": 1.335569,
+                "cpu_second_per_total": 0.133502
                 },
                 {
                 "name": "cal_gint_vlocal",
-                "cpu_second": 45.08,
-                "calls": 36,
-                "cpu_second_per_call": 1.252223,
-                "cpu_second_per_total": 0.161497
+                "cpu_second": 54.967,
+                "calls": 37,
+                "cpu_second_per_call": 1.485594,
+                "cpu_second_per_total": 0.148498
                 }
             ]
         },
@@ -328,17 +328,17 @@
             "sub": [
                 {
                 "name": "Distri",
-                "cpu_second": 6.5125,
-                "calls": 360,
-                "cpu_second_per_call": 0.018090,
-                "cpu_second_per_total": 0.023331
+                "cpu_second": 21.089,
+                "calls": 370,
+                "cpu_second_per_call": 0.056997,
+                "cpu_second_per_total": 0.056974
                 },
                 {
                 "name": "folding_vl_k",
-                "cpu_second": 7.91887,
-                "calls": 360,
-                "cpu_second_per_call": 0.021997,
-                "cpu_second_per_total": 0.028369
+                "cpu_second": 22.7381,
+                "calls": 370,
+                "cpu_second_per_call": 0.061454,
+                "cpu_second_per_total": 0.061429
                 }
             ]
         },
@@ -347,10 +347,10 @@
             "sub": [
                 {
                 "name": "grid_expansion_index",
-                "cpu_second": 0.00948316,
+                "cpu_second": 0.0101929,
                 "calls": 2,
-                "cpu_second_per_call": 0.004742,
-                "cpu_second_per_total": 0.000034
+                "cpu_second_per_call": 0.005096,
+                "cpu_second_per_total": 0.000028
                 }
             ]
         },
@@ -359,7 +359,7 @@
             "sub": [
                 {
                 "name": "Find_atom",
-                "cpu_second": 0.000380682,
+                "cpu_second": 0.00040885,
                 "calls": 132,
                 "cpu_second_per_call": 0.000003,
                 "cpu_second_per_total": 0.000001
@@ -371,10 +371,10 @@
             "sub": [
                 {
                 "name": "init",
-                "cpu_second": 0.116213,
+                "cpu_second": 0.115707,
                 "calls": 1,
-                "cpu_second_per_call": 0.116213,
-                "cpu_second_per_total": 0.000416
+                "cpu_second_per_call": 0.115707,
+                "cpu_second_per_total": 0.000313
                 }
             ]
         },
@@ -383,17 +383,17 @@
             "sub": [
                 {
                 "name": "hamiltSolvePsiK",
-                "cpu_second": 116.345,
-                "calls": 360,
-                "cpu_second_per_call": 0.323181,
-                "cpu_second_per_total": 0.416800
+                "cpu_second": 162.772,
+                "calls": 370,
+                "cpu_second_per_call": 0.439925,
+                "cpu_second_per_total": 0.439744
                 },
                 {
                 "name": "solve",
-                "cpu_second": 231.288,
-                "calls": 36,
-                "cpu_second_per_call": 6.424659,
-                "cpu_second_per_total": 0.828576
+                "cpu_second": 316.488,
+                "calls": 37,
+                "cpu_second_per_call": 8.553735,
+                "cpu_second_per_total": 0.855021
                 }
             ]
         },
@@ -402,10 +402,10 @@
             "sub": [
                 {
                 "name": "compute_ewald",
-                "cpu_second": 0.04133,
+                "cpu_second": 0.0440123,
                 "calls": 1,
-                "cpu_second_per_call": 0.041330,
-                "cpu_second_per_total": 0.000148
+                "cpu_second_per_call": 0.044012,
+                "cpu_second_per_total": 0.000119
                 }
             ]
         },
@@ -414,10 +414,10 @@
             "sub": [
                 {
                 "name": "v_hartree",
-                "cpu_second": 2.90301,
-                "calls": 37,
-                "cpu_second_per_call": 0.078460,
-                "cpu_second_per_total": 0.010400
+                "cpu_second": 3.32527,
+                "calls": 38,
+                "cpu_second_per_call": 0.087507,
+                "cpu_second_per_total": 0.008984
                 }
             ]
         },
@@ -426,10 +426,10 @@
             "sub": [
                 {
                 "name": "updateHk",
-                "cpu_second": 58.6725,
-                "calls": 360,
-                "cpu_second_per_call": 0.162979,
-                "cpu_second_per_total": 0.210191
+                "cpu_second": 84.7417,
+                "calls": 370,
+                "cpu_second_per_call": 0.229032,
+                "cpu_second_per_total": 0.228937
                 }
             ]
         },
@@ -438,9 +438,9 @@
             "sub": [
                 {
                 "name": "Init",
-                "cpu_second": 0.00254651,
+                "cpu_second": 0.00314737,
                 "calls": 1,
-                "cpu_second_per_call": 0.002547,
+                "cpu_second_per_call": 0.003147,
                 "cpu_second_per_total": 0.000009
                 }
             ]
@@ -450,9 +450,9 @@
             "sub": [
                 {
                 "name": "Convert",
-                "cpu_second": 0.000223647,
+                "cpu_second": 0.000235967,
                 "calls": 1,
-                "cpu_second_per_call": 0.000224,
+                "cpu_second_per_call": 0.000236,
                 "cpu_second_per_total": 0.000001
                 }
             ]
@@ -462,10 +462,10 @@
             "sub": [
                 {
                 "name": "using_zheev",
-                "cpu_second": 0.00391016,
-                "calls": 34,
-                "cpu_second_per_call": 0.000115,
-                "cpu_second_per_total": 0.000014
+                "cpu_second": 0.00406825,
+                "calls": 35,
+                "cpu_second_per_call": 0.000116,
+                "cpu_second_per_total": 0.000011
                 }
             ]
         },
@@ -474,10 +474,10 @@
             "sub": [
                 {
                 "name": "opt_ions",
-                "cpu_second": 277.914,
+                "cpu_second": 369.187,
                 "calls": 1,
-                "cpu_second_per_call": 277.913616,
-                "cpu_second_per_total": 0.995611
+                "cpu_second_per_call": 369.187169,
+                "cpu_second_per_total": 0.997392
                 }
             ]
         },
@@ -486,10 +486,10 @@
             "sub": [
                 {
                 "name": "cal_dk_k",
-                "cpu_second": 9.49878,
-                "calls": 36,
-                "cpu_second_per_call": 0.263855,
-                "cpu_second_per_total": 0.034029
+                "cpu_second": 11.7465,
+                "calls": 37,
+                "cpu_second_per_call": 0.317473,
+                "cpu_second_per_total": 0.031734
                 }
             ]
         },
@@ -498,7 +498,7 @@
             "sub": [
                 {
                 "name": "grid_prepare",
-                "cpu_second": 1.17021e-06,
+                "cpu_second": 1.17999e-06,
                 "calls": 1,
                 "cpu_second_per_call": 0.000001,
                 "cpu_second_per_total": 0.000000
@@ -510,10 +510,10 @@
             "sub": [
                 {
                 "name": "Read_Orbitals",
-                "cpu_second": 0.167344,
+                "cpu_second": 0.099293,
                 "calls": 1,
-                "cpu_second_per_call": 0.167344,
-                "cpu_second_per_total": 0.000599
+                "cpu_second_per_call": 0.099293,
+                "cpu_second_per_total": 0.000268
                 }
             ]
         },
@@ -522,17 +522,17 @@
             "sub": [
                 {
                 "name": "b_NL_mu_new",
-                "cpu_second": 2.30137,
+                "cpu_second": 2.70488,
                 "calls": 2,
-                "cpu_second_per_call": 1.150686,
-                "cpu_second_per_total": 0.008245
+                "cpu_second_per_call": 1.352441,
+                "cpu_second_per_total": 0.007307
                 },
                 {
                 "name": "calculate_S_no",
-                "cpu_second": 0.971599,
+                "cpu_second": 1.02955,
                 "calls": 1,
-                "cpu_second_per_call": 0.971599,
-                "cpu_second_per_total": 0.003481
+                "cpu_second_per_call": 1.029552,
+                "cpu_second_per_total": 0.002781
                 }
             ]
         },
@@ -541,10 +541,10 @@
             "sub": [
                 {
                 "name": "folding_fixedH",
-                "cpu_second": 1.86997,
-                "calls": 360,
-                "cpu_second_per_call": 0.005194,
-                "cpu_second_per_total": 0.006699
+                "cpu_second": 2.83579,
+                "calls": 370,
+                "cpu_second_per_call": 0.007664,
+                "cpu_second_per_total": 0.007661
                 }
             ]
         },
@@ -553,10 +553,10 @@
             "sub": [
                 {
                 "name": "cal_dm_R",
-                "cpu_second": 0.036238,
+                "cpu_second": 0.0627799,
                 "calls": 2,
-                "cpu_second_per_call": 0.018119,
-                "cpu_second_per_total": 0.000130
+                "cpu_second_per_call": 0.031390,
+                "cpu_second_per_total": 0.000170
                 }
             ]
         },
@@ -565,24 +565,24 @@
             "sub": [
                 {
                 "name": "Cubic_Spline_Interpolation",
-                "cpu_second": 0.00187932,
+                "cpu_second": 0.000441242,
                 "calls": 18,
-                "cpu_second_per_call": 0.000104,
-                "cpu_second_per_total": 0.000007
+                "cpu_second_per_call": 0.000025,
+                "cpu_second_per_total": 0.000001
                 },
                 {
                 "name": "SplineD2",
-                "cpu_second": 0.000181715,
+                "cpu_second": 0.000222317,
                 "calls": 18,
-                "cpu_second_per_call": 0.000010,
+                "cpu_second_per_call": 0.000012,
                 "cpu_second_per_total": 0.000001
                 },
                 {
                 "name": "Uni_Deriv_Phi",
-                "cpu_second": 0.0819958,
+                "cpu_second": 0.0486456,
                 "calls": 18,
-                "cpu_second_per_call": 0.004555,
-                "cpu_second_per_total": 0.000294
+                "cpu_second_per_call": 0.002703,
+                "cpu_second_per_total": 0.000131
                 }
             ]
         },
@@ -591,10 +591,10 @@
             "sub": [
                 {
                 "name": "write_istate_info",
-                "cpu_second": 0.0124649,
+                "cpu_second": 0.00922335,
                 "calls": 1,
-                "cpu_second_per_call": 0.012465,
-                "cpu_second_per_total": 0.000045
+                "cpu_second_per_call": 0.009223,
+                "cpu_second_per_total": 0.000025
                 }
             ]
         },
@@ -603,10 +603,10 @@
             "sub": [
                 {
                 "name": "extra_uniform",
-                "cpu_second": 0.0921145,
+                "cpu_second": 0.0507096,
                 "calls": 18,
-                "cpu_second_per_call": 0.005117,
-                "cpu_second_per_total": 0.000330
+                "cpu_second_per_call": 0.002817,
+                "cpu_second_per_total": 0.000137
                 }
             ]
         },
@@ -615,10 +615,10 @@
             "sub": [
                 {
                 "name": "contributeHR",
-                "cpu_second": 0.68449,
+                "cpu_second": 0.79479,
                 "calls": 1,
-                "cpu_second_per_call": 0.684490,
-                "cpu_second_per_total": 0.002452
+                "cpu_second_per_call": 0.794790,
+                "cpu_second_per_total": 0.002147
                 }
             ]
         },
@@ -627,10 +627,10 @@
             "sub": [
                 {
                 "name": "read_orb_first",
-                "cpu_second": 0.167375,
+                "cpu_second": 0.0993243,
                 "calls": 1,
-                "cpu_second_per_call": 0.167375,
-                "cpu_second_per_total": 0.000600
+                "cpu_second_per_call": 0.099324,
+                "cpu_second_per_total": 0.000268
                 }
             ]
         },
@@ -639,17 +639,17 @@
             "sub": [
                 {
                 "name": "folding_fixed",
-                "cpu_second": 2.82919,
-                "calls": 360,
-                "cpu_second_per_call": 0.007859,
-                "cpu_second_per_total": 0.010135
+                "cpu_second": 3.97196,
+                "calls": 370,
+                "cpu_second_per_call": 0.010735,
+                "cpu_second_per_total": 0.010731
                 },
                 {
                 "name": "init",
-                "cpu_second": 53.2152,
-                "calls": 720,
-                "cpu_second_per_call": 0.073910,
-                "cpu_second_per_total": 0.190641
+                "cpu_second": 77.981,
+                "calls": 740,
+                "cpu_second_per_call": 0.105380,
+                "cpu_second_per_total": 0.210673
                 }
             ]
         },
@@ -658,10 +658,10 @@
             "sub": [
                 {
                 "name": "contributeHR",
-                "cpu_second": 0.971603,
+                "cpu_second": 1.02956,
                 "calls": 1,
-                "cpu_second_per_call": 0.971603,
-                "cpu_second_per_total": 0.003481
+                "cpu_second_per_call": 1.029559,
+                "cpu_second_per_total": 0.002781
                 }
             ]
         },
@@ -670,52 +670,52 @@
             "sub": [
                 {
                 "name": "distributeg",
-                "cpu_second": 0.0110385,
+                "cpu_second": 0.0127382,
                 "calls": 1,
-                "cpu_second_per_call": 0.011039,
-                "cpu_second_per_total": 0.000040
+                "cpu_second_per_call": 0.012738,
+                "cpu_second_per_total": 0.000034
                 },
                 {
                 "name": "gatherp_scatters",
-                "cpu_second": 0.641851,
-                "calls": 336,
-                "cpu_second_per_call": 0.001910,
-                "cpu_second_per_total": 0.002299
+                "cpu_second": 0.815351,
+                "calls": 345,
+                "cpu_second_per_call": 0.002363,
+                "cpu_second_per_total": 0.002203
                 },
                 {
                 "name": "gathers_scatterp",
-                "cpu_second": 1.16542,
-                "calls": 226,
-                "cpu_second_per_call": 0.005157,
-                "cpu_second_per_total": 0.004175
+                "cpu_second": 1.44112,
+                "calls": 232,
+                "cpu_second_per_call": 0.006212,
+                "cpu_second_per_total": 0.003893
                 },
                 {
                 "name": "real2recip",
-                "cpu_second": 8.06652,
-                "calls": 336,
-                "cpu_second_per_call": 0.024008,
-                "cpu_second_per_total": 0.028898
+                "cpu_second": 9.67996,
+                "calls": 345,
+                "cpu_second_per_call": 0.028058,
+                "cpu_second_per_total": 0.026151
                 },
                 {
                 "name": "recip2real",
-                "cpu_second": 7.71596,
-                "calls": 226,
-                "cpu_second_per_call": 0.034141,
-                "cpu_second_per_total": 0.027642
+                "cpu_second": 9.17276,
+                "calls": 232,
+                "cpu_second_per_call": 0.039538,
+                "cpu_second_per_total": 0.024781
                 },
                 {
                 "name": "setup_struc_factor",
-                "cpu_second": 0.160767,
+                "cpu_second": 0.093737,
                 "calls": 1,
-                "cpu_second_per_call": 0.160767,
-                "cpu_second_per_total": 0.000576
+                "cpu_second_per_call": 0.093737,
+                "cpu_second_per_total": 0.000253
                 },
                 {
                 "name": "setuptransform",
-                "cpu_second": 0.0113281,
+                "cpu_second": 0.0130597,
                 "calls": 1,
-                "cpu_second_per_call": 0.011328,
-                "cpu_second_per_total": 0.000041
+                "cpu_second_per_call": 0.013060,
+                "cpu_second_per_total": 0.000035
                 }
             ]
         },
@@ -724,17 +724,17 @@
             "sub": [
                 {
                 "name": "distributeg",
-                "cpu_second": 0.00827463,
+                "cpu_second": 0.0080673,
                 "calls": 1,
-                "cpu_second_per_call": 0.008275,
-                "cpu_second_per_total": 0.000030
+                "cpu_second_per_call": 0.008067,
+                "cpu_second_per_total": 0.000022
                 },
                 {
                 "name": "setuptransform",
-                "cpu_second": 0.0399108,
+                "cpu_second": 0.0393437,
                 "calls": 1,
-                "cpu_second_per_call": 0.039911,
-                "cpu_second_per_total": 0.000143
+                "cpu_second_per_call": 0.039344,
+                "cpu_second_per_total": 0.000106
                 }
             ]
         },
@@ -743,10 +743,10 @@
             "sub": [
                 {
                 "name": "cal_fixed_v",
-                "cpu_second": 0.0455515,
+                "cpu_second": 0.041707,
                 "calls": 1,
-                "cpu_second_per_call": 0.045552,
-                "cpu_second_per_total": 0.000163
+                "cpu_second_per_call": 0.041707,
+                "cpu_second_per_total": 0.000113
                 }
             ]
         },
@@ -755,10 +755,10 @@
             "sub": [
                 {
                 "name": "cal_v_eff",
-                "cpu_second": 14.0271,
-                "calls": 37,
-                "cpu_second_per_call": 0.379110,
-                "cpu_second_per_total": 0.050251
+                "cpu_second": 16.7524,
+                "calls": 38,
+                "cpu_second_per_call": 0.440853,
+                "cpu_second_per_total": 0.045258
                 }
             ]
         },
@@ -767,31 +767,31 @@
             "sub": [
                 {
                 "name": "cal_fixed_v",
-                "cpu_second": 0.0470175,
+                "cpu_second": 0.0433224,
                 "calls": 1,
-                "cpu_second_per_call": 0.047017,
-                "cpu_second_per_total": 0.000168
+                "cpu_second_per_call": 0.043322,
+                "cpu_second_per_total": 0.000117
                 },
                 {
                 "name": "cal_v_eff",
-                "cpu_second": 19.3021,
-                "calls": 37,
-                "cpu_second_per_call": 0.521678,
-                "cpu_second_per_total": 0.069149
+                "cpu_second": 22.7184,
+                "calls": 38,
+                "cpu_second_per_call": 0.597854,
+                "cpu_second_per_total": 0.061376
                 },
                 {
                 "name": "init_pot",
-                "cpu_second": 0.575521,
+                "cpu_second": 0.559783,
                 "calls": 1,
-                "cpu_second_per_call": 0.575521,
-                "cpu_second_per_total": 0.002062
+                "cpu_second_per_call": 0.559783,
+                "cpu_second_per_total": 0.001512
                 },
                 {
                 "name": "update_from_charge",
-                "cpu_second": 19.3493,
-                "calls": 37,
-                "cpu_second_per_call": 0.522953,
-                "cpu_second_per_total": 0.069318
+                "cpu_second": 22.762,
+                "calls": 38,
+                "cpu_second_per_call": 0.599000,
+                "cpu_second_per_total": 0.061494
                 }
             ]
         },
@@ -800,17 +800,17 @@
             "sub": [
                 {
                 "name": "for_2d",
-                "cpu_second": 0.0142001,
+                "cpu_second": 0.0146675,
                 "calls": 1,
-                "cpu_second_per_call": 0.014200,
-                "cpu_second_per_total": 0.000051
+                "cpu_second_per_call": 0.014667,
+                "cpu_second_per_total": 0.000040
                 },
                 {
                 "name": "for_grid",
-                "cpu_second": 0.00679854,
-                "calls": 36,
-                "cpu_second_per_call": 0.000189,
-                "cpu_second_per_total": 0.000024
+                "cpu_second": 0.0163171,
+                "calls": 37,
+                "cpu_second_per_call": 0.000441,
+                "cpu_second_per_total": 0.000044
                 }
             ]
         },
@@ -819,10 +819,10 @@
             "sub": [
                 {
                 "name": "Spherical_Bessel",
-                "cpu_second": 0.077603,
+                "cpu_second": 0.0490428,
                 "calls": 12060,
-                "cpu_second_per_call": 0.000006,
-                "cpu_second_per_total": 0.000278
+                "cpu_second_per_call": 0.000004,
+                "cpu_second_per_total": 0.000132
                 }
             ]
         },
@@ -831,38 +831,38 @@
             "sub": [
                 {
                 "name": "stress_cc",
-                "cpu_second": 5.59958e-07,
+                "cpu_second": 1.09989e-06,
                 "calls": 1,
                 "cpu_second_per_call": 0.000001,
                 "cpu_second_per_total": 0.000000
                 },
                 {
                 "name": "stress_ewa",
-                "cpu_second": 0.0427022,
+                "cpu_second": 0.0559254,
                 "calls": 1,
-                "cpu_second_per_call": 0.042702,
-                "cpu_second_per_total": 0.000153
+                "cpu_second_per_call": 0.055925,
+                "cpu_second_per_total": 0.000151
                 },
                 {
                 "name": "stress_gga",
-                "cpu_second": 0.207654,
+                "cpu_second": 0.243584,
                 "calls": 1,
-                "cpu_second_per_call": 0.207654,
-                "cpu_second_per_total": 0.000744
+                "cpu_second_per_call": 0.243584,
+                "cpu_second_per_total": 0.000658
                 },
                 {
                 "name": "stress_har",
-                "cpu_second": 0.036489,
+                "cpu_second": 0.0388888,
                 "calls": 1,
-                "cpu_second_per_call": 0.036489,
-                "cpu_second_per_total": 0.000131
+                "cpu_second_per_call": 0.038889,
+                "cpu_second_per_total": 0.000105
                 },
                 {
                 "name": "stress_loc",
-                "cpu_second": 0.170423,
+                "cpu_second": 0.288192,
                 "calls": 1,
-                "cpu_second_per_call": 0.170423,
-                "cpu_second_per_total": 0.000611
+                "cpu_second_per_call": 0.288192,
+                "cpu_second_per_total": 0.000779
                 }
             ]
         },
@@ -878,10 +878,10 @@
                 },
                 {
                 "name": "rho_symmetry",
-                "cpu_second": 2.21339,
-                "calls": 37,
-                "cpu_second_per_call": 0.059821,
-                "cpu_second_per_total": 0.007929
+                "cpu_second": 2.68465,
+                "calls": 38,
+                "cpu_second_per_call": 0.070649,
+                "cpu_second_per_total": 0.007253
                 }
             ]
         },
@@ -890,7 +890,7 @@
             "sub": [
                 {
                 "name": "check_tau",
-                "cpu_second": 3.80003e-06,
+                "cpu_second": 4.12995e-06,
                 "calls": 1,
                 "cpu_second_per_call": 0.000004,
                 "cpu_second_per_total": 0.000000
@@ -902,24 +902,24 @@
             "sub": [
                 {
                 "name": "cal_energy",
-                "cpu_second": 0.0510476,
+                "cpu_second": 0.0271379,
                 "calls": 1,
-                "cpu_second_per_call": 0.051048,
-                "cpu_second_per_total": 0.000183
+                "cpu_second_per_call": 0.027138,
+                "cpu_second_per_total": 0.000073
                 },
                 {
                 "name": "cal_force",
-                "cpu_second": 0.0690367,
+                "cpu_second": 0.0697328,
                 "calls": 1,
-                "cpu_second_per_call": 0.069037,
-                "cpu_second_per_total": 0.000247
+                "cpu_second_per_call": 0.069733,
+                "cpu_second_per_total": 0.000188
                 },
                 {
                 "name": "cal_stress",
-                "cpu_second": 0.0694775,
+                "cpu_second": 0.0709286,
                 "calls": 1,
-                "cpu_second_per_call": 0.069477,
-                "cpu_second_per_total": 0.000249
+                "cpu_second_per_call": 0.070929,
+                "cpu_second_per_total": 0.000192
                 }
             ]
         },
@@ -928,10 +928,10 @@
             "sub": [
                 {
                 "name": "contributeHk",
-                "cpu_second": 53.0003,
-                "calls": 360,
-                "cpu_second_per_call": 0.147223,
-                "cpu_second_per_total": 0.189871
+                "cpu_second": 77.707,
+                "calls": 370,
+                "cpu_second_per_call": 0.210019,
+                "cpu_second_per_total": 0.209932
                 }
             ]
         },
@@ -940,10 +940,10 @@
             "sub": [
                 {
                 "name": "v_xc",
-                "cpu_second": 13.9377,
-                "calls": 37,
-                "cpu_second_per_call": 0.376695,
-                "cpu_second_per_total": 0.049931
+                "cpu_second": 16.6596,
+                "calls": 38,
+                "cpu_second_per_call": 0.438412,
+                "cpu_second_per_total": 0.045008
                 }
             ]
         },
@@ -952,10 +952,10 @@
             "sub": [
                 {
                 "name": "search",
-                "cpu_second": 0.00129063,
+                "cpu_second": 0.00133146,
                 "calls": 1,
-                "cpu_second_per_call": 0.001291,
-                "cpu_second_per_total": 0.000005
+                "cpu_second_per_call": 0.001331,
+                "cpu_second_per_total": 0.000004
                 }
             ]
         },
@@ -964,10 +964,10 @@
             "sub": [
                 {
                 "name": "cal_dm",
-                "cpu_second": 4.83146,
-                "calls": 37,
-                "cpu_second_per_call": 0.130580,
-                "cpu_second_per_total": 0.017308
+                "cpu_second": 6.05781,
+                "calls": 38,
+                "cpu_second_per_call": 0.159416,
+                "cpu_second_per_total": 0.016366
                 }
             ]
         },
@@ -976,10 +976,10 @@
             "sub": [
                 {
                 "name": "heapsort",
-                "cpu_second": 0.130697,
-                "calls": 85,
-                "cpu_second_per_call": 0.001538,
-                "cpu_second_per_total": 0.000468
+                "cpu_second": 0.148282,
+                "calls": 253,
+                "cpu_second_per_call": 0.000586,
+                "cpu_second_per_total": 0.000401
                 }
             ]
         },
@@ -988,10 +988,10 @@
             "sub": [
                 {
                 "name": "init_vloc",
-                "cpu_second": 0.0957042,
+                "cpu_second": 0.0483577,
                 "calls": 1,
-                "cpu_second_per_call": 0.095704,
-                "cpu_second_per_total": 0.000343
+                "cpu_second_per_call": 0.048358,
+                "cpu_second_per_total": 0.000131
                 }
             ]
         },
@@ -1000,10 +1000,10 @@
             "sub": [
                 {
                 "name": "pdgemm",
-                "cpu_second": 3.66313,
-                "calls": 370,
-                "cpu_second_per_call": 0.009900,
-                "cpu_second_per_total": 0.013123
+                "cpu_second": 4.60789,
+                "calls": 380,
+                "cpu_second_per_call": 0.012126,
+                "cpu_second_per_total": 0.012449
                 }
             ]
         }

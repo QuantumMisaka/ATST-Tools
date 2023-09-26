@@ -1,0 +1,11 @@
+MPI cannnot be recursively used, so only omp number is effective
+MPI cannnot be recursively used, so only omp number is effective
+MPI cannnot be recursively used, so only omp number is effective
+MPI cannnot be recursively used, so only omp number is effective
+----- Parallel calculation is being used -----
+----- Running ASE-NEB -----
+----- improvedtangent method is being used -----
+----- OUT Trajectory change to restart_neb.traj  -----
+----- OUT Trajectory change to restart_neb.traj  -----
+----- OUT Trajectory change to restart_neb.traj  -----
+----- OUT Trajectory change to restart_neb.traj  -----
