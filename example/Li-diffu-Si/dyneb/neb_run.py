@@ -1,4 +1,4 @@
-# JamesMisaka in 2023-11-02
+# JamesMisaka in 2023-10-08
 # Run full NEB calculation on NEB images by ASE-ABACUS
 # part of ASE-NEB-ABACUS scripts
 
@@ -11,41 +11,35 @@ from ase.parallel import world, parprint, paropen
 #from pathlib import Path
 
 # setting for NEB
-mpi = 8
-omp = 1
-parallel = True
+mpi = 4
+omp = 2
+parallel = False
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "NEB"
 algorism = "improvedtangent" # IT-NEB is recommended
-neb_type = "neb"
+neb_type = "dyneb"
 init_chain = "init_neb_chain.traj"
 climb = True
 fmax = 0.05  # eV / Ang
 # setting for calculator
 abacus = "abacus"
-#lib_dir = "/lustre/home/2201110432/example/abacus"
-libdir = ""
-pseudo_dir = f"{lib_dir}/"
-basis_dir = f"{lib_dir}/"
+pseudo_dir = "."
+basis_dir = "."
 pp = {
-        'N':'N_ONCV_PBE-1.0.upf',
-        'Cu':'Cu_ONCV_PBE-1.0.upf',
-      }
+    "Li": "Li_ONCV_PBE-1.2.upf",
+    "Si": "Si_ONCV_PBE-1.2.upf", }
 basis = {
-        'N':'N_gga_7au_100Ry_2s2p1d.orb',
-        'Cu':'Cu_gga_8au_100Ry_4s2p2d1f.orb',
-        }
-kpts = [3, 1, 3]
+    "Li": "Li_gga_8au_100Ry_4s1p.orb",
+    "Si": "Si_gga_8au_100Ry_2s2p1d.orb"}
+kpts = [2, 2, 2]
 parameters = {
     'calculation': 'scf',
-    'nspin': 2,
     'xc': 'pbe',
     'ecutwfc': 100,
-    'ks_solver': 'genelpa',
-    'vdw_method': 'd3_bj',
     'smearing_method': 'gaussian',
     'smearing_sigma': 0.001,
     'basis_type': 'lcao',
+    'ks_solver': 'genelpa',
     'mixing_type': 'broyden',
     'scf_thr': 1e-6,
     'scf_nmax': 100,
@@ -59,10 +53,10 @@ parameters = {
     'out_stru': 1,
     'out_chg': 0,
     'out_bandgap': 0,
-    'efield_flag': 1,
-    'dip_cor_flag': 1,
-    'efield_dir': 1,
-    'efield_pos_max': 0.0
+    'efield_flag': 0,
+    'dip_cor_flag': 0,
+    'efield_dir': 2,
+    'efield_pos_max': 0.7
 }
 
 

@@ -1,0 +1,16 @@
+                               nkstot now = 4
+      KPT             DirectX             DirectY             DirectZ              Weight
+        1                   0                   0                   0               0.125
+        2                 0.5                   0                   0               0.375
+        3                 0.5                   0                 0.5               0.375
+        4                 0.5                 0.5                 0.5               0.125
+                                   nkstot = 8                                                            ibzkpt
+      KPT             DirectX             DirectY             DirectZ     IBZ             DirectX             DirectY             DirectZ
+        1                   0                   0                   0       1                   0                   0                   0
+        2                 0.5                   0                   0       2                 0.5                   0                   0
+        3                   0                 0.5                   0       2                 0.5                   0                   0
+        4                 0.5                 0.5                   0       3                 0.5                   0                 0.5
+        5                   0                   0                 0.5       2                 0.5                   0                   0
+        6                 0.5                   0                 0.5       3                 0.5                   0                 0.5
+        7                   0                 0.5                 0.5       3                 0.5                   0                 0.5
+        8                 0.5                 0.5                 0.5       4                 0.5                 0.5                 0.5

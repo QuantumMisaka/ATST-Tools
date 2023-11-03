@@ -1,0 +1,49 @@
+ In SCAN_BEGIN, can't find: LATTICE_PARAMETERS block.
+ AUTO_SET NBANDS to 0
+ AUTO_SET NBANDS to 157
+      Processor           Atom
+              1             31
+              2             31
+              3             31
+              4             31
+                            startmag_type = 2
+                       charge from rho_at = 2.88725
+                         charge should be = 3
+                            startmag_type = 2
+                       charge from rho_at = 3.95377
+                         charge should be = 4
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 259
+           total electron number from rho = 259
+                                should be = 259
+                 charge before normalized = 259
+                  charge after normalized = 259
+                 charge before normalized = 259.000000844504
+                  charge after normalized = 259.000000000004
+                 charge before normalized = 259.000000872431
+                  charge after normalized = 258.999999999999
+                 charge before normalized = 259.000000915944
+                  charge after normalized = 259.000000000006
+                 charge before normalized = 259.00000091473
+                  charge after normalized = 259.000000000006
+                 charge before normalized = 259.000000905785
+                  charge after normalized = 259
+                 charge before normalized = 259.000000903963
+                  charge after normalized = 258.999999999998
+                 charge before normalized = 259.000000903554
+                  charge after normalized = 259
+                 charge before normalized = 259.000000903255
+                  charge after normalized = 259
+                 charge before normalized = 259.00000090321
+                  charge after normalized = 258.999999999993
+                 charge before normalized = 259.000000903062
+                  charge after normalized = 258.999999999999
+                 charge before normalized = 259.000000903195
+                  charge after normalized = 258.999999999998
+                 charge before normalized = 259.000000902987
+                  charge after normalized = 258.999999999999
+                 charge before normalized = 259.000000903
+                  charge after normalized = 259.000000000002
+                 charge before normalized = 259.000000903043
+                  charge after normalized = 258.999999999992
