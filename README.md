@@ -2,7 +2,7 @@
 NEB or CI-NEB workflow by ASE and ABACUS using ASE-ABACUS interfaces,
 Which use enhanced NEB method in ASE, like Dynamic NEB `DyNEB` or `AutoNEB`.
 
-Version v0.3.1
+Version v1.0-dev
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
@@ -11,6 +11,8 @@ Version v0.3.1
 - [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel
 
 ## Usage
+The workflow is in reconstruction, the README need to re-writte
+
 - `abacus_neb.py` have all the NEB workflow by using ASE-ABACUS interface to do NEB calculation
 - examples can be run by `python run_neb.py`, or simply bt `./run.sh`
 - Before use, make `abacus_neb.py` detectable by python, e.g. `export PYTHONPATH=/path/to/ase-neb-abacus:$PYTHONPATH`
