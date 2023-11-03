@@ -22,7 +22,7 @@ def set_Atoms(infile, format=None, fix_height=0.0, fix_dir=1,
     atoms = read(infile, format=format)
     # maybe we should set constaints independently in here
     if fix_height:
-        if fix_dir not in [0,1,2]:
+        if fix_dir not in [0, 1, 2]:
             raise ValueError("fix_dir should be 0, 1 or 2 for x, y or z")
         mask = atoms.get_scaled_positions()[:, fix_dir] < fix_height
         fix = FixAtoms(mask=mask)

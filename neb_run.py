@@ -24,16 +24,16 @@ fmax = 0.05  # eV / Ang
 # setting for calculator
 abacus = "abacus"
 #lib_dir = "/lustre/home/2201110432/example/abacus"
-libdir = ""
+lib_dir = ""
 pseudo_dir = f"{lib_dir}/"
 basis_dir = f"{lib_dir}/"
 pp = {
-        'N':'N_ONCV_PBE-1.0.upf',
-        'Cu':'Cu_ONCV_PBE-1.0.upf',
+        'H':'H_ONCV_PBE-1.0.upf',
+        'Au':'Au_ONCV_PBE-1.0.upf',
       }
 basis = {
-        'N':'N_gga_7au_100Ry_2s2p1d.orb',
-        'Cu':'Cu_gga_8au_100Ry_4s2p2d1f.orb',
+        'H':'H_gga_6au_100Ry_2s1p.orb',
+        'Au':'Au_gga_7au_100Ry_4s2p2d1f.orb',
         }
 kpts = [3, 1, 3]
 parameters = {
@@ -62,7 +62,7 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.0
+    'efield_pos_max': 0.8
 }
 
 
