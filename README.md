@@ -32,8 +32,9 @@ When running, the NEB trajectory will be output to `neb_chain.traj`, and NEB ima
 ## Examples
 - Li-diffu-Si: Li diffusion in Si, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, using ABACUS as SCF calculator and ASE as optimizer and NEB calculator.  Also, an dflow example is proposed.
 - Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
-- N2-Cu111: N2 dissociation on Cu(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
-- CO-Pt111: CO dissociation on Pt(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ASE for initial and final state optimization and use ASE as NEB calculator. 
+- H2-Cu111: H2 dissociation on Au(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator,use ASE for initial and final state optimization and use ASE as NEB calculator. 
+- N2-Cu111 (in plan): N2 dissociation on Cu(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
+- CO-Pt111 : CO dissociation on Pt(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
 
 
 ## Next Examples

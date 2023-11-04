@@ -1,0 +1,123 @@
+ In SCAN_BEGIN, can't find: LATTICE_PARAMETERS block.
+ AUTO_SET NBANDS to 0
+ AUTO_SET NBANDS to 698
+      Processor           Atom
+              1             23
+              2             23
+              3             23
+              4             23
+              5             23
+              6             23
+              7             23
+              8             23
+              9             23
+             10             23
+             11             23
+             12             23
+             13             23
+             14             23
+             15             23
+             16             23
+                            startmag_type = 2
+                       charge from rho_at = 3.99303
+                         charge should be = 4
+                            startmag_type = 2
+                       charge from rho_at = 5.99905
+                         charge should be = 6
+                            startmag_type = 2
+                       charge from rho_at = 17.9731
+                         charge should be = 18
+ Warning: negative or imaginary starting charge :  neg = -0.000969854 ima = 6.44588e-08 SPIN = 0
+ Warning: negative or imaginary starting charge :  neg = -0.000969854 ima = 6.44588e-08 SPIN = 1
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 581
+
+ SETUP ATOMIC RHO FOR SPIN 2
+                 Electron number from rho = 581
+           total electron number from rho = 1162
+                                should be = 1162
+                 charge before normalized = 1162
+                  charge after normalized = 1162
+                 charge before normalized = 1162.00000031005
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1162.00000018311
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999957038
+                  charge after normalized = 1162
+                 charge before normalized = 1162.00000003227
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1162.00000002804
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1162.00000001049
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999997802
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1161.99999996046
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999990916
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999990141
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999990555
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999990967
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991983
+                  charge after normalized = 1162
+                 charge before normalized = 1161.9999999239
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999992004
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991648
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1161.99999991304
+                  charge after normalized = 1162
+                 charge before normalized = 1161.9999999144
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991584
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991532
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991412
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999991295
+                  charge after normalized = 1162
+                 charge before normalized = 1161.9999999132
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1161.99999991279
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991271
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991238
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1161.99999991208
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991214
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999991193
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999991185
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991179
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991168
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991164
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991162
+                  charge after normalized = 1162.00000000001
+                 charge before normalized = 1161.99999991164
+                  charge after normalized = 1161.99999999999
+                 charge before normalized = 1161.99999991161
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991158
+                  charge after normalized = 1162
+                 charge before normalized = 1161.9999999116
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991161
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991162
+                  charge after normalized = 1162
+                 charge before normalized = 1161.99999991169
+                  charge after normalized = 1162

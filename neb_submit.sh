@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=7
-#SBATCH --cpus-per-task=8
+#SBATCH --ntasks-per-node=8
+#SBATCH --cpus-per-task=64
 #SBATCH -J NEB-ABACUS
 #SBATCH -o run_neb.out
 #SBATCH -e run_neb.err
@@ -11,12 +11,19 @@
 # workflow of ase-abacus-neb method
 # each python script do their single job
 # ntasks-per-node is for images, cpus-per-task is for calculator
+# for one calculator, ntasks-per-node for mpi, cpus-per-task for openmp
+
+# n_image selection should consider the computer resource
+
+source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
+conda activate gpaw-intel
+module load abacus/3.4.1-dev-icx
 
 # variable
 INIT="INIT/OUT.ABACUS/running*.log"   # running_scf/relax.log
 FINAL="FINAL/OUT.ABACUS/running*.log"
-#NMAX=5 # image number in intermediate, each process do one image calculation
-NMAX= $SLURM_NTASKS
+#NMAX=8 # image number in intermediate, each process do one image calculation
+NMAX=$SLURM_NTASKS
 echo "NMAX is ${NMAX}" 
 
 # Job state 

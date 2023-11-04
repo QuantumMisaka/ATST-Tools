@@ -1,5 +1,6 @@
 # JamesMisaka in 2023-10-08
 # Run full NEB calculation on NEB images by ASE-ABACUS
+# only for Li-diffu-Si example, using dyneb
 # part of ASE-NEB-ABACUS scripts
 
 import os 

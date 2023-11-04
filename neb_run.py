@@ -11,8 +11,8 @@ from ase.parallel import world, parprint, paropen
 #from pathlib import Path
 
 # setting for NEB
-mpi = 8
-omp = 1
+mpi = 16
+omp = 4
 parallel = True
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "NEB"
@@ -71,7 +71,7 @@ class AbacusNEB:
 
     def __init__(self, init_chain, parameters, abacus='abacus',
                  neb_type="neb", algorism="improvedtangent", directory='OUT', 
-                 mpi=1, omp=1, parallel=False,) -> None:
+                 mpi=1, omp=1, parallel=True,) -> None:
         """Initialize initial and final states
 
         init_chain (Atoms object): starting image chain
@@ -105,7 +105,11 @@ class AbacusNEB:
         if self.parallel == False:
             parprint("Notice: Parallel calculation is not being used")
             parprint("Set NEB method to DyNEB automatically")
-            self.neb_type = "dyneb"
+            self.neb_type = 'dyneb'
+        elif self.algorism == 'dyneb':
+            parprint("Notice: Dynamic NEB method is set")
+            parprint("Parallel calculation is auto set to False")
+            self.parallel = False
             
 
     def set_calculator(self):
@@ -121,6 +125,7 @@ class AbacusNEB:
         calc = Abacus(profile=profile, directory=out_directory,
                       **self.parameters)
         return calc
+    
     
     def set_neb_chain(self, fmax=0.05, climb=True,):
         """Set neb_chain, namely:
@@ -149,7 +154,7 @@ class AbacusNEB:
                 parprint(f"----- {self.algorism} method is being used -----")
                 parprint("----- Default scale_fmax = 1.0 -----")
                 neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True,
-                method=self.algorism, parallel=self.parallel, scale_fmax=1.0)
+                method=self.algorism, parallel=False, scale_fmax=1.0)
             elif self.neb_type == "neb":
                 parprint("----- Running ASE-NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
@@ -161,6 +166,7 @@ class AbacusNEB:
         else:
             raise NotImplementedError("NEB algorism not supported! \n Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string'")
         return neb
+
 
     def run(self, optimizer=FIRE, fmax=0.05, climb=True, outfile="neb.traj"):
         """Run Abacus NEB
