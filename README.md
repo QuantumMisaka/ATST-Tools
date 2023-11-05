@@ -57,7 +57,6 @@ Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.s
 - - CH3OH generation process
 - - H2O2 dissociation process
 - CO-Fe100: CO dissociation on Fe(100) surface, in this example we will focus on setting `magmom` during NEB calculation, which is important for spin-polarized magnetic system.
-- K2O-diffu-Fe5C2-510: K2O or K diffusion on Fe5C2(510) surface, 
 - FTS Fe5C2-510: FTS process on Fe5C2(510) surface. Which is the final goal, including
 - - C vacancy generation process
 - - CO and H2 dissocation process
