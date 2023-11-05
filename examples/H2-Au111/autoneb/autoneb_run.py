@@ -151,7 +151,7 @@ class AbacusAutoNEB:
         parprint("----- AutoNEB calculation finished -----")
 
 
-if __name__ == "main": 
+if __name__ == "__main__": 
 # running process
 # read initial guessed neb chain
     init_chain = read(init_chain, index=':')

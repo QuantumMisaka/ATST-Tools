@@ -10,6 +10,9 @@ Version v1.0
 - [ASE-ABACUS interfaces](https://gitlab.com/1041176461/ase-abacus)
 - [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel
 
+Notice: GPAW and ABACUS should be dependent on same MPI and libraries environments. 
+For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW should NOT be dependent on gcc-toolchain like OpenMPI and OpenBLAS.
+
 
 ## Usage
 The workflow is based on 3 main python scripts and 1 workflow submit script. Namely:
