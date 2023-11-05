@@ -1,10 +1,10 @@
-# JamesMisaka in 2023-11-02
-# Run full NEB calculation on NEB images by ASE-ABACUS
+# JamesMisaka in 2023-11-05
+# Run NEB calculation on NEB images by ASE-ABACUS
 # part of ASE-NEB-ABACUS scripts
 
-import os 
+import os
 from ase.calculators.abacus import Abacus, AbacusProfile
-from ase.optimize import FIRE, BFGS, QuasiNewton
+from ase.optimize import FIRE, BFGS
 from ase.mep.neb import NEB, DyNEB # newest ase
 from ase.io import read, write
 from ase.parallel import world, parprint, paropen
@@ -12,21 +12,22 @@ from ase.parallel import world, parprint, paropen
 
 # setting for NEB
 mpi = 16
-omp = 4
-parallel = True
+omp = 2
 neb_optimizer = FIRE # suited for CI-NEB
-neb_directory = "NEB"
+neb_directory = "NEBrun"
 algorism = "improvedtangent" # IT-NEB is recommended
-neb_type = "neb"
+neb_type = "neb"  # neb, dyneb, but not autoneb
 init_chain = "init_neb_chain.traj"
 climb = True
 fmax = 0.05  # eV / Ang
+parallel = True
+
 # setting for calculator
 abacus = "abacus"
-#lib_dir = "/lustre/home/2201110432/example/abacus"
-lib_dir = ""
-pseudo_dir = f"{lib_dir}/"
-basis_dir = f"{lib_dir}/"
+lib_dir = "/lustre/home/2201110432/example/abacus"
+#lib_dir = ""
+pseudo_dir = f"{lib_dir}/PP"
+basis_dir = f"{lib_dir}/ORB"
 pp = {
         'H':'H_ONCV_PBE-1.0.upf',
         'Au':'Au_ONCV_PBE-1.0.upf',
@@ -42,6 +43,8 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'ks_solver': 'genelpa',
+    'symmetry': 1,
+    'symmetry_autoclose': 1,
     'vdw_method': 'd3_bj',
     'smearing_method': 'gaussian',
     'smearing_sigma': 0.001,
@@ -62,7 +65,7 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.8
+    'efield_pos_max': 0.7
 }
 
 
@@ -70,27 +73,27 @@ class AbacusNEB:
     """Customize Nudged Elastic Band calculation by using ABACUS"""
 
     def __init__(self, init_chain, parameters, abacus='abacus',
-                 neb_type="neb", algorism="improvedtangent", directory='OUT', 
-                 mpi=1, omp=1, parallel=True,) -> None:
+                 neb_type="neb", algorism="improvedtangent", directory='NEB', 
+                 mpi=1, omp=1, parallel=True, n_simul_auto=0, n_max_auto=0) -> None:
         """Initialize initial and final states
 
-        init_chain (Atoms object): starting image chain
-        parameters (dict): settings of input parameters
+        init_chain (Atoms object): starting image chain from nem_make.py or other method
+        parameters (dict): settings of abacus input parameters
         abacus (str): Abacus executable file. Default: 'abacus'
         algorism (str): NEB algorism. which can be
         - 'aseneb': standard ase NEB
         - 'improvedtangent' : IT-NEB (recommended by Sobereva)
-        - 'eb': climbing image elastic band method (in AutoNEB)
+        - 'eb': climbing image elastic band method (default in AutoNEB)
         - 'spline': 
         - 'string': 
         
         Default: 'improvedtangent'
         
-        dyneb (bool): dynamic NEB method. Default: True
-        directory (str): work directory
-        mpi (int): number of MPI
-        omp (int): number of OpenMP
-        parallel (bool): parallel calculation setting
+        neb_type (str): NEB method.  Choose from 'neb', 'dyneb'. and 'autoneb' should use AbacusAutoNEB class
+        directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name
+        mpi (int): number of MPI for abacus calculator
+        omp (int): number of OpenMP for abacus calculator
+        parallel (bool): parallel calculation setting, default True, if neb_type set to 'dyneb', parallel will be set to False automatically
         """
 
         self.init_chain = init_chain
@@ -110,7 +113,14 @@ class AbacusNEB:
             parprint("Notice: Dynamic NEB method is set")
             parprint("Parallel calculation is auto set to False")
             self.parallel = False
-            
+        if self.neb_type == 'autoneb':
+            parprint("Notice: AutoNEB method is set")
+            if (n_simul_auto > 0) and (n_max_auto >= n_simul_auto):
+                parprint(f"You manually set n_simul = {n_simul_auto}, n_max = {n_max_auto}", )
+                self.n_simul_auto = n_simul_auto
+                self.n_max_auto = n_max_auto
+            else:
+                raise ValueError("You must set n_simul > 0 and n_max >= n_simul numbers for AutoNEB")
 
     def set_calculator(self):
         """Set Abacus calculators"""
@@ -153,8 +163,8 @@ class AbacusNEB:
                 parprint("----- Running Dynamic NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
                 parprint("----- Default scale_fmax = 1.0 -----")
-                neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, allow_shared_calculator=True,
-                method=self.algorism, parallel=False, scale_fmax=1.0)
+                neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, 
+                            method=self.algorism, parallel=False, scale_fmax=1.0)
             elif self.neb_type == "neb":
                 parprint("----- Running ASE-NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
@@ -178,19 +188,16 @@ class AbacusNEB:
         neb = self.set_neb_chain(fmax, climb)
         opt = optimizer(neb, trajectory=outfile)
         opt.run(fmax)
+        print("----- NEB calculation finished -----")
 
-## if __name__ == "__main__":
+
+if __name__ == "__main__":
 # running process
 # read initial guessed neb chain
-init_chain = read(init_chain, index=':')
-
-# No atom need to be fixed, pass fix process
-# ABACUS fix and magmom information CANNOT be read by ASE-ABACUS now from abacus-out
-
-# do neb calculation parallelly
-neb = AbacusNEB(init_chain, parameters=parameters, parallel=parallel,
-                directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
-                algorism=algorism)
-neb.run(optimizer=neb_optimizer, climb=climb, fmax=fmax)
+    init_chain = read(init_chain, index=':')
+    neb = AbacusNEB(init_chain, parameters=parameters, parallel=parallel,
+                    directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
+                    algorism=algorism)
+    neb.run(optimizer=neb_optimizer, climb=climb, fmax=fmax)
 
 

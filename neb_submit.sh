@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=8
-#SBATCH --cpus-per-task=64
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-task=32
 #SBATCH -J NEB-ABACUS
 #SBATCH -o run_neb.out
 #SBATCH -e run_neb.err
@@ -18,14 +18,15 @@
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
-module load abacus/3.4.1-dev-icx
+module load abacus/3.4.2-icx
 
 # variable
 INIT="INIT/OUT.ABACUS/running*.log"   # running_relax/scf.log
 FINAL="FINAL/OUT.ABACUS/running*.log"
-#NMAX=8 # image number in intermediate, each process do one image calculation
-NMAX=$SLURM_NTASKS
-echo "NMAX is ${NMAX}" 
+#N_IMG=8 # image number in intermediate, each process do one image calculation
+# in autoneb, N_IMG is the parallelled-run img number
+N_IMG=$SLURM_NTASKS
+echo "N_IMG is ${N_IMG}" 
 
 # Job state 
 echo $SLURM_JOB_ID > JobRun.state
@@ -33,7 +34,7 @@ echo "Start at $(date)" >> JobRun.state
 
 # prepare neb image chain
 echo " ===== Make Initial NEB Guess ====="
-python neb_make.py $INIT $FINAL $NMAX --fix 0.5:1 
+python neb_make.py $INIT $FINAL $N_IMG # --fix 0.2:1 --mag Fe:1.7,C:-0.3 
 
 # neb_make Usage: 
 # Default: 
@@ -48,16 +49,16 @@ python neb_make.py $INIT $FINAL $NMAX --fix 0.5:1
 echo "===== Running NEB ====="
 
 #python neb_run.py
-mpirun -np $NMAX gpaw python neb_run.py #2>run_neb.err | tee run_neb.out
+mpirun -np $N_IMG gpaw python neb_run.py #2>run_neb.err | tee run_neb.out
 # if trans-nodes
 # srun hostname -s | sort -n > slurm.hosts
-# mpirun -np $NMAX -machinefile slurm.hosts gpaw python neb_run.py
+# mpirun -np $N_IMG -machinefile slurm.hosts gpaw python neb_run.py
 
 # post_precessing
 echo "===== NEB Process Done ! ====="
 echo "===== Running Post-Processing ====="
 
-python neb_post.py neb.traj $NMAX
+python neb_post.py neb.traj $N_IMG
 
 echo "===== Done ! ====="
 

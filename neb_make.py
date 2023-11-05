@@ -63,22 +63,30 @@ def nebmake(initial='', final='', n_max=8, interpolate='idpp',
         # terminate nebmake for initial guess provided
     else:
         images = [initial]
-        for i in range(n_max):
-            image = initial.copy()
-            images.append(image)
-        images.append(final)
-        # use a simple NEB object to create traj file
-        neb = NEB(images)
-        # calculation and others should be set independently
-        if interpolate in ['idpp','linear']:
-            neb.interpolate(method=interpolate)
-            # print-out guess information
-        elif interpolate:
-            print("---- Warning: interpolate method not supported, using default linear interpolate ----")
-            neb.interpolate(method="linear") # using default
-        print(f"--- Successfully make guessed image chain by {interpolate} method ! ---")
-        write(f'{outfile}', images, format='traj')
-        return neb # for main function to read
+        if nmax == 0:
+            # always for autoneb, just do format transfer
+            print("---- Warning: n_max = 0, traj file only contain initial and final images. ---- \n ---- If you are using AutoNEB method, just ignore it ----")
+            images.append(final)
+            write(f'{outfile}', images, format='traj')
+        elif nmax > 0 and type(nmax) == int:
+            for i in range(n_max):
+                image = initial.copy()
+                images.append(image)
+            images.append(final)
+            # use a simple NEB object to create traj file
+            neb = NEB(images)
+            # calculation and others should be set independently
+            if interpolate in ['idpp','linear']:
+                neb.interpolate(method=interpolate)
+                # print-out guess information
+            elif interpolate:
+                print("---- Warning: interpolate method not supported, using default linear interpolate ----")
+                neb.interpolate(method="linear") # using default
+            print(f"--- Successfully make guessed image chain by {interpolate} method ! ---")
+            write(f'{outfile}', images, format='traj')
+            return neb # for main function to read
+        else:
+            raise ValueError("n_max should be a non-negative integer")
 
 
 if __name__ == "__main__":
