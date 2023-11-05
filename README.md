@@ -20,10 +20,18 @@ When running, the NEB trajectory will be output to `neb_chain.traj`, and NEB ima
 - `neb_post.py` will post-process the NEB calculation result, which will generate `neb_chain.traj` for neb calculation. Users should edit this file to set parameters for NEB calculation.
 - `neb_submit.sh` will do all neb process in one workflow scripts and running neb calculation in parallel. Users should edit this file to set parameters for NEB calculation. Also this submit script can be used as a template for job submission in HPC. the Default setting is for `slurm` job submission system.
 
+Users can run each step respectively: 
+1. `python neb_make.py [INIT/result] [FINAL/result] [nmax]` to create initial guess of neb chain
+2. `python neb_run.py` or `mpirun -np [nprocs] gpaw python neb_run.py` to run neb calculation
+3. `python neb_post.py` to post-process neb calculation result
+
+Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.sh` or `sbatch neb_submit.sh`.
+
+> Notice: Before you start neb calculation process, make sure that you have check the nodes and cpus setting in `neb_submit.sh` and `neb_run.py` to make sure that you can reach the highest performance !!! 
 
 ## Method
 - For serial NEB calculation, DyNEB, namely dynamic NEB method `ase.mep.neb.DyNEB` is for default used.
-- For parallel NEB calculation, `ase.mep.neb.NEB` traditional method is for default used.
+- For parallel NEB calculation, `ase.mep.neb.NEB` traditional method is for default used, and `AutoNEB` method is in development. 
 - The Improved Tangent NEB method `IT-NEB` and Climbing Image NEB method `CI-NEB` in ASE are also default used in this workflow.
 - Users can change lots of parameter for different NEB setting. one can refer to [ASE NEB calculator](https://wiki.fysik.dtu.dk/ase/ase/neb.html#module-ase.neb) for more details: 
 - Notice: in surface calculation and hexangonal system, the vaccum and c-axis should be set along y-direction but not z-direction, which is much more efficient for ABACUS calculation.
@@ -31,10 +39,10 @@ When running, the NEB trajectory will be output to `neb_chain.traj`, and NEB ima
 
 ## Examples
 - Li-diffu-Si: Li diffusion in Si, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, using ABACUS as SCF calculator and ASE as optimizer and NEB calculator.  Also, an dflow example is proposed.
-- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
-- H2-Cu111: H2 dissociation on Au(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator,use ASE for initial and final state optimization and use ASE as NEB calculator. 
+- H2-Au111: H2 dissociation on Au(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator,use ASE for initial and final state optimization and use ASE as NEB calculator. 
 - N2-Cu111 (in plan): N2 dissociation on Cu(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
 - CO-Pt111 : CO dissociation on Pt(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
+- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
 
 
 ## Next Examples
@@ -49,7 +57,7 @@ When running, the NEB trajectory will be output to `neb_chain.traj`, and NEB ima
 - [x] Use interface to read ABACUS STRU file and ABACUS output
 - [x] Flexible input for different NEB method in ASE
 - [x] `DyNEB` implementation and test
-- [x] Now used optimum option: idpp + DyNEB + IT-NEB + CI-NEB method
+- [x] Now used optimum option: idpp-guess + IT-NEB + CI-NEB parallel method
 - [x] Make bottom atom fixed when read from `running*.log` of ABACUS
 - [x] Give an initial guess print-out of NEB images
 - [x] Decoupling to init-guess -> NEB calculation -> result post-process

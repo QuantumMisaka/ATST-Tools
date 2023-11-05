@@ -15,12 +15,13 @@
 
 # n_image selection should consider the computer resource
 
+# in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
 module load abacus/3.4.1-dev-icx
 
 # variable
-INIT="INIT/OUT.ABACUS/running*.log"   # running_scf/relax.log
+INIT="INIT/OUT.ABACUS/running*.log"   # running_relax/scf.log
 FINAL="FINAL/OUT.ABACUS/running*.log"
 #NMAX=8 # image number in intermediate, each process do one image calculation
 NMAX=$SLURM_NTASKS

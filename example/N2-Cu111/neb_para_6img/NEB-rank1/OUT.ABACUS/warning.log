@@ -1,0 +1,78 @@
+ In SCAN_BEGIN, can't find: LATTICE_PARAMETERS block.
+ AUTO_SET NBANDS to 0
+ AUTO_SET NBANDS to 736
+      Processor           Atom
+              1             44
+              2             43
+              3             45
+              4             46
+              5             45
+              6             45
+              7             44
+              8             45
+              9             43
+             10             42
+             11             44
+             12             45
+             13             42
+             14             42
+             15             43
+             16             42
+                            startmag_type = 2
+                       charge from rho_at = 18.9734
+                         charge should be = 19
+                            startmag_type = 2
+                       charge from rho_at = 4.99741
+                         charge should be = 5
+ Warning: negative or imaginary starting charge :  neg = -0.00132771 ima = 4.23289e-10 SPIN = 0
+ Warning: negative or imaginary starting charge :  neg = -0.00132771 ima = 4.23289e-10 SPIN = 1
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 613
+
+ SETUP ATOMIC RHO FOR SPIN 2
+                 Electron number from rho = 613
+           total electron number from rho = 1226
+                                should be = 1226
+                 charge before normalized = 1226.00000000001
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000260985
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000268741
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000264724
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000265671
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000261295
+                  charge after normalized = 1225.99999999999
+                 charge before normalized = 1226.00000262003
+                  charge after normalized = 1225.99999999999
+                 charge before normalized = 1226.00000264012
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000263178
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000263355
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000263243
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000263385
+                  charge after normalized = 1225.99999999999
+                 charge before normalized = 1226.0000026335
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000263234
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.0000026319
+                  charge after normalized = 1225.99999999999
+                 charge before normalized = 1226.00000263043
+                  charge after normalized = 1225.99999999999
+                 charge before normalized = 1226.00000263022
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000262951
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000262959
+                  charge after normalized = 1226
+                 charge before normalized = 1226.00000262956
+                  charge after normalized = 1226.00000000001
+                 charge before normalized = 1226.00000262945
+                  charge after normalized = 1226
