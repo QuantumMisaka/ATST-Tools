@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/lustre/home/2201110432/WORK/ASE-NEB/Au-H2_dyneb/neb_make.py", line 122, in <module>
+    init_Atoms = set_Atoms(initial, format="abacus-out", 
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/home/2201110432/WORK/ASE-NEB/Au-H2_dyneb/neb_make.py", line 22, in set_Atoms
+    atoms = read(infile, format=format)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/home/2201110432/apps/miniconda3/envs/gpaw-intel/lib/python3.11/site-packages/ase/io/formats.py", line 801, in read
+    return next(_iread(filename, slice(index, None), format, io,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/home/2201110432/apps/miniconda3/envs/gpaw-intel/lib/python3.11/site-packages/ase/parallel.py", line 285, in new_generator
+    for result in generator(*args, **kwargs):
+  File "/lustre/home/2201110432/apps/miniconda3/envs/gpaw-intel/lib/python3.11/site-packages/ase/io/formats.py", line 858, in _iread
+    fd = open_with_compression(filename, mode)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/home/2201110432/apps/miniconda3/envs/gpaw-intel/lib/python3.11/site-packages/ase/io/formats.py", line 597, in open_with_compression
+    return open(filename, mode)
+           ^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'INIT/OUT.ABACUS/running*.log'
