@@ -1,0 +1,25 @@
+Notice: AutoNEB method is set
+You manually set n_simul = 3, n_max = 8
+----- Running AutoNEB -----
+----- improvedtangent method is being used -----
+The NEB initially has 3 images  (including the end-points)
+Now adding images for initial run
+Max length between images is at  0
+Now adding images for initial run
+Max length between images is at  2
+Start of evaluation of the initial images
+Now starting iteration 1 on  [0, 1, 2, 3, 4]
+Finished initialisation phase.
+****Now adding another image until n_max is reached (5/8)****
+Adding image between 0 and 1. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 2 on  [0, 1, 2, 3, 4]
+****Now adding another image until n_max is reached (6/8)****
+Adding image between 4 and 5. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 3 on  [2, 3, 4, 5, 6]
+****Now adding another image until n_max is reached (7/8)****
+Adding image between 3 and 4. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 4 on  [1, 2, 3, 4, 5]
+n_max images has been reached
+****Now doing the CI-NEB calculation****
+Now starting iteration 5 on  [1, 2, 3, 4, 5]
+----- AutoNEB calculation finished -----

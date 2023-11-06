@@ -20,8 +20,9 @@ algorism = 'eb' # default
 init_chain = "init_neb_chain.traj"
 climb = True
 fmax = 0.05  # eV / Ang
-n_max = 12 # only for autoneb, max number of inter-image
 n_simul = world.size # only for autoneb, number of simultaneous calculation
+n_max = 12 # only for autoneb, max number of all image, 
+# which will not be reached if the convergence is reached before that.
 
 # setting for calculator
 abacus = "abacus"
@@ -90,7 +91,9 @@ class AbacusAutoNEB:
         
         Default: 'improvedtangent'
         
-        neb_type (str): NEB method.  Choose from 'neb', 'dyneb'. and 'autoneb' should use AbacusAutoNEB class
+        prefix (str): prefix for AutoNEB output files, default 'autoneb'
+        n_simul (int): number of simultaneous calculation, default use world.size, read from ase.parallel
+        n_max (int): max number of all image in NEB band, default 10. The max number will not be reached if the convergence is reached before that.
         directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name
         mpi (int): number of MPI for abacus calculator
         omp (int): number of OpenMP for abacus calculator
