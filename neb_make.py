@@ -51,7 +51,7 @@ def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
             init_magmom[ele_ind] = mag_pair[1]
         atoms.set_initial_magnetic_moments(init_magmom)
     else:
-        print("---- Warning: elementd for initial magmom height provided, no magmom set ----")
+        print("---- Warning: no element for initial magmom height provided, no magmom set ----")
 
 
 def nebmake(initial='', final='', n_max=8, interpolate='idpp',  
