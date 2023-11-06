@@ -11,8 +11,7 @@ from ase.constraints import FixAtoms
 from pathlib import Path
 
 
-def set_Atoms(infile, format=None, fix_height=0.0, fix_dir=1, 
-              mag_ele=[], mag_num=[]):
+def set_Atoms(infile, format=None, ):
     """Set Atoms Object by read from file
     
     Args:
@@ -20,14 +19,29 @@ def set_Atoms(infile, format=None, fix_height=0.0, fix_dir=1,
         format (None or string) infile format, None for auto-detected
     """
     atoms = read(infile, format=format)
+    return atoms
+
+def set_fix_for_Atoms(atoms, fix_height=0.0, fix_dir=1,):
     # maybe we should set constaints independently in here
     if fix_height:
         if fix_dir not in [0, 1, 2]:
             raise ValueError("fix_dir should be 0, 1 or 2 for x, y or z")
-        mask = atoms.get_scaled_positions()[:, fix_dir] < fix_height
+        mask = atoms.get_scaled_positions()[:, fix_dir] <= fix_height
         fix = FixAtoms(mask=mask)
         atoms.set_constraint(fix)
-    # maybe we should set init magmom independently in here
+    else:
+        print("---- Warning: No fix height provided, no constraint set ----")
+
+
+def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
+    """Set Atoms Object magmom by element
+    
+    Args:
+        atoms: (atoms) Atoms object
+        mag_ele (list): element list
+        mag_num (list): magmom list
+    """
+    # init magmom can only be set to intermediate images
     if mag_ele:
         init_magmom = atoms.get_initial_magnetic_moments()
         if len(mag_ele) != len(mag_num):
@@ -36,11 +50,13 @@ def set_Atoms(infile, format=None, fix_height=0.0, fix_dir=1,
             ele_ind = [atom.index for atom in atoms if atom.symbol == mag_pair[0]]
             init_magmom[ele_ind] = mag_pair[1]
         atoms.set_initial_magnetic_moments(init_magmom)
-    return atoms
+    else:
+        print("---- Warning: elementd for initial magmom height provided, no magmom set ----")
 
 
 def nebmake(initial='', final='', n_max=8, interpolate='idpp',  
-                infile="input_guess_chain.traj", outfile='init_neb_chain.traj', ):
+                infile="input_guess_chain.traj", outfile='init_neb_chain.traj', 
+                fix_height=0.0, fix_dir=1, mag_ele=[], mag_num=[]):
     """Make NEB Trajectory by ASE method, and print-out traj file, namely:
     1. images defining path from initial to final state
     2. neb object including the images and the implemented NEB method
@@ -71,6 +87,8 @@ def nebmake(initial='', final='', n_max=8, interpolate='idpp',
         elif nmax > 0 and type(nmax) == int:
             for i in range(n_max):
                 image = initial.copy()
+                set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
+                set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
                 images.append(image)
             images.append(final)
             # use a simple NEB object to create traj file
@@ -127,11 +145,10 @@ Use existing guess:
             mag_pair = sys.argv[mag_ind+1].split(",")
             mag_ele = [ele.split(":")[0] for ele in mag_pair]
             mag_num = [float(num.split(":")[1]) for num in mag_pair]
-        init_Atoms = set_Atoms(initial, format="abacus-out", 
-                            fix_height=height, fix_dir=direction, mag_ele=mag_ele, mag_num=mag_num)
-        final_Atoms = set_Atoms(final, format="abacus-out", 
-                            fix_height=height, fix_dir=direction, mag_ele=mag_ele, mag_num=mag_num)
-        nebmake(init_Atoms, final_Atoms, nmax)
+        init_Atoms = set_Atoms(initial, format="abacus-out",)
+        final_Atoms = set_Atoms(final, format="abacus-out", )
+        nebmake(init_Atoms, final_Atoms, nmax, interpolate='idpp', 
+                fix_height=height, fix_dir=direction, mag_ele=mag_ele, mag_num=mag_num)
     else:
         print(msg)
 

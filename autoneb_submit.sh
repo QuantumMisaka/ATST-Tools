@@ -34,7 +34,7 @@ echo "===== AutoNEB Job Starting ====="
 
 # prepare neb image chain
 echo " ===== Make Initial NEB Guess ====="
-python neb_make.py $INIT $FINAL 0 # --fix 0.2:1 --mag Fe:1.7,C:-0.3 
+python neb_make.py $INIT $FINAL $NSIMUL # --fix 0.2:1 --mag Fe:1.7,C:-0.3 
 
 # neb_make Usage: 
 # Default: 
