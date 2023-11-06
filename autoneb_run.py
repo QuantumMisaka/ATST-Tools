@@ -12,7 +12,7 @@ from ase.parallel import world, parprint, paropen
 
 # setting for NEB
 mpi = 16
-omp = 2
+omp = 4
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "AutoNEBrun"
 algorism = 'eb' # default
@@ -21,7 +21,7 @@ init_chain = "init_neb_chain.traj"
 climb = True
 fmax = 0.05  # eV / Ang
 n_simul = world.size # only for autoneb, number of simultaneous calculation
-n_max = 12 # only for autoneb, max number of all image, 
+n_max = 14 # only for autoneb, max number of all image, 
 # which will not be reached if the convergence is reached before that.
 
 # setting for calculator
@@ -65,11 +65,12 @@ parameters = {
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 0,
+    'out_mul': 0,
     'out_bandgap': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.0
+    'efield_pos_max': 0.7
 }
 
 
@@ -77,7 +78,7 @@ class AbacusAutoNEB:
     """Customize AutoNEB calculation by using ABACUS"""
 
     def __init__(self, init_chain, parameters, abacus='abacus',  
-                 prefix="autoneb", n_simul=1, n_max=10, algorism="improvedtangent", 
+                 prefix="run_autoneb", n_simul=1, n_max=10, algorism="improvedtangent", 
                  directory='NEB', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
 

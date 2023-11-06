@@ -34,7 +34,7 @@ def set_Atoms(infile, format=None, fix_height=0.0, fix_dir=1,
             raise SyntaxWarning("mag_ele and mag_num have different length")
         for mag_pair in zip(mag_ele, mag_num):
             ele_ind = [atom.index for atom in atoms if atom.symbol == mag_pair[0]]
-            init_magmom[ele_ind] = mag_num
+            init_magmom[ele_ind] = mag_pair[1]
         atoms.set_initial_magnetic_moments(init_magmom)
     return atoms
 

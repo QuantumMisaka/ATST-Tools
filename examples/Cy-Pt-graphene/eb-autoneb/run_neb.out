@@ -1,0 +1,48 @@
+Loading mkl version 2023.0.0
+Loading tbb version 2021.8.0
+Loading compiler-rt version 2023.0.0
+Loading mpi version 2021.8.0
+Loading compiler version 2023.0.0
+Loading oclfpga version 2023.0.0
+  Load "debugger" to debug DPC++ applications with the gdb-oneapi debugger.
+  Load "dpl" for additional DPC++ APIs: https://github.com/oneapi-src/oneDPL
+
+Loading abacus/3.4.2-icx
+  Loading requirement: tbb/latest compiler-rt/latest mkl/2023.0.0 mpi/latest
+    oclfpga/latest compiler/latest
+N_IMG is 4
+===== Running NEB =====
+Notice: AutoNEB method is set
+You manually set n_simul = 4, n_max = 12
+----- Running AutoNEB -----
+----- eb method is being used -----
+The NEB initially has 2 images  (including the end-points)
+Now adding images for initial run
+Max length between images is at  0
+Start of evaluation of the initial images
+Now starting iteration 1 on  [0, 1, 2, 3, 4, 5]
+Finished initialisation phase.
+****Now adding another image until n_max is reached (6/12)****
+Adding image between 2 and 3. New image point is selected on the basis of the biggest energy difference between neighbours!
+Now starting iteration 2 on  [1, 2, 3, 4, 5, 6]
+****Now adding another image until n_max is reached (7/12)****
+Adding image between 0 and 1. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 3 on  [0, 1, 2, 3, 4, 5]
+****Now adding another image until n_max is reached (8/12)****
+Adding image between 6 and 7. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 4 on  [3, 4, 5, 6, 7, 8]
+****Now adding another image until n_max is reached (9/12)****
+Adding image between 5 and 6. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 5 on  [2, 3, 4, 5, 6, 7]
+****Now adding another image until n_max is reached (10/12)****
+Adding image between 4 and 5. New image point is selected on the basis of the biggest energy difference between neighbours!
+Now starting iteration 6 on  [3, 4, 5, 6, 7, 8]
+****Now adding another image until n_max is reached (11/12)****
+Adding image between 4 and 5. New image point is selected on the basis of the biggest energy difference between neighbours!
+Now starting iteration 7 on  [3, 4, 5, 6, 7, 8]
+n_max images has been reached
+****Now doing the CI-NEB calculation****
+Now starting iteration 8 on  [3, 4, 5, 6, 7, 8]
+----- AutoNEB calculation finished -----
+===== NEB Process Done ! =====
+===== Done ! =====

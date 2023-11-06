@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=4
-#SBATCH --ntasks-per-node=2
-#SBATCH --cpus-per-task=32
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=64
 #SBATCH -J AutoNEB-ABACUS
-#SBATCH -o run_neb.out
-#SBATCH -e run_neb.err
+#SBATCH -o run_autoneb.out
+#SBATCH -e run_autoneb.err
 #SBATCH -p C064M0256G
 
 # JamesMisaka in 2023-11-02
@@ -21,7 +21,7 @@ module load abacus/3.4.2-icx
 # variable
 INIT="INIT/OUT.ABACUS/running*.log"   # running_relax/scf.log
 FINAL="FINAL/OUT.ABACUS/running*.log"
-#NSIMUL=8 # the parallelled-run img number
+#NSIMUL=4 # the parallelled-run img number
 NSIMUL=$SLURM_NTASKS
 echo "NSIMUL is ${NSIMUL}" 
 
@@ -52,13 +52,13 @@ echo "===== Running AutoNEB ====="
 mpirun -np $NSIMUL gpaw python autoneb_run.py #2>run_neb.err | tee run_neb.out
 # if trans-nodes
 # srun hostname -s | sort -n > slurm.hosts
-# mpirun -np $NSIMUL -machinefile slurm.hosts gpaw python neb_run.py
+# mpirun -np $NSIMUL -machinefile slurm.hosts gpaw python autoneb_run.py
 
 # post_precessing
 echo "===== AutoNEB Process Done ! ====="
 echo "===== Running Post-Processing ====="
 
-python neb_post.py --autoneb autoneb???.traj
+python neb_post.py --autoneb run_autoneb???.traj
 
 echo "===== Done ! ====="
 

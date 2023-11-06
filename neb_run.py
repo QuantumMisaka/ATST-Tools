@@ -61,6 +61,7 @@ parameters = {
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 0,
+    'out_mul': 0,
     'out_bandgap': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
