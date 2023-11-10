@@ -15,8 +15,8 @@ mpi = 16
 omp = 4
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "AutoNEBrun"
-algorism = 'eb' # default
-# algorism = "improvedtangent" # IT-NEB is recommended
+algorism = 'eb' # default for AutoNEB
+# algorism = "improvedtangent" # IT-NEB
 init_chain = "init_neb_chain.traj"
 climb = True
 fmax = 0.05  # eV / Ang
@@ -47,8 +47,7 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'ks_solver': 'genelpa',
-    'symmetry': 1,
-    'symmetry_autoclose': 1,
+    'symmetry': 0,
     'vdw_method': 'd3_bj',
     'smearing_method': 'gaussian',
     'smearing_sigma': 0.001,
