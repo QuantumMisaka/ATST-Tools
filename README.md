@@ -1,13 +1,13 @@
 # ase-neb-abacus
-NEB or CI-NEB workflow by ASE and ABACUS using ASE-ABACUS interfaces,
+NEB or CI-NEB workflow by ASE and ABACUS using ASE-ABACUS interface,
 Which use enhanced NEB method in ASE, like Dynamic NEB `DyNEB`, improved-tangent method `IT-NEB`, and also `AutoNEB` in ASE.  
 
-Version v1.0.1
+Version v1.0.2
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
 - [ABACUS](https://abacus.deepmodeling.com/en/latest/)
-- [ASE-ABACUS interfaces](https://gitlab.com/1041176461/ase-abacus)
+- [ASE-ABACUS interface](https://gitlab.com/1041176461/ase-abacus)
 - [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel
 
 Notice: GPAW and ABACUS should be dependent on same MPI and libraries environments. 
