@@ -16,7 +16,7 @@ class NEBPost():
             self.neb_chain = self.all_image.copy()
         elif (n_max > 0) and (type(n_max) == int):
             self.n_images = n_max + 2
-            self.neb_chain = images[self.n_images:]
+            self.neb_chain = images[ - self.n_images:]
         else:
             raise ValueError("n_max must be a non-negative integer")
 
