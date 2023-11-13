@@ -25,7 +25,8 @@ class NEBPost():
         for i, atoms in enumerate(self.neb_chain):
             ene = atoms.get_potential_energy()
             print(f"num: {i}; Energy: {ene} (eV)")
-        barrier = NEBTools(self.neb_chain).get_barrier()
+        barrier = NEBTools(self.neb_chain).get_barrier(fit=True)
+        # set fit to True/False is not determined yet
         print(f"Reaction Barrier and Energy Difference: {barrier} (eV)")
         return barrier
 
