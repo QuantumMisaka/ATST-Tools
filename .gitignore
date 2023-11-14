@@ -1,3 +1,4 @@
 
 examples/*/*/OUT.*/
 examples/*/*/*/OUT.*/
+.DS_Store
