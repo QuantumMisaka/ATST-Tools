@@ -11,18 +11,18 @@ from ase.parallel import world, parprint, paropen
 #from pathlib import Path
 
 # setting for NEB
-mpi = 16
-omp = 2
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "NEBrun"
+fmax = 0.05  # eV / Ang
 algorism = "improvedtangent" # IT-NEB is recommended
 neb_type = "neb"  # neb, dyneb, but not autoneb
 init_chain = "init_neb_chain.traj"
 climb = True
-fmax = 0.05  # eV / Ang
 parallel = True
 
 # setting for calculator
+mpi = 16
+omp = 2
 abacus = "abacus"
 lib_dir = "/lustre/home/2201110432/example/abacus"
 #lib_dir = ""

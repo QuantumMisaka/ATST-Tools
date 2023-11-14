@@ -67,3 +67,6 @@ echo "===== Done at $(date)! ====="
 
 # Job State
 echo "End at $(date)" >> JobRun.state
+
+# if plus dimer method
+# sbatch dimer_submit.sh
