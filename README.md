@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - AutoNEB
 - Dimer
 
-Version v1.1
+Version v1.1.0
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
