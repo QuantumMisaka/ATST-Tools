@@ -16,8 +16,8 @@ source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
 module load abacus/3.4.2-icx
 
-# if one just done neb calculation
-python neb2dimer.py neb.traj # or neb_latest.traj
+# if one just done neb calculation and done neb_post.py
+python neb2dimer.py neb_latest.traj # or neb.traj
 
 # Job state 
 echo $SLURM_JOB_ID > JobRun.state
