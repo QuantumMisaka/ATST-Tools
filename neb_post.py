@@ -12,8 +12,9 @@ class NEBPost():
     def __init__(self, images, n_max: int = 0):
         self.all_image = images
         if n_max == 0:
-            print("=== n_max set to 0, using all images ===")
-            self.neb_chain = self.all_image.copy()
+            print("=== n_max set to 0, automatically detect the images of chain by NEBTools ===")
+            self.n_images = NEBTools(self.all_image)._guess_nimages()
+            self.neb_chain = images[ - self.n_images:]
         elif (n_max > 0) and (type(n_max) == int):
             self.n_images = n_max + 2
             self.neb_chain = images[ - self.n_images:]
@@ -50,26 +51,35 @@ if __name__ == "__main__":
     msg = '''
 Usage: 
     For Traditional NEB process result: 
-        python neb_post.py [traj_file] [n_images]
+        python neb_post.py [traj_file] ([n_images])
     For AutoNEB result:
-        python neb_post.py --autoneb ([autoneb_traj_files])
+        python neb_post.py --autoneb \{[autoneb_traj_files]\}
     '''
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(msg)
-    elif sys.argv[1] == "--autoneb":
-        traj_files = sys.argv[2:]
-        result_atoms = [read(traj, format="traj") for traj in traj_files]
-        result = NEBPost(result_atoms, 0)
-        result.get_barrier()
-        result.plot_all_bands()
-        result.write_latest_bands()
-    else:
+    elif len(sys.argv) == 2:
         traj_file = sys.argv[1]
-        n_max = int(sys.argv[2])
         all_images = read(traj_file, index=":", format="traj")
-        result = NEBPost(all_images, n_max)
+        result = NEBPost(all_images, 0)
         result.get_barrier()
         result.plot_all_bands()
         result.plot_neb_bands()
         result.write_latest_bands()
+    else:
+        if sys.argv[1] == "--autoneb":
+            traj_files = sys.argv[2:]
+            result_atoms = [read(traj, format="traj") for traj in traj_files]
+            result = NEBPost(result_atoms, 0)
+            result.get_barrier()
+            result.plot_all_bands() # in autoneb we only have one chain
+            result.write_latest_bands()
+        else:
+            traj_file = sys.argv[1]
+            n_max = int(sys.argv[2])
+            all_images = read(traj_file, index=":", format="traj")
+            result = NEBPost(all_images, n_max)
+            result.get_barrier()
+            result.plot_all_bands()
+            result.plot_neb_bands()
+            result.write_latest_bands()
     
