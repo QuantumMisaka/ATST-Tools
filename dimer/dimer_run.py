@@ -112,12 +112,18 @@ class AbacusDimer:
         """set mask by constraint of Atoms"""
         print("=== Set mask by constraint read from init Atoms ===")
         dimer_init = self.init_Atoms
-        const_list = dimer_init._get_constraints()[0]
-        const_list = const_list.todict()['kwargs']['indices']
         d_mask = [True] * len(dimer_init)
-        for ind in const_list:
-            d_mask[ind] = False
-        return d_mask
+        const = dimer_init._get_constraints()
+        # const will be empty list if no constraint
+        if const:
+            const_object = dimer_init._get_constraints()[0]
+            const_object = const_object.todict()['kwargs']['indices']
+            for ind in const_object:
+                d_mask[ind] = False
+            return d_mask
+        else:
+            print("--- Notice: No constraint found in init Atoms, there will be no mask in dimer calculation ---")
+            return d_mask
         
     def run(self, fmax=0.05):
         """run dimer calculation workflow"""
