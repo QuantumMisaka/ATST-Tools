@@ -33,7 +33,7 @@ echo $SLURM_JOB_ID > JobRun.state
 echo "Start at $(date)" >> JobRun.state
 
 # Job Starting
-echo "===== AutoNEB Job Starting at $(date) =====" 
+echo "===== NEB Job Starting at $(date) =====" 
 
 # prepare neb image chain
 echo " ===== Make Initial NEB Guess ====="
