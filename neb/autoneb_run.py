@@ -19,10 +19,9 @@ algorism = 'eb' # default for AutoNEB
 # algorism = "improvedtangent" # IT-NEB
 init_chain = "init_neb_chain.traj"
 climb = True
-fmax = 0.05  # eV / Ang
+fmax = [0.40, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
-n_max = 14 # only for autoneb, max number of all image, 
-# which will not be reached if the convergence is reached before that.
+n_max = 10 # only for autoneb, max number of all image, which should be reached
 
 # setting for calculator
 abacus = "abacus"
