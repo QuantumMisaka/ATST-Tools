@@ -132,7 +132,7 @@ class AbacusDimer:
         dimer_traj = Trajectory(self.traj_file, 'w', dimer_init)
         if self.init_eigenmode_method == "displacement":
             # d_mask = self.set_d_mask_by_displacement() # not the best
-            d_mask = self.set_d_mask_by_constraint()
+            d_mask = self.set_d_mask_by_constraint() # not need if displacement is right
             d_control = DimerControl(initial_eigenmode_method=self.init_eigenmode_method, 
                                     displacement_method="vector", 
                                     mask=d_mask)

@@ -3,8 +3,9 @@ import sys
 from ase.io import Trajectory, read, write
 from ase.mep.neb import NEBTools
 
-def neb2dimer(neb_traj:list, n_max:int=0, out_traj='dimer_init.traj', out_vec='displacement_vector.npy', 
-                step_before_TS:int=1, step_after_TS:int=1):
+def neb2dimer(neb_traj:list, n_max:int=0, out_traj='dimer_init.traj', 
+              out_vec='displacement_vector.npy', 
+                step_before_TS:int=0, step_after_TS:int=1):
     '''
     Transform neb chain to dimer init
     '''
