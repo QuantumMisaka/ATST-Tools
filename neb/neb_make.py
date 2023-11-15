@@ -13,16 +13,14 @@ from pathlib import Path
 
 def set_fix_for_Atoms(atoms, fix_height=0.0, fix_dir=1,):
     # maybe we should set constaints independently in here
-    if fix_height:
-        if fix_dir not in [0, 1, 2]:
-            raise ValueError("fix_dir should be 0, 1 or 2 for x, y or z")
-        direction = {0: "x", 1: "y", 2: "z"}
-        mask = atoms.get_scaled_positions()[:, fix_dir] <= fix_height
-        fix = FixAtoms(mask=mask)
-        print(f"---- Fix Atoms below {fix_height} in direction {direction[fix_dir]} ----")
-        atoms.set_constraint(fix)
-    else:
-        print("---- Warning: no fix height provided, no constraint set in ASE ----")
+    if fix_dir not in [0, 1, 2]:
+        raise ValueError("fix_dir should be 0, 1 or 2 for x, y or z")
+    direction = {0: "x", 1: "y", 2: "z"}
+    mask = atoms.get_scaled_positions()[:, fix_dir] <= fix_height
+    fix = FixAtoms(mask=mask)
+    print(f"---- Fix Atoms below {fix_height} in direction {direction[fix_dir]} ----")
+    atoms.set_constraint(fix)
+
 
 
 def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
@@ -34,17 +32,14 @@ def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
         mag_num (list): magmom list
     """
     # init magmom can only be set to intermediate images
-    if mag_ele:
-        init_magmom = atoms.get_initial_magnetic_moments()
-        if len(mag_ele) != len(mag_num):
-            raise SyntaxWarning("mag_ele and mag_num have different length")
-        for mag_pair in zip(mag_ele, mag_num):
-            ele_ind = [atom.index for atom in atoms if atom.symbol == mag_pair[0]]
-            init_magmom[ele_ind] = mag_pair[1]
-        atoms.set_initial_magnetic_moments(init_magmom)
-        print(f"---- Set initial magmom for {mag_ele} to {mag_num} ----")
-    else:
-        print("---- Warning: no element for initial magmom height provided, no magmom set in ASE ----")
+    init_magmom = atoms.get_initial_magnetic_moments()
+    if len(mag_ele) != len(mag_num):
+        raise SyntaxWarning("mag_ele and mag_num have different length")
+    for mag_pair in zip(mag_ele, mag_num):
+        ele_ind = [atom.index for atom in atoms if atom.symbol == mag_pair[0]]
+        init_magmom[ele_ind] = mag_pair[1]
+    atoms.set_initial_magnetic_moments(init_magmom)
+    print(f"---- Set initial magmom for {mag_ele} to {mag_num} ----")
 
 
 def nebmake(initial, final, n_max, interpolate='idpp',  
@@ -68,9 +63,18 @@ def nebmake(initial, final, n_max, interpolate='idpp',
         print(f"----- Input Guess {infile} detected ! -----")
         print(f"----- Guess Trajectory just from {infile}  -----")
         images = read(f"{infile}@-{n_max + 2}:")
-        for image in images:
-            set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
-            set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
+        # set constraint by atom height along some direction
+        if fix_height:
+            for image in images:
+                set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
+        else:
+            print("---- Warning: no fix height provided, no constraint set in ASE ----")
+        # set init-magmom for atom by element
+        if mag_ele:
+            for image in images:
+                set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
+        else:
+            print("---- Warning: no element for initial magmom height provided, no magmom set in ASE ----")
         interpolate = None
         write(f'{outfile}', images, format='traj')
         # terminate nebmake for initial guess provided
