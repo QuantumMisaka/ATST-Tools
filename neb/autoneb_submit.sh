@@ -3,8 +3,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=64
 #SBATCH -J AutoNEB-ABACUS
-#SBATCH -o run_autoneb.out
-#SBATCH -e run_autoneb.err
+#SBATCH -o running_autoneb.out
+#SBATCH -e running_autoneb.err
 #SBATCH -p C064M0256G
 
 # JamesMisaka in 2023-11-02

@@ -3,8 +3,8 @@
 #SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=32
 #SBATCH -J NEB-ABACUS
-#SBATCH -o run_neb.out
-#SBATCH -e run_neb.err
+#SBATCH -o running_neb.out
+#SBATCH -e running_neb.err
 #SBATCH -p C064M0256G
 
 # JamesMisaka in 2023-11-02

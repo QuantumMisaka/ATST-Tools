@@ -64,13 +64,13 @@ def nebmake(initial, final, n_max, interpolate='idpp',
         print(f"----- Guess Trajectory just from {infile}  -----")
         images = read(f"{infile}@-{n_max + 2}:")
         # set constraint by atom height along some direction
-        if fix_height:
+        if bool(fix_height):
             for image in images:
                 set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
         else:
             print("---- Warning: no fix height provided, no constraint set in ASE ----")
         # set init-magmom for atom by element
-        if mag_ele:
+        if bool(mag_ele):
             for image in images:
                 set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
         else:
