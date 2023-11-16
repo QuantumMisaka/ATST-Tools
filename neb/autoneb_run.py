@@ -30,16 +30,14 @@ lib_dir = ""
 pseudo_dir = f"{lib_dir}/"
 basis_dir = f"{lib_dir}/"
 pp = {
-      'C':'C_ONCV_PBE-1.0.upf',
-      'H':'H_ONCV_PBE-1.0.upf',
-      'Pt':'Pt_ONCV_PBE-1.0.upf',
+        'H':'H_ONCV_PBE-1.0.upf',
+        'Au':'Au_ONCV_PBE-1.0.upf',
       }
 basis = {
-         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
-         'H': 'H_gga_6au_100Ry_2s1p.orb',
-         'Pt': 'Pt_gga_7au_100Ry_4s2p2d1f.orb'
-         ,}
-kpts = [2, 1, 2]
+        'H':'H_gga_6au_100Ry_2s1p.orb',
+        'Au':'Au_gga_7au_100Ry_4s2p2d1f.orb',
+        }
+kpts = [3, 1, 3]
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
