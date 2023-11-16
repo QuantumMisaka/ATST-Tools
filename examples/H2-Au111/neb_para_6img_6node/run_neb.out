@@ -1,145 +1,0 @@
-Loading mkl version 2023.0.0
-Loading tbb version 2021.8.0
-Loading compiler-rt version 2023.0.0
-Loading mpi version 2021.8.0
-Loading compiler version 2023.0.0
-Loading oclfpga version 2023.0.0
-  Load "debugger" to debug DPC++ applications with the gdb-oneapi debugger.
-  Load "dpl" for additional DPC++ APIs: https://github.com/oneapi-src/oneDPL
-
-Loading abacus/3.4.1-dev-icx
-  Loading requirement: tbb/latest compiler-rt/latest mkl/latest mpi/latest
-    oclfpga/latest compiler/latest
-NMAX is 6
- ===== Make Initial NEB Guess =====
---- Successfully make guessed image chain by idpp method ! ---
-===== Running NEB =====
------ Running ASE-NEB -----
------ improvedtangent method is being used -----
------ Parallel calculation is being used -----
-      Step     Time          Energy          fmax
-FIRE:    0 12:37:59  -239253.360790         4.208734
-FIRE:    1 12:42:40  -239253.429770         3.849833
-FIRE:    2 12:47:22  -239253.573330         3.649455
-FIRE:    3 12:51:58  -239253.769550         3.160982
-FIRE:    4 12:56:57  -239254.005130         6.188047
-FIRE:    5 13:01:38  -239254.272220         3.973892
-FIRE:    6 13:06:21  -239254.534650         7.026348
-FIRE:    7 13:11:07  -239254.538070         5.831710
-FIRE:    8 13:15:50  -239254.545400         3.780078
-FIRE:    9 13:20:26  -239254.557990         2.091937
-FIRE:   10 13:25:11  -239254.578060         1.940355
-FIRE:   11 13:29:56  -239254.607660         1.757125
-FIRE:   12 13:34:39  -239254.646320         1.869724
-FIRE:   13 13:39:07  -239254.691350         2.310178
-FIRE:   14 13:43:41  -239254.744100         2.284214
-FIRE:   15 13:48:16  -239254.803030         1.757761
-FIRE:   16 13:53:02  -239254.870650         1.094625
-FIRE:   17 13:57:44  -239254.945220         1.008980
-FIRE:   18 14:02:28  -239255.009370         3.200799
-FIRE:   19 14:07:11  -239255.009990         2.699738
-FIRE:   20 14:12:00  -239255.011220         1.853537
-FIRE:   21 14:16:36  -239255.013070         0.884039
-FIRE:   22 14:21:09  -239255.015640         0.487149
-FIRE:   23 14:25:44  -239255.019010         0.671698
-FIRE:   24 14:30:28  -239255.019130         0.659013
-FIRE:   25 14:35:01  -239255.019370         0.634005
-FIRE:   26 14:39:35  -239255.019750         0.596991
-FIRE:   27 14:44:18  -239255.020250         0.547861
-FIRE:   28 14:48:57  -239255.020860         0.487564
-FIRE:   29 14:53:35  -239255.021600         0.467878
-FIRE:   30 14:58:05  -239255.022460         0.465033
-FIRE:   31 15:02:56  -239255.023540         0.461332
-FIRE:   32 15:07:30  -239255.024910         0.456927
-FIRE:   33 15:12:17  -239255.026600         0.451289
-FIRE:   34 15:16:52  -239255.028690         0.444433
-FIRE:   35 15:21:30  -239255.031230         0.436037
-FIRE:   36 15:25:56  -239255.034250         0.426129
-FIRE:   37 15:30:28  -239255.037860         0.414518
-FIRE:   38 15:35:00  -239255.042120         0.401087
-FIRE:   39 15:39:44  -239255.047130         0.385775
-FIRE:   40 15:44:27  -239255.053070         0.368353
-FIRE:   41 15:49:04  -239255.059990         0.348988
-FIRE:   42 15:53:47  -239255.068020         0.327832
-FIRE:   43 15:58:29  -239255.077120         0.304402
-FIRE:   44 16:03:00  -239255.087370         0.277910
-FIRE:   45 16:07:40  -239255.098390         0.246393
-FIRE:   46 16:12:13  -239255.109480         0.210130
-FIRE:   47 16:16:50  -239255.119660         0.207900
-FIRE:   48 16:21:30  -239255.127990         0.243097
-FIRE:   49 16:26:03  -239255.133210         0.262817
-FIRE:   50 16:30:49  -239255.134960         0.289917
-FIRE:   51 16:35:20  -239255.133180         0.219005
-FIRE:   52 16:39:56  -239255.128750         0.183079
-FIRE:   53 16:44:46  -239255.124140         0.265210
-FIRE:   54 16:49:30  -239255.123320         0.248825
-FIRE:   55 16:54:09  -239255.130540         0.261393
-FIRE:   56 16:58:53  -239255.148400         0.345471
-FIRE:   57 17:03:29  -239255.175030         0.397925
-FIRE:   58 17:08:14  -239255.177020         0.391776
-FIRE:   59 17:12:43  -239255.180380         0.388831
-FIRE:   60 17:17:15  -239255.183870         0.386923
-FIRE:   61 17:21:49  -239255.185950         0.386907
-FIRE:   62 17:26:22  -239255.184800         0.388483
-FIRE:   63 17:30:58  -239255.178830         0.389863
-FIRE:   64 17:35:26  -239255.166610         0.388192
-FIRE:   65 17:39:57  -239255.145450         0.374543
-FIRE:   66 17:44:17  -239255.115270         0.334083
-FIRE:   67 17:48:45  -239255.086530         0.280962
-FIRE:   68 17:53:14  -239255.089990         0.394183
-FIRE:   69 17:57:47  -239255.093230         0.389913
-FIRE:   70 18:02:41  -239255.099350         0.386718
-FIRE:   71 18:07:15  -239255.107540         0.380774
-FIRE:   72 18:11:50  -239255.116740         0.371001
-FIRE:   73 18:16:24  -239255.125860         0.355701
-FIRE:   74 18:21:04  -239255.134180         0.333498
-FIRE:   75 18:25:44  -239255.140800         0.304779
-FIRE:   76 18:29:56  -239255.145730         0.266579
-FIRE:   77 18:34:27  -239255.148050         0.231863
-FIRE:   78 18:39:05  -239255.147210         0.163929
-FIRE:   79 18:43:30  -239255.143360         0.144253
-FIRE:   80 18:48:03  -239255.137740         0.275469
-FIRE:   81 18:52:37  -239255.137970         0.160933
-FIRE:   82 18:57:02  -239255.138410         0.102517
-FIRE:   83 19:01:38  -239255.139060         0.158440
-FIRE:   84 19:06:02  -239255.139860         0.206580
-FIRE:   85 19:10:31  -239255.140760         0.147445
-FIRE:   86 19:15:04  -239255.141740         0.087398
-FIRE:   87 19:19:38  -239255.142820         0.125680
-FIRE:   88 19:24:04  -239255.144040         0.159719
-FIRE:   89 19:28:28  -239255.145410         0.059035
-FIRE:   90 19:32:49  -239255.146870         0.123853
-FIRE:   91 19:37:20  -239255.148200         0.115819
-FIRE:   92 19:42:00  -239255.149140         0.092544
-FIRE:   93 19:46:27  -239255.149490         0.102065
-FIRE:   94 19:50:59  -239255.148830         0.134541
-FIRE:   95 19:55:41  -239255.147080         0.079360
-FIRE:   96 20:00:13  -239255.144430         0.158058
-FIRE:   97 20:04:50  -239255.142350         0.227319
-FIRE:   98 20:09:17  -239255.142630         0.090728
-FIRE:   99 20:13:50  -239255.143180         0.119801
-FIRE:  100 20:18:16  -239255.143960         0.203366
-FIRE:  101 20:22:59  -239255.144890         0.109787
-FIRE:  102 20:27:35  -239255.145930         0.074688
-FIRE:  103 20:32:00  -239255.147010         0.159222
-FIRE:  104 20:36:36  -239255.148010         0.089822
-FIRE:  105 20:40:59  -239255.148900         0.098092
-FIRE:  106 20:45:34  -239255.149520         0.130758
-FIRE:  107 20:49:56  -239255.149620         0.075568
-FIRE:  108 20:54:36  -239255.149100         0.108381
-FIRE:  109 20:59:06  -239255.147990         0.124092
-FIRE:  110 21:03:35  -239255.146640         0.049503
-===== NEB Process Done ! =====
-===== Running Post-Processing =====
-num: 0; Energy: -239256.26878 (eV)
-num: 1; Energy: -239256.22041 (eV)
-num: 2; Energy: -239255.90987 (eV)
-num: 3; Energy: -239255.14664 (eV)
-num: 4; Energy: -239255.48209 (eV)
-num: 5; Energy: -239255.69438 (eV)
-num: 6; Energy: -239255.85031 (eV)
-num: 7; Energy: -239255.88577 (eV)
-Number of images per band guessed to be 8.
-Processing band          0 /        111Processing band          1 /        111Processing band          2 /        111Processing band          3 /        111Processing band          4 /        111Processing band          5 /        111Processing band          6 /        111Processing band          7 /        111Processing band          8 /        111Processing band          9 /        111Processing band         10 /        111Processing band         11 /        111Processing band         12 /        111Processing band         13 /        111Processing band         14 /        111Processing band         15 /        111Processing band         16 /        111Processing band         17 /        111Processing band         18 /        111Processing band         19 /        111Processing band         20 /        111Processing band         21 /        111Processing band         22 /        111Processing band         23 /        111Processing band         24 /        111Processing band         25 /        111Processing band         26 /        111Processing band         27 /        111Processing band         28 /        111Processing band         29 /        111Processing band         30 /        111Processing band         31 /        111Processing band         32 /        111Processing band         33 /        111Processing band         34 /        111Processing band         35 /        111Processing band         36 /        111Processing band         37 /        111Processing band         38 /        111Processing band         39 /        111Processing band         40 /        111Processing band         41 /        111Processing band         42 /        111Processing band         43 /        111Processing band         44 /        111Processing band         45 /        111Processing band         46 /        111Processing band         47 /        111Processing band         48 /        111Processing band         49 /        111Processing band         50 /        111Processing band         51 /        111Processing band         52 /        111Processing band         53 /        111Processing band         54 /        111Processing band         55 /        111Processing band         56 /        111Processing band         57 /        111Processing band         58 /        111Processing band         59 /        111Processing band         60 /        111Processing band         61 /        111Processing band         62 /        111Processing band         63 /        111Processing band         64 /        111Processing band         65 /        111Processing band         66 /        111Processing band         67 /        111Processing band         68 /        111Processing band         69 /        111Processing band         70 /        111Processing band         71 /        111Processing band         72 /        111Processing band         73 /        111Processing band         74 /        111Processing band         75 /        111Processing band         76 /        111Processing band         77 /        111Processing band         78 /        111Processing band         79 /        111Processing band         80 /        111Processing band         81 /        111Processing band         82 /        111Processing band         83 /        111Processing band         84 /        111Processing band         85 /        111Processing band         86 /        111Processing band         87 /        111Processing band         88 /        111Processing band         89 /        111Processing band         90 /        111Processing band         91 /        111Processing band         92 /        111Processing band         93 /        111Processing band         94 /        111Processing band         95 /        111Processing band         96 /        111Processing band         97 /        111Processing band         98 /        111Processing band         99 /        111Processing band        100 /        111Processing band        101 /        111Processing band        102 /        111Processing band        103 /        111Processing band        104 /        111Processing band        105 /        111Processing band        106 /        111Processing band        107 /        111Processing band        108 /        111Processing band        109 /        111Processing band        110 /        111
-Processing band          0 /          1
-===== Done ! =====

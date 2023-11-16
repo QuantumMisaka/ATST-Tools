@@ -12,16 +12,16 @@ from ase.parallel import world, parprint, paropen
 
 # setting for NEB
 mpi = 16
-omp = 2
+omp = 4
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "AutoNEBrun"
-algorism = 'eb' # default
-# algorism = "improvedtangent" # IT-NEB is recommended
+#algorism = 'eb' # default for AutoNEB
+algorism = "improvedtangent" # IT-NEB
 init_chain = "init_neb_chain.traj"
 climb = True
-fmax = 0.05  # eV / Ang
-n_max = 12 # only for autoneb, max number of inter-image
+fmax = [0.20, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
+n_max = 10 # only for autoneb, max number of all image, which should be reached
 
 # setting for calculator
 abacus = "abacus"
@@ -30,13 +30,13 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 pp = {
-        'H':'H_ONCV_PBE-1.0.upf',
-        'Au':'Au_ONCV_PBE-1.0.upf',
+      'H':'H_ONCV_PBE-1.0.upf',
+      'Au':'Au_ONCV_PBE-1.0.upf',
       }
 basis = {
-        'H':'H_gga_6au_100Ry_2s1p.orb',
-        'Au':'Au_gga_7au_100Ry_4s2p2d1f.orb',
-        }
+         'H': 'H_gga_6au_100Ry_2s1p.orb',
+         'Au': 'Au_gga_7au_100Ry_4s2p2d1f.orb'
+         ,}
 kpts = [3, 1, 3]
 parameters = {
     'calculation': 'scf',
@@ -44,8 +44,7 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'ks_solver': 'genelpa',
-    'symmetry': 1,
-    'symmetry_autoclose': 1,
+    'symmetry': 0,
     'vdw_method': 'd3_bj',
     'smearing_method': 'gaussian',
     'smearing_sigma': 0.001,
@@ -62,6 +61,7 @@ parameters = {
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 0,
+    'out_mul': 0,
     'out_bandgap': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
@@ -74,7 +74,7 @@ class AbacusAutoNEB:
     """Customize AutoNEB calculation by using ABACUS"""
 
     def __init__(self, init_chain, parameters, abacus='abacus',  
-                 prefix="autoneb", n_simul=1, n_max=10, algorism="improvedtangent", 
+                 prefix="run_autoneb", n_simul=1, n_max=10, algorism="improvedtangent", 
                  directory='NEB', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
 
@@ -88,7 +88,9 @@ class AbacusAutoNEB:
         
         Default: 'improvedtangent'
         
-        neb_type (str): NEB method.  Choose from 'neb', 'dyneb'. and 'autoneb' should use AbacusAutoNEB class
+        prefix (str): prefix for AutoNEB output files, default 'autoneb'
+        n_simul (int): number of simultaneous calculation, default use world.size, read from ase.parallel
+        n_max (int): max number of all image in NEB band, default 10. The max number will not be reached if the convergence is reached before that.
         directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name
         mpi (int): number of MPI for abacus calculator
         omp (int): number of OpenMP for abacus calculator
