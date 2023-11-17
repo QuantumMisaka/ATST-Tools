@@ -71,6 +71,15 @@ The Dimer workflow is based on 2 main python scripts and 2 workflow submit scrip
 ### Method
 (Waiting for update)
 
+## Notice
+Some property should be get via specific way from trajectory files, and some will be lost in trajetory files, 
+- Stress property will not be stored in trajetory file
+- In NEB calculation, the Force property for fixed atoms and Stress property will NOT be stored in trajectroy file.
+- in Dimer calculation, the Energy, Forces and Stress property will NOT be stored in trajetory file.
+- in AutoNEB calculation, all property in processing trajectory will be stored in AutoNEB_iter directory, but in the result `run_autoneb???.traj`, the forces and stress information will be lost.
+
+
+
 ## Examples
 The example below need to be more concise, which have much more data in there
 - Li-diffu-Si: Li diffusion in Si, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, using ABACUS as SCF calculator and ASE as optimizer and NEB calculator.  Also, an dflow example is proposed.
