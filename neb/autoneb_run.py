@@ -15,13 +15,13 @@ mpi = 16
 omp = 4
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "AutoNEBrun"
-algorism = 'eb' # default for AutoNEB
-# algorism = "improvedtangent" # IT-NEB
+# algorism = 'eb' # default for AutoNEB
+algorism = "improvedtangent" # IT-NEB
 init_chain = "init_neb_chain.traj"
 climb = True
-fmax = [0.40, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
+fmax = [0.20, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
-n_max = 10 # only for autoneb, max number of all image, which should be reached
+n_images = 10 # only for autoneb, max number of all image, which should be reached
 
 # setting for calculator
 abacus = "abacus"
@@ -159,6 +159,6 @@ if __name__ == "__main__":
     init_chain = read(init_chain, index=':')
     neb = AbacusAutoNEB(init_chain, parameters, algorism=algorism, 
                         directory=neb_directory,
-                        n_simul=n_simul, n_max=n_max, 
+                        n_simul=n_simul, n_max=n_images, 
                         abacus=abacus,  mpi=mpi, omp=omp, )
     neb.run(optimizer=neb_optimizer, climb=climb, fmax=fmax)
