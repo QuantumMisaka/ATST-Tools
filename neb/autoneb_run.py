@@ -150,8 +150,10 @@ class AbacusAutoNEB:
         for num, image in enumerate(self.init_chain):
             index = f"{num:03d}"
             write(f"{self.prefix}{index}.traj", image, format="traj")
-        autoneb = AutoNEB(self.attach_calculators, self.prefix, self.n_simul, self.n_max, fmax=fmax, climb=climb, 
-                            method=self.algorism, parallel=self.parallel, optimizer=optimizer, )
+        autoneb = AutoNEB(self.attach_calculators, self.prefix, self.n_simul, 
+                          self.n_max, fmax=fmax, climb=climb, k = self.k,
+                            method=self.algorism, parallel=self.parallel, 
+                            optimizer=optimizer, smooth_curve=smooth_curve)
         autoneb.run()
         parprint("----- AutoNEB calculation finished -----")
 

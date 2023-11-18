@@ -105,6 +105,7 @@ class AbacusNEB:
         self.mpi = mpi
         self.omp = omp
         self.parallel = parallel
+        self.k = k
         if self.parallel == False:
             parprint("Notice: Parallel calculation is not being used")
             parprint("Set NEB method to DyNEB automatically")
@@ -129,7 +130,7 @@ class AbacusNEB:
         return calc
     
     
-    def set_neb_chain(self, fmax=0.05, climb=True,):
+    def set_neb_chain(self, climb=True, fmax=0.05):
         """Set neb_chain, namely:
         1. images defining path from initial to final state
         2. neb object including the images and the implemented NEB method
@@ -155,14 +156,16 @@ class AbacusNEB:
                 parprint("----- Running Dynamic NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
                 parprint("----- Default scale_fmax = 1.0 -----")
-                neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, 
-                            method=self.algorism, parallel=False, scale_fmax=1.0)
+                # dynamic neb need to read fmax
+                neb = DyNEB(images, climb=climb, dynamic_relaxation=True, fmax=fmax
+                            method=self.algorism, parallel=False, scale_fmax=1.0, k=self.k)
             else:
                 parprint("----- Running ASE-NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
                 if self.parallel:
                     parprint("----- Parallel calculation is being used -----")
-                neb = NEB(images, climb=climb, method=self.algorism, parallel=self.parallel)
+                neb = NEB(images, climb=climb, method=self.algorism, 
+                          k=self.k, parallel=self.parallel)
         else:
             raise NotImplementedError("NEB algorism not supported! \n Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string'")
         return neb
@@ -175,7 +178,7 @@ class AbacusNEB:
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
         """
-        neb = self.set_neb_chain(fmax, climb)
+        neb = self.set_neb_chain(climb, fmax)
         opt = optimizer(neb, trajectory=outfile)
         opt.run(fmax)
         print("----- NEB calculation finished -----")
