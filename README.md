@@ -82,7 +82,7 @@ Some property should be get via specific way from trajectory files, and some wil
 
 ## Examples
 The example below need to be more concise, which have much more data in there
-- Li-diffu-Si: Li diffusion in Si, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, using ABACUS as SCF calculator and ASE as optimizer and NEB calculator.  Also, an dflow example is proposed.
+- Li-diffu-Si: Li diffusion in Si, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, using ABACUS as SCF calculator and ASE as optimizer and NEB calculator.  Also, an dflow example is proposed from DeepModeling community.
 - H2-Au111: H2 dissociation on Au(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator,use ASE for initial and final state optimization and use ASE as NEB calculator. 
 - N2-Cu111 : N2 dissociation on Cu(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
 - CO-Pt111 : CO dissociation on Pt(111) surface, an example for running ASE-NEB-ABACUS based on existing ABACUS input files of initial and final state, use ABACUS as SCF calculator, use ABACUS as optimizer for optimization of initial state and final state, use ASE as NEB calculator
@@ -91,15 +91,15 @@ The example below need to be more concise, which have much more data in there
 AutoNEB example ix on update, Dimer example is preparing
 
 ## Next Examples
-- CO-Fe100: CO dissociation on Fe(100) surface, in this example we will focus on setting `magmom` during NEB calculation, which is important for spin-polarized magnetic system.
-- TS of MTM process by H2O2 in Cu/Ag-ZSM5 system, including:
+- FTS Fe5C2-510: FTS process on Fe5C2(510) surface. Which is the final goal, in this example we will focus on setting `magmom` during NEB calculation, which is important for spin-polarized magnetic system.
+- - CO dissocation process and C vacancy generation process
+- - C-C coupling process
+- TS of MTM process by H2O2 in Cu/Ag-ZSM5 system, which is a example of large catalysis system. will including:
 - - proton transfer process
 - - CH4 dissociation process
 - - CH3OH generation process
 - - H2O2 dissociation process
-- FTS Fe5C2-510: FTS process on Fe5C2(510) surface. Which is the final goal, including
-- - CO dissocation process and C vacancy generation process
-- - C-C coupling process
+
 
 
 ## Developing
@@ -114,7 +114,7 @@ AutoNEB example ix on update, Dimer example is preparing
 - [x] Parallel computing during images relaxation by `gpaw python`
 - [x] `AutoNEB` implementation
 - [x] Connected to Dimer method
-- [ ] More test in magnetic surface reaction system
+- [x] More test in magnetic surface reaction system
 - [ ] put calculation setting in an independent file (decoupling run*.py)
 
 
