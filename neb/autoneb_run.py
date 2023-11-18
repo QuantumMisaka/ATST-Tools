@@ -22,6 +22,7 @@ climb = True
 fmax = [0.20, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
 n_images = 10 # only for autoneb, max number of all image, which should be reached
+smooth_curve = False # True to do more neb step to smooth the curve.
 
 # setting for calculator
 abacus = "abacus"
@@ -73,9 +74,11 @@ parameters = {
 class AbacusAutoNEB:
     """Customize AutoNEB calculation by using ABACUS"""
 
-    def __init__(self, init_chain, parameters, abacus='abacus',  
-                 prefix="run_autoneb", n_simul=1, n_max=10, algorism="improvedtangent", 
-                 directory='NEB', mpi=1, omp=1, parallel=True, ):
+    def __init__(self, init_chain, parameters, 
+                 abacus='abacus',  prefix="run_autoneb", 
+                 n_simul=1, n_max=10, 
+                 algorism="improvedtangent", 
+                 directory='AutoNEBrun', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
 
         init_chain (Atoms object): starting image chain from nem_make.py or other method, can only include Initial and Final states, autoneb will generate inter-images automactically. 
@@ -135,7 +138,7 @@ class AbacusAutoNEB:
             image.calc = self.set_calculator()
         
     
-    def run(self, optimizer=FIRE, fmax=0.05, climb=True):
+    def run(self, optimizer=FIRE, fmax=0.05, climb=True, smooth_curve=False):
         """Run Abacus AutoNEB
 
         optimizer (Optimizer object): defaults to FIRE. BFGS and FIRE is only used
@@ -161,4 +164,5 @@ if __name__ == "__main__":
                         directory=neb_directory,
                         n_simul=n_simul, n_max=n_images, 
                         abacus=abacus,  mpi=mpi, omp=omp, )
-    neb.run(optimizer=neb_optimizer, climb=climb, fmax=fmax)
+    neb.run(optimizer=neb_optimizer, climb=climb, 
+                fmax=fmax, smooth_curve=smooth_curve)
