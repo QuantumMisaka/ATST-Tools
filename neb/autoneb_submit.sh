@@ -49,10 +49,10 @@ python neb_make.py $INIT $FINAL $NSIMUL # --fix 0.1:1 --mag Fe:2.0,C:-0.3
 echo "===== Running AutoNEB ====="
 
 #python neb_run.py
-mpirun -np $NSIMUL gpaw python autoneb_run.py #2>run_neb.err | tee run_neb.out
+# mpirun -np $NSIMUL gpaw python autoneb_run.py #2>run_neb.err | tee run_neb.out
 # if trans-nodes
-# srun hostname -s | sort -n > slurm.hosts
-# mpirun -np $NSIMUL -machinefile slurm.hosts gpaw python autoneb_run.py
+srun hostname -s | sort -n > slurm.hosts
+mpirun -np $NSIMUL -machinefile slurm.hosts gpaw python autoneb_run.py
 
 # post_precessing
 echo "===== AutoNEB Process Done ! ====="

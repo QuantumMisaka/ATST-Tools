@@ -10,25 +10,23 @@ from ase.io import read, write
 from ase.parallel import world, parprint, paropen
 #from pathlib import Path
 
-# setting for NEB
+# setting
+mpi = 8
+omp = 4
+fmax = 0.05  # eV / Ang
 neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "NEBrun"
-fmax = 0.05  # eV / Ang
 algorism = "improvedtangent" # IT-NEB is recommended
-dyneb = False  
-init_chain = "init_neb_chain.traj"
 climb = True
+dyneb = False  
 parallel = True
 k = 0.05 # eV/Ang^2, spring constant
-
-# setting for calculator
-mpi = 16
-omp = 2
+init_chain = "init_neb_chain.traj"
 abacus = "abacus"
-lib_dir = "/lustre/home/2201110432/example/abacus"
-#lib_dir = ""
-pseudo_dir = f"{lib_dir}/PP"
-basis_dir = f"{lib_dir}/ORB"
+#lib_dir = "/lustre/home/2201110432/example/abacus"
+lib_dir = ""
+pseudo_dir = f"{lib_dir}"
+basis_dir = f"{lib_dir}"
 pp = {
         'H':'H_ONCV_PBE-1.0.upf',
         'Au':'Au_ONCV_PBE-1.0.upf',

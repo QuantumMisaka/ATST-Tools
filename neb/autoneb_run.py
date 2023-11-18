@@ -10,7 +10,7 @@ from ase.io import read, write
 from ase.parallel import world, parprint, paropen
 #from pathlib import Path
 
-# setting for NEB
+# setting
 mpi = 16
 omp = 4
 neb_optimizer = FIRE # suited for CI-NEB
@@ -24,8 +24,6 @@ n_simul = world.size # only for autoneb, number of simultaneous calculation
 n_images = 10 # only for autoneb, max number of all image, which should be reached
 smooth_curve = False # True to do more neb step to smooth the curve.
 k = 0.05 # eV/Ang^2, force constant of spring, 0.05 is from VTST-Tools
-
-# setting for calculator
 abacus = "abacus"
 #lib_dir = "/lustre/home/2201110432/example/abacus"
 lib_dir = ""

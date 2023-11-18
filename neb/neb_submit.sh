@@ -52,10 +52,10 @@ python neb_make.py $INIT $FINAL $N_IMG # --fix 0.2:1 --mag Fe:1.7,C:-0.3
 echo "===== Running NEB ====="
 
 #python neb_run.py
-mpirun -np $N_IMG gpaw python neb_run.py #2>run_neb.err | tee run_neb.out
+# mpirun -np $N_IMG gpaw python neb_run.py #2>run_neb.err | tee run_neb.out
 # if trans-nodes
-# srun hostname -s | sort -n > slurm.hosts
-# mpirun -np $N_IMG -machinefile slurm.hosts gpaw python neb_run.py
+srun hostname -s | sort -n > slurm.hosts
+mpirun -np $N_IMG -machinefile slurm.hosts gpaw python neb_run.py
 
 # post_precessing
 echo "===== NEB Process Done ! ====="
