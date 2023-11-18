@@ -23,6 +23,7 @@ fmax = [0.20, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
 n_images = 10 # only for autoneb, max number of all image, which should be reached
 smooth_curve = False # True to do more neb step to smooth the curve.
+k = 0.05 # eV/Ang^2, force constant of spring, 0.05 is from VTST-Tools
 
 # setting for calculator
 abacus = "abacus"
@@ -76,7 +77,7 @@ class AbacusAutoNEB:
 
     def __init__(self, init_chain, parameters, 
                  abacus='abacus',  prefix="run_autoneb", 
-                 n_simul=1, n_max=10, 
+                 n_simul=1, n_max=10, k=0.05,
                  algorism="improvedtangent", 
                  directory='AutoNEBrun', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
@@ -108,6 +109,7 @@ class AbacusAutoNEB:
         self.prefix = prefix
         self.mpi = mpi
         self.omp = omp
+        self.k = k
         self.parallel = parallel
         parprint("Notice: AutoNEB method is set")
         if (n_simul > 0) and (n_max >= n_simul):
@@ -161,7 +163,7 @@ if __name__ == "__main__":
 # read initial guessed neb chain
     init_chain = read(init_chain, index=':')
     neb = AbacusAutoNEB(init_chain, parameters, algorism=algorism, 
-                        directory=neb_directory,
+                        directory=neb_directory, k=k,
                         n_simul=n_simul, n_max=n_images, 
                         abacus=abacus,  mpi=mpi, omp=omp, )
     neb.run(optimizer=neb_optimizer, climb=climb, 

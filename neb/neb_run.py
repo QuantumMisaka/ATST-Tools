@@ -15,10 +15,11 @@ neb_optimizer = FIRE # suited for CI-NEB
 neb_directory = "NEBrun"
 fmax = 0.05  # eV / Ang
 algorism = "improvedtangent" # IT-NEB is recommended
-neb_type = "neb"  # neb, dyneb, but not autoneb
+dyneb = False  
 init_chain = "init_neb_chain.traj"
 climb = True
 parallel = True
+k = 0.05 # eV/Ang^2, spring constant
 
 # setting for calculator
 mpi = 16
@@ -73,13 +74,15 @@ class AbacusNEB:
     """Customize Nudged Elastic Band calculation by using ABACUS"""
 
     def __init__(self, init_chain, parameters, abacus='abacus',
-                 neb_type="neb", algorism="improvedtangent", directory='NEB', 
-                 mpi=1, omp=1, parallel=True, n_simul_auto=0, n_max_auto=0) -> None:
+                 dyneb=False, k=0.05, algorism="improvedtangent", 
+                 directory='NEB', mpi=1, omp=1, parallel=True, ) -> None:
         """Initialize initial and final states
 
         init_chain (Atoms object): starting image chain from nem_make.py or other method
         parameters (dict): settings of abacus input parameters
         abacus (str): Abacus executable file. Default: 'abacus'
+        dyneb (bool): Using DyNEB method or not, which is efficient in serial NEB calculation. Default: False
+        k (float): spring constant for NEB calculation, eV/Ang^2, default: 0.05
         algorism (str): NEB algorism. which can be
         - 'aseneb': standard ase NEB
         - 'improvedtangent' : IT-NEB (recommended by Sobereva)
@@ -89,15 +92,14 @@ class AbacusNEB:
         
         Default: 'improvedtangent'
         
-        neb_type (str): NEB method.  Choose from 'neb', 'dyneb'. and 'autoneb' should use AbacusAutoNEB class
-        directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name
+        directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name, default: 'NEB'
         mpi (int): number of MPI for abacus calculator
         omp (int): number of OpenMP for abacus calculator
-        parallel (bool): parallel calculation setting, default True, if neb_type set to 'dyneb', parallel will be set to False automatically
+        parallel (bool): parallel calculation setting, default True, if dyneb is True, parallel will be set to False automatically
         """
 
         self.init_chain = init_chain
-        self.neb_type = neb_type
+        self.dyneb = dyneb
         self.algorism = algorism
         self.abacus = abacus
         self.directory = directory
@@ -108,19 +110,11 @@ class AbacusNEB:
         if self.parallel == False:
             parprint("Notice: Parallel calculation is not being used")
             parprint("Set NEB method to DyNEB automatically")
-            self.neb_type = 'dyneb'
-        elif self.algorism == 'dyneb':
+            self.dyneb = True
+        elif self.dyneb == True:
             parprint("Notice: Dynamic NEB method is set")
             parprint("Parallel calculation is auto set to False")
             self.parallel = False
-        if self.neb_type == 'autoneb':
-            parprint("Notice: AutoNEB method is set")
-            if (n_simul_auto > 0) and (n_max_auto >= n_simul_auto):
-                parprint(f"You manually set n_simul = {n_simul_auto}, n_max = {n_max_auto}", )
-                self.n_simul_auto = n_simul_auto
-                self.n_max_auto = n_max_auto
-            else:
-                raise ValueError("You must set n_simul > 0 and n_max >= n_simul numbers for AutoNEB")
 
     def set_calculator(self):
         """Set Abacus calculators"""
@@ -158,21 +152,19 @@ class AbacusNEB:
             image.calc = self.set_calculator()
         # setting neb algorism
         if self.algorism in ["aseneb", "improvedtangent", "eb", "spline", "string"]:
-            if self.neb_type == "dyneb" or not self.parallel :
+            if self.dyneb or not self.parallel :
                 # dynamic neb can only be performed by serial
                 parprint("----- Running Dynamic NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
                 parprint("----- Default scale_fmax = 1.0 -----")
                 neb = DyNEB(images, climb=climb, fmax=fmax, dynamic_relaxation=True, 
                             method=self.algorism, parallel=False, scale_fmax=1.0)
-            elif self.neb_type == "neb":
+            else:
                 parprint("----- Running ASE-NEB -----")
                 parprint(f"----- {self.algorism} method is being used -----")
                 if self.parallel:
                     parprint("----- Parallel calculation is being used -----")
                 neb = NEB(images, climb=climb, method=self.algorism, parallel=self.parallel)
-            else:
-                raise NotImplementedError("----- neb_type NOT SUPPORTED ! -----")
         else:
             raise NotImplementedError("NEB algorism not supported! \n Please choose algorism from 'aseneb', 'improvedtangent', 'eb', 'spline', 'string'")
         return neb
@@ -197,7 +189,7 @@ if __name__ == "__main__":
     init_chain = read(init_chain, index=':')
     neb = AbacusNEB(init_chain, parameters=parameters, parallel=parallel,
                     directory=neb_directory, mpi=mpi, omp=omp, abacus=abacus, 
-                    algorism=algorism)
+                    algorism=algorism, k=k, dyneb=dyneb)
     neb.run(optimizer=neb_optimizer, climb=climb, fmax=fmax)
 
 
