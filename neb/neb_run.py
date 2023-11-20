@@ -20,7 +20,7 @@ algorism = "improvedtangent" # IT-NEB is recommended
 climb = True
 dyneb = False  
 parallel = True
-k = 0.05 # eV/Ang^2, spring constant
+k = 0.10 # eV/Ang^2, spring constant
 init_chain = "init_neb_chain.traj"
 abacus = "abacus"
 #lib_dir = "/lustre/home/2201110432/example/abacus"
@@ -72,7 +72,7 @@ class AbacusNEB:
     """Customize Nudged Elastic Band calculation by using ABACUS"""
 
     def __init__(self, init_chain, parameters, abacus='abacus',
-                 dyneb=False, k=0.05, algorism="improvedtangent", 
+                 dyneb=False, k=0.1, algorism="improvedtangent", 
                  directory='NEB', mpi=1, omp=1, parallel=True, ) -> None:
         """Initialize initial and final states
 
@@ -80,7 +80,7 @@ class AbacusNEB:
         parameters (dict): settings of abacus input parameters
         abacus (str): Abacus executable file. Default: 'abacus'
         dyneb (bool): Using DyNEB method or not, which is efficient in serial NEB calculation. Default: False
-        k (float): spring constant for NEB calculation, eV/Ang^2, default: 0.05
+        k (float): spring constant for NEB calculation, eV/Ang^2, default: 0.10
         algorism (str): NEB algorism. which can be
         - 'aseneb': standard ase NEB
         - 'improvedtangent' : IT-NEB (recommended by Sobereva)
@@ -157,7 +157,7 @@ class AbacusNEB:
                 parprint(f"----- {self.algorism} method is being used -----")
                 parprint("----- Default scale_fmax = 1.0 -----")
                 # dynamic neb need to read fmax
-                neb = DyNEB(images, climb=climb, dynamic_relaxation=True, fmax=fmax
+                neb = DyNEB(images, climb=climb, dynamic_relaxation=True, fmax=fmax,
                             method=self.algorism, parallel=False, scale_fmax=1.0, k=self.k)
             else:
                 parprint("----- Running ASE-NEB -----")

@@ -23,7 +23,7 @@ fmax = [0.20, 0.05]  # eV / Ang, 2 fmax for others and last CI-NEB in all-images
 n_simul = world.size # only for autoneb, number of simultaneous calculation
 n_images = 10 # only for autoneb, max number of all image, which should be reached
 smooth_curve = False # True to do more neb step to smooth the curve.
-k = 0.05 # eV/Ang^2, force constant of spring, 0.05 is from VTST-Tools
+k = 0.10 # eV/Ang^2, force constant of spring, 0.05 is from VTST-Tools
 abacus = "abacus"
 #lib_dir = "/lustre/home/2201110432/example/abacus"
 lib_dir = ""
@@ -75,7 +75,7 @@ class AbacusAutoNEB:
 
     def __init__(self, init_chain, parameters, 
                  abacus='abacus',  prefix="run_autoneb", 
-                 n_simul=1, n_max=10, k=0.05,
+                 n_simul=1, n_max=10, k=0.10,
                  algorism="improvedtangent", 
                  directory='AutoNEBrun', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
