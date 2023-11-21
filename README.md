@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - AutoNEB
 - Dimer
 
-Version v1.1.1
+Version v1.1.2
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
@@ -16,6 +16,9 @@ Version v1.1.1
 Notice: GPAW and ABACUS should be dependent on same MPI and libraries environments. 
 For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW should NOT be dependent on gcc-toolchain like OpenMPI and OpenBLAS.
 
+## Workflow
+
+![ATST-workflow](img/ATST-workflow.png)
 
 ## NEB workflow
 ### Usage
