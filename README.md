@@ -18,7 +18,7 @@ For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW s
 
 ## Workflow
 
-![ATST-workflow](img/ATST-workflow.png)
+![ATST-workflow](./img/ATST-workflow.png)
 
 ## NEB workflow
 ### Usage
