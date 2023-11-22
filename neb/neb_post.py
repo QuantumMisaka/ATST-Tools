@@ -39,9 +39,11 @@ class NEBPost():
         """Gmakes plots of all band during neb in the series in a single PDF"""
         return NEBTools(self.all_image).plot_bands(label=label)
     
-    def write_latest_bands(self, outfile="neb_latest.traj"):
+    def write_latest_bands(self, outname="neb_latest"):
         """write latest neb chain to file"""
-        return write(outfile, self.neb_chain, format="traj")
+        write(f"{outname}.traj", self.neb_chain, format="traj")
+        write(f"{outname}.extxyz", self.neb_chain, format="extxyz")
+        return
     
     def view_neb_bands(self):
         """view neb chain"""

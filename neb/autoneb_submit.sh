@@ -33,6 +33,7 @@ echo "Start at $(date)" >> JobRun.state
 echo "===== AutoNEB Job Starting =====" 
 
 # prepare neb image chain
+# one may do this in login node better
 echo " ===== Make Initial NEB Guess ====="
 python neb_make.py $INIT $FINAL $NSIMUL # --fix 0.1:1 --mag Fe:2.0,C:-0.3 
 
@@ -42,8 +43,8 @@ python neb_make.py $INIT $FINAL $NSIMUL # --fix 0.1:1 --mag Fe:2.0,C:-0.3
 # [optional]:
 #     --fix [height]:[direction] : fix atom below height (fractional) in direction (0,1,2 for x,y,z)
 #     --mag [element1]:[magmom1],[element2]:[magmom2],... : set initial magmom for atoms of element
-# Use existing guess: 
-#     python neb_make.py -i [init_guess_traj]
+# Use existing guess and do continuation calculation
+#     python neb_make.py -i [init_guess_traj] [n_max] [optional]
 
 # run neb
 echo "===== Running AutoNEB ====="

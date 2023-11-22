@@ -7,11 +7,12 @@ import os, sys
 from ase.mep.neb import NEB
 # from ase.autoneb import AutoNEB
 from ase.io import read, write
+from ase import Atoms
 from ase.constraints import FixAtoms
 from pathlib import Path
 
 
-def set_fix_for_Atoms(atoms, fix_height=0.0, fix_dir=1,):
+def set_fix_for_Atoms(atoms, fix_height=0, fix_dir=1,):
     # maybe we should set constaints independently in here
     if fix_dir not in [0, 1, 2]:
         raise ValueError("fix_dir should be 0, 1 or 2 for x, y or z")
@@ -20,7 +21,6 @@ def set_fix_for_Atoms(atoms, fix_height=0.0, fix_dir=1,):
     fix = FixAtoms(mask=mask)
     print(f"---- Fix Atoms below {fix_height} in direction {direction[fix_dir]} ----")
     atoms.set_constraint(fix)
-
 
 
 def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
@@ -42,9 +42,12 @@ def set_magmom_for_Atoms(atoms, mag_ele=[], mag_num=[]):
     print(f"---- Set initial magmom for {mag_ele} to {mag_num} ----")
 
 
-def nebmake(initial, final, n_max, interpolate='idpp',  
-                infile="input_guess_chain.traj", outfile='init_neb_chain.traj', 
-                fix_height=0.0, fix_dir=1, mag_ele=[], mag_num=[]):
+def nebmake(initial:Atoms=None, final:Atoms=None, 
+                n_max:int=1, interpolate='idpp',  
+                infile="input_guess_chain.traj", 
+                outfile='init_neb_chain.traj', 
+                fix_height:float = None, fix_dir:int = 1, 
+                mag_ele:list = None, mag_num:list = None):
     """Make NEB Trajectory by ASE method, and print-out traj file, namely:
     1. images defining path from initial to final state
     2. neb object including the images and the implemented NEB method
@@ -62,36 +65,33 @@ def nebmake(initial, final, n_max, interpolate='idpp',
     if Path(infile).exists():
         print(f"----- Input Guess {infile} detected ! -----")
         print(f"----- Guess Trajectory just from {infile}  -----")
-        images = read(f"{infile}@-{n_max + 2}:")
+        if n_max > 0 and type(n_max) == int:
+            images = read(f"{infile}@-{n_max + 2}:")
+        else:
+            raise ValueError("n_max should be a positive integer")
         # set constraint by atom height along some direction
         if bool(fix_height):
             for image in images:
                 set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
-        else:
-            print("---- Warning: no fix height provided, no constraint set in ASE ----")
         # set init-magmom for atom by element
         if bool(mag_ele):
             for image in images:
                 set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
-        else:
-            print("---- Warning: no element for initial magmom height provided, no magmom set in ASE ----")
         interpolate = None
         write(f'{outfile}', images, format='traj')
         # terminate nebmake for initial guess provided
         return
-    else:
-        images = [initial]
-        if n_max == 0:
-            # always for autoneb, just do format transfer
-            print("---- Warning: n_max = 0, traj file only contain initial and final images.")
-            images.append(final)
-            write(f'{outfile}', images, format='traj')
-        elif n_max > 0 and type(n_max) == int:
+    elif (bool(initial) and bool(final)):
+        if n_max > 0 and type(n_max) == int:
+            images = [initial]
             for i in range(n_max):
                 image = initial.copy()
-                set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
-                set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
                 images.append(image)
+                # init and final image need to set mag and fix but not here
+                if bool(fix_height):
+                    set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
+                if bool(mag_ele):
+                    set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
             images.append(final)
             # use a simple NEB object to create traj file
             neb = NEB(images)
@@ -106,7 +106,9 @@ def nebmake(initial, final, n_max, interpolate='idpp',
             write(f'{outfile}', images, format='traj')
             return neb # for main function to read
         else:
-            raise ValueError("n_max should be a non-negative integer")
+            raise ValueError("n_max should be a positive integer")
+    else:
+        raise ValueError("initial and final state or input traj file should be provided")
 
 
 if __name__ == "__main__":
@@ -115,10 +117,11 @@ Usage:
 Default: 
     python neb_make.py [init_image] [final_image] [n_max] [optional]
 [optional]:
-    --fix [height]:[direction] : fix atom below height (fractional) in direction (0,1,2 for x,y,z)
-    --mag [element1]:[magmom1],[element2]:[magmom2],... : set initial magmom for atoms of element
-Use existing guess: 
-    python neb_make.py -i [input_guess_traj] [n_max]
+    --fix [height]:[direction] : fix atom below height (fractional) in direction (0,1,2 for x,y,z), default None
+    --mag [element1]:[magmom1],[element2]:[magmom2],... : set initial magmom for atoms of element, default None
+    --format [format]: input image-files format, support abacus-out, vasp-out, extxyz, traj and others which have calculated property information, default abacus-out
+Use existing guess and do continuation calculation
+    python neb_make.py -i [init_guess_traj] [n_max] [optional]
 Notice: n_max is related to the number of interpolated image, not include initial and final image
 '''
     if len(sys.argv) < 4:
@@ -129,6 +132,7 @@ Notice: n_max is related to the number of interpolated image, not include initia
         direction = 1
         mag_ele = []
         mag_num = []
+        format = "abacus-out"
         if "--fix" in sys.argv[4:]:
             fix_ind = sys.argv.index("--fix")
             height = float(sys.argv[fix_ind+1].split(":")[0])
@@ -138,6 +142,9 @@ Notice: n_max is related to the number of interpolated image, not include initia
             mag_pair = sys.argv[mag_ind+1].split(",")
             mag_ele = [ele.split(":")[0] for ele in mag_pair]
             mag_num = [float(num.split(":")[1]) for num in mag_pair]
+        if "--format" in sys.argv[4:]:
+            format_ind = sys.argv.index("--format")
+            format = sys.argv[format_ind+1]
         # set images
         if sys.argv[1] == "-i":
             infile = sys.argv[2]
@@ -147,8 +154,8 @@ Notice: n_max is related to the number of interpolated image, not include initia
         else:
             initial = sys.argv[1]
             final = sys.argv[2]
-            init_Atoms = read(initial, format="abacus-out",)
-            final_Atoms = read(final, format="abacus-out", )
+            init_Atoms = read(initial, format=format,)
+            final_Atoms = read(final, format=format, )
             n_max = int(sys.argv[3])
             nebmake(init_Atoms, final_Atoms, n_max, interpolate='idpp', 
                     fix_height=height, fix_dir=direction, mag_ele=mag_ele, mag_num=mag_num)
