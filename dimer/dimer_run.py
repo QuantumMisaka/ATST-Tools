@@ -116,8 +116,7 @@ class AbacusDimer:
         const = dimer_init._get_constraints()
         # const will be empty list if no constraint
         if const:
-            const_object = dimer_init._get_constraints()[0]
-            const_object = const_object.todict()['kwargs']['indices']
+            const_object = dimer_init._get_constraints()[0].get_indices()
             for ind in const_object:
                 d_mask[ind] = False
             return d_mask
