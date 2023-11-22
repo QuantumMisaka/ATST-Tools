@@ -16,6 +16,8 @@ Version v1.1.2
 Notice: GPAW and ABACUS should be dependent on same MPI and libraries environments. 
 For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW should NOT be dependent on gcc-toolchain like OpenMPI and OpenBLAS.
 
+ATST-Tools is Under actively development, please let me know if any problem occurs.
+
 ## Workflow
 
 ![ATST-workflow](./img/ATST-workflow.png)
