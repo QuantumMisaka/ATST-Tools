@@ -3,11 +3,13 @@
 # part of ASE-NEB-ABACUS scripts
 
 import os
+from ase.atoms import Atoms
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.mep.autoneb import AutoNEB
 from ase.io import read, write
 from ase.parallel import world, parprint, paropen
+from ase.constraints import FixAtoms
 #from pathlib import Path
 
 # setting
@@ -80,7 +82,7 @@ class AbacusAutoNEB:
                  directory='AutoNEBrun', mpi=1, omp=1, parallel=True, ):
         """Initialize initial and final states
 
-        init_chain (Atoms object): starting image chain from nem_make.py or other method, can only include Initial and Final states, autoneb will generate inter-images automactically. 
+        init_chain (List[Atoms]): starting image chain from nem_make.py or other method, can only include Initial and Final states, autoneb will generate inter-images automactically. 
         parameters (dict): settings of abacus input parameters
         abacus (str): Abacus executable file. Default: 'abacus'
         algorism (str): NEB algorism. which can be
@@ -118,7 +120,7 @@ class AbacusAutoNEB:
             raise ValueError("You must set n_simul > 0 and n_max >= n_simul numbers for AutoNEB")
         
             
-    def set_calculator(self):
+    def set_calculator(self) -> Abacus:
         """Set Abacus calculators"""
         os.environ['OMP_NUM_THREADS'] = f'{self.omp}'
         profile = AbacusProfile(
@@ -136,6 +138,42 @@ class AbacusAutoNEB:
         """Attach calculator to a list of images supplied"""
         for num, image in enumerate(images):
             image.calc = self.set_calculator()
+
+
+    def set_init_and_final_conditions(self) -> list:
+        """Attach fix and init magmom information for init and final image"""
+        image_use = self.init_chain[len(self.init_chain) // 2]
+        init_magmom = image_use.get_initial_magnetic_moments()
+        init:Atoms
+        final:Atoms
+        parprint("==> set mag <==")
+        cond_chain = []
+        init = self.init_chain[0]
+        final = self.init_chain[-1]
+        init.set_initial_magnetic_moments(init_magmom)
+        final.set_initial_magnetic_moments(init_magmom)
+        # a round-around method should be used here
+        # for add init magmom and preserve energy property at the same time
+        write(f"{self.prefix}_init.extxyz", self.init_chain, format="extxyz")
+        init = read(f"{self.prefix}_init.extxyz", index=0)
+        final = read(f"{self.prefix}_init.extxyz", index=-1)
+        # add fix later
+        FixAtom_list = image_use._get_constraints()
+        parprint("==> set fix <==")
+        parprint(FixAtom_list)
+        if FixAtom_list:
+            fix_indices = FixAtom_list[0].get_indices()
+            fix_obj = FixAtoms(indices=fix_indices)
+            parprint(fix_obj)
+            init.set_constraint(fix_obj)
+            final.set_constraint(fix_obj)
+        cond_chain.append(init)
+        cond_chain += self.init_chain[1:-1]
+        cond_chain.append(final)
+        # for condition check
+        write("STRU-init", cond_chain[0], format="abacus")
+        write("STRU-final", cond_chain[-1], format="abacus")
+        return cond_chain
         
     
     def run(self, optimizer=FIRE, fmax=0.05, climb=True, smooth_curve=False):
@@ -147,7 +185,10 @@ class AbacusAutoNEB:
         """
         parprint("----- Running AutoNEB -----")
         parprint(f"----- {self.algorism} method is being used -----")
-        for num, image in enumerate(self.init_chain):
+        # add constaints and init magmom for init and final image
+        running_chain = self.set_init_and_final_conditions()
+        # running
+        for num, image in enumerate(running_chain):
             index = f"{num:03d}"
             write(f"{self.prefix}{index}.traj", image, format="traj")
         autoneb = AutoNEB(self.attach_calculators, self.prefix, self.n_simul, 
