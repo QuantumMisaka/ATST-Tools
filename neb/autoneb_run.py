@@ -146,7 +146,7 @@ class AbacusAutoNEB:
         init_magmom = image_use.get_initial_magnetic_moments()
         init:Atoms
         final:Atoms
-        parprint("==> set mag <==")
+        # parprint("==> set mag <==")
         cond_chain = []
         init = self.init_chain[0]
         final = self.init_chain[-1]
@@ -159,12 +159,10 @@ class AbacusAutoNEB:
         final = read(f"{self.prefix}_init.extxyz", index=-1)
         # add fix later
         FixAtom_list = image_use._get_constraints()
-        parprint("==> set fix <==")
-        parprint(FixAtom_list)
+        # parprint("==> set fix <==")
         if FixAtom_list:
             fix_indices = FixAtom_list[0].get_indices()
             fix_obj = FixAtoms(indices=fix_indices)
-            parprint(fix_obj)
             init.set_constraint(fix_obj)
             final.set_constraint(fix_obj)
         cond_chain.append(init)
