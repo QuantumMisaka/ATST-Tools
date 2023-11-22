@@ -47,7 +47,7 @@ Optional:
         print("===> Transform NEB Traj by NEBTools <===")
         traj_file = sys.argv[1]
         tag = traj_file.split(".")[0]
-        traj = Trajectory(sys.argv[1])
+        traj = read(sys.argv[1], ":")
         nebtools = NEBTools(traj)
         image_num = nebtools._guess_nimages()
         band_num = len(traj) // image_num
@@ -65,7 +65,7 @@ Optional:
     else:
         traj_file = sys.argv[1]
         tag = traj_file.split(".")[0]
-        traj = Trajectory(sys.argv[1])
+        traj = read(sys.argv[1], ":")
         output_format = sys.argv[2]
         write_traj(tag, traj, format=output_format)
         print(f"===> Successfully Transform NEB Traj to {output_format} files ! <===")
