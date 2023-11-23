@@ -71,11 +71,13 @@ def nebmake(initial:Atoms=None, final:Atoms=None,
             raise ValueError("n_max should be a positive integer")
         # set constraint by atom height along some direction
         if bool(fix_height):
-            for image in images:
+            print("---- Warning: fix option is specified for input guess ----")
+            for image in images[1:-1]:
                 set_fix_for_Atoms(image, fix_height=fix_height, fix_dir=fix_dir)
         # set init-magmom for atom by element
         if bool(mag_ele):
-            for image in images:
+            print("---- Warning: init magmom option is specified for input guess ----")
+            for image in images[1:-1]:
                 set_magmom_for_Atoms(image, mag_ele=mag_ele, mag_num=mag_num)
         interpolate = None
         write(f'{outfile}', images, format='traj')
