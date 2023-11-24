@@ -32,11 +32,11 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] Decoupling to init-guess -> NEB calculation -> result post-process
 - [x] Parallel computing during images relaxation by `gpaw python`
 - [x] `AutoNEB` implementation
-- [x] Give user a way to specify constraint information (along one direction) and initial magnetic moments (for each atom of one element) for NEB initlal guess chain and two end point (while these information cannot be read from calculation result)
+- [x] Give user a way to specify constraint information (along one direction) and initial magnetic moments (for each atom of one element) for NEB initlal guess chain and two end points (while these information cannot be read from calculation result)
 - [x] More test in surface reaction system
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
-- [ ] put calculation setting in an independent file (decoupling run*.py)
+- [ ] put calculation setting in an independent file (decoupling *_run.py)
 
 
 
