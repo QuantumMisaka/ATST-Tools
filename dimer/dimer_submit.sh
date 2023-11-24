@@ -3,8 +3,8 @@
 #SBATCH --ntasks-per-node=16
 #SBATCH --cpus-per-task=4
 #SBATCH -J DIMER-ABACUS
-#SBATCH -o run_dimer.out
-#SBATCH -e run_dimer.err
+#SBATCH -o running_dimer.out
+#SBATCH -e running_dimer.err
 #SBATCH -p C064M0256G
 
 # JamesMisaka in 2023-11-14
