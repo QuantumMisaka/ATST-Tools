@@ -28,12 +28,12 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] Flexible input for different NEB method in ASE
 - [x] `DyNEB` implementation and test
 - [x] Now used optimum option: idpp-guess + IT-NEB + CI-NEB parallel method
-- [x] Make bottom atom fixed when read from `running*.log` of ABACUS
 - [x] Give an initial guess print-out of NEB images
 - [x] Decoupling to init-guess -> NEB calculation -> result post-process
-- [x] More test in surface reaction system
 - [x] Parallel computing during images relaxation by `gpaw python`
 - [x] `AutoNEB` implementation
+- [x] Give user a way to specify constraint information (along one direction) and initial magnetic moments (for each atom of one element) for NEB initlal guess chain and two end point (while these information cannot be read from calculation result)
+- [x] More test in surface reaction system
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
 - [ ] put calculation setting in an independent file (decoupling run*.py)
