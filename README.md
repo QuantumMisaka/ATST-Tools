@@ -80,16 +80,17 @@ In ATST-Tools, the AutoNEB method can be easily used by the following scripts
 - `autoneb_submit.sh` will do all AutoNEB process in one workflow and running AutoNEB calculation in parallel. Users should edit this file to set parameters for AutoNEB calculation. Also this submit script can be used as a template for job submission in HPC. the Default setting is for `slurm` job submission system.
 - `neb_make.py` and `neb_post.py` can be used for `AutoNEB` method, but the workflow have slight difference. 
 
+#### Running
 Users can run NEB each step respectively: 
 1. `python neb_make.py [INIT/result] [FINAL/result] [n_max]` to create initial guess of neb chain
    1. Also You can use `python neb_make.py -i [input_traj_file] [n_max]` to create initial guess from existing traj file, which can be used for continuation calculation.
 2. `python neb_run.py` or `mpirun -np [nprocs] gpaw python neb_run.py` to run NEB calculation
-3. `python neb_post.py [traj_file] [n_max]` to post-process NEB calculation result
+3. `python neb_post.py neb.traj [n_max]` to post-process NEB calculation result
 
 Users can run AutoNEB each step respectively:
 1. `python neb_make.py [INIT/result] [FINAL/result] [nprocs]` to create initial guess of neb chain
 2. `mpirun -np [nprocs] gpaw python autoneb_run.py` to run AutoNEB calculation
-3. `python neb_post.py --autoneb ([autoneb_traj_files])` to post-process NEB calculation result
+3. `python neb_post.py --autoneb run_autoneb???.traj` to post-process NEB calculation result
 
 Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.sh` or `sbatch neb_submit.sh`. AutoNEB scripts usage is like that. 
 
