@@ -94,7 +94,7 @@ Users can run AutoNEB each step respectively:
 
 Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.sh` or `sbatch neb_submit.sh`. AutoNEB scripts usage is like that. 
 
-> Notice: Before you start neb calculation process, make sure that you have check the nodes and cpus setting in `neb_submit.sh` and `neb_run.py` to make sure that you can reach the highest performance !!!  
+> Notice: Before you start neb calculation process, make sure that you have check the nodes and cpus setting and other setting like n_max, constraints and initial magnetic moments in `*neb_submit.sh` and `*neb_run.py` to make sure that you can reach the highest performance and reach the simulation result you want !!!  
 
 
 #### Continuation calculation for NEB
