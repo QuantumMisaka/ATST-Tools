@@ -168,10 +168,10 @@ Some property should be get via specific way from trajectory files, and some wil
 
 ## Examples
 - Li-diffu-Si: Li diffusion in Si, very easy example for serial and parallel NEB calculation
-- H2-Au111: H2 dissociation on Au(111) surface. which will have NEB, AutoNEB and Dimer example.
-- N2-Cu111 : N2 dissociation on Cu(111) surface
-- CO-Pt111 : CO dissociation on Pt(111) surface
-- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface. Noted that the `IT-NEB` result is wrong, but which is consistent to the result in VTST-Tools when using 4 image to do IT-NEB calculation.
-- C-C coupling on Fe5C2(510) surface: C-C coupling on Fe5C2(510) surface with CO co-adsorption. which will have NEB and AutoNEB example for TS-search. This is a typical example for reaction on magnetic surfaces. The result is consistent with existing paper.
+- H2-Au111: H2 dissociation on Au(111) surface. which will have NEB, AutoNEB and Dimer example. The barrier is around 1.1 eV consistent with existing paper and calculation result.
+- N2-Cu111 : N2 dissociation on Cu(111) surface. which have high barrier as 4.0 eV but it's not hard to calculate
+- CO-Pt111 : CO dissociation on Pt(111) surface. which have high barrier as 3.6 eV and including diffusion part. AutoNEB will always fail due to the low starting image. 
+- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface. The barrier is around 1.3 eV. Noted that the `IT-NEB` result is wrong, but which is consistent to the result in VTST-Tools when using 4 image to do IT-NEB calculation.
+- C-C coupling on Fe5C2(510) surface: C-C coupling on Fe5C2(510) surface with CO co-adsorption, which have 0.48 eV barrier in calculation result and existing paper. This is a typical example for reaction on magnetic surfaces.
 
 More examples is welcomed from users. 
