@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - AutoNEB
 - Dimer
 
-Version v1.1.2
+Version v1.2.0
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
@@ -36,7 +36,8 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] More test in surface reaction system
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
-- [ ] put calculation setting in an independent file (decoupling *_run.py)
+- [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
+- [ ] Put calculation setting in an independent file (decoupling *_run.py)
 
 
 
@@ -136,7 +137,7 @@ to generate `init_neb_chain.traj` for continuation calculation.
 ```
 
 #### Other scripts
-Because ATST is originally based on ASE, the trajectory file can be directly read, view and analysis by `ase gui` and other ASE tools. Abide by `neb_post.py`, We also offer some scripts to help you:
+Because ATST is originally based on ASE, the trajectory file can be directly read, view and analysis by `ase gui` and other ASE tools. Abide by `neb_make.py` and `neb_post.py`, We also offer some scripts to help you:
 - `neb_dist.py`: This script will give distance between initial and final state, which is good for you to check whether the atoms in two image is correspondent, and is also a reference for setting number of n_max
 - `traj_transform.py`: This script can transfer traj files into other format like `extxyz`, `abacus`(STRU), `cif` and so on (coming soon). Also if user specify `--neb` option, this script will automatically detect and cut the NEB trajectory when doing format transform. This script will be helpful for analysis and visualization of NEB trajectory.
 
