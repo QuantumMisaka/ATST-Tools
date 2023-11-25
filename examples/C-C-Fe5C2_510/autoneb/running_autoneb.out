@@ -1,0 +1,71 @@
+Loading mkl version 2023.0.0
+Loading tbb version 2021.8.0
+Loading compiler-rt version 2023.0.0
+Loading mpi version 2021.8.0
+Loading compiler version 2023.0.0
+Loading oclfpga version 2023.0.0
+  Load "debugger" to debug DPC++ applications with the gdb-oneapi debugger.
+  Load "dpl" for additional DPC++ APIs: https://github.com/oneapi-src/oneDPL
+
+Loading abacus/3.4.3-icx
+  Loading requirement: tbb/latest compiler-rt/latest mkl/latest mpi/latest
+    oclfpga/latest compiler/latest
+NSIMUL is 4
+===== AutoNEB Job Starting =====
+ ===== Make Initial NEB Guess =====
+---- Fix Atoms below 0.14 in direction y ----
+---- Set initial magmom for ['Fe'] to [2.0] ----
+---- Fix Atoms below 0.14 in direction y ----
+---- Set initial magmom for ['Fe'] to [2.0] ----
+---- Fix Atoms below 0.14 in direction y ----
+---- Set initial magmom for ['Fe'] to [2.0] ----
+---- Fix Atoms below 0.14 in direction y ----
+---- Set initial magmom for ['Fe'] to [2.0] ----
+--- Successfully make guessed image chain by idpp method ! ---
+===== Running AutoNEB =====
+Notice: AutoNEB method is set
+You manually set n_simul = 4, n_max = 10
+----- Running AutoNEB -----
+----- improvedtangent method is being used -----
+==> set mag <==
+==> set fix <==
+[FixAtoms(indices=[10, 11, 12, 13, 14, 15, 16, 17, 28, 29, 30, 31, 32, 33, 34, 35, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117])]
+FixAtoms(indices=[10, 11, 12, 13, 14, 15, 16, 17, 28, 29, 30, 31, 32, 33, 34, 35, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117])
+The NEB initially has 6 images  (including the end-points)
+Start of evaluation of the initial images
+Now starting iteration 1 on  [0, 1, 2, 3, 4, 5]
+Finished initialisation phase.
+****Now adding another image until n_max is reached (6/10)****
+Adding image between 3 and 4. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 2 on  [0, 1, 2, 3, 4, 5]
+****Now adding another image until n_max is reached (7/10)****
+Adding image between 2 and 3. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 3 on  [1, 2, 3, 4, 5, 6]
+****Now adding another image until n_max is reached (8/10)****
+Adding image between 1 and 2. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 4 on  [1, 2, 3, 4, 5, 6]
+****Now adding another image until n_max is reached (9/10)****
+Adding image between 0 and 1. New image point is selected on the basis of the biggest spring length!
+Now starting iteration 5 on  [0, 1, 2, 3, 4, 5]
+n_max images has been reached
+****Now doing the CI-NEB calculation****
+Now starting iteration 6 on  [3, 4, 5, 6, 7, 8]
+----- AutoNEB calculation finished -----
+===== AutoNEB Process Done ! =====
+===== Running Post-Processing =====
+=== n_max set to 0, automatically detect the images of chain by NEBTools ===
+Appears to be only one band in the images.
+num: 0; Energy: -263919.63951 (eV)
+num: 1; Energy: -263919.61641 (eV)
+num: 2; Energy: -263919.55546 (eV)
+num: 3; Energy: -263919.43204 (eV)
+num: 4; Energy: -263919.30454 (eV)
+num: 5; Energy: -263919.20591 (eV)
+num: 6; Energy: -263919.15506 (eV)
+num: 7; Energy: -263919.20474 (eV)
+num: 8; Energy: -263919.69873 (eV)
+num: 9; Energy: -263919.87311 (eV)
+Reaction Barrier and Energy Difference: (0.4861443298766748, -0.2335999999777414) (eV)
+Appears to be only one band in the images.
+Processing band          0 /          1
+===== Done ! =====
