@@ -193,6 +193,7 @@ class AbacusAutoNEB:
         for num, image in enumerate(running_chain):
             index = f"{num:03d}"
             write(f"{self.prefix}{index}.traj", image, format="traj")
+        world.barrier()
         autoneb = AutoNEB(self.attach_calculators, self.prefix, self.n_simul, 
                           self.n_max, fmax=fmax, climb=climb, k = self.k,
                             method=self.algorism, parallel=self.parallel, 
