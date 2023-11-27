@@ -7,6 +7,8 @@ Advanced ASE Transition State Tools for ABACUS, including:
 
 Version v1.2.1
 
+Copyright @ QuantumMisaka from PKU & AISI
+
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
 - [ABACUS](https://abacus.deepmodeling.com/en/latest/)
