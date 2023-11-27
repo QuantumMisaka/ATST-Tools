@@ -110,6 +110,22 @@ Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.s
 
 > Notice: Before you start neb calculation process, make sure that you have check the nodes and cpus setting and other setting like n_max, constraints and initial magnetic moments in `*neb_submit.sh` and `*neb_run.py` to make sure that you can reach the highest performance and reach the simulation result you want !!!   
 
+#### Visualize
+You can simply use ASE-GUI to have a view of NEB or AutoNEB trajectory.
+
+For NEB, you can view all running trajectory by 
+```bash
+ase -T gui neb.traj 
+```
+You can also view the last 10 images by
+```bash
+ase -T gui neb.traj@-10:
+```
+For AutoNEB, the most recent NEB path can always be monitored by:
+```bash
+ase -T gui -n -1 run_autoneb???.traj
+```
+
 
 #### Continuation calculation for NEB
 If NEB or AutoNEB is break down somehow, you can do continuation calculation based on saved trajectory files and ATST-Tools scripts.
