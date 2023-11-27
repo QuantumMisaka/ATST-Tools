@@ -2,7 +2,7 @@
 # Analyze NEB and AutoNEB calculation result 
 # part of ATST-Tools scripts
 
-from ase.mep.neb import NEB, DyNEB, NEBTools # newest ase
+from ase.mep.neb import NEBTools # newest ase
 from ase.io import read, write
 import sys, os
 
