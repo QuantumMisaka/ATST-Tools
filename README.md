@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - AutoNEB
 - Dimer
 
-Version v1.2.0
+Version v1.2.1
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
@@ -36,10 +36,21 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] More test in surface reaction system
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
+- [x] Put calculation setting in an independent file (decoupling *_run.py)
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
-- [ ] Put calculation setting in an independent file (decoupling *_run.py)
 
-
+## Workflow libraries files and setting
+All workflow libraries files and re-constructed ASE libraries will be put in `./source` directory. including:
+```bash
+source
+├── abacus_autoneb.py
+├── abacus_dimer.py
+└── abacus_neb.py
+```
+Before use running scripts, you should add these libraries into your PYTHONPATH:
+```bash
+export PYTHONPATH=/path/to/source:$PYTHONPATH
+```
 
 ## NEB workflow
 
