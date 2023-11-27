@@ -1,6 +1,6 @@
 # JamesMisaka in 2023-11-02
 # make NEB chain by ASE-NEB
-# part of ASE-NEB-ABACUS scripts
+# part of ATST-Tools scripts
 
 import os, sys
 # from ase.neb import NEB # old ase

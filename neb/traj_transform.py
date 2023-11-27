@@ -3,6 +3,7 @@
 # 1. extended xyz file, which is widely used in ASE, Ovito, VMD, Nequip and Others, in there will be energy, force and stress information
 # 2. ABACUS STRU file, for continuation 
 # 3. cif file, for M$ and VESTA to read and analysis
+# part of ATST-Tools scripts
 
 import os, sys
 from ase.io import read, write, Trajectory

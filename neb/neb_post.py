@@ -1,6 +1,6 @@
 # JamesMisaka in 2023-11-06
 # Analyze NEB and AutoNEB calculation result 
-# part of ASE-NEB-ABACUS scripts
+# part of ATST-Tools scripts
 
 from ase.mep.neb import NEB, DyNEB, NEBTools # newest ase
 from ase.io import read, write

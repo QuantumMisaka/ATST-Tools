@@ -1,12 +1,16 @@
+# JamesMisaka in 2023-11-27
+# Using NEB result to generate dimer init structure and displacement vector
+# part of ATST-Tools scripts
+
 import numpy as np
 import sys
 from ase.io import Trajectory, read, write
 from ase.mep.neb import NEBTools
 
-def neb2dimer(neb_traj:list, n_max:int=0, out_traj='dimer_init.traj', 
-              out_vec='displacement_vector.npy', 
-              norm_vector=0.1,
-                step_before_TS:int=0, step_after_TS:int=1):
+def neb2dimer(neb_traj : list, n_max : int = 0, out_traj = 'dimer_init.traj', 
+              out_vec = 'displacement_vector.npy', 
+              norm_vector : float = 0.1,
+              step_before_TS : int = 0, step_after_TS : int = 1):
     '''
     Transform neb chain to dimer init
     '''
