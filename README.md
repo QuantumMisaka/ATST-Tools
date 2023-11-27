@@ -39,8 +39,8 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] Put calculation setting in an independent file (decoupling *_run.py)
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
 
-## Workflow libraries files and setting
-All workflow libraries files and re-constructed ASE libraries will be put in `./source` directory. including:
+## Workflow libraries and setting
+All workflow library files and re-constructed ASE libraries will be put in `./source` directory. including:
 ```bash
 source
 ├── abacus_autoneb.py
