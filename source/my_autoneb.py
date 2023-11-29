@@ -200,11 +200,13 @@ class AutoNEB:
         
         # Remove the calculation folder if exists
         # QuantumMisaka refine in 20231128
-        for ind in to_run[1:-1]:
+        for ind in to_run[1: -1]:
             calc_dir = self.all_images[ind].calc.directory
             if os.path.isdir(calc_dir):
-                print(f" => Notice: Remove existing {calc_dir} for next NEB calculation <=")
+                mpi.parprint(
+                    f" => Notice: Remove existing {calc_dir} for next NEB calculation <=")
                 shutil.rmtree(calc_dir)
+        self.world.barrier()
         
         # Find the ranks which are masters for each their calculation
         if self.parallel:
