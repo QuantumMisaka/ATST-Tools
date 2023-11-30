@@ -47,7 +47,8 @@ All workflow library files and re-constructed ASE libraries will be put in `./so
 source
 ├── abacus_autoneb.py
 ├── abacus_dimer.py
-└── abacus_neb.py
+├── abacus_neb.py
+└── my_autoneb.py
 ```
 Before use running scripts, you should add these libraries into your PYTHONPATH:
 ```bash
