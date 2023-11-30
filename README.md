@@ -5,7 +5,9 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - AutoNEB
 - Dimer
 
-Version v1.2.0
+Version v1.2.1
+
+Copyright @ QuantumMisaka from PKU & AISI
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
@@ -36,10 +38,21 @@ ATST-Tools is Under actively development, please let me know if any problem occu
 - [x] More test in surface reaction system
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
+- [x] Put calculation setting in an independent file (decoupling *_run.py)
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
-- [ ] Put calculation setting in an independent file (decoupling *_run.py)
 
-
+## Workflow libraries and setting
+All workflow library files and re-constructed ASE libraries will be put in `./source` directory. including:
+```bash
+source
+├── abacus_autoneb.py
+├── abacus_dimer.py
+└── abacus_neb.py
+```
+Before use running scripts, you should add these libraries into your PYTHONPATH:
+```bash
+export PYTHONPATH=/path/to/source:$PYTHONPATH
+```
 
 ## NEB workflow
 
@@ -96,6 +109,22 @@ Users can run AutoNEB each step respectively:
 Also, user can run each step in one script `neb_submit.sh` by `bash neb_submit.sh` or `sbatch neb_submit.sh`. AutoNEB scripts usage is like that. 
 
 > Notice: Before you start neb calculation process, make sure that you have check the nodes and cpus setting and other setting like n_max, constraints and initial magnetic moments in `*neb_submit.sh` and `*neb_run.py` to make sure that you can reach the highest performance and reach the simulation result you want !!!   
+
+#### Visualize
+You can simply use ASE-GUI to have a view of NEB or AutoNEB trajectory.
+
+For NEB, you can view all running trajectory by 
+```bash
+ase -T gui neb.traj 
+```
+You can also view the last 10 images by
+```bash
+ase -T gui neb.traj@-10:
+```
+For AutoNEB, the most recent NEB path can always be monitored by:
+```bash
+ase -T gui -n -1 run_autoneb???.traj
+```
 
 
 #### Continuation calculation for NEB

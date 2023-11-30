@@ -1,5 +1,6 @@
 # JamesMisaka in 2023-11-16
 # read INIT and FINAL state and give the distance between each atoms
+# part of ATST-Tools scripts
 
 import os, sys
 from ase.io import read, write
