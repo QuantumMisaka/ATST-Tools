@@ -1,9 +1,9 @@
 # ATST-Tools
 Advanced ASE Transition State Tools for ABACUS, including:
-- NEB and improvement, like Dynamic NEB
-- CI-NEB, IT-NEB and others
-- AutoNEB
+- NEB, including CI-NEB, IT-NEB and others
+- AutoNEB: an automatic NEB workflow
 - Dimer
+- Vibration analysis
 
 Version v1.2.2
 
@@ -53,6 +53,7 @@ export PYTHONPATH=/path/to/source:$PYTHONPATH
 - [x] More test in magnetic surface reaction system
 - [x] Put calculation setting in an independent file (decoupling *_run.py)
 - [x] Vibration analysis scripts 
+- [ ] More easily and proper way to do continuation calculation for NEB and AutoNEB. (next target)
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
 
 
