@@ -1,5 +1,5 @@
 # JamesMisaka in 2023-11-30
-# Vibrational analysis by using abacus
+# Vibrational analysis from finite displacement by using abacus
 # part of ATST-Tools scripts
 
 import os
@@ -10,8 +10,7 @@ from ase.parallel import world, parprint
 
 stru = "STRU"
 atoms = read(stru)
-# indices setting
-
+# indices setting for which atoms to be displaced
 #vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
 vib_indices = [0, 1, 37]
 
@@ -22,8 +21,6 @@ nfree = 2
 abacus = "abacus"
 mpi = 16
 omp = 4
-
-
 lib_dir = "/lustre/home/2201110432/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
@@ -74,6 +71,7 @@ parameters = {
     'efield_pos_max': 0.7
 }
 
+
 def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     """Set Abacus calculators"""
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
@@ -84,19 +82,20 @@ def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
                 **parameters)
     return calc
 
-print("==> Starting Vibrational Analysis <==")
+if __name__ == "__main__":
+    print("==> Starting Vibrational Analysis <==")
 
-atoms.calc = set_calculator(abacus, parameters, mpi=mpi, omp=omp)
+    atoms.calc = set_calculator(abacus, parameters, mpi=mpi, omp=omp)
 
-vib = Vibrations(atoms, indices=vib_indices, 
-                 name=vib_name, delta=delta, nfree=nfree)
+    vib = Vibrations(atoms, indices=vib_indices, 
+                    name=vib_name, delta=delta, nfree=nfree)
 
-print("==> Running Vibrational Analysis <==")
-vib.run()
-# post-processing
-print("==> Done !!! <==")
-print(f"==> All force cache will be in {vib_name} directory <==")
-print("==> Vibrational Analysis Summary <==")
-vib.summary()
-print("==> Writing All Mode Trajectory <==")
-vib.write_mode()
+    print("==> Running Vibrational Analysis <==")
+    vib.run()
+    # post-processing
+    print("==> Done !!! <==")
+    print(f"==> All force cache will be in {vib_name} directory <==")
+    print("==> Vibrational Analysis Summary <==")
+    vib.summary()
+    print("==> Writing All Mode Trajectory <==")
+    vib.write_mode()
