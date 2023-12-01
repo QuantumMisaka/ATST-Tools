@@ -9,7 +9,7 @@ import os, sys
 from ase.io import read, write, Trajectory
 from ase.mep.neb import NEBTools
 
-def write_traj(tag, traj, format="extxyz"):
+def write_traj(tag, traj, format="abacus"):
     """output trajectory file by format"""
     
     if format == "extxyz":
