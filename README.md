@@ -129,23 +129,30 @@ For AutoNEB, the most recent NEB path can always be monitored by:
 ase -T gui -n -1 run_autoneb???.traj
 ```
 
-
 #### Continuation calculation for NEB
 If NEB or AutoNEB is break down somehow, you can do continuation calculation based on saved trajectory files and ATST-Tools scripts.
 
 For NEB, you can simply:
 ```bash
-python neb_make.py -i neb.traj [n_max]
+python neb_make.py -i neb.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation. You can also `python neb_post.py neb.traj` to generate the latest neb band `neb_latest.traj` and do continuation calculation by `python neb_make.py -i neb_latest.traj [n_max]`. note that `n_max = n_image - 2`
 
 For AutoNEB, you need to get `neb_latest.traj` in a more compicated way:
 ```bash
-python neb_post.py --autoneb ./AutoNEB_iter/run_autoneb???iter[index].traj
+python traj_collect.py ./AutoNEB_iter/run_autoneb???iter[index].traj
 ```
-to generate `neb_latest.traj` from certain index (like 006) stage of AutoNEB calculation, and then
+to generate `collection.traj` from certain index (like 006) stage of AutoNEB calculation. Another way to do the same thing is:
 ```bash
-python neb_make.py -i neb_latest.traj [n_max]
+python traj_collect.py ./run_autoneb???.traj
+```
+or
+```bash
+python traj_collect.py ./AutoNEBrun_rank?/STRU
+```
+When `collection.traj` is gotten, one can do
+```bash
+python neb_make.py -i collection.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation.
 
@@ -167,6 +174,9 @@ to generate `init_neb_chain.traj` for continuation calculation.
 -rw-r--r-- 1 james james 6.5K Nov 24 20:35 run_autoneb012.traj
 -rw-r--r-- 1 james james 531K Nov 24 20:37 run_autoneb025.traj
 ```
+
+> Note: if you want to preserve property information in traj_collect.py, you can manually edit the script to specify `no_calc = False`
+
 
 #### Other scripts
 Because ATST is originally based on ASE, the trajectory file can be directly read, view and analysis by `ase gui` and other ASE tools. Abide by `neb_make.py` and `neb_post.py`, We also offer some scripts to help you:
