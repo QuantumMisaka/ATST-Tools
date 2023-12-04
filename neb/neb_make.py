@@ -149,7 +149,7 @@ Notice: n_max is related to the number of interpolated image, not include initia
             format = sys.argv[format_ind+1]
         # set images
         if sys.argv[1] == "-i":
-            infile = sys.argv[2]
+            infile : str = sys.argv[2]
             n_max = int(sys.argv[3])
             nebmake(infile=infile, n_max=n_max, interpolate=None, 
                     fix_height=height, fix_dir=direction, mag_ele=mag_ele, mag_num=mag_num)

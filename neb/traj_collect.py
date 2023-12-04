@@ -3,8 +3,7 @@
 # for doing continuation calculation, espeacially for AutoNEB
 # part of ATST-Tools scripts
 
-import os, sys
-import glob
+import sys
 from ase.io import read, write
 from ase.atoms import Atoms
 
