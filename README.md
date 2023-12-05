@@ -148,6 +148,10 @@ python traj_collect.py ./run_autoneb???.traj
 ```
 or
 ```bash
+python traj_collect.py ./AutoNEB_iter/run_autoneb???iter00[i].traj
+```
+or
+```bash
 python traj_collect.py ./AutoNEBrun_rank?/STRU
 ```
 When `collection.traj` is gotten, one can do
@@ -155,6 +159,11 @@ When `collection.traj` is gotten, one can do
 python neb_make.py -i collection.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation.
+
+Also, if you want to preserve property information in traj_collect.py, you can manually edit the script to specify `no_calc = False`, or use:
+```bash
+python neb_post.py --autoneb neb.traj ./run_autoneb???.traj
+```
 
 > Note: Linux shell will automatically detect and sort number of index, so you will not be worried about using format like `run_autoneb???iter005.traj`, the consequence will be right, for example:
 ```bash
@@ -174,8 +183,6 @@ to generate `init_neb_chain.traj` for continuation calculation.
 -rw-r--r-- 1 james james 6.5K Nov 24 20:35 run_autoneb012.traj
 -rw-r--r-- 1 james james 531K Nov 24 20:37 run_autoneb025.traj
 ```
-
-> Note: if you want to preserve property information in traj_collect.py, you can manually edit the script to specify `no_calc = False`
 
 
 #### Other scripts
@@ -202,6 +209,8 @@ The Dimer workflow is based on 2 main python scripts and 2 workflow submit scrip
 
 ## Vibration Analysis 
 The vibration analysis is based on `ase.vibrations.Vibrations` object, which can be used by `python vib_analysis.py` to do vibration analysis by finite displacement method for initial, final and transition state. The result will be printed out  and saved in `running_vib.out` file. All force matrix for displaced and normal mode will also be saved and printed.
+
+Also, thermodynamic analysis will be performed based on `ase.thermochemistry.HarmonicThermo` object based on vibration analysis result and specified temperature.
 
 
 ## Notices
