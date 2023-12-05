@@ -2,15 +2,23 @@ from ase import Atoms
 from ase.optimize import BFGS, FIRE
 from ase.vibrations import Vibrations
 from ase.io import read, write
+from ase.thermochemistry import HarmonicThermo
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.parallel import world, parprint
 import os
+import numpy as np
 
 #lib_dir = "/home/james/example/"
 target = read("neb_latest.traj@-5")
 lib_dir = "/lustre/home/2201110432/example/abacus"
 mpi = 16
 omp = 4
+
+neb_ts = target
+vib_indices = list(range(48, 54))
+vib_indices += [atom.index for atom in neb_ts if atom.symbol == 'H']
+T = 300
+
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 pp = {
@@ -66,21 +74,26 @@ def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     return calc
 
 
-neb_ts = target
-neb_ts.calc = set_calculator("abacus", parameters, mpi=mpi, omp=omp)
-vib_indices = list(range(48, 54))
-vib_indices += [atom.index for atom in neb_ts if atom.symbol == 'H']
-
-vib = Vibrations(neb_ts, indices=vib_indices)
-parprint("==> Running Vibrational Analysis <==")
-vib.run()
-# post-processing
-parprint("==> Get Energy and Frequency <==")
-vib.get_energies()
-vib.get_frequencies()
-parprint("==> Get ZPE <==")
-vib.get_zero_point_energy()
-parprint("==> Writing Mode <==")
-vib.write_mode()
-parprint("==> Summary <==")
-vib.summary()
+if __name__ == "__main__":
+    neb_ts.calc = set_calculator("abacus", parameters, mpi=mpi, omp=omp)
+    vib = Vibrations(neb_ts, indices=vib_indices)
+    parprint("==> Running Vibrational Analysis <==")
+    vib.run()
+    # post-processing
+    parprint("==> Get Energy and Frequency <==")
+    vib.get_energies()
+    vib.get_frequencies()
+    parprint("==> Get ZPE <==")
+    vib.get_zero_point_energy()
+    parprint("==> Writing Mode <==")
+    vib.write_mode()
+    parprint("==> Summary <==")
+    vib.summary()
+    # thermochemistry
+    print("==> Doing Harmonmic Thermodynamic Analysis <==")
+    real_vib_energies = np.array([energy for energy in vib.get_energies() if energy.imag == 0 and energy.real > 0], dtype=float)
+    thermo = HarmonicThermo(real_vib_energies)
+    entropy = thermo.get_entropy(T)
+    free_energy = thermo.get_helmholtz_energy(T)
+    print(f"==> Entropy: {entropy:.6e} eV/K <==")
+    print(f"==> Free Energy: {free_energy:.6f} eV <==")

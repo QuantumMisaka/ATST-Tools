@@ -3,7 +3,9 @@
 # part of ATST-Tools scripts
 
 import os
+import numpy as np
 from ase.vibrations import Vibrations
+from ase.thermochemistry import HarmonicThermo
 from ase.io import read, write
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.parallel import world, parprint
@@ -13,6 +15,7 @@ atoms = read(stru)
 # indices setting for which atoms to be displaced
 #vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
 vib_indices = [0, 1, 37]
+T = 523.15 # K
 
 vib_name = 'vib'
 delta = 0.01
@@ -99,3 +102,14 @@ if __name__ == "__main__":
     vib.summary()
     print("==> Writing All Mode Trajectory <==")
     vib.write_mode()
+    # thermochemistry
+    print("==> Doing Harmonmic Thermodynamic Analysis <==")
+    real_vib_energies = np.array([energy for energy in vib.get_energies() 
+                        if energy.imag == 0 and energy.real > 0], dtype=float)
+    thermo = HarmonicThermo(real_vib_energies)
+    entropy = thermo.get_entropy(T)
+    free_energy = thermo.get_helmholtz_energy(T)
+    print(f"==> Entropy: {entropy:.6e} eV/K <==")
+    print(f"==> Free Energy: {free_energy:.6f} eV <==")
+    
+
