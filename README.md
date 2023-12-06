@@ -138,7 +138,7 @@ python neb_make.py -i neb.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation. You can also `python neb_post.py neb.traj` to generate the latest neb band `neb_latest.traj` and do continuation calculation by `python neb_make.py -i neb_latest.traj [n_max]`. note that `n_max = n_image - 2`
 
-For AutoNEB, you need to get `neb_latest.traj` in a more compicated way:
+For AutoNEB, you need to get `neb_latest.traj` in a more compicated way, especially for the first NEB step in AutoNEB running:
 ```bash
 python traj_collect.py ./AutoNEB_iter/run_autoneb???iter[index].traj
 ```
@@ -160,7 +160,7 @@ python neb_make.py -i collection.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation.
 
-Also, if you want to preserve property information in traj_collect.py, you can manually edit the script to specify `no_calc = False`, or use:
+Also, if you want to preserve property information in traj_collect.py (especially for AutoNEB process which is nearly finished), you can manually edit the script to specify `no_calc = False`, or use:
 ```bash
 python neb_post.py --autoneb neb.traj ./run_autoneb???.traj
 ```
