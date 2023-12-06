@@ -72,11 +72,11 @@ class AbacusDimer:
             print("--- Notice: No constraint found in init Atoms, there will be no mask in dimer calculation ---")
             return d_mask
         
-    def run(self, fmax=0.05):
+    def run(self, fmax=0.05, properties=["energy", "forces", "stress"]):
         """run dimer calculation workflow"""
         dimer_init = self.init_Atoms
         dimer_init.calc = self.set_calculator()
-        dimer_traj = Trajectory(self.traj_file, 'w', dimer_init, properties=["energy", "forces", "stress"])
+        dimer_traj = Trajectory(self.traj_file, 'w', dimer_init, properties=properties)
         if self.init_eigenmode_method == "displacement":
             # d_mask = self.set_d_mask_by_displacement() # not the best
             d_mask = self.set_d_mask_by_constraint() # not need if displacement is right
