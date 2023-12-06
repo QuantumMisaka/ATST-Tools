@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - Dimer
 - Vibration analysis
 
-Version v1.2.3
+Version v1.3.0
 
 Copyright @ QuantumMisaka from PKU & AISI
 
