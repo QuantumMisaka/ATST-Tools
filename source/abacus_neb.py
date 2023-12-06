@@ -6,7 +6,7 @@ import os
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.mep.neb import NEB, DyNEB # newest ase
-from ase.io import read, write
+from ase.io import read, write, Trajectory
 from ase.parallel import world, parprint, paropen
 
 class AbacusNEB:
@@ -122,6 +122,7 @@ class AbacusNEB:
         climb (bool): climbing image NEB method
         """
         neb = self.set_neb_chain(climb, fmax)
-        opt = optimizer(neb, trajectory=outfile)
+        traj = Trajectory(outfile, 'w', neb, properties=["energy", "forces", "stress"])
+        opt = optimizer(neb, trajectory=traj)
         opt.run(fmax)
         print("----- NEB calculation finished -----")

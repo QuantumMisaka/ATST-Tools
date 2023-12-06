@@ -5,6 +5,7 @@
 from ase.io import Trajectory, read, write
 import os, sys
 import numpy as np
+from abacus_dimer import AbacusDimer
 
 fmax = 0.05
 dimer_input_file = 'dimer_init.traj'

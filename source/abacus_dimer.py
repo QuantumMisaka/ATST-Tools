@@ -3,7 +3,8 @@
 # part of ATST-Tools scripts
 
 from ase.io import Trajectory, read, write
-from ase.mep import DimerControl, MinModeAtoms, MinModeTranslate
+#from ase.mep import DimerControl, MinModeAtoms, MinModeTranslate
+from my_dimer import DimerControl, MinModeAtoms, MinModeTranslate
 from ase.calculators.abacus import Abacus, AbacusProfile
 import os, sys
 import numpy as np
@@ -75,7 +76,7 @@ class AbacusDimer:
         """run dimer calculation workflow"""
         dimer_init = self.init_Atoms
         dimer_init.calc = self.set_calculator()
-        dimer_traj = Trajectory(self.traj_file, 'w', dimer_init)
+        dimer_traj = Trajectory(self.traj_file, 'w', dimer_init, properties=["energy", "forces", "stress"])
         if self.init_eigenmode_method == "displacement":
             # d_mask = self.set_d_mask_by_displacement() # not the best
             d_mask = self.set_d_mask_by_constraint() # not need if displacement is right
