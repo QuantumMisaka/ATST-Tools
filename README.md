@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - Dimer
 - Vibration analysis
 
-Version v1.2.2
+Version v1.2.3
 
 Copyright @ QuantumMisaka from PKU & AISI
 
@@ -53,7 +53,7 @@ export PYTHONPATH=/path/to/source:$PYTHONPATH
 - [x] More test in magnetic surface reaction system
 - [x] Put calculation setting in an independent file (decoupling *_run.py)
 - [x] Vibration analysis scripts 
-- [ ] More easily and proper way to do continuation calculation for NEB and AutoNEB. (next target)
+- [x] More easily and proper way to do continuation calculation for NEB and AutoNEB. (next target)
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
 
 
@@ -129,25 +129,41 @@ For AutoNEB, the most recent NEB path can always be monitored by:
 ase -T gui -n -1 run_autoneb???.traj
 ```
 
-
 #### Continuation calculation for NEB
 If NEB or AutoNEB is break down somehow, you can do continuation calculation based on saved trajectory files and ATST-Tools scripts.
 
 For NEB, you can simply:
 ```bash
-python neb_make.py -i neb.traj [n_max]
+python neb_make.py -i neb.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation. You can also `python neb_post.py neb.traj` to generate the latest neb band `neb_latest.traj` and do continuation calculation by `python neb_make.py -i neb_latest.traj [n_max]`. note that `n_max = n_image - 2`
 
-For AutoNEB, you need to get `neb_latest.traj` in a more compicated way:
+For AutoNEB, you need to get `neb_latest.traj` in a more compicated way, especially for the first NEB step in AutoNEB running:
 ```bash
-python neb_post.py --autoneb ./AutoNEB_iter/run_autoneb???iter[index].traj
+python traj_collect.py ./AutoNEB_iter/run_autoneb???iter[index].traj
 ```
-to generate `neb_latest.traj` from certain index (like 006) stage of AutoNEB calculation, and then
+to generate `collection.traj` from certain index (like 006) stage of AutoNEB calculation. Another way to do the same thing is:
 ```bash
-python neb_make.py -i neb_latest.traj [n_max]
+python traj_collect.py ./run_autoneb???.traj
+```
+or
+```bash
+python traj_collect.py ./AutoNEB_iter/run_autoneb???iter00[i].traj
+```
+or
+```bash
+python traj_collect.py ./AutoNEBrun_rank?/STRU
+```
+When `collection.traj` is gotten, one can do
+```bash
+python neb_make.py -i collection.traj [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation.
+
+Also, if you want to preserve property information in traj_collect.py (especially for AutoNEB process which is nearly finished), you can manually edit the script to specify `no_calc = False`, or use:
+```bash
+python neb_post.py --autoneb neb.traj ./run_autoneb???.traj
+```
 
 > Note: Linux shell will automatically detect and sort number of index, so you will not be worried about using format like `run_autoneb???iter005.traj`, the consequence will be right, for example:
 ```bash
@@ -168,10 +184,12 @@ to generate `init_neb_chain.traj` for continuation calculation.
 -rw-r--r-- 1 james james 531K Nov 24 20:37 run_autoneb025.traj
 ```
 
+
 #### Other scripts
 Because ATST is originally based on ASE, the trajectory file can be directly read, view and analysis by `ase gui` and other ASE tools. Abide by `neb_make.py` and `neb_post.py`, We also offer some scripts to help you:
 - `neb_dist.py`: This script will give distance between initial and final state, which is good for you to check whether the atoms in two image is correspondent, and is also a reference for setting number of n_max
 - `traj_transform.py`: This script can transfer traj files into other format like `extxyz`, `abacus`(STRU), `cif` and so on (coming soon). Also if user specify `--neb` option, this script will automatically detect and cut the NEB trajectory when doing format transform. This script will be helpful for analysis and visualization of NEB trajectory.
+- `traj_collect.py`: This script can collect structure files into a trajectory file, which is specifically used for NEB continuation calculation.
 
 
 ## Dimer workflow
@@ -191,6 +209,8 @@ The Dimer workflow is based on 2 main python scripts and 2 workflow submit scrip
 
 ## Vibration Analysis 
 The vibration analysis is based on `ase.vibrations.Vibrations` object, which can be used by `python vib_analysis.py` to do vibration analysis by finite displacement method for initial, final and transition state. The result will be printed out  and saved in `running_vib.out` file. All force matrix for displaced and normal mode will also be saved and printed.
+
+Also, thermodynamic analysis will be performed based on `ase.thermochemistry.HarmonicThermo` object based on vibration analysis result and specified temperature.
 
 
 ## Notices
