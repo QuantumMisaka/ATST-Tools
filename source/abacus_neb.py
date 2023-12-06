@@ -120,6 +120,7 @@ class AbacusNEB:
         optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported, recommend FIRE method
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
+        properties (list): properties dumped in trajectory files, default ['energy', 'forces', 'stress']
         """
         neb = self.set_neb_chain(climb, fmax)
         traj = Trajectory(outfile, 'w', neb, properties=properties)

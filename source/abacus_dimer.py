@@ -73,7 +73,12 @@ class AbacusDimer:
             return d_mask
         
     def run(self, fmax=0.05, properties=["energy", "forces", "stress"]):
-        """run dimer calculation workflow"""
+        """run dimer calculation workflow
+        
+        Args:
+            fmax (float): threshold (unit: eV/Angstrom) of the force convergence
+            properties (list): properties dumped in trajectory files, default ['energy', 'forces', 'stress']
+        """
         dimer_init = self.init_Atoms
         dimer_init.calc = self.set_calculator()
         dimer_traj = Trajectory(self.traj_file, 'w', dimer_init, properties=properties)
