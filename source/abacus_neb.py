@@ -5,7 +5,8 @@
 import os
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
-from ase.mep.neb import NEB, DyNEB # newest ase
+#from ase.mep.neb import NEB, DyNEB # newest ase
+from my_neb import NEB, DyNEB
 from ase.io import read, write, Trajectory
 from ase.parallel import world, parprint, paropen
 

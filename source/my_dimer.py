@@ -1107,7 +1107,7 @@ class MinModeTranslate(Optimizer):
             else:
                 # save this calculation result by QuamtumMisaka
                 if self.dump_calc:
-                    self.dump_properties_traj(self.atoms)
+                    self.dump_properties_traj(self.atoms) 
                 if isinstance(self.control, DimerControl):
                     l = '%s: %4d  %02d:%02d:%02d %15.6f %12.4f %s ' \
                         '%12.6f %10d\n' % ('MinModeTranslate', self.nsteps,
