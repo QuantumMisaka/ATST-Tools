@@ -131,13 +131,19 @@ def nebmake(initial:Atoms=None, final:Atoms=None, ts_guess:Atoms=None,
                 n_ts = n_max // 2 + 1
                 n_init = n_ts - 1
                 n_final = n_max - n_ts
-                image_before_ts = get_neb_guess_chain(initial, ts_guess, n_init, interpolate,)
-                image_after_ts = get_neb_guess_chain(ts_guess, final, n_final, interpolate,)
+                image_before_ts = get_neb_guess_chain(initial, ts_guess, n_init, interpolate,
+                                                      fix_height, fix_dir, mag_ele, mag_num,)
+                image_after_ts = get_neb_guess_chain(ts_guess, final, n_final, interpolate,
+                                                     fix_height, fix_dir, mag_ele, mag_num,)
+                # fix and mag need to be set in ts_guess also
+                set_fix_for_Atoms(ts_guess, fix_height=fix_height, fix_dir=fix_dir)
+                set_magmom_for_Atoms(ts_guess, mag_ele=mag_ele, mag_num=mag_num)
                 images = image_before_ts + image_after_ts[1:]
             else:
             # not TS_guess information
                 print("----- Get NEB guess chain only by initial and final state -----")
-                images = get_neb_guess_chain(initial, final, n_max, interpolate,)
+                images = get_neb_guess_chain(initial, final, n_max, interpolate,
+                                             fix_height, fix_dir, mag_ele, mag_num,)
             print(f"--- Successfully make guessed image chain by {interpolate} method ! ---")
             write(f'{outfile}', images, format='traj')
             return images # for main function to read
