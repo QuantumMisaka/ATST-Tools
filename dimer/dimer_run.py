@@ -5,6 +5,7 @@
 from ase.io import Trajectory, read, write
 import os, sys
 import numpy as np
+from abacus_dimer import AbacusDimer
 
 fmax = 0.05
 dimer_input_file = 'dimer_init.traj'
@@ -15,6 +16,7 @@ displacement_input = 'displacement_vector.npy'
 mpi = 16
 omp = 4
 abacus = "abacus"
+moving_atoms_ind = [0,1,37,38,39]
 #lib_dir = "/lustre/home/2201110432/example/abacus"
 lib_dir = "/home/james/example"
 pseudo_dir = f"{lib_dir}/PP"
@@ -68,4 +70,4 @@ if __name__ == "__main__":
                         mpi=mpi, omp=omp, 
                         init_eigenmode_method=init_eigenmode_method,
                         displacement_vector=displacement_vector)
-    dimer.run(fmax=fmax)
+    dimer.run(fmax=fmax, moving_atoms_ind=moving_atoms_ind)

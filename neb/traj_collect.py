@@ -7,7 +7,7 @@ import sys
 from ase.io import read, write
 from ase.atoms import Atoms
 
-def traj_collect(files: list[Atoms], out_file="collection.traj", no_calc=True):
+def traj_collect(files: list[Atoms], out_file="collection.traj", no_calc=False):
     """Collect Atoms files to a traj file contain list[Atoms]
     
     Args:
@@ -26,16 +26,27 @@ def traj_collect(files: list[Atoms], out_file="collection.traj", no_calc=True):
 if __name__ == "__main__":
     msg = '''
 Usage: 
-    python traj_collect.py [structures]
+    python traj_collect.py  [(--no-calc)]  [structures]
 structures list should contrain 2 or more structures
+    --no-calc is optional for not keeping properties
 '''
     if len(sys.argv) <= 2:
         print(msg)
     else:
-        stru_files = sys.argv[1:]
+        no_calc = False
+        if "--no-calc" in sys.argv:
+            if len(sys.argv) <= 3:
+                print(msg)
+                exit()
+            index_no_calc = sys.argv.index("--no-calc")
+            no_calc = True
+            stru_files = sys.argv[1:index_no_calc]
+            stru_files.extend(sys.argv[index_no_calc+1:])
+        else:
+            stru_files = sys.argv[1:]
         try:
             atoms_list = [read(stru) for stru in stru_files]
         except:
             raise ValueError("Can't read structures files")
-        traj_collect(atoms_list)
+        traj_collect(atoms_list, no_calc=no_calc)
         print("==> Done ! <==")

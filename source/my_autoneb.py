@@ -14,8 +14,8 @@ from warnings import warn
 from ase.io import Trajectory
 from ase.io import read
 from ase.mep import NEB
-from ase.optimize import BFGS
-from ase.optimize import FIRE
+#from my_neb import NEB
+from ase.optimize import BFGS, FIRE
 from ase.calculators.singlepoint import SinglePointCalculator
 import ase.parallel as mpi
 
@@ -176,8 +176,10 @@ class AutoNEB:
                 if i not in to_run[1: -1]:
                     filename = '%s%03d.traj' % (self.prefix, i)
                     with Trajectory(filename, mode='w',
-                                    atoms=self.all_images[i]) as traj:
+                                    atoms=self.all_images[i],
+                                    ) as traj:
                         traj.write()
+                        # modified by QuantumMisaka
                     filename_ref = self.iter_trajpath(i, self.iteration)
                     if os.path.isfile(filename):
                         shutil.copy2(filename, filename_ref)
@@ -218,13 +220,15 @@ class AutoNEB:
             traj = closelater(Trajectory(
                 '%s%03d.traj' % (self.prefix, j + nneb), 'w',
                 self.all_images[j + nneb],
-                master=(self.world.rank % n == 0)
+                master=(self.world.rank % n == 0),
+                properties=["energy", "forces", "stress"]
             ))
             filename_ref = self.iter_trajpath(j + nneb, self.iteration)
             trajhist = closelater(Trajectory(
                 filename_ref, 'w',
                 self.all_images[j + nneb],
-                master=(self.world.rank % n == 0)
+                master=(self.world.rank % n == 0),
+                properties=["energy", "forces", "stress"]
             ))
             qn.attach(traj)
             qn.attach(trajhist)
@@ -233,16 +237,19 @@ class AutoNEB:
             for i, j in enumerate(to_run[1: -1]):
                 filename_ref = self.iter_trajpath(j, self.iteration)
                 trajhist = closelater(Trajectory(
-                    filename_ref, 'w', self.all_images[j]
+                    filename_ref, 'w', self.all_images[j],
+                    properties=["energy", "forces", "stress"]
                 ))
                 qn.attach(seriel_writer(trajhist, i, num).write)
 
                 traj = closelater(Trajectory(
                     '%s%03d.traj' % (self.prefix, j), 'w',
-                    self.all_images[j]
+                    self.all_images[j],
+                    properties=["energy", "forces", "stress"]
                 ))
                 qn.attach(seriel_writer(traj, i, num).write)
                 num += 1
+        # Trajectory writing part is modified by QuantumMisaka
 
         if isinstance(self.maxsteps, (list, tuple)) and many_steps:
             steps = self.maxsteps[1]

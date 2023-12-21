@@ -6,7 +6,8 @@ import os
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.optimize import FIRE, BFGS
 from ase.mep.neb import NEB, DyNEB # newest ase
-from ase.io import read, write
+# from my_neb import NEB, DyNEB
+from ase.io import read, write, Trajectory
 from ase.parallel import world, parprint, paropen
 
 class AbacusNEB:
@@ -114,14 +115,16 @@ class AbacusNEB:
         return neb
 
 
-    def run(self, optimizer=FIRE, fmax=0.05, climb=True, outfile="neb.traj"):
+    def run(self, optimizer=FIRE, fmax=0.05, climb=True, outfile="neb.traj", properties=["energy", "forces", "stress"]):
         """Run Abacus NEB
 
         optimizer (Optimizer object): defaults to FIRE. BFGS, LBFGS, GPMin, MDMin and QuasiNewton are supported, recommend FIRE method
         fmax (float): threshold (unit: eV/Angstrom) of the force convergence
         climb (bool): climbing image NEB method
+        properties (list): properties dumped in trajectory files, default ['energy', 'forces', 'stress']
         """
         neb = self.set_neb_chain(climb, fmax)
-        opt = optimizer(neb, trajectory=outfile)
+        traj = Trajectory(outfile, 'w', neb, properties=properties)
+        opt = optimizer(neb, trajectory=traj)
         opt.run(fmax)
         print("----- NEB calculation finished -----")
