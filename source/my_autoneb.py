@@ -14,8 +14,8 @@ from warnings import warn
 from ase.io import Trajectory
 from ase.io import read
 from ase.mep import NEB
-from ase.optimize import BFGS
-from ase.optimize import FIRE
+#from my_neb import NEB
+from ase.optimize import BFGS, FIRE
 from ase.calculators.singlepoint import SinglePointCalculator
 import ase.parallel as mpi
 
