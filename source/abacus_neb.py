@@ -124,7 +124,8 @@ class AbacusNEB:
         properties (list): properties dumped in trajectory files, default ['energy', 'forces', 'stress']
         """
         neb = self.set_neb_chain(climb, fmax)
-        traj = Trajectory(outfile, 'w', neb, properties=properties)
+        # traj = Trajectory(outfile, 'w', neb, properties=properties) # cannot run for now
+        traj = Trajectory(outfile, 'w', neb)
         opt = optimizer(neb, trajectory=traj)
         opt.run(fmax)
         print("----- NEB calculation finished -----")
