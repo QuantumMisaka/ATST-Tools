@@ -16,20 +16,22 @@ displacement_input = 'displacement_vector.npy'
 mpi = 16
 omp = 4
 abacus = "abacus"
-moving_atoms_ind = [0,1,37,38,39]
+moving_atoms_ind = None
 #lib_dir = "/lustre/home/2201110432/example/abacus"
-lib_dir = "/home/james/example"
+lib_dir = ""
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 pp = {
-        'H':'H_ONCV_PBE-1.0.upf',
-        'Au':'Au_ONCV_PBE-1.0.upf',
+      'C':'C_ONCV_PBE-1.0.upf',
+      'H':'H_ONCV_PBE-1.0.upf',
+      'Pt':'Pt_ONCV_PBE-1.0.upf',
       }
 basis = {
-        'H':'H_gga_6au_100Ry_2s1p.orb',
-        'Au':'Au_gga_7au_100Ry_4s2p2d1f.orb',
-        }
-kpts = [3, 1, 3]
+         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+         'H': 'H_gga_6au_100Ry_2s1p.orb',
+         'Pt': 'Pt_gga_7au_100Ry_4s2p2d1f.orb'
+         ,}
+kpts = [2, 1, 2]
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
@@ -49,16 +51,19 @@ parameters = {
     'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
+    'init_chg': 'atomic',
+    'init_wfc': 'atomic',
     'cal_force': 1,
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 0,
     'out_mul': 0,
     'out_bandgap': 0,
+    'out_wfc_lcao': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.7
+    'efield_pos_max': 0.0
 }
         
 if __name__ == "__main__":

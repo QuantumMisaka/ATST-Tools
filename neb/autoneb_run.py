@@ -29,14 +29,16 @@ lib_dir = ""
 pseudo_dir = f"{lib_dir}/"
 basis_dir = f"{lib_dir}/"
 pp = {
-        'H':'H_ONCV_PBE-1.0.upf',
-        'Au':'Au_ONCV_PBE-1.0.upf',
+      'C':'C_ONCV_PBE-1.0.upf',
+      'H':'H_ONCV_PBE-1.0.upf',
+      'Pt':'Pt_ONCV_PBE-1.0.upf',
       }
 basis = {
-        'H':'H_gga_6au_100Ry_2s1p.orb',
-        'Au':'Au_gga_7au_100Ry_4s2p2d1f.orb',
-        }
-kpts = [3, 1, 3]
+         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+         'H': 'H_gga_6au_100Ry_2s1p.orb',
+         'Pt': 'Pt_gga_7au_100Ry_4s2p2d1f.orb'
+         ,}
+kpts = [2, 1, 2]
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
@@ -64,12 +66,12 @@ parameters = {
     'out_stru': 1,
     'out_chg': 0,
     'out_mul': 0,
-    'out_wfc_lcao': 1,
+    'out_wfc_lcao': 0,
     'out_bandgap': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.7
+    'efield_pos_max': 0.0
 }
 
 
