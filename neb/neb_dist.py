@@ -20,5 +20,7 @@ Will return the distance of two image structure by Frobenius norm
         final_infile = sys.argv[2]
         init_Atoms = read(init_infile)
         final_Atoms = read(final_infile)
+        # if constraints error, the constraint part need to be aligned
+        # need more notice print-out
         distance = distance(init_Atoms, final_Atoms)
         print(f"==> Distance Between Two Image is {distance:.4f} Angstrom <==")
