@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - Dimer
 - Vibration analysis
 
-Version v1.3.0
+Version v1.3.1
 
 Copyright @ QuantumMisaka from PKU & AISI
 
@@ -214,6 +214,9 @@ The Dimer workflow is based on 2 main python scripts and 2 workflow submit scrip
 The vibration analysis is based on `ase.vibrations.Vibrations` object, which can be used by `python vib_analysis.py` to do vibration analysis by finite displacement method for initial, final and transition state. The result will be printed out  and saved in `running_vib.out` file. All force matrix for displaced and normal mode will also be saved and printed.
 
 Also, thermodynamic analysis will be performed based on `ase.thermochemistry.HarmonicThermo` object based on vibration analysis result and specified temperature.
+
+## Relaxation
+Relaxation method offer by ASE can be used by scripts from `relax` directory, which use ABACUS as SCF calculator. 
 
 
 ## Notices
