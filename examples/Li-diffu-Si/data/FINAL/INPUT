@@ -3,10 +3,10 @@ INPUT_PARAMETERS
 calculation                             scf
 ecutwfc                                 100
 smearing_method                         gaussian
-smearing_sigma                          0.002
+smearing_sigma                          0.001
 basis_type                              lcao
 ks_solver                               genelpa
-mixing_type                             pulay
+mixing_type                             broyden
 scf_thr                                 1e-06
 scf_nmax                                300
 out_chg                                 0
@@ -16,3 +16,5 @@ cal_stress                              1
 out_stru                                1
 ntype                                   2
 dft_functional                          pbe
+pseudo_dir   ..
+orbital_dir  ..
