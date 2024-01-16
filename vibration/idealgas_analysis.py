@@ -1,5 +1,5 @@
-# JamesMisaka in 2023-11-30
-# Vibrational analysis from finite displacement by using abacus
+# JamesMisaka in 2024-01-16
+# Thermodynamic analysis for molecular (in a box)
 # part of ATST-Tools scripts
 
 import os
@@ -105,9 +105,9 @@ if __name__ == "__main__":
     vib.write_mode()
     # thermochemistry
     print("==> Doing Ideal-Gas Thermodynamic Analysis <==")
-    initias = (atoms.get_moments_of_inertia() * units._amu /
-                        (10.0**10)**2)
-    print(f"==> Initial Moments of Inertia for {geometry} {atoms.symbols} molecular: {initias} kg*m^2 <==")
+    # initias = (atoms.get_moments_of_inertia() * units._amu /
+    #                     (10.0**10)**2)
+    # print(f"==> Initial Moments of Inertia for {geometry} {atoms.symbols} molecular: {initias} kg*m^2 <==")
     gasthermo = IdealGasThermo(vib.get_energies(),
                            geometry=geometry,
                            atoms=atoms,
@@ -118,5 +118,6 @@ if __name__ == "__main__":
     free_energy = gasthermo.get_gibbs_energy(T,P)
     print(f"==> Entropy: {entropy:.6e} eV/K <==")
     print(f"==> Gibbs Free Energy: {free_energy:.6f} eV <==")
+    
     
 

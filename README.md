@@ -5,7 +5,7 @@ Advanced ASE Transition State Tools for ABACUS, including:
 - Dimer
 - Vibration analysis
 
-Version v1.3.1
+Version v1.3.2
 
 Copyright @ QuantumMisaka from PKU & AISI
 
@@ -56,8 +56,8 @@ export PYTHONPATH=/path/to/source:$PYTHONPATH
 - [x] Connected to Dimer method
 - [x] More test in magnetic surface reaction system
 - [x] Put calculation setting in an independent file (decoupling *_run.py)
-- [x] Vibration analysis scripts 
-- [x] More easily and proper way to do continuation calculation for NEB and AutoNEB. (next target)
+- [x] Vibration and Thermodynamic analysis scripts 
+- [x] More easily and proper way to do continuation calculation for NEB and AutoNEB. 
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
 
 
