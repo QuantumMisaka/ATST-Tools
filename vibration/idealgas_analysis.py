@@ -5,26 +5,30 @@
 import os
 import numpy as np
 from ase.vibrations import Vibrations
-from ase.thermochemistry import HarmonicThermo
+from ase.thermochemistry import IdealGasThermo
 from ase.io import read, write
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.parallel import world, parprint
+from ase import units
 
 stru = "STRU"
 atoms = read(stru)
 # indices setting for which atoms to be displaced
 #vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
-vib_indices = [0, 1, 37]
+vib_indices = None
 T = 523.15 # K
+P = 1E5 # Pa
+geometry = 'linear'
+symmetrynumber = 1
 
 vib_name = 'vib'
 delta = 0.01
 nfree = 2
 
 abacus = "abacus"
-mpi = 16
+mpi = 4
 omp = 4
-lib_dir = "/lustre/home/2201110432/example/abacus"
+lib_dir = "/home/james/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 pp = {
@@ -39,7 +43,7 @@ basis = {
          'O': 'O_gga_7au_100Ry_2s2p1d.orb',
          'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb'
          ,}
-kpts = [3, 1, 2]
+kpts = [1, 1, 1]
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
@@ -48,8 +52,9 @@ parameters = {
     'ks_solver': 'genelpa',
     'symmetry': 0,
     'vdw_method': 'none',
-    'smearing_method': 'mp',
-    'smearing_sigma': 0.002,
+    'gamma_only': 1,
+    'smearing_method': 'gau',
+    'smearing_sigma': 0.001,
     'basis_type': 'lcao',
     'mixing_type': 'broyden',
     'scf_thr': 1e-7,
@@ -68,10 +73,6 @@ parameters = {
     'out_mul': 0,
     'out_bandgap': 0,
     'out_wfc_lcao': 1,
-    'efield_flag': 1,
-    'dip_cor_flag': 1,
-    'efield_dir': 1,
-    'efield_pos_max': 0.7
 }
 
 
@@ -103,13 +104,19 @@ if __name__ == "__main__":
     print("==> Writing All Mode Trajectory <==")
     vib.write_mode()
     # thermochemistry
-    print("==> Doing Harmonmic Thermodynamic Analysis <==")
-    vib_energies = vib.get_energies()
-    #real_vib_energies = np.array([energy for energy in vib.get_energies() if energy.imag == 0 and energy.real > 0], dtype=float)
-    thermo = HarmonicThermo(vib_energies, ignore_imag_modes=True,)
-    entropy = thermo.get_entropy(T)
-    free_energy = thermo.get_helmholtz_energy(T)
+    print("==> Doing Ideal-Gas Thermodynamic Analysis <==")
+    initias = (atoms.get_moments_of_inertia() * units._amu /
+                        (10.0**10)**2)
+    print(f"==> Initial Moments of Inertia for {geometry} {atoms.symbols} molecular: {initias} kg*m^2 <==")
+    gasthermo = IdealGasThermo(vib.get_energies(),
+                           geometry=geometry,
+                           atoms=atoms,
+                           ignore_imag_modes=True,
+                           symmetrynumber=symmetrynumber,
+                           spin=0,)
+    entropy = gasthermo.get_entropy(T,P)
+    free_energy = gasthermo.get_gibbs_energy(T,P)
     print(f"==> Entropy: {entropy:.6e} eV/K <==")
-    print(f"==> Free Energy: {free_energy:.6f} eV <==")
+    print(f"==> Gibbs Free Energy: {free_energy:.6f} eV <==")
     
 
