@@ -305,7 +305,7 @@ class AutoNEB:
             toInterpolate += [self.all_images[jmax + 1]]
 
             neb = NEB(toInterpolate)
-            neb.interpolate(method=self.interpolate_method)
+            neb.interpolate(method=self.interpolate_method, apply_constraint=False)
 
             tmp = self.all_images[:jmax + 1]
             tmp += toInterpolate[1:-1]
@@ -393,7 +393,7 @@ class AutoNEB:
             toInterpolate += [self.all_images[jmax + 1]]
 
             neb = NEB(toInterpolate)
-            neb.interpolate(method=self.interpolate_method)
+            neb.interpolate(method=self.interpolate_method, apply_constraint=False)
 
             tmp = self.all_images[:jmax + 1]
             tmp += toInterpolate[1:-1]

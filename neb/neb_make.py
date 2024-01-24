@@ -70,11 +70,11 @@ def get_neb_guess_chain(init_Atoms: Atoms, final_Atoms: Atoms,
     neb = NEB(images)
     # calculation and others should be set independently
     if interpolate in ['idpp','linear']:
-        neb.interpolate(method=interpolate)
+        neb.interpolate(method=interpolate, apply_constraint=False)
         # print-out guess information
     elif interpolate:
         print("---- Warning: interpolate method not supported, using default linear interpolate ----")
-        neb.interpolate(method="linear") # using default
+        neb.interpolate(method="linear", apply_constraint=False) # using default
     return images
 
 
