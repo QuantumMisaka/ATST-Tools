@@ -160,12 +160,11 @@ opt.run(neb_fmax)
 
 # neb displacement to dimer
 n_images = NEBTools(images)._guess_nimages()
-neb_chain = images
-neb_raw_barrier = max([image.get_potential_energy() for image in neb_chain])
-fmax = NEBTools(neb_chain).get_fmax()
-barrier = NEBTools(neb_chain).get_barrier()[0]
+neb_raw_barrier = max([image.get_potential_energy() for image in images])
+fmax = NEBTools(images).get_fmax()
+barrier = NEBTools(images).get_barrier()[0]
 TS_info = [(ind, image) 
-            for ind, image in enumerate(neb_chain) 
+            for ind, image in enumerate(images) 
             if image.get_potential_energy() == neb_raw_barrier][0]
 print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} images  ===")
 print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
@@ -180,8 +179,8 @@ norm_vector = 0.01
 
 ind_before_TS = TS_info[0] - step_before_TS
 ind_after_TS = TS_info[0] + step_after_TS
-img_before = neb_chain[ind_before_TS]
-img_after = neb_chain[ind_after_TS]
+img_before = images[ind_before_TS]
+img_after = images[ind_after_TS]
 image_vector = (img_before.positions - img_after.positions)
 modulo_norm = np.linalg.norm(image_vector) / norm_vector
 displacement_vector = image_vector / modulo_norm
