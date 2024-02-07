@@ -50,7 +50,7 @@ class DPDimer:
         
     def set_calculator(self):
         """Set Abacus calculators"""
-        os.environ['OMP_NUM_THREADS'] = f'{self.omp}'
+        os.environ['OMP_NUM_THREADS'] = 'omp'
         calc = DP(model=self.model)
         return calc
     
