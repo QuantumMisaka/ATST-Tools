@@ -16,7 +16,6 @@ from deepmd_pt.utils.ase_calc import DPCalculator as DP
 from ase.mep.autoneb import AutoNEB
 
 model = "FeCHO-dpa2-full.pt"
-prefix = "DP-AutoNEB"
 n_max = 8
 neb_fmax = 1.00  # neb should be rough
 sella_fmax = 0.05 # dimer use neb guess
@@ -30,7 +29,7 @@ os.environ['OMP_NUM_THREADS'] = "omp"
 
 # init and final stru
 atom_init = read("./C-C-Fe5C2_510/data/IS/STRU")
-# atom_init.calc = DP(model=model)
+atom_init.calc = DP(model=model)
 # init_relax = BFGS(atom_init)
 # init_relax.run(fmax=0.05)
 print(atom_init.get_potential_energy())
@@ -69,20 +68,20 @@ TS_info = [(ind, image)
 print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} images  ===")
 print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
 print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
-print(f"=== Now Turn to Dimer with NEB Information ===")
-
+print(f"=== Now Turn to Sella with NEB Information ===")
 
 
 # sella part
-
 # set cons is optional
-cons = Constraints()
-cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
+# there are some problems during setting constraints
+ts_guess = TS_info[1].copy()
+ts_guess.calc = DP(model=model)
+cons = Constraints(ts_guess)
+cons.fix_translation(ts_guess._get_constraints()[0].get_indices())
 
-dimer_init = TS_info[1].copy()
-init_eigenmode_method = "displacement"
-dimer = DPDimer(dimer_init, model=model,
-                        omp=omp, 
-                        init_eigenmode_method=init_eigenmode_method,
-                        displacement_vector=displacement_vector)
-dimer.run(fmax=sella_fmax)
+dyn = Sella(
+    ts_guess,
+    constraints=cons,
+    trajectory='sella.traj',
+)
+dyn.run(fmax=sella_fmax)

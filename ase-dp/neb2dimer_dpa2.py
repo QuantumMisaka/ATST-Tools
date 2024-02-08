@@ -15,7 +15,6 @@ from deepmd_pt.utils.ase_calc import DPCalculator as DP
 from ase.mep.autoneb import AutoNEB
 
 model = "FeCHO-dpa2-full.pt"
-prefix = "DP-AutoNEB"
 n_max = 8
 neb_fmax = 1.00  # neb should be rough
 dimer_fmax = 0.05 # dimer use neb guess
@@ -44,7 +43,7 @@ write("final_opted.traj", atom_final, format="traj")
 # function setting
 
 class DPDimer:
-    """Customize Dimer calculation workflow by using ABACUS"""
+    """Customize Dimer calculation workflow by using Deep Potential"""
     
     def __init__(self, init_Atoms, model,
                  omp=1, directory='DIMER', 
