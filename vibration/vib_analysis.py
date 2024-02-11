@@ -9,12 +9,20 @@ from ase.thermochemistry import HarmonicThermo
 from ase.io import read, write
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.parallel import world, parprint
+from ase.mep.neb import NEBTools
+from neb2vib import neb2vib
 
-stru = "STRU"
-atoms = read(stru)
+
 # indices setting for which atoms to be displaced
 #vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
-vib_indices = [0, 1, 37]
+# usage by neb
+neb_traj = read('neb_latest.traj', index=':')
+atoms, vib_indices = neb2vib(neb_traj)
+# traditional
+# stru = "STRU"
+# atoms = read(stru)
+# vib_indices = [0, 1, 37]
+
 T = 523.15 # K
 
 vib_name = 'vib'
@@ -84,6 +92,7 @@ def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     calc = Abacus(profile=profile, directory=out_directory,
                 **parameters)
     return calc
+
 
 if __name__ == "__main__":
     print("==> Starting Vibrational Analysis <==")
