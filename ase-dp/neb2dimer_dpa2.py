@@ -1,3 +1,7 @@
+# JamesMisaka in 20240210
+# Using DPA2 model to search TS via NEB-DIMER
+# update need: auto vib and thermo analy
+
 import numpy as np
 import os
 
@@ -22,13 +26,15 @@ climb = True
 scale_fmax = 1.0 # use dyneb to reduce message far from TS
 omp = 16
 neb_algorism = "improvedtangent"
-neb_traj = "neb_images.traj"
+neb_traj = "neb_dpa2_raw.traj"
+dimer_traj = "dimer_dpa2.traj"
 
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # init and final stru
-atom_init = read("./C-C-Fe5C2_510/data/IS/STRU")
-atom_final = read("./C-C-Fe5C2_510/data/FS/STRU")
+neb_abacus = read("neb_latest.traj")
+atom_init = neb_abacus[0]
+atom_final = neb_abacus[-1]
 atom_init.calc = DP(model=model)
 atom_final.calc = DP(model=model)
 init_relax = BFGS(atom_init)
@@ -50,14 +56,13 @@ class DPDimer:
                  traj_file='dimer.traj',
                  init_eigenmode_method='displacement',
                  displacement_vector: np.ndarray = None,):
-        """Initialize Dimer method by using ASE-ABACUS
+        """Initialize Dimer method by using ASE-DP
 
         init_Atoms (Atoms object): starting image, can be from every way including NEB result
         parameters (dict): settings of abacus input parameters
         model (str): DeepPotential model
         directory (str): calculator directory name, for parallel calculation {directory}-rank{i} will be the directory name
-        mpi (int): number of MPI for abacus calculator
-        omp (int): number of OpenMP for abacus calculator
+        omp (int): number of OpenMP for DP calculator
         traj_file (str): trajectory file name for dimer calculation, when running dimer calculation, trajetory will be written to this file, default is 'dimer.traj'
         init_eigenmode_method (str): dimer initial eigenmode method. Choose from 'displacement' and 'gauss'.
         displacement_vector (np.ndarray): displacement vector for dimer initial eigenmode. Only used when init_eigenmode_method is 'displacement'
@@ -193,5 +198,6 @@ init_eigenmode_method = "displacement"
 dimer = DPDimer(dimer_init, model=model,
                         omp=omp, 
                         init_eigenmode_method=init_eigenmode_method,
+                        traj_file=dimer_traj,
                         displacement_vector=displacement_vector)
 dimer.run(fmax=dimer_fmax)
