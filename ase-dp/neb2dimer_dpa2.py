@@ -15,9 +15,6 @@ from ase.mep.autoneb import AutoNEB
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
-
-from ase.mep.autoneb import AutoNEB
-
 model = "FeCHO-dpa2-full.pt"
 n_max = 8
 neb_fmax = 1.00  # neb should be rough
