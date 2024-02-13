@@ -5,7 +5,8 @@
 #SBATCH -J RELAX-ASE-ABACUS
 #SBATCH -o running_relax.out
 #SBATCH -e running_relax.err
-##SBATCH -p C064M0256G
+#SBATCH -p C064M0256G
+#SBATCH --qos=low
 
 # JamesMisaka in 2023-11-14
 # workflow of ase-abacus-dimer method
@@ -14,7 +15,7 @@
 # in developer's PKU-WM2 server
 source /data/softwares/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
-module load abacus/3.4.4-icc
+module load abacus/3.5.2-icx
 
 # Job state 
 echo $SLURM_JOB_ID > JobRun.state

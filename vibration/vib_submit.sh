@@ -6,6 +6,7 @@
 #SBATCH -o running_vib.out
 #SBATCH -e running_vib.err
 #SBATCH -p C064M0256G
+#SBATCH --qos=low
 
 # JamesMisaka in 2023-11-30
 # Vibrational analysis by using abacus
@@ -14,7 +15,7 @@
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate ase
-module load abacus/3.4.3-icx-dev
+module load abacus/3.5.2-icx
 
 echo "Vibrational Calculation Start at $(date) !"
 # Job state 

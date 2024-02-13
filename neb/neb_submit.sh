@@ -6,6 +6,7 @@
 #SBATCH -o running_neb.out
 #SBATCH -e running_neb.err
 #SBATCH -p C064M0256G
+#SBATCH --qos=low
 
 # JamesMisaka in 2023-11-02
 # workflow of ase-abacus-neb method
@@ -18,7 +19,7 @@
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
-module load abacus/3.4.4-icx
+module load abacus/3.5.2-icx
 
 # variable
 INIT="INIT/OUT.ABACUS/running*.log"   # running_relax/scf.log
