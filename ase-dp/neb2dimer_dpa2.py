@@ -29,7 +29,7 @@ dimer_traj = "dimer_dpa2.traj"
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # init and final stru
-neb_abacus = read("neb_latest.traj")
+neb_abacus = read("neb_latest.traj", ":")
 atom_init = neb_abacus[0]
 atom_final = neb_abacus[-1]
 atom_init.calc = DP(model=model)
@@ -198,3 +198,25 @@ dimer = DPDimer(dimer_init, model=model,
                         traj_file=dimer_traj,
                         displacement_vector=displacement_vector)
 dimer.run(fmax=dimer_fmax)
+
+# get struc of IS,FS,TS
+write("IS_stru.cif", atom_init, format="cif")
+write("FS_stru.cif", atom_final, format="cif")
+write("TS_stru.cif", dimer_init, format="cif")
+
+# get energy informations
+ene_init = atom_init.get_potential_energy()
+ene_final = atom_final.get_potential_energy()
+ene_ts = dimer_init.get_potential_energy()
+ene_delta = ene_final - ene_init
+ene_activa = ene_ts - ene_init
+msg = f'''
+==> TS-Search Results <==
+- Items      Energy
+- IS         {ene_init:.6f}
+- FS         {ene_final:.6f}
+- TS         {ene_ts:.6f}
+- dE         {ene_delta:.6f}
+- Ea         {ene_activa:.6f}
+'''
+print(msg)
