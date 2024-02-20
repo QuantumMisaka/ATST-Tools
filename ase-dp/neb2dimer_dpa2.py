@@ -13,7 +13,12 @@ from ase.visualize import view
 from ase.mep.neb import NEBTools, NEB, DyNEB
 from ase.mep.autoneb import AutoNEB
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
+
+from ase.vibrations import Vibrations
+from ase.thermochemistry import HarmonicThermo
+
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
+
 
 model = "FeCHO-dpa2-full.pt"
 n_max = 8
@@ -141,7 +146,30 @@ class DPDimer:
             raise ValueError("init_eigenmode_method must be displacement or gauss")
         dimer_relax = MinModeTranslate(d_atoms, trajectory=dimer_traj)
         dimer_relax.run(fmax=fmax)
+        
+def main4dis(displacement_vector, thr=0.10):
+    """Get Main Parts of Displacement Vector by using threshold"""
+    len_vector = np.linalg.norm(displacement_vector)
+    norm_vector = np.linalg.norm(displacement_vector / len_vector, axis=1)
+    main_indices = [ind for ind,vec in enumerate(norm_vector) if vec > thr]
+    return main_indices, norm_vector
 
+def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
+    """Do Thermo Analysis by using ASE"""
+    vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
+    vib.run()
+    vib.summary()
+    ROOT_DIR = os.getcwd()
+    os.mkdir(f"{name}_mode")
+    os.chdir(f"{name}_mode")
+    vib.write_mode()
+    os.chdir(ROOT_DIR)
+    vib_energies = vib.get_energies()
+    thermo = HarmonicThermo(vib_energies, ignore_imag_modes=True,)
+    entropy = thermo.get_entropy(T)
+    free_energy = thermo.get_helmholtz_energy(T)
+    print(f"==> Entropy: {entropy:.6e} eV/K <==")
+    print(f"==> Free Energy: {free_energy:.6f} eV <==")
 
 # run neb
 images = [atom_init]
@@ -220,3 +248,25 @@ msg = f'''
 - Ea         {ene_activa:.6f}
 '''
 print(msg)
+
+# use neb2dimer information to do vibration analysis
+print("==> Do Vibrational Analysis by DP Potential <==")
+vib_indices, norm_vector = main4dis(image_vector, thr=0.10)
+print(f"=== TS main moving atoms: {vib_indices} ===")
+T = 523.15 # K
+delta = 0.01
+nfree = 2
+
+vib_is_name = 'vib_is'
+vib_fs_name = 'vib_fs'
+vib_ts_name = 'vib_ts'
+
+print("==> For TS Structure <==")
+thermo_analysis(dimer_init, T, name=vib_ts_name, indices=vib_indices, delta=delta, nfree=nfree)
+print("==> For Initial Structure <==")
+thermo_analysis(atom_init, T, name=vib_is_name, indices=vib_indices, delta=delta, nfree=nfree)
+print("==> For Final Structure <==")
+thermo_analysis(atom_final, T, name=vib_fs_name, indices=vib_indices, delta=delta, nfree=nfree)
+
+
+
