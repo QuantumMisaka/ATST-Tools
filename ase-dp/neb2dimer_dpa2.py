@@ -50,9 +50,11 @@ elif len(sys.argv) == 2:
         sys.exit(0)
     else
         neb_traj = sys.argv[1]
-        neb_abacus = read(neb_traj, ":")
+        neb_abacus = read(neb_traj, ":", format="traj")
         atom_init = neb_abacus[0]
         atom_final = neb_abacus[-1]
+        assert type(atom_init) == Atoms and type(atom_final) == Atoms, \
+        "The input file is not a trajectory file contained Atoms object"
 else:
     init_stru = sys.argv[1]
     final_stru = sys.argv[2]
