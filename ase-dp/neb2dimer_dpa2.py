@@ -48,7 +48,7 @@ elif len(sys.argv) == 2:
     if sys.argv[1] == "-h" or sys.argv[1] == "--help":
         print(msg)
         sys.exit(0)
-    else
+    else:
         neb_traj = sys.argv[1]
         neb_abacus = read(neb_traj, ":", format="traj")
         atom_init = neb_abacus[0]
