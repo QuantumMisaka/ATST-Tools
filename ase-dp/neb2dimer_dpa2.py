@@ -1,9 +1,10 @@
-# JamesMisaka in 20240210
+# Author: JamesMisaka 
 # Using DPA2 model to search TS via NEB-DIMER
-# update need: auto vib and thermo analy
+# Last Update: 2024-02-21
 
 import numpy as np
 import os
+import sys
 
 from ase.io import read, write, Trajectory
 from ase import Atoms
@@ -19,7 +20,7 @@ from ase.thermochemistry import HarmonicThermo
 
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
-
+# parameter setting
 model = "FeCHO-dpa2-full.pt"
 n_max = 8
 neb_fmax = 1.00  # neb should be rough
@@ -30,13 +31,38 @@ omp = 16
 neb_algorism = "improvedtangent"
 neb_traj = "neb_dpa2_raw.traj"
 dimer_traj = "dimer_dpa2.traj"
-
 os.environ['OMP_NUM_THREADS'] = "omp"
 
-# init and final stru
-neb_abacus = read("neb_latest.traj", ":")
-atom_init = neb_abacus[0]
-atom_final = neb_abacus[-1]
+# reading part
+msg = '''
+Usage: 
+- For using IS and FS: 
+    python neb2dimer_dpa2.py [init_stru] [final_stru] ([format])
+- For using existing NEB: 
+    python neb2dimer_dpa2.py [neb_latest.traj]
+'''
+if len(sys.argv) < 1:
+    print(msg)
+    sys.exit(1)
+elif len(sys.argv) == 2:
+    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+        print(msg)
+        sys.exit(0)
+    else
+        neb_traj = sys.argv[1]
+        neb_abacus = read(neb_traj, ":")
+        atom_init = neb_abacus[0]
+        atom_final = neb_abacus[-1]
+else:
+    init_stru = sys.argv[1]
+    final_stru = sys.argv[2]
+    if len(sys.argv) == 4:
+        format = sys.argv[3]
+    else:
+        format = None # auto detect
+    atom_init = read(init_stru, format)
+    atom_final = read(final_stru, format)
+
 atom_init.calc = DP(model=model)
 atom_final.calc = DP(model=model)
 init_relax = BFGS(atom_init)
@@ -170,6 +196,7 @@ def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     free_energy = thermo.get_helmholtz_energy(T)
     print(f"==> Entropy: {entropy:.6e} eV/K <==")
     print(f"==> Free Energy: {free_energy:.6f} eV <==")
+    print()
 
 # run neb
 images = [atom_init]
@@ -180,7 +207,8 @@ for i in range(n_max):
 images.append(atom_final)
 neb = DyNEB(images, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=scale_fmax)
+            method=neb_algorism, parallel=False, scale_fmax=scale_fmax,
+            allow_shared_calculator=True)
 neb.interpolate(method="idpp")
 
 traj = Trajectory(neb_traj, 'w', neb)
@@ -238,6 +266,7 @@ ene_final = atom_final.get_potential_energy()
 ene_ts = dimer_init.get_potential_energy()
 ene_delta = ene_final - ene_init
 ene_activa = ene_ts - ene_init
+ene_act_rev = ene_ts - ene_final
 msg = f'''
 ==> TS-Search Results <==
 - Items      Energy
@@ -245,7 +274,8 @@ msg = f'''
 - FS         {ene_final:.6f}
 - TS         {ene_ts:.6f}
 - dE         {ene_delta:.6f}
-- Ea         {ene_activa:.6f}
+- Ea_f       {ene_activa:.6f}
+- Ea_r       {ene_act_rev:.6f}
 '''
 print(msg)
 
