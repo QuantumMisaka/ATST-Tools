@@ -41,7 +41,7 @@ Usage:
 - For using existing NEB: 
     python neb2dimer_dpa2.py [neb_latest.traj]
 '''
-if len(sys.argv) < 1:
+if len(sys.argv) < 2:
     print(msg)
     sys.exit(1)
 elif len(sys.argv) == 2:
@@ -62,8 +62,8 @@ else:
         format = sys.argv[3]
     else:
         format = None # auto detect
-    atom_init = read(init_stru, format)
-    atom_final = read(final_stru, format)
+    atom_init = read(init_stru, format=format)
+    atom_final = read(final_stru, format=format)
 
 atom_init.calc = DP(model=model)
 atom_final.calc = DP(model=model)
@@ -184,11 +184,14 @@ def main4dis(displacement_vector, thr=0.10):
 
 def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     """Do Thermo Analysis by using ASE"""
+    vib_dir = f"{name}_mode"
+    mode_dir = f"{vib_dir}/{name}"
+    if not os.path.exists(vib_dir):
+        os.mkdir(f"{name}_mode")   
     vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
     vib.run()
     vib.summary()
     ROOT_DIR = os.getcwd()
-    os.mkdir(f"{name}_mode")
     os.chdir(f"{name}_mode")
     vib.write_mode()
     os.chdir(ROOT_DIR)
@@ -258,9 +261,12 @@ dimer = DPDimer(dimer_init, model=model,
 dimer.run(fmax=dimer_fmax)
 
 # get struc of IS,FS,TS
-write("IS_stru.cif", atom_init, format="cif")
-write("FS_stru.cif", atom_final, format="cif")
-write("TS_stru.cif", dimer_init, format="cif")
+write("IS_get.cif", atom_init, format="cif")
+write("FS_get.cif", atom_final, format="cif")
+write("TS_get.cif", dimer_init, format="cif")
+write("IS_get.stru", atom_init, format="abacus")
+write("FS_get.stru", atom_final, format="abacus")
+write("TS_get.stru", dimer_init, format="abacus")
 
 # get energy informations
 ene_init = atom_init.get_potential_energy()
