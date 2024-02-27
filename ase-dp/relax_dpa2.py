@@ -1,5 +1,4 @@
-# read STRU file, generate INCAR and KPT file 
-# run optimization jobs
+# read STRU file, run optimization jobs
 import os
 import sys
 from ase.optimize import QuasiNewton, BFGS, LBFGS, FIRE, GPMin, MDMin

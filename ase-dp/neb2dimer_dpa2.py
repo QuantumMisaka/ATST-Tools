@@ -23,7 +23,7 @@ from deepmd_pt.utils.ase_calc import DPCalculator as DP
 # parameter setting
 model = "FeCHO-dpa2-full.pt"
 n_max = 8
-neb_fmax = 1.00  # neb should be rough
+neb_fmax = 0.80  # neb should be rough
 dimer_fmax = 0.05 # dimer use neb guess
 climb = True
 scale_fmax = 1.0 # use dyneb to reduce message far from TS
@@ -119,7 +119,10 @@ class DPDimer:
         return d_mask
     
     def set_d_mask_by_constraint(self):
-        """set mask by constraint of Atoms"""
+        """set mask by constraint of Atoms
+        
+        Notice: This function have some problem in dealing with abacus STRU, which FixCatesian object will be independent
+        """
         print("=== Set mask by constraint read from init Atoms ===")
         dimer_init = self.init_Atoms
         d_mask = [True] * len(dimer_init)
@@ -154,11 +157,11 @@ class DPDimer:
         dimer_init.calc = self.set_calculator()
         dimer_traj = Trajectory(self.traj_file, 'w', dimer_init, properties=properties)
         if self.init_eigenmode_method == "displacement":
-            # d_mask = self.set_d_mask_by_displacement() # not the best
             if moving_atoms_ind:
                 d_mask = self.set_d_mask_by_specified(moving_atoms_ind)
             else:
-                d_mask = self.set_d_mask_by_constraint()
+                # d_mask = self.set_d_mask_by_constraint()
+                d_mask = self.set_d_mask_by_displacement()
             d_control = DimerControl(initial_eigenmode_method=self.init_eigenmode_method, 
                                     displacement_method="vector", 
                                     mask=d_mask)
