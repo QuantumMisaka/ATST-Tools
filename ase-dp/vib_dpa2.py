@@ -17,11 +17,10 @@ nfree = 2
 if len(sys.argv) > 1:
     stru = read(sys.argv[1], format='abacus')
 else:
-    stru = read('STRU', format='abacus')
-    # get vib_indices by --ind flag
-    if "--ind" in sys.argv[3:]:
-        fix_ind = sys.argv.index("--ind")
-        vib_indices = [int(i) for i in sys.argv[fix_ind:]]
+    stru = read("STRU", format='abacus')
+if "--ind" in sys.argv[2:]:
+    fix_ind = sys.argv.index("--ind")
+    vib_indices = [int(i) for i in sys.argv[fix_ind+1:]]
 
 
 if __name__ == "__main__":
