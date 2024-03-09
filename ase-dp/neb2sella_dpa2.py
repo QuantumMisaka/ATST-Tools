@@ -150,6 +150,8 @@ def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
 # there are some problems during setting constraints
 ts_guess = TS_info[1].copy()
 ts_guess.calc = DP(model=model)
+# remove all ase constarint and use them by sella is recommended 
+ts_guess.set_constraint()
 d_mask = (displacement_vector != np.zeros(3))
 cons_index = np.where(d_mask == False)[0]
 cons = Constraints(ts_guess)
