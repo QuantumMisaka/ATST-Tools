@@ -14,7 +14,6 @@ from ase.visualize import view
 from ase.mep.neb import NEBTools, NEB, DyNEB
 from ase.mep.autoneb import AutoNEB
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
-
 from ase.vibrations import Vibrations
 from ase.thermochemistry import HarmonicThermo
 
