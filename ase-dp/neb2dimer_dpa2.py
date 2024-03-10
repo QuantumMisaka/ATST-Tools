@@ -28,8 +28,8 @@ climb = True
 scale_fmax = 1.0 # use dyneb to reduce message far from TS
 omp = 16
 neb_algorism = "improvedtangent"
-neb_traj = "neb_dpa2_raw.traj"
-dimer_traj = "dimer_dpa2.traj"
+neb_log = "neb_dpa2_raw.traj"
+dimer_log = "dimer_dpa2.traj"
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
@@ -48,8 +48,8 @@ elif len(sys.argv) == 2:
         print(msg)
         sys.exit(0)
     else:
-        neb_traj = sys.argv[1]
-        neb_abacus = read(neb_traj, ":", format="traj")
+        neb_traj_read = sys.argv[1]
+        neb_abacus = read(neb_traj_read, ":", format="traj")
         atom_init = neb_abacus[0]
         atom_final = neb_abacus[-1]
         assert type(atom_init) == Atoms and type(atom_final) == Atoms, \
@@ -218,7 +218,7 @@ neb = DyNEB(images,
             allow_shared_calculator=True)
 neb.interpolate(method="idpp")
 
-traj = Trajectory(neb_traj, 'w', neb)
+traj = Trajectory(neb_log, 'w', neb)
 opt = FIRE(neb, trajectory=traj)
 opt.run(neb_fmax)
 
@@ -258,7 +258,7 @@ init_eigenmode_method = "displacement"
 dimer = DPDimer(dimer_init, model=model,
                         omp=omp, 
                         init_eigenmode_method=init_eigenmode_method,
-                        traj_file=dimer_traj,
+                        traj_file=dimer_log,
                         displacement_vector=displacement_vector)
 dimer.run(fmax=dimer_fmax)
 
