@@ -16,7 +16,7 @@ from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
 model = "FeCHO-dpa2-full.pt"
 n_max = 8
-neb_fmax = 0.80  # neb should be rough
+neb_fmax = 1.00  # neb should be rough
 sella_fmax = 0.05 # sella use neb guess
 climb = True
 scale_fmax = 1.0 # use dyneb to reduce message far from TS
@@ -31,9 +31,9 @@ os.environ['OMP_NUM_THREADS'] = "omp"
 msg = '''
 Usage: 
 - For using IS and FS: 
-    python neb2dimer_dpa2.py [init_stru] [final_stru] ([format])
+    python neb2sella_dpa2.py [init_stru] [final_stru] ([format])
 - For using existing NEB: 
-    python neb2dimer_dpa2.py [neb_latest.traj]
+    python neb2sella_dpa2.py [neb_latest.traj]
 '''
 if len(sys.argv) < 2:
     print(msg)
