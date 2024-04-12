@@ -11,9 +11,9 @@ Author: mosey
 Last update: 2024-03-28
 
 Dependencies:
-1. Install pymatgen: pip install pymatgen
+1. Install pymatgen: pip install pymatgen (or conda install -c conda-forge pymatgen)
 2. Install pymatgen-analysis-diffusion: pip install pymatgen-analysis-diffusion
-3. Install ase: pip install ase
+3. Install ase-abacus interfaces
 '''
 
 def set_fix_for_Atoms(atoms: Atoms, fix_height: float=0, fix_dir: int=1,):
