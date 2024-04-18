@@ -55,6 +55,8 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
     fs_atom = read(fs_file,format=format)
     is_e = is_atom.get_potential_energy()
     fs_e = fs_atom.get_potential_energy()
+    is_f = is_atom.get_forces()
+    fs_f = fs_atom.get_forces()
     is_pmg = AseAtomsAdaptor.get_structure(is_atom)
     fs_pmg = AseAtomsAdaptor.get_structure(fs_atom)
 
@@ -73,8 +75,8 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
     
     # conver path to ase format, and add SinglePointCalculator
     ase_path = [i.to_ase_atoms() for i in new_path]
-    ase_path[0].calc = SinglePointCalculator(ase_path[0].copy(), energy=is_e)
-    ase_path[-1].calc = SinglePointCalculator(ase_path[-1].copy(), energy=fs_e)
+    ase_path[0].calc = SinglePointCalculator(ase_path[0].copy(), energy=is_e, forces=is_f)
+    ase_path[-1].calc = SinglePointCalculator(ase_path[-1].copy(), energy=fs_e, forces=fs_f)
 
     # Set fix and magmom
     if bool(fix_height):
