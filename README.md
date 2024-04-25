@@ -6,9 +6,15 @@ Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
 - NEB2Dimer Workflow
 - Vibration analysis
 
-Version v1.4.0
+Version v1.4.1
 
 Copyright @ QuantumMisaka from PKU & AISI
+
+## Update 1.4.1
+
+- *neb_make_pymatgen.py* scripts by @MoseyQAQ, which use interpolation of pymatgen to do NEB initial guess 
+and avoid edge-crossing problem in NEB guess generation.
+- minor bug fixed
 
 ## Update 1.4.0
 - Support DeepPotential and DPA-2 Potential usage scripts in `ase-dp` directory
