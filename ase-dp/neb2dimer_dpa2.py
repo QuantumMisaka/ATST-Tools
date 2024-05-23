@@ -187,14 +187,13 @@ def main4dis(displacement_vector, thr=0.10):
 def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     """Do Thermo Analysis by using ASE"""
     vib_dir = f"{name}_mode"
-    mode_dir = f"{vib_dir}/{name}"
     if not os.path.exists(vib_dir):
-        os.mkdir(f"{name}_mode")   
+        os.mkdir(vib_dir)   
     vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
     vib.run()
     vib.summary()
     ROOT_DIR = os.getcwd()
-    os.chdir(f"{name}_mode")
+    os.chdir(vib_dir)
     vib.write_mode()
     os.chdir(ROOT_DIR)
     vib_energies = vib.get_energies()

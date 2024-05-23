@@ -1,5 +1,6 @@
 import numpy as np
 import os, sys
+from copy import deepcopy
 
 from ase.io import read, write, Trajectory
 from ase import Atoms
@@ -10,12 +11,17 @@ from ase.mep.neb import NEBTools, NEB, DyNEB
 from ase.mep.autoneb import AutoNEB
 from ase.vibrations import Vibrations
 from ase.thermochemistry import HarmonicThermo
+from ase.calculators.singlepoint import SinglePointCalculator
+
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.analysis.diffusion.neb.pathfinder import IDPPSolver
+
 from sella import Sella, Constraints
 
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
 model = "FeCHO-dpa2-full.pt"
-n_max = 8
+n_neb_images = 8
 neb_fmax = 1.00  # neb should be rough
 sella_fmax = 0.05 # sella use neb guess
 climb = True
@@ -24,6 +30,7 @@ omp = 16
 neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
+neb_sort_tol = 1
 
 os.environ['OMP_NUM_THREADS'] = "omp"
 
@@ -35,6 +42,8 @@ Usage:
 - For using existing NEB: 
     python neb2sella_dpa2.py [neb_latest.traj]
 '''
+
+# parse arguments, argparse lib is better 
 if len(sys.argv) < 2:
     print(msg)
     sys.exit(1)
@@ -69,32 +78,41 @@ atom_final.calc = DP(model=model)
 final_relax = BFGS(atom_final)
 final_relax.run(fmax=0.05)
 
-write("init_opted.traj", atom_init, format="traj")
-write("final_opted.traj", atom_final, format="traj")
+init_opted = "init_opted.traj"
+final_opted = "final_opted.traj"
+write(init_opted, atom_init, format="traj")
+write(final_opted, atom_final, format="traj")
 
 # run neb
-images = [atom_init]
-for i in range(n_max):
-    image = atom_init.copy()
-    image.set_calculator(DP(model=model))
-    images.append(image)
-images.append(atom_final)
-neb = DyNEB(images, 
+# use pymatgen interpolate, which is better and avoid trans-cell problem
+print(f'Generating NEB path, number of images: {n_neb_images}, sort_tol: {neb_sort_tol}')
+is_pmg = AseAtomsAdaptor.get_structure(atom_init)
+fs_pmg = AseAtomsAdaptor.get_structure(atom_final)
+path = IDPPSolver.from_endpoints([is_pmg, fs_pmg], n_neb_images, sort_tol=neb_sort_tol)
+new_path = path.run(maxiter=5000, tol=1e-5, gtol=1e-3)
+# conver path to ase format, and add SinglePointCalculator
+ase_path = [i.to_ase_atoms() for i in new_path]
+ase_path[0].calc = deepcopy(atom_init.calc)
+ase_path[-1].calc = deepcopy(atom_final.calc)
+for img in ase_path[1:-1]:
+    img.calc = DP(model=model)
+
+neb = DyNEB(ase_path, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=scale_fmax)
-neb.interpolate(method="idpp")
+            method=neb_algorism, parallel=False, scale_fmax=scale_fmax,
+            allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
 opt = FIRE(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
-n_images = NEBTools(images)._guess_nimages()
-neb_raw_barrier = max([image.get_potential_energy() for image in images])
-fmax = NEBTools(images).get_fmax()
-barrier = NEBTools(images).get_barrier()[0]
+n_images = NEBTools(ase_path)._guess_nimages()
+neb_raw_barrier = max([image.get_potential_energy() for image in ase_path])
+fmax = NEBTools(ase_path).get_fmax()
+barrier = NEBTools(ase_path).get_barrier()[0]
 TS_info = [(ind, image) 
-            for ind, image in enumerate(images) 
+            for ind, image in enumerate(ase_path) 
             if image.get_potential_energy() == neb_raw_barrier][0]
 print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} images  ===")
 print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
@@ -109,8 +127,8 @@ norm_vector = 0.01
 
 ind_before_TS = TS_info[0] - step_before_TS
 ind_after_TS = TS_info[0] + step_after_TS
-img_before = images[ind_before_TS]
-img_after = images[ind_after_TS]
+img_before = ase_path[ind_before_TS]
+img_after = ase_path[ind_after_TS]
 image_vector = (img_before.positions - img_after.positions)
 modulo_norm = np.linalg.norm(image_vector) / norm_vector
 displacement_vector = image_vector / modulo_norm
@@ -127,14 +145,13 @@ def main4dis(displacement_vector, thr=0.10):
 def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     """Do Thermo Analysis by using ASE"""
     vib_dir = f"{name}_mode"
-    mode_dir = f"{vib_dir}/{name}"
     if not os.path.exists(vib_dir):
-        os.mkdir(f"{name}_mode")   
+        os.mkdir(vib_dir)   
     vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
     vib.run()
     vib.summary()
     ROOT_DIR = os.getcwd()
-    os.chdir(f"{name}_mode")
+    os.chdir(vib_dir)
     vib.write_mode()
     os.chdir(ROOT_DIR)
     vib_energies = vib.get_energies()
@@ -146,21 +163,19 @@ def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     print()
 
 # sella part
-# set cons is optional
-# there are some problems during setting constraints
 ts_guess = TS_info[1].copy()
 ts_guess.calc = DP(model=model)
-# remove all ase constarint and use them by sella is recommended 
-ts_guess.set_constraint()
-d_mask = (displacement_vector != np.zeros(3))
-cons_index = np.where(d_mask == False)[0]
-cons = Constraints(ts_guess)
-# use dimer not-moved atoms as constraints
-cons.fix_translation(cons_index)
+
+# set sella cons is optional, use cons from ASE is enough
+# ts_guess.set_constraint()
+# d_mask = (displacement_vector != np.zeros(3))
+# cons_index = np.where(d_mask == False)[0]
+# cons = Constraints(ts_guess)
+# # use dimer not-moved atoms as constraints
+# cons.fix_translation(cons_index)
 
 dyn = Sella(
     ts_guess,
-    constraints=cons,
     trajectory=sella_log,
 )
 dyn.run(fmax=sella_fmax)
