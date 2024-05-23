@@ -6,9 +6,13 @@ Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
 - NEB2Dimer Workflow
 - Vibration analysis
 
-Version v1.4.1
+Version v1.4.2
 
 Copyright @ QuantumMisaka from PKU & AISI
+
+## Update 1.4.2
+- *neb2dimer_dpa2.py* and *neb2sella_dpa2.py* are using 
+- Since constraints read-in in ASE-ABACUS interface is fixed, the constraints is the two scripts above is modified.
 
 ## Update 1.4.1
 
