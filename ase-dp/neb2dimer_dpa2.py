@@ -1,10 +1,10 @@
 # Author: JamesMisaka 
 # Using DPA2 model to search TS via NEB-DIMER
-# Last Update: 2024-02-21
+# Last Update: 2024-05-23
 
 import numpy as np
-import os
-import sys
+import os, sys, shutil
+from copy import deepcopy
 
 from ase.io import read, write, Trajectory
 from ase import Atoms
@@ -12,16 +12,18 @@ from ase.optimize import BFGS, FIRE, QuasiNewton
 from ase.constraints import FixAtoms
 from ase.visualize import view
 from ase.mep.neb import NEBTools, NEB, DyNEB
-from ase.mep.autoneb import AutoNEB
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
 from ase.vibrations import Vibrations
 from ase.thermochemistry import HarmonicThermo
+
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.analysis.diffusion.neb.pathfinder import IDPPSolver
 
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
 # parameter setting
 model = "FeCHO-dpa2-full.pt"
-n_max = 8
+n_neb_images = 8
 neb_fmax = 0.80  # neb should be rough
 dimer_fmax = 0.05 # dimer use neb guess
 climb = True
@@ -30,6 +32,8 @@ omp = 16
 neb_algorism = "improvedtangent"
 neb_log = "neb_dpa2_raw.traj"
 dimer_log = "dimer_dpa2.traj"
+neb_sort_tol = 1
+
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
@@ -71,8 +75,10 @@ final_relax = BFGS(atom_final)
 init_relax.run(fmax=0.05)
 final_relax.run(fmax=0.05)
 
-write("init_opted.traj", atom_init, format="traj")
-write("final_opted.traj", atom_final, format="traj")
+init_opted = "init_opted.traj"
+final_opted = "final_opted.traj"
+write(init_opted, atom_init, format="traj")
+write(final_opted, atom_final, format="traj")
 
 # run neb and dimer 
 # function setting
@@ -186,14 +192,16 @@ def main4dis(displacement_vector, thr=0.10):
 
 def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     """Do Thermo Analysis by using ASE"""
-    vib_dir = f"{name}_mode"
-    if not os.path.exists(vib_dir):
-        os.mkdir(vib_dir)   
+    vib_mode_dir = f"{name}_mode"
+    if os.path.exists(name):
+        shutil.move(name, f"{name}_bak")
+    if not os.path.exists(vib_mode_dir):
+        os.mkdir(vib_mode_dir)   
     vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
     vib.run()
     vib.summary()
     ROOT_DIR = os.getcwd()
-    os.chdir(vib_dir)
+    os.chdir(vib_mode_dir)
     vib.write_mode()
     os.chdir(ROOT_DIR)
     vib_energies = vib.get_energies()
@@ -205,31 +213,37 @@ def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     print()
 
 # run neb
-images = [atom_init]
-for i in range(n_max):
-    image = atom_init.copy()
-    image.set_calculator(DP(model=model))
-    images.append(image)
-images.append(atom_final)
-neb = DyNEB(images, 
+# use pymatgen interpolate, which is better and avoid trans-cell problem
+print(f'Generating NEB path, number of ase_path: {n_neb_images}, sort_tol: {neb_sort_tol}')
+is_pmg = AseAtomsAdaptor.get_structure(atom_init)
+fs_pmg = AseAtomsAdaptor.get_structure(atom_final)
+path = IDPPSolver.from_endpoints([is_pmg, fs_pmg], n_neb_images, sort_tol=neb_sort_tol)
+new_path = path.run(maxiter=5000, tol=1e-5, gtol=1e-3)
+# conver path to ase format, and add SinglePointCalculator
+ase_path = [i.to_ase_atoms() for i in new_path]
+ase_path[0].calc = deepcopy(atom_init.calc)
+ase_path[-1].calc = deepcopy(atom_final.calc)
+for img in ase_path[1:-1]:
+    img.calc = DP(model=model)
+
+neb = DyNEB(ase_path, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
             method=neb_algorism, parallel=False, scale_fmax=scale_fmax,
             allow_shared_calculator=True)
-neb.interpolate(method="idpp")
 
 traj = Trajectory(neb_log, 'w', neb)
 opt = FIRE(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
-n_images = NEBTools(images)._guess_nimages()
-neb_raw_barrier = max([image.get_potential_energy() for image in images])
-fmax = NEBTools(images).get_fmax()
-barrier = NEBTools(images).get_barrier()[0]
+n_images = NEBTools(ase_path)._guess_nimages()
+neb_raw_barrier = max([image.get_potential_energy() for image in ase_path])
+fmax = NEBTools(ase_path).get_fmax()
+barrier = NEBTools(ase_path).get_barrier()[0]
 TS_info = [(ind, image) 
-            for ind, image in enumerate(images) 
+            for ind, image in enumerate(ase_path) 
             if image.get_potential_energy() == neb_raw_barrier][0]
-print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} images  ===")
+print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} ase_path  ===")
 print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
 print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Dimer with NEB Information ===")
@@ -242,12 +256,12 @@ norm_vector = 0.01
 
 ind_before_TS = TS_info[0] - step_before_TS
 ind_after_TS = TS_info[0] + step_after_TS
-img_before = images[ind_before_TS]
-img_after = images[ind_after_TS]
+img_before = ase_path[ind_before_TS]
+img_after = ase_path[ind_after_TS]
 image_vector = (img_before.positions - img_after.positions)
 modulo_norm = np.linalg.norm(image_vector) / norm_vector
 displacement_vector = image_vector / modulo_norm
-print(f"=== Displacement vector generated by {ind_before_TS} and {ind_after_TS} images of NEB chain ===")
+print(f"=== Displacement vector generated by {ind_before_TS} and {ind_after_TS} ase_path of NEB chain ===")
 print(f"=== Which is normalized to {norm_vector} length ! ===")
 #np.save(out_vec,displacement_vector)
 

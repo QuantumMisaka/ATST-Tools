@@ -1,5 +1,9 @@
+# Author: JamesMisaka 
+# Using DPA2 model to search TS via NEB-DIMER
+# Last Update: 2024-05-23
+
 import numpy as np
-import os, sys
+import os, sys, shutil
 from copy import deepcopy
 
 from ase.io import read, write, Trajectory
@@ -8,7 +12,6 @@ from ase.optimize import BFGS, FIRE, QuasiNewton
 from ase.constraints import FixAtoms
 from ase.visualize import view
 from ase.mep.neb import NEBTools, NEB, DyNEB
-from ase.mep.autoneb import AutoNEB
 from ase.vibrations import Vibrations
 from ase.thermochemistry import HarmonicThermo
 from ase.calculators.singlepoint import SinglePointCalculator
@@ -144,14 +147,16 @@ def main4dis(displacement_vector, thr=0.10):
 
 def thermo_analysis(atoms, T, name="vib", indices=None, delta=0.01, nfree=2):
     """Do Thermo Analysis by using ASE"""
-    vib_dir = f"{name}_mode"
-    if not os.path.exists(vib_dir):
-        os.mkdir(vib_dir)   
+    vib_mode_dir = f"{name}_mode"
+    if os.path.exists(name):
+        shutil.move(name, f"{name}_bak")
+    if not os.path.exists(vib_mode_dir):
+        os.mkdir(vib_mode_dir)   
     vib = Vibrations(atoms, indices=indices, name=name, delta=delta, nfree=nfree)
     vib.run()
     vib.summary()
     ROOT_DIR = os.getcwd()
-    os.chdir(vib_dir)
+    os.chdir(vib_mode_dir)
     vib.write_mode()
     os.chdir(ROOT_DIR)
     vib_energies = vib.get_energies()
