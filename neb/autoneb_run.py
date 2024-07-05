@@ -70,7 +70,6 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.0
 }
     # 'pp': pp,
     # 'basis': basis,
