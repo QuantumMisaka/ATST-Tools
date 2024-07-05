@@ -20,18 +20,18 @@ out_dir = "OUT"
 properties = ["energy", "forces", "stress"]
 out_traj = Trajectory("relax.traj", 'w', stru, properties=properties)
 # default pp and basis is supported by ase-abacus interface
-# pp = {
-#         'H':'H_ONCV_PBE-1.0.upf',
-#         'C':'C_ONCV_PBE-1.0.upf',
-#         'O':'O_ONCV_PBE-1.0.upf',
-#         'Fe':'Fe_ONCV_PBE-1.0.upf',
-#       }
-# basis = {
-#         'H':'H_gga_6au_100Ry_2s1p.orb',
-#         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
-#         'O': 'O_gga_7au_100Ry_2s2p1d.orb',
-#         'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb',
-#         }
+pp = {
+        'H':'H_ONCV_PBE-1.0.upf',
+        'C':'C_ONCV_PBE-1.0.upf',
+        'O':'O_ONCV_PBE-1.0.upf',
+        'Fe':'Fe_ONCV_PBE-1.0.upf',
+      }
+basis = {
+        'H':'H_gga_6au_100Ry_2s1p.orb',
+        'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+        'O': 'O_gga_7au_100Ry_2s2p1d.orb',
+        'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb',
+        }
 kpts = [3, 1, 2] # KPT setting (will be generate next)
 # INPUT setting
 parameters = {
@@ -43,6 +43,8 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'kpts': kpts,
+    'pp': pp,
+    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'smearing_method': 'mp',
@@ -64,8 +66,7 @@ parameters = {
     'dip_cor_flag': 1,
     'efield_dir': 1,
 }
-    # 'pp': pp,
-    # 'basis': basis,
+
 
 # running
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
