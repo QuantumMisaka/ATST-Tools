@@ -21,16 +21,17 @@ moving_atoms_ind = None
 lib_dir = ""
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
-pp = {
-      'C':'C_ONCV_PBE-1.0.upf',
-      'H':'H_ONCV_PBE-1.0.upf',
-      'Pt':'Pt_ONCV_PBE-1.0.upf',
-      }
-basis = {
-         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
-         'H': 'H_gga_6au_100Ry_2s1p.orb',
-         'Pt': 'Pt_gga_7au_100Ry_4s2p2d1f.orb'
-         ,}
+# default pp and basis is supported by ase-abacus interface
+# pp = {
+#       'C':'C_ONCV_PBE-1.0.upf',
+#       'H':'H_ONCV_PBE-1.0.upf',
+#       'Pt':'Pt_ONCV_PBE-1.0.upf',
+#       }
+# basis = {
+#          'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+#          'H': 'H_gga_6au_100Ry_2s1p.orb',
+#          'Pt': 'Pt_gga_7au_100Ry_4s2p2d1f.orb'
+#          ,}
 kpts = [2, 1, 2]
 parameters = {
     'calculation': 'scf',
@@ -47,8 +48,6 @@ parameters = {
     'scf_thr': 1e-6,
     'scf_nmax': 100,
     'kpts': kpts,
-    'pp': pp,
-    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'init_chg': 'atomic',
@@ -63,8 +62,9 @@ parameters = {
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.0
 }
+    # 'pp': pp,
+    # 'basis': basis,
         
 if __name__ == "__main__":
 # running process

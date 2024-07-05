@@ -35,18 +35,19 @@ omp = 4
 lib_dir = "/lustre/home/2201110432/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
-pp = {
-      'H': 'H_ONCV_PBE-1.0.upf',
-      'C': 'C_ONCV_PBE-1.0.upf',
-      'O': 'O_ONCV_PBE-1.0.upf',
-      'Fe': 'Fe_ONCV_PBE-1.0.upf',
-      }
-basis = {
-         'H': 'H_gga_6au_100Ry_2s1p.orb',
-         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
-         'O': 'O_gga_7au_100Ry_2s2p1d.orb',
-         'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb'
-         ,}
+# default pp and basis is supported by ase-abacus interface
+# pp = {
+#       'H': 'H_ONCV_PBE-1.0.upf',
+#       'C': 'C_ONCV_PBE-1.0.upf',
+#       'O': 'O_ONCV_PBE-1.0.upf',
+#       'Fe': 'Fe_ONCV_PBE-1.0.upf',
+#       }
+# basis = {
+#          'H': 'H_gga_6au_100Ry_2s1p.orb',
+#          'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+#          'O': 'O_gga_7au_100Ry_2s2p1d.orb',
+#          'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb',
+#          }
 kpts = [3, 1, 2]
 parameters = {
     'calculation': 'scf',
@@ -60,34 +61,32 @@ parameters = {
     'smearing_sigma': 0.002,
     'basis_type': 'lcao',
     'mixing_type': 'broyden',
+    'mixing_ndim': 8,
     'scf_thr': 1e-7,
     'scf_nmax': 300,
     'kpts': kpts,
-    'pp': pp,
-    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
-    'init_chg': 'atomic',
-    'init_wfc': 'file',
+    'init_chg': 'file',
+    'init_wfc': 'atomic',
     'cal_force': 1,
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 1,
     'out_mul': 0,
     'out_bandgap': 0,
-    'out_wfc_lcao': 1,
+    'out_wfc_lcao': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.7
 }
-
+    # 'pp': pp,
+    # 'basis': basis,
 
 def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     """Set Abacus calculators"""
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(
-        argv=['mpirun', '-np', f'{mpi}', abacus])
+    profile = AbacusProfile(command=f"mpirun -np {self.mpi} {self.abacus}")
     out_directory = f"SCF-rank{world.rank}"
     calc = Abacus(profile=profile, directory=out_directory,
                 **parameters)

@@ -19,18 +19,19 @@ basis_dir = f"{lib_dir}/ORB"
 out_dir = "OUT"
 properties = ["energy", "forces", "stress"]
 out_traj = Trajectory("relax.traj", 'w', stru, properties=properties)
-pp = {
-        'H':'H_ONCV_PBE-1.0.upf',
-        'C':'C_ONCV_PBE-1.0.upf',
-        'O':'O_ONCV_PBE-1.0.upf',
-        'Fe':'Fe_ONCV_PBE-1.0.upf',
-      }
-basis = {
-        'H':'H_gga_6au_100Ry_2s1p.orb',
-        'C': 'C_gga_7au_100Ry_2s2p1d.orb',
-        'O': 'O_gga_7au_100Ry_2s2p1d.orb',
-        'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb',
-        }
+# default pp and basis is supported by ase-abacus interface
+# pp = {
+#         'H':'H_ONCV_PBE-1.0.upf',
+#         'C':'C_ONCV_PBE-1.0.upf',
+#         'O':'O_ONCV_PBE-1.0.upf',
+#         'Fe':'Fe_ONCV_PBE-1.0.upf',
+#       }
+# basis = {
+#         'H':'H_gga_6au_100Ry_2s1p.orb',
+#         'C': 'C_gga_7au_100Ry_2s2p1d.orb',
+#         'O': 'O_gga_7au_100Ry_2s2p1d.orb',
+#         'Fe': 'Fe_gga_8au_100Ry_4s2p2d1f.orb',
+#         }
 kpts = [3, 1, 2] # KPT setting (will be generate next)
 # INPUT setting
 parameters = {
@@ -42,8 +43,6 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'kpts': kpts,
-    'pp': pp,
-    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'smearing_method': 'mp',
@@ -53,23 +52,24 @@ parameters = {
     'mixing_gg0': 1.0,
     'mixing_ndim': 8,
     'scf_thr': 1e-6,
-    'init_wfc': 'file',
+    'init_wfc': 'atomic',
+    'init_chg': 'atomic',
     'cal_force': 1,
     'cal_stress': 1,
     'out_stru': 1,
     'out_chg': 0,
     'out_bandgap': 1,
-    'out_wfc_lcao': 1,
+    'out_wfc_lcao': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.7,
 }
+    # 'pp': pp,
+    # 'basis': basis,
 
 # running
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
-profile = AbacusProfile(
-    argv=['mpirun', '-np', f'{mpi}', abacus])
+profile = AbacusProfile(command=f"mpirun -np {self.mpi} {self.abacus}")
 stru.calc = Abacus(profile=profile, directory=out_dir,
                     **parameters)
 qn = optimizer(stru, trajectory=out_traj)
