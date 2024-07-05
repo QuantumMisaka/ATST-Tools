@@ -62,8 +62,7 @@ class AbacusNEB:
     def set_calculator(self):
         """Set Abacus calculators"""
         os.environ['OMP_NUM_THREADS'] = f'{self.omp}'
-        profile = AbacusProfile(
-            argv=['mpirun', '-np', f'{self.mpi}', self.abacus])
+        profile = AbacusProfile(command=f"mpirun -np {self.mpi} {self.abacus}")
         # add parallel setting 20230926
         if self.parallel:
             out_directory = f"{self.directory}-rank{world.rank}"
