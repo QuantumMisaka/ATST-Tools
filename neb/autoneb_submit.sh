@@ -17,7 +17,7 @@
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate gpaw-intel
-module load abacus/3.5.2-icx
+module load abacus/3.7.0-icx
 
 # variable
 INIT="INIT/OUT.ABACUS/running*.log"   # running_relax/scf.log
