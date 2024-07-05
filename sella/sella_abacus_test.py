@@ -11,14 +11,14 @@ lib_dir = "/home/james/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 # default pp and basis is supported by ase-abacus interface
-# pp = {
-#       'Au':'Au_ONCV_PBE-1.0.upf',
-#       'H':'H_ONCV_PBE-1.0.upf',
-#       }
-# basis = {
-#          'Au': 'Au_gga_7au_100Ry_4s2p2d1f.orb',
-#          'H': 'H_gga_6au_100Ry_2s1p.orb',
-#          }
+pp = {
+      'Au':'Au_ONCV_PBE-1.0.upf',
+      'H':'H_ONCV_PBE-1.0.upf',
+      }
+basis = {
+         'Au': 'Au_gga_7au_100Ry_4s2p2d1f.orb',
+         'H': 'H_gga_6au_100Ry_2s1p.orb',
+         }
 kpts = [3, 1, 3]
 parameters = {
     'calculation': 'scf',
@@ -36,6 +36,8 @@ parameters = {
     'scf_thr': 1e-6,
     'scf_nmax': 100,
     'kpts': kpts,
+    'pp': pp,
+    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'cal_force': 1,
@@ -51,8 +53,7 @@ parameters = {
     'dip_cor_flag': 1,
     'efield_dir': 1,
 }
-    # 'pp': pp,
-    # 'basis': basis,
+
 
 
 # read traj of NEB
