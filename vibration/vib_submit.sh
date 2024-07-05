@@ -15,7 +15,7 @@
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate ase
-module load abacus/3.5.2-icx
+module load abacus/3.7.0-icx
 
 echo "Vibrational Calculation Start at $(date) !"
 # Job state 
