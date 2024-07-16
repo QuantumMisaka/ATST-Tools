@@ -1,3 +1,4 @@
+# need test
 import numpy as np
 import os, sys
 
@@ -79,8 +80,7 @@ parameters = {
 }
 
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
-profile = AbacusProfile(
-    argv=['mpirun', '-np', f'{mpi}', abacus])
+profile = AbacusProfile(f'mpirun -np  {mpi} abacus')
 
 
 # reading part
@@ -182,17 +182,10 @@ print(f"=== Which is normalized to {norm_vector} length ! ===")
 ts_guess = TS_info[1].copy()
 ts_guess.calc = Abacus(profile=profile, directory="SELLA",
                     **parameters)
-# remove all ase constarint and use them by sella is recommended 
-ts_guess.set_constraint()
-d_mask = (displacement_vector != np.zeros(3))
-cons_index = np.where(d_mask == False)[0]
-cons = Constraints(ts_guess)
-# use dimer not-moved atoms as constraints
-cons.fix_translation(cons_index)
+
 
 dyn = Sella(
     ts_guess,
-    constraints=cons,
     trajectory=sella_log,
 )
 dyn.run(fmax=sella_fmax)
