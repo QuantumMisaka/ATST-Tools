@@ -2,9 +2,9 @@
 Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
 - NEB, including CI-NEB, IT-NEB and others
 - AutoNEB: an automatic NEB workflow
-- Dimer
-- NEB2Dimer Workflow
-- Vibration analysis
+- Single-End TS search: Dimer, Sella
+- NEB2Dimer/NEB2Sella Workflow
+- Vibration analysis and ideal gas thermochemistry analysis
 
 Version v1.4.3
 
@@ -13,7 +13,6 @@ Copyright @ QuantumMisaka from PKU & AISI
 ## Update 1.4.3
 - Default *neb_make.py* change to pymatgen version
 - change the way to use `AbacusProfile` to march the newest version of ase-abacus interface, which use different command format.
-- change the way for initial setting to march the newest version of ase-abacus interface, which allow the default pp and basis setting.
 
 ## Update 1.4.2
 - *neb2dimer_dpa2.py* and *neb2sella_dpa2.py* are using pymatgen interpolation
