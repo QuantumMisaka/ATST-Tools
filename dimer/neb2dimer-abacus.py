@@ -54,8 +54,7 @@ parameters = {
     'xc': 'pbe',
     'ecutwfc': 100,
     'ks_solver': 'genelpa',
-    'symmetry': 1,
-    'symmetry_autoclose': 1,
+    'symmetry': 0,
     'vdw_method': 'none',
     'smearing_method': 'mp',
     'smearing_sigma': 0.002,
@@ -88,8 +87,7 @@ parameters = {
 def abacus_calc(directory="OUT", abacus='abacus', parameters={}, mpi=1, omp=1):
     """Set Abacus calculators"""
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(
-        argv=['mpirun', '-np', f'{mpi}', abacus])
+    profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
     # add parallel setting 20230926
     out_directory = directory
     calc = Abacus(profile=profile, directory=out_directory,
