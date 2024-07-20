@@ -14,6 +14,10 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 kpts = [2, 1, 2]
+irc_traj = "irc_log.traj"
+dx = 0.1
+fmax = 0.05
+steps = 1000
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
@@ -57,10 +61,12 @@ def set_abacus_calc(abacus, parameters, directory, mpi, omp) -> Abacus:
                 **parameters)
     return calc
 
-ts_opt.calc = set_abacus_calc(abacus, parameters, f"ABACUS", mpi, omp)
-
-# run from TS stru, but fmax more required
-# set cons is optional
-#cons = Constraints(ts_neb)
-#cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
-irc = IRC(ts_opt, traj='sella-irc.traj', fmax=0.05)
+if __name__ == "__main__":
+    ts_opt.calc = set_abacus_calc(abacus, parameters, f"ABACUS", mpi, omp)
+    # run from TS stru, but fmax more required
+    # set cons is optional
+    #cons = Constraints(ts_neb)
+    #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
+    irc = IRC(ts_opt, irc_traj, dx=dx,)
+    irc.run(fmax, steps, direction='forward')
+    irc.run(fmax, steps, direction='reverse')

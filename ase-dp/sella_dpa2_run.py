@@ -16,8 +16,6 @@ sella_log = "sella_images.traj"
 # setting for calculator
 omp = 16
 
-
-
 if __name__ == "__main__":
     # running process
     stru = read(input_file)
