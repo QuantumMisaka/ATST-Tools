@@ -9,7 +9,7 @@ import numpy as np
 
 from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
-model = "FeCHO-see2a-6-0111.pb"
+model = "FeCHO-dpa2-full.pt"
 
 fmax = 0.05
 dimer_input_file = 'dimer_init.traj'
@@ -130,3 +130,6 @@ if __name__ == "__main__":
                         init_eigenmode_method=init_eigenmode_method,
                         displacement_vector=displacement_vector)
     dimer.run(fmax=fmax, moving_atoms_ind=moving_atoms_ind)
+    # write ts stru
+    write("dimer_opted.cif", dimer_init, format="cif")
+    write("dimer_opted.stru", dimer_init, format="abacus")
