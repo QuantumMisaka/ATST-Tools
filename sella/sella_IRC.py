@@ -1,5 +1,5 @@
 from ase.calculators.abacus import Abacus, AbacusProfile
-from ase.io import read, write
+from ase.io import read, write, Trajectory
 from ase.visualize import view
 from sella import Sella, Constraints, IRC
 import os
@@ -14,7 +14,7 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 kpts = [2, 1, 2]
-irc_traj = "irc_log.traj"
+irc_log = "irc_log.traj"
 dx = 0.1
 fmax = 0.05
 steps = 1000
@@ -32,7 +32,7 @@ parameters = {
     'mixing_type': 'broyden',
     'mixing_ndim': 20,
     'scf_thr': 1e-7,
-    'scf_nmax': 100,
+    'scf_nmax': 300,
     'kpts': kpts,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
@@ -67,6 +67,7 @@ if __name__ == "__main__":
     # set cons is optional
     #cons = Constraints(ts_neb)
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
-    irc = IRC(ts_opt, irc_traj, dx=dx,)
-    irc.run(fmax, steps, direction='forward')
-    irc.run(fmax, steps, direction='reverse')
+    irc_traj = Trajectory(irc_log, 'w')
+    irc = IRC(ts_opt, trajectory=irc_traj, dx=dx,)
+    irc.run(fmax, steps=steps, direction='forward')
+    irc.run(fmax, steps=steps, direction='reverse')
