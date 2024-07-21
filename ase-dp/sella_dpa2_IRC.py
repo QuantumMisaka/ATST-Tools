@@ -20,21 +20,27 @@ omp = 16
 
 if __name__ == "__main__":
     # running process
-    irc_traj = Trajectory('sella_IRC.traj', 'w')
+    irc_traj = Trajectory(irc_log, 'w')
     stru = read(input_file)
     stru.calc = DP(model=model)
     irc = IRC(stru, trajectory=irc_traj, dx=dx,)
     irc.run(fmax, steps=steps, direction='forward')
     irc.run(fmax, steps=steps, direction='reverse')
     # normalize the trajectory
-    # irc_log_norm = []
-    # ene_last = -99999999
-    # for stru in irc_traj[::-1]:
-    #     if stru.get_potential_energy() > ene_last:
-    #         irc_log_norm.append(stru)
-    #         ene_last = stru.get_potential_energy()
-    #     else:
-    #         break
-    # for stru in irc_traj:
-    #     irc_log_norm.append(stru)
-    # write(f"norm_{irc_log}", irc_log_norm, format="traj")
+    irc_log_norm = []
+    irc_origin = read(irc_log,":")
+    ene_last = -99999999
+    for stru in irc_origin[::-1]:
+        if stru.get_potential_energy() > ene_last:
+            irc_log_norm.append(stru)
+            ene_last = stru.get_potential_energy()
+        else:
+            break
+    ene_last = 99999999
+    for stru in irc_origin:
+        if stru.get_potential_energy() < ene_last:
+            irc_log_norm.append(stru)
+            ene_last = stru.get_potential_energy()
+        else:
+            break
+    write(f"norm_{irc_log}", irc_log_norm, format="traj")
