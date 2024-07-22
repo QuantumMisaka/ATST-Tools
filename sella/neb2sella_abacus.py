@@ -33,7 +33,6 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 #lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
-properties = ["energy", "forces", "stress"]
 pp = {
         "H":"H_ONCV_PBE-1.0.upf",
         "C":"C_ONCV_PBE-1.0.upf",
@@ -71,7 +70,7 @@ parameters = {
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
     'cal_force': 1,
-    'cal_stress': 1,
+    'cal_stress': 0,
     'out_stru': 1,
     'out_chg': 0,
     'out_mul': 1,

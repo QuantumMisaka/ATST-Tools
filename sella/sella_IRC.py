@@ -13,7 +13,7 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 #lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
-kpts = [2, 1, 2]
+kpts = [3, 1, 2]
 irc_log = "irc_log.traj"
 dx = 0.1
 fmax = 0.05
@@ -37,7 +37,7 @@ parameters = {
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'cal_force': 1,
-    'cal_stress': 1,
+    'cal_stress': 0,
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
     'out_stru': 1,
