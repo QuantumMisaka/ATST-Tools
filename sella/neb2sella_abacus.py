@@ -50,10 +50,10 @@ kpts = [3, 1, 2]
 parameters = {
     'calculation': 'scf',
     'basis_type': 'lcao',
+    'xc': 'pbe',
     'ks_solver': 'genelpa',
     'vdw_method': 'none',
     'nspin' : 2,
-    'xc': 'pbe',
     'ecutwfc': 100,
     'pp': pp,
     'basis': basis,
@@ -65,7 +65,7 @@ parameters = {
     'mixing_beta': 0.4,
     'mixing_gg0': 1.0,
     'mixing_ndim': 8,
-    'scf_thr': 1e-6,
+    'scf_thr': 1e-7,
     'kpts': kpts,
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
@@ -119,12 +119,11 @@ else:
 
 
 # init and final stru
-atom_init.calc = Abacus(profile=profile, directory="IS",
+atom_init.calc = Abacus(profile=profile, directory="IS_OPT",
                     **parameters)
-# init_relax = BFGS(atom_init)
-# init_relax.run(fmax=0.05)
-print(atom_init.get_potential_energy())
-atom_final.calc = Abacus(profile=profile, directory="FS",
+init_relax = BFGS(atom_init)
+init_relax.run(fmax=0.05)
+atom_final.calc = Abacus(profile=profile, directory="FS_OPT",
                     **parameters)
 final_relax = BFGS(atom_final)
 final_relax.run(fmax=0.05)
@@ -173,3 +172,30 @@ dyn = Sella(
     trajectory=sella_log,
 )
 dyn.run(fmax=sella_fmax)
+
+# get struc of IS,FS,TS
+write("IS_get.cif", atom_init, format="cif")
+write("FS_get.cif", atom_final, format="cif")
+write("TS_get.cif", ts_guess, format="cif")
+write("IS_get.stru", atom_init, format="abacus")
+write("FS_get.stru", atom_final, format="abacus")
+write("TS_get.stru", ts_guess, format="abacus")
+
+# get energy informations
+ene_init = atom_init.get_potential_energy()
+ene_final = atom_final.get_potential_energy()
+ene_ts = ts_guess.get_potential_energy()
+ene_delta = ene_final - ene_init
+ene_activa = ene_ts - ene_init
+ene_act_rev = ene_ts - ene_final
+msg = f'''
+==> TS-Search Results <==
+- Items      Energy
+- IS         {ene_init:.6f}
+- FS         {ene_final:.6f}
+- TS         {ene_ts:.6f}
+- dE         {ene_delta:.6f}
+- Ea_f       {ene_activa:.6f}
+- Ea_r       {ene_act_rev:.6f}
+'''
+print(msg)

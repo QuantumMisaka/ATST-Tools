@@ -99,8 +99,8 @@ atom_init = read(init_stru)
 atom_final = read(final_stru)
 
 # just use this structure
-atom_init.calc = abacus_calc(directory='OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
-atom_final.calc = abacus_calc(directory='OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
+atom_init.calc = abacus_calc(directory='IS_OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
+atom_final.calc = abacus_calc(directory='FS_OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
 # single opt
 init_relax = BFGS(atom_init)
 final_relax = BFGS(atom_final)
@@ -169,3 +169,30 @@ dimer = AbacusDimer(dimer_init,
                     init_eigenmode_method=init_eigenmode_method,
                     displacement_vector=displacement_vector)
 dimer.run(fmax=dimer_fmax)
+
+# get struc of IS,FS,TS
+write("IS_get.cif", atom_init, format="cif")
+write("FS_get.cif", atom_final, format="cif")
+write("TS_get.cif", dimer_init, format="cif")
+write("IS_get.stru", atom_init, format="abacus")
+write("FS_get.stru", atom_final, format="abacus")
+write("TS_get.stru", dimer_init, format="abacus")
+
+# get energy informations
+ene_init = atom_init.get_potential_energy()
+ene_final = atom_final.get_potential_energy()
+ene_ts = dimer_init.get_potential_energy()
+ene_delta = ene_final - ene_init
+ene_activa = ene_ts - ene_init
+ene_act_rev = ene_ts - ene_final
+msg = f'''
+==> TS-Search Results <==
+- Items      Energy
+- IS         {ene_init:.6f}
+- FS         {ene_final:.6f}
+- TS         {ene_ts:.6f}
+- dE         {ene_delta:.6f}
+- Ea_f       {ene_activa:.6f}
+- Ea_r       {ene_act_rev:.6f}
+'''
+print(msg)
