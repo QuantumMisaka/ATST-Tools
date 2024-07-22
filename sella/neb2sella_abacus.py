@@ -66,6 +66,7 @@ parameters = {
     'mixing_gg0': 1.0,
     'mixing_ndim': 8,
     'scf_thr': 1e-7,
+    'scf_nmax': 300,
     'kpts': kpts,
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
