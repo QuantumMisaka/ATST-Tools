@@ -1,6 +1,6 @@
 # Author: JamesMisaka 
-# Using DPA2 model to search TS via NEB-DIMER
-# Last Update: 2024-05-23
+# Using DPA2 model to search TS via NEB-SELLA
+# Last Update: 2024-07-23
 
 import numpy as np
 import os, sys, shutil
@@ -42,7 +42,7 @@ msg = '''
 Usage: 
 - For using IS and FS: 
     python neb2sella_dpa2.py [init_stru] [final_stru] ([format])
-- For using existing NEB: 
+- For using existed NEB: 
     python neb2sella_dpa2.py [neb_latest.traj]
 '''
 
