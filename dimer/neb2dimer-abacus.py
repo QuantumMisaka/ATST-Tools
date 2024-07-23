@@ -1,3 +1,4 @@
+# neb+dimer TS Search by ABACUS
 import numpy as np
 import os
 
@@ -9,11 +10,15 @@ from ase.visualize import view
 from ase.mep.neb import NEBTools, NEB, DyNEB
 # from ase.mep.autoneb import AutoNEB
 # from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
+from copy import deepcopy
+
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.analysis.diffusion.neb.pathfinder import IDPPSolver
 
 from ase.calculators.abacus import Abacus, AbacusProfile
 from abacus_dimer import AbacusDimer
 
-n_max = 8
+n_neb_images = 8
 neb_fmax = 0.80  # neb should be rough
 dimer_fmax = 0.05 # dimer use neb guess
 climb = True
@@ -21,11 +26,11 @@ scale_fmax = 1.0 # use dyneb to reduce message far from TS
 mpi = 16
 omp = 4
 neb_algorism = "improvedtangent"
-init_stru = "../IS/STRU"
-final_stru = "../FS/STRU"
-neb_traj = "neb_images.traj"
+init_stru = "STRU_IS"
+final_stru = "STRU_FS"
+neb_log = "neb_images.traj"
 dimer_traj = "dimer.traj"
-
+neb_sort_tol = 1
 
 # setting for calculator
 abacus = "abacus"
@@ -84,23 +89,17 @@ parameters = {
     'efield_dir': 1,
 }
 
-def abacus_calc(directory="OUT", abacus='abacus', parameters={}, mpi=1, omp=1):
-    """Set Abacus calculators"""
-    os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
-    # add parallel setting 20230926
-    out_directory = directory
-    calc = Abacus(profile=profile, directory=out_directory,
-                    **parameters)
-    return calc
+profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
 
 # init and final stru
 atom_init = read(init_stru)
 atom_final = read(final_stru)
 
 # just use this structure
-atom_init.calc = abacus_calc(directory='IS_OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
-atom_final.calc = abacus_calc(directory='FS_OPT', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp)
+atom_init.calc = Abacus(profile=profile, directory='IS_OPT',
+                        **parameters)
+atom_final.calc = Abacus(profile=profile, directory='FS_OPT',
+                        **parameters)
 # single opt
 init_relax = BFGS(atom_init)
 final_relax = BFGS(atom_final)
@@ -109,33 +108,36 @@ final_relax.run(fmax=0.05)
 write("init_opted.traj", atom_init, format="traj")
 write("final_opted.traj", atom_final, format="traj")
 
-# run neb and dimer 
-# function setting
-
-
 # run neb
-images = [atom_init]
-for i in range(n_max):
-    image = atom_init.copy()
-    image.set_calculator(abacus_calc(directory='NEB', abacus='abacus', parameters=parameters ,mpi=mpi, omp=omp))
-    images.append(image)
-images.append(atom_final)
-neb = DyNEB(images, 
-            climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=scale_fmax)
-neb.interpolate(method="idpp")
+print(f'Generating NEB path, number of images: {n_neb_images}, sort_tol: {neb_sort_tol}')
+is_pmg = AseAtomsAdaptor.get_structure(atom_init)
+fs_pmg = AseAtomsAdaptor.get_structure(atom_final)
+path = IDPPSolver.from_endpoints([is_pmg, fs_pmg], n_neb_images, sort_tol=neb_sort_tol)
+new_path = path.run(maxiter=5000, tol=1e-5, gtol=1e-3)
+# conver path to ase format, and add SinglePointCalculator
+ase_path = [i.to_ase_atoms() for i in new_path]
+ase_path[0].calc = deepcopy(atom_init.calc)
+ase_path[-1].calc = deepcopy(atom_final.calc)
+for img in ase_path[1:-1]:
+    img.calc = Abacus(profile=profile, directory="NEB_OPT",
+                    **parameters)
 
-traj = Trajectory(neb_traj, 'w', neb)
+neb = DyNEB(ase_path, 
+            climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
+            method=neb_algorism, parallel=False, scale_fmax=scale_fmax,
+            allow_shared_calculator=True)
+
+traj = Trajectory(neb_log, 'w', neb)
 opt = FIRE(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
-n_images = NEBTools(images)._guess_nimages()
-neb_raw_barrier = max([image.get_potential_energy() for image in images])
-fmax = NEBTools(images).get_fmax()
-barrier = NEBTools(images).get_barrier()[0]
+n_images = NEBTools(ase_path)._guess_nimages()
+neb_raw_barrier = max([image.get_potential_energy() for image in ase_path])
+fmax = NEBTools(ase_path).get_fmax()
+barrier = NEBTools(ase_path).get_barrier()[0]
 TS_info = [(ind, image) 
-            for ind, image in enumerate(images) 
+            for ind, image in enumerate(ase_path) 
             if image.get_potential_energy() == neb_raw_barrier][0]
 print(f"=== Locate TS in {TS_info[0]} of 0-{n_images-1} images  ===")
 print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
@@ -150,8 +152,8 @@ norm_vector = 0.01
 
 ind_before_TS = TS_info[0] - step_before_TS
 ind_after_TS = TS_info[0] + step_after_TS
-img_before = images[ind_before_TS]
-img_after = images[ind_after_TS]
+img_before = ase_path[ind_before_TS]
+img_after = ase_path[ind_after_TS]
 image_vector = (img_before.positions - img_after.positions)
 modulo_norm = np.linalg.norm(image_vector) / norm_vector
 displacement_vector = image_vector / modulo_norm
