@@ -119,7 +119,7 @@ ase_path = [i.to_ase_atoms() for i in new_path]
 ase_path[0].calc = deepcopy(atom_init.calc)
 ase_path[-1].calc = deepcopy(atom_final.calc)
 for img in ase_path[1:-1]:
-    img.calc = Abacus(profile=profile, directory="NEB_OPT",
+    img.calc = Abacus(profile=profile, directory="NEB",
                     **parameters)
 
 neb = DyNEB(ase_path, 
