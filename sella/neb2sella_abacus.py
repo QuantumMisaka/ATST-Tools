@@ -19,7 +19,6 @@ n_neb_images = 8
 neb_fmax = 0.80  # neb should be rough
 sella_fmax = 0.05 # dimer use neb guess
 climb = True
-scale_fmax = 1.0 # use dyneb to reduce message far from TS
 neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
@@ -149,7 +148,7 @@ for img in ase_path[1:-1]:
 
 neb = DyNEB(ase_path, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=scale_fmax,
+            method=neb_algorism, parallel=False, scale_fmax=0.0,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
