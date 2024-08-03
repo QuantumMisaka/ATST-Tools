@@ -82,3 +82,7 @@ dyn = Sella(
     trajectory='sella-abacus.traj',
 )
 dyn.run(fmax=0.05)
+
+# output TS stru file
+write("TS_sella.stru", ts, format="abacus")
+write("TS_sella.cif", ts, format="cif")

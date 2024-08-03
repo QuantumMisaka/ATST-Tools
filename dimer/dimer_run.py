@@ -77,3 +77,7 @@ if __name__ == "__main__":
                         init_eigenmode_method=init_eigenmode_method,
                         displacement_vector=displacement_vector)
     dimer.run(fmax=fmax, moving_atoms_ind=moving_atoms_ind)
+
+    # output TS stru file
+    write("TS_dimer.stru", dimer_init, format="abacus")
+    write("TS_dimer.cif", dimer_init, format="cif")
