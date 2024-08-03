@@ -71,18 +71,20 @@ def set_abacus_calc(abacus, parameters, directory, mpi, omp) -> Abacus:
                 **parameters)
     return calc
 
-ts.calc = set_abacus_calc(abacus, parameters, f"ABACUS", mpi, omp)
+if __name__ == "__main__":
 
-# run from TS stru, but fmax more required
-# set cons is optional
-#cons = Constraints(ts_neb)
-#cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
-dyn = Sella(
-    ts,
-    trajectory='sella-abacus.traj',
-)
-dyn.run(fmax=0.05)
+    ts.calc = set_abacus_calc(abacus, parameters, f"ABACUS", mpi, omp)
 
-# output TS stru file
-write("TS_sella.stru", ts, format="abacus")
-write("TS_sella.cif", ts, format="cif")
+    # run from TS stru, but fmax more required
+    # set cons is optional
+    #cons = Constraints(ts_neb)
+    #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
+    dyn = Sella(
+        ts,
+        trajectory='sella-abacus.traj',
+    )
+    dyn.run(fmax=0.05)
+
+    # output TS stru file
+    write("TS_sella.stru", ts, format="abacus")
+    write("TS_sella.cif", ts, format="cif")
