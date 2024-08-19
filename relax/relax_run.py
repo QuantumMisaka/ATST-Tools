@@ -70,7 +70,7 @@ parameters = {
 
 # running
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
-profile = AbacusProfile(command=f"mpirun -np {self.mpi} {self.abacus}")
+profile = AbacusProfile(command=f"mpirun -np {mpi} {abacus}")
 stru.calc = Abacus(profile=profile, directory=out_dir,
                     **parameters)
 qn = optimizer(stru, trajectory=out_traj)
