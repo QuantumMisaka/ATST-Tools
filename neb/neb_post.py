@@ -30,6 +30,16 @@ class NEBPost():
         # set fit to True/False is not determined yet
         print(f"Reaction Barrier and Energy Difference: {barrier} (eV)")
         return barrier
+    
+    def get_TS_stru(self, name="TS_get"):
+        """Get TS structure from NEB chain"""
+        raw_barrier = NEBTools(self.neb_chain).get_barrier(fit=False, raw=True)
+        for atoms in self.neb_chain:
+            if atoms.get_potential_energy() == raw_barrier:
+                write(f"{name}.cif", atoms, format="cif")
+                write(f"{name}.stru", atoms, format="stru")
+                print(f"TS structure is saved as {name}.cif and {name}.stru")
+                return
 
     def plot_neb_bands(self, label='nebplots_chain'):
         """makes plots of final neb band in the series in a single PDF"""
@@ -67,6 +77,7 @@ Usage:
         result.plot_all_bands()
         result.plot_neb_bands()
         result.write_latest_bands()
+        result.get_TS_stru()
     else:
         if sys.argv[1] == "--autoneb":
             traj_files = sys.argv[2:]
@@ -75,6 +86,7 @@ Usage:
             result.get_barrier()
             result.plot_all_bands() # in autoneb we only have one chain
             result.write_latest_bands()
+            result.get_TS_stru()
         else:
             traj_file = sys.argv[1]
             n_max = int(sys.argv[2])
@@ -84,4 +96,5 @@ Usage:
             result.plot_all_bands()
             result.plot_neb_bands()
             result.write_latest_bands()
+            result.get_TS_stru()
     
