@@ -7,7 +7,7 @@ from ase.io import Trajectory
 from deepmd.calculator import DP
 
 # setting
-model = "FeCHO-dpa2-full.pt"
+model = "FeCHO-dpa220-100-30656.pt"
 optimizer = BFGS
 omp = 4
 out_traj = "relax.traj"

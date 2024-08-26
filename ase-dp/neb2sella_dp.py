@@ -23,7 +23,7 @@ from sella import Sella, Constraints
 
 from deepmd.calculator import DP
 
-model = "FeCHO-dpa210-30656.pt"
+model = "FeCHO-dpa220-100-30656.pt"
 n_neb_images = 8
 neb_fmax = 1.00  # neb should be rough
 sella_fmax = 0.05 # sella use neb guess
