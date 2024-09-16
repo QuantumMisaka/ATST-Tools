@@ -8,7 +8,7 @@ from deepmd.calculator import DP
 
 # setting
 model = "FeCHO-dpa220-100-30656.pt"
-optimizer = BFGS
+optimizer = QuasiNewton
 omp = 4
 out_traj = "relax.traj"
 

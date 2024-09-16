@@ -24,16 +24,19 @@ from sella import Sella, Constraints
 from deepmd.calculator import DP
 
 model = "FeCHO-dpa220-100-30656.pt"
-n_neb_images = 8
-neb_fmax = 1.00  # neb should be rough
+n_neb_images = 12
+neb_fmax = 1.00  # neb should be rough, but need steps
 sella_fmax = 0.05 # sella use neb guess
 climb = True
 scale_fmax = 0.0 # 0 or 1, 1 for using dyneb
 omp = 16
-neb_algorism = "improvedtangent"
+neb_algorism = "improvedtangent" # eb is another choice
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
 neb_sort_tol = 1
+
+OPTSolver = QuasiNewton
+NEBSolver = FIRE
 
 os.environ['OMP_NUM_THREADS'] = "omp"
 
@@ -74,11 +77,11 @@ else:
 
 # init and final stru
 atom_init.calc = DP(model=model)
-init_relax = BFGS(atom_init)
+init_relax = OPTSolver(atom_init)
 init_relax.run(fmax=0.05)
 # print(atom_init.get_potential_energy())
 atom_final.calc = DP(model=model)
-final_relax = BFGS(atom_final)
+final_relax = OPTSolver(atom_final)
 final_relax.run(fmax=0.05)
 
 init_opted = "init_opted.traj"
@@ -108,7 +111,7 @@ neb = DyNEB(ase_path,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
-opt = FIRE(neb, trajectory=traj)
+opt = NEBSolver(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
