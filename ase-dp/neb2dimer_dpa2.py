@@ -34,6 +34,10 @@ neb_log = "neb_dpa2_raw.traj"
 dimer_log = "dimer_dpa2.traj"
 neb_sort_tol = 1
 
+
+OPTSolver = QuasiNewton
+NEBSolver = FIRE
+
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
@@ -70,8 +74,8 @@ else:
 
 atom_init.calc = DP(model=model)
 atom_final.calc = DP(model=model)
-init_relax = BFGS(atom_init)
-final_relax = BFGS(atom_final)
+init_relax = OPTSolver(atom_init)
+final_relax = OPTSolver(atom_final)
 init_relax.run(fmax=0.05)
 final_relax.run(fmax=0.05)
 
@@ -232,7 +236,7 @@ neb = DyNEB(ase_path,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
-opt = FIRE(neb, trajectory=traj)
+opt = NEBSolver(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
