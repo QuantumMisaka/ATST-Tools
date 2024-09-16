@@ -41,7 +41,7 @@ parameters = {
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_mul': 1,
     'out_wfc_lcao': 0,
     'out_bandgap': 0,

@@ -9,8 +9,8 @@ ts = read("STRU", format="abacus")
 abacus = "abacus"
 mpi=16
 omp=4
-#lib_dir = "/lustre/home/2201110432/example/abacus"
-lib_dir = "/data/home/liuzq/example"
+lib_dir = "/lustre/home/2201110432/example/abacus"
+#lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
 pp = {
@@ -51,7 +51,7 @@ parameters = {
     'init_wfc': 'atomic',
     'init_chg': 'atomic',
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_mul': 1,
     'out_wfc_lcao': 0,
     'out_bandgap': 0,
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
     dyn = Sella(
         ts,
-        trajectory='sella-abacus.traj',
+        trajectory='run_sella.traj',
     )
     dyn.run(fmax=0.05)
 

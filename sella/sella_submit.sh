@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=16
+#SBATCH --ntasks=16
 #SBATCH --cpus-per-task=4
 #SBATCH -J Sella-ABACUS
 #SBATCH -o running_sella.out
@@ -10,12 +10,11 @@
 
 # JamesMisaka in 2023-11-14
 # workflow of ase-abacus-sella method
-# for one calculator, ntasks-per-node for mpi, cpus-per-task for openmp
 
 # in developer's PKU-WM2 server
 source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
 conda activate ase
-module load abacus/3.7.1-icx
+module load abacus/3.7.5-icx
 
 # if one just done neb calculation and done neb_post.py
 # python neb2dimer.py neb_latest.traj # or neb.traj
