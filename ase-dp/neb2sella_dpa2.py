@@ -35,6 +35,9 @@ neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
 neb_sort_tol = 1
 
+OPTSolver = QuasiNewton
+NEBSolver = FIRE
+
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
@@ -74,11 +77,11 @@ else:
 
 # init and final stru
 atom_init.calc = DP(model=model)
-init_relax = BFGS(atom_init)
+init_relax = OPTSolver(atom_init)
 init_relax.run(fmax=0.05)
 # print(atom_init.get_potential_energy())
 atom_final.calc = DP(model=model)
-final_relax = BFGS(atom_final)
+final_relax = OPTSolver(atom_final)
 final_relax.run(fmax=0.05)
 
 init_opted = "init_opted.traj"
@@ -106,7 +109,7 @@ neb = DyNEB(ase_path,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
-opt = FIRE(neb, trajectory=traj)
+opt = NEBSolver(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
@@ -122,7 +125,7 @@ print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
 print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Sella with NEB Information ===")
 
-# para for neb2dimer
+# displacement vector for vib analysis
 step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01

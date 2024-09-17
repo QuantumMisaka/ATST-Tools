@@ -127,7 +127,7 @@ print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
 print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Sella with NEB Information ===")
 
-# para for neb2dimer
+# displacement vector for vib analysis
 step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01
