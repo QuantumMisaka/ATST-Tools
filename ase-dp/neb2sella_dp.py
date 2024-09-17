@@ -98,8 +98,6 @@ path = IDPPSolver.from_endpoints([is_pmg, fs_pmg], n_neb_images, sort_tol=neb_so
 new_path = path.run(maxiter=5000, tol=1e-5, gtol=1e-3)
 # conver path to ase format, and add SinglePointCalculator
 ase_path = [i.to_ase_atoms() for i in new_path]
-# ase_path[0].calc = deepcopy(atom_init.calc)
-# ase_path[-1].calc = deepcopy(atom_final.calc)
 ase_path[0] = atom_init
 ase_path[-1] = atom_final
 for img in ase_path[1:-1]:

@@ -212,8 +212,8 @@ path = IDPPSolver.from_endpoints([is_pmg, fs_pmg], n_neb_images, sort_tol=neb_so
 new_path = path.run(maxiter=5000, tol=1e-5, gtol=1e-3)
 # conver path to ase format, and add SinglePointCalculator
 ase_path = [i.to_ase_atoms() for i in new_path]
-ase_path[0].calc = deepcopy(atom_init.calc)
-ase_path[-1].calc = deepcopy(atom_final.calc)
+ase_path[0] = atom_init
+ase_path[-1] = atom_final
 for img in ase_path[1:-1]:
     img.calc = DP(model=model)
 
@@ -239,7 +239,7 @@ print(f"=== NEB Raw Barrier: {neb_raw_barrier:.4f} (eV) ===")
 print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Dimer with NEB Information ===")
 
-# para for neb2dimer
+# displacement vector for vib analysis
 step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01
