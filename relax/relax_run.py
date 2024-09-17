@@ -8,7 +8,7 @@ from ase.calculators.abacus import Abacus, AbacusProfile
 
 # setting
 stru = read('STRU', format='abacus')
-optimizer = BFGS
+optimizer = QuasiNewton
 mpi = 16
 omp = 4
 abacus = 'abacus'
