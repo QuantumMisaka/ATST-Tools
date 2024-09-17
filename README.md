@@ -6,9 +6,13 @@ Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
 - NEB2Dimer/NEB2Sella Workflow
 - Vibration analysis and ideal gas thermochemistry analysis
 
-Version v1.4.3
+Version v1.4.4
 
 Copyright @ QuantumMisaka from PKU & AISI
+
+## Update 1.4.4
+- Add *neb2dimer_dp.py*, *neb2sella_dp.py*, *relax_dp.py* for deepmd usage, including tf and torch version
+- Change ASE-ABACUS running profile to newest version (already done in 1.4.3 packages)
 
 ## Update 1.4.3
 - Default *neb_make.py* change to pymatgen version
