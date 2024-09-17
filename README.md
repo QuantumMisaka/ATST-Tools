@@ -13,6 +13,7 @@ Copyright @ QuantumMisaka from PKU & AISI
 ## Update 1.4.4
 - Add *neb2dimer_dp.py*, *neb2sella_dp.py*, *relax_dp.py* for deepmd usage, including tf and torch version
 - Change ASE-ABACUS running profile to newest version (already done in 1.4.3 packages)
+- Change default relaxation optimizer to QuasiNewton (BFGSLineSearch)
 
 ## Update 1.4.3
 - Default *neb_make.py* change to pymatgen version

@@ -8,7 +8,7 @@ from deepmd_pt.utils.ase_calc import DPCalculator as DP
 
 # setting
 model = "FeCHO-dpa2-full.pt"
-optimizer = BFGS
+optimizer = QuasiNewton
 omp = 4
 out_traj = "relax.traj"
 
