@@ -38,7 +38,7 @@ OPTSolver = QuasiNewton
 NEBSolver = FIRE
 
 # developers only
-sella_eta = 0.001
+sella_eta = 0.0005
 neb_sort_tol = 1
 os.environ['OMP_NUM_THREADS'] = "omp"
 
