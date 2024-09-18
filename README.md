@@ -73,10 +73,11 @@ export PYTHONPATH=/path/to/source:$PYTHONPATH
 
 ## Developing
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
-- [ ] Checkout the problem in Dimer-ABACUS calculation
-- [ ] Inplement `neb2vib` method in  `neb2dimer` workflow for DPA-2 (and ABACUS)
 - [ ] Move workflow parts of Deep-Potential and DPA-2 potential to `source` directory
-- [ ] Other TS method usage, like [Sella](https://github.com/zadorlab/sella)
+- [ ] Test for Sella usage to get best performance
+- [x] Checkout the problem in Dimer-ABACUS calculation
+- [x] Inplement `neb2vib` method in  `neb2dimer` workflow for DPA-2 (and ABACUS)
+- [x] Other TS method usage, like [Sella](https://github.com/zadorlab/sella)
 
 
 ## NEB workflow
