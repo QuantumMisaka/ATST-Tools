@@ -61,6 +61,9 @@ parameters = {
 }
 
 
+# developers only
+sella_eta = 0.005
+
 # set calculator
 def set_abacus_calc(abacus, parameters, directory, mpi, omp) -> Abacus:
     """Set Abacus calculators"""
@@ -82,6 +85,7 @@ if __name__ == "__main__":
     dyn = Sella(
         ts,
         trajectory='run_sella.traj',
+        eta = sella_eta,
     )
     dyn.run(fmax=0.05)
 

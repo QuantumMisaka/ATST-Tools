@@ -33,11 +33,13 @@ omp = 16
 neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
-neb_sort_tol = 1
 
 OPTSolver = QuasiNewton
 NEBSolver = FIRE
 
+# developers only
+neb_sort_tol = 1
+sella_eta = 0.001
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
@@ -184,7 +186,8 @@ ts_guess.calc = DP(model=model)
 
 dyn = Sella(
     ts_guess,
-    trajectory=sella_log,
+    trajectory = sella_log,
+    eta = sella_eta,
 )
 dyn.run(fmax=sella_fmax)
 

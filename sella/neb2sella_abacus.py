@@ -23,7 +23,6 @@ neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
 abacus = "abacus"
-neb_sort_tol = 1
 
 # abacus setting
 mpi = 16
@@ -82,9 +81,14 @@ parameters = {
     'efield_dir': 1,
 }
 
+
+
+# developers only
+neb_sort_tol = 1
+sella_eta = 0.005
+
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(f'mpirun -np  {mpi} {abacus}')
-
 
 # reading part
 msg = '''
