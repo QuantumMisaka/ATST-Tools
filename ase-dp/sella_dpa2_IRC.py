@@ -17,13 +17,15 @@ steps = 1000 # IRC steps
 dx = 0.1 # IRC step size
 # setting for calculator
 omp = 16
+# for developers
+sella_eta = 2e-4
 
 if __name__ == "__main__":
     # running process
     irc_traj = Trajectory(irc_log, 'w')
     stru = read(input_file)
     stru.calc = DP(model=model)
-    irc = IRC(stru, trajectory=irc_traj, dx=dx,)
+    irc = IRC(stru, trajectory=irc_traj, dx=dx, eta=sella_eta)
     irc.run(fmax, steps=steps, direction='forward')
     irc.run(fmax, steps=steps, direction='reverse')
     # normalize the trajectory

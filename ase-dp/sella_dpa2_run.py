@@ -15,6 +15,8 @@ fmax = 0.05 # sella use neb guess
 sella_log = "sella_images.traj"
 # setting for calculator
 omp = 16
+# for developers
+sella_eta = 2e-4
 
 if __name__ == "__main__":
     # running process
@@ -23,6 +25,7 @@ if __name__ == "__main__":
     dyn = Sella(
     stru,
     trajectory=sella_log,
+    eta = sella_eta,
     )
     dyn.run(fmax=fmax)
     # output ts stru
