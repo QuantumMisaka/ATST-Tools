@@ -12,7 +12,7 @@
 # workflow of ase-abacus-dimer method
 
 # in developer's PKU-WM2 server
-source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
+source /lustre/home/2201110432/apps/miniconda3/bin/activate
 conda activate ase
 module load abacus/3.7.5-icx
 

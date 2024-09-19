@@ -17,7 +17,7 @@
 # n_image selection should consider the computer resource
 
 # in developer's PKU-WM2 server
-source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
+source /lustre/home/2201110432/apps/miniconda3/bin/activate
 conda activate gpaw-intel
 module load abacus/3.7.0-icx
 

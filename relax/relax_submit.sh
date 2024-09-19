@@ -13,7 +13,7 @@
 # for one calculator, ntasks-per-node for mpi, cpus-per-task for openmp
 
 # in developer's PKU-WM2 server
-source /data/softwares/miniconda3/etc/profile.d/conda.sh
+source /data/softwares/miniconda3/bin/activate
 conda activate gpaw-intel
 module load abacus/3.7.0-icx
 
