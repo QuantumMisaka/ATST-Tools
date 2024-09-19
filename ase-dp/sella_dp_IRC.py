@@ -7,12 +7,13 @@ import numpy as np
 
 from sella import Sella, Constraints, IRC
 
-from deepmd_pt.utils.ase_calc import DPCalculator as DP
+#from deepmd_pt.utils.ase_calc import DPCalculator as DP
+from deepmd.calculator import DP
 
 input_file = 'STRU'
-model = "FeCHO-dpa2-full.pt"
+model = "FeCHO-dpa220-100-30656.pt"
 fmax = 0.05 # sella use neb guess
-irc_log = "sella_IRC.traj"
+irc_log = "IRC_images.traj"
 steps = 1000 # IRC steps
 dx = 0.1 # IRC step size
 # setting for calculator

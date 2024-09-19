@@ -40,7 +40,7 @@ parameters = {
     'mixing_type': 'broyden',
     'mixing_ndim': 20,
     'scf_thr': 1e-7,
-    'scf_nmax': 100,
+    'scf_nmax': 300,
     'kpts': kpts,
     'pp': pp,
     'basis': basis,

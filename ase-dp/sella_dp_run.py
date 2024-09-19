@@ -7,10 +7,11 @@ import numpy as np
 
 from sella import Sella, Constraints
 
-from deepmd_pt.utils.ase_calc import DPCalculator as DP
+#from deepmd_pt.utils.ase_calc import DPCalculator as DP
+from deepmd.calculator import DP
 
 input_file = 'STRU'
-model = "FeCHO-dpa2-full.pt"
+model = "FeCHO-dpa220-100-30656.pt"
 fmax = 0.05 # sella use neb guess
 sella_log = "sella_images.traj"
 # setting for calculator

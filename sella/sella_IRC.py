@@ -13,6 +13,18 @@ lib_dir = "/lustre/home/2201110432/example/abacus"
 #lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
+pp = {
+        "H":"H_ONCV_PBE-1.0.upf",
+        "C":"C_ONCV_PBE-1.0.upf",
+        "O":"O_ONCV_PBE-1.0.upf",
+        "Fe":"Fe_ONCV_PBE-1.0.upf",
+      }
+basis = {
+        "H":"H_gga_6au_100Ry_2s1p.orb",
+        "C":"C_gga_7au_100Ry_2s2p1d.orb",
+        "O":"O_gga_7au_100Ry_2s2p1d.orb",
+        "Fe":"Fe_gga_8au_100Ry_4s2p2d1f.orb",
+         }
 kpts = [3, 1, 2]
 irc_log = "irc_log.traj"
 dx = 0.1
@@ -34,6 +46,8 @@ parameters = {
     'scf_thr': 1e-7,
     'scf_nmax': 300,
     'kpts': kpts,
+    'pp': pp,
+    'basis': basis,
     'pseudo_dir': pseudo_dir,
     'basis_dir': basis_dir,
     'cal_force': 1,
@@ -71,7 +85,7 @@ if __name__ == "__main__":
     #cons = Constraints(ts_neb)
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
     irc_traj = Trajectory(irc_log, 'w')
-    irc = IRC(ts_opt, trajectory=irc_traj, dx=dx,)
+    irc = IRC(ts_opt, trajectory=irc_traj, dx=dx, eta=sella_eta)
     irc.run(fmax, steps=steps, direction='forward')
     irc.run(fmax, steps=steps, direction='reverse')
     # normalize the trajectory
