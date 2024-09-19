@@ -22,9 +22,11 @@ climb = True
 neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
-abacus = "abacus"
+OPTSolver = QuasiNewton
+NEBSolver = FIRE
 
 # abacus setting
+abacus = "abacus"
 mpi = 16
 omp = 4
 abacus = "abacus"
@@ -63,7 +65,7 @@ parameters = {
     'mixing_type': 'broyden',
     'mixing_beta': 0.4,
     'mixing_gg0': 1.0,
-    'mixing_ndim': 8,
+    'mixing_ndim': 20,
     'scf_thr': 1e-7,
     'scf_nmax': 300,
     'kpts': kpts,
@@ -72,7 +74,7 @@ parameters = {
     'cal_force': 1,
     'cal_stress': 0,
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_mul': 1,
     'out_bandgap': 1,
     'out_wfc_lcao': 0,
@@ -82,10 +84,10 @@ parameters = {
 }
 
 
-
 # developers only
 neb_sort_tol = 1
 sella_eta = 0.005
+scale_sigma = 1.0
 
 os.environ['OMP_NUM_THREADS'] = f'{omp}'
 profile = AbacusProfile(f'mpirun -np  {mpi} {abacus}')
@@ -126,11 +128,11 @@ else:
 # init and final stru
 atom_init.calc = Abacus(profile=profile, directory="IS_OPT",
                     **parameters)
-init_relax = BFGS(atom_init)
+init_relax = OPTSolver(atom_init)
 init_relax.run(fmax=0.05)
 atom_final.calc = Abacus(profile=profile, directory="FS_OPT",
                     **parameters)
-final_relax = BFGS(atom_final)
+final_relax = OPTSolver(atom_final)
 final_relax.run(fmax=0.05)
 
 write("init_opted.traj", atom_init, format="traj")
@@ -152,11 +154,11 @@ for img in ase_path[1:-1]:
 
 neb = DyNEB(ase_path, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=0.0,
+            method=neb_algorism, parallel=False, scale_fmax=scale_sigma,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
-opt = FIRE(neb, trajectory=traj)
+opt = NEBSolver(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
@@ -180,7 +182,8 @@ ts_guess.calc = Abacus(profile=profile, directory="SELLA",
 
 dyn = Sella(
     ts_guess,
-    trajectory=sella_log,
+    trajectory = sella_log,
+    eta = sella_eta,
 )
 dyn.run(fmax=sella_fmax)
 

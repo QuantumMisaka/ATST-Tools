@@ -1,6 +1,7 @@
 # neb+dimer TS Search by ABACUS
 import numpy as np
 import os
+import sys
 
 from ase.io import read, write, Trajectory
 from ase import Atoms
@@ -25,11 +26,10 @@ climb = True
 mpi = 16
 omp = 4
 neb_algorism = "improvedtangent"
-init_stru = "STRU_IS"
-final_stru = "STRU_FS"
 neb_log = "neb_images.traj"
-dimer_traj = "dimer.traj"
-neb_sort_tol = 1
+dimer_traj = "dimer_images.traj"
+OPTSolver = QuasiNewton
+NEBSolver = FIRE
 
 # setting for calculator
 abacus = "abacus"
@@ -51,7 +51,6 @@ basis = {
         }
 
 kpts = [3, 1, 2]
-
 parameters = {
     'calculation': 'scf',
     'nspin': 2,
@@ -79,7 +78,7 @@ parameters = {
     'init_wfc': 'atomic',
     'init_charge': 'atomic',
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_bandgap': 1,
     'out_mul': 1,
     'out_wfc_lcao': 0,
@@ -88,11 +87,47 @@ parameters = {
     'efield_dir': 1,
 }
 
+
+# developer only
+scale_sigma = 1.0
+step_before_TS = 1
+step_after_TS = 1
+norm_vector = 0.01
+neb_sort_tol = 1
+
 profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
 
-# init and final stru
-atom_init = read(init_stru)
-atom_final = read(final_stru)
+# reading part
+msg = '''
+Usage: 
+- For using IS and FS: 
+    python neb2sella_abacus.py [init_stru] [final_stru] ([format])
+- For using existed NEB: 
+    python neb2sella_abacus.py [neb_latest.traj]
+'''
+if len(sys.argv) < 2:
+    print(msg)
+    sys.exit(1)
+elif len(sys.argv) == 2:
+    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+        print(msg)
+        sys.exit(0)
+    else:
+        neb_traj = sys.argv[1]
+        neb_abacus = read(neb_traj, ":", format="traj")
+        atom_init = neb_abacus[0]
+        atom_final = neb_abacus[-1]
+        assert type(atom_init) == Atoms and type(atom_final) == Atoms, \
+        "The input file is not a trajectory file contained Atoms object"
+else:
+    init_stru = sys.argv[1]
+    final_stru = sys.argv[2]
+    if len(sys.argv) == 4:
+        format = sys.argv[3]
+    else:
+        format = None # auto detect
+    atom_init = read(init_stru, format=format)
+    atom_final = read(final_stru, format=format)
 
 # just use this structure
 atom_init.calc = Abacus(profile=profile, directory='IS_OPT',
@@ -100,8 +135,8 @@ atom_init.calc = Abacus(profile=profile, directory='IS_OPT',
 atom_final.calc = Abacus(profile=profile, directory='FS_OPT',
                         **parameters)
 # single opt
-init_relax = BFGS(atom_init)
-final_relax = BFGS(atom_final)
+init_relax = OPTSolver(atom_init)
+final_relax = OPTSolver(atom_final)
 init_relax.run(fmax=0.05)
 final_relax.run(fmax=0.05)
 write("init_opted.traj", atom_init, format="traj")
@@ -123,11 +158,11 @@ for img in ase_path[1:-1]:
 
 neb = DyNEB(ase_path, 
             climb=climb, dynamic_relaxation=True, fmax=neb_fmax,
-            method=neb_algorism, parallel=False, scale_fmax=0.0,
+            method=neb_algorism, parallel=False, scale_fmax=scale_sigma,
             allow_shared_calculator=True)
 
 traj = Trajectory(neb_log, 'w', neb)
-opt = FIRE(neb, trajectory=traj)
+opt = NEBSolver(neb, trajectory=traj)
 opt.run(neb_fmax)
 
 # neb displacement to dimer
@@ -144,9 +179,6 @@ print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Dimer with NEB Information ===")
 
 # para for neb2dimer
-step_before_TS = 1
-step_after_TS = 1
-norm_vector = 0.01
 #out_vec = 'displacement_vector.npy',
 
 ind_before_TS = TS_info[0] - step_before_TS
