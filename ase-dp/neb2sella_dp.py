@@ -33,11 +33,10 @@ omp = 16
 neb_algorism = "improvedtangent" # eb is another choice
 neb_log = "neb_images.traj"
 sella_log = "sella_images.traj"
-
 OPTSolver = QuasiNewton
 NEBSolver = FIRE
 
-# developers only
+# developer only
 sella_eta = 0.0002
 neb_sort_tol = 1
 os.environ['OMP_NUM_THREADS'] = "omp"

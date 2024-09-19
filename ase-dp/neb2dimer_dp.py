@@ -32,12 +32,17 @@ omp = 16
 neb_algorism = "improvedtangent"
 neb_log = "neb_images.traj"
 dimer_log = "dimer_images.traj"
-neb_sort_tol = 1
-
 OPTSolver = QuasiNewton
 NEBSolver = FIRE
 
+
+
+# developer only
 os.environ['OMP_NUM_THREADS'] = "omp"
+neb_sort_tol = 1
+step_before_TS = 1
+step_after_TS = 1
+norm_vector = 0.01
 
 # reading part
 msg = '''
@@ -240,9 +245,6 @@ print(f"=== NEB Fmax: {fmax:.4f} (eV/A) ===")
 print(f"=== Now Turn to Dimer with NEB Information ===")
 
 # displacement vector for vib analysis
-step_before_TS = 1
-step_after_TS = 1
-norm_vector = 0.01
 #out_vec = 'displacement_vector.npy',
 
 ind_before_TS = TS_info[0] - step_before_TS
