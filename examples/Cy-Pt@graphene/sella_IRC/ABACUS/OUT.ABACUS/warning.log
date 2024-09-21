@@ -1,0 +1,207 @@
+ In SCAN_END, can't find: </PP_R> block.
+ In SCAN_END, can't find: </PP_RAB> block.
+ In SCAN_END, can't find: </PP_MESH> block.
+ In SCAN_END, can't find: </PP_LOCAL> block.
+ In SCAN_END, can't find: </PP_BETA.1> block.
+ In SCAN_END, can't find: </PP_BETA.2> block.
+ In SCAN_END, can't find: </PP_BETA.3> block.
+ In SCAN_END, can't find: </PP_BETA.4> block.
+ In SCAN_END, can't find: </PP_RHOATOM> block.
+ In SCAN_END, can't find: </PP_R> block.
+ In SCAN_END, can't find: </PP_RAB> block.
+ In SCAN_END, can't find: </PP_MESH> block.
+ In SCAN_END, can't find: </PP_LOCAL> block.
+ In SCAN_END, can't find: </PP_BETA.1> block.
+ In SCAN_END, can't find: </PP_BETA.2> block.
+ In SCAN_END, can't find: </PP_BETA.3> block.
+ In SCAN_END, can't find: </PP_BETA.4> block.
+ In SCAN_END, can't find: </PP_BETA.5> block.
+ In SCAN_END, can't find: </PP_BETA.6> block.
+ In SCAN_END, can't find: </PP_BETA.7> block.
+ In SCAN_END, can't find: </PP_BETA.8> block.
+ In SCAN_END, can't find: </PP_RHOATOM> block.
+ In SCAN_END, can't find: </PP_R> block.
+ In SCAN_END, can't find: </PP_RAB> block.
+ In SCAN_END, can't find: </PP_MESH> block.
+ In SCAN_END, can't find: </PP_LOCAL> block.
+ In SCAN_END, can't find: </PP_BETA.1> block.
+ In SCAN_END, can't find: </PP_BETA.2> block.
+ In SCAN_END, can't find: </PP_RHOATOM> block.
+ AUTO_SET NBANDS to 0
+ AUTO_SET NBANDS to 188
+      Processor           Atom
+              1             20
+              2             19
+              3             22
+              4             20
+              5             20
+              6             22
+              7             22
+              8             25
+              9             27
+             10             27
+             11             28
+             12             27
+             13             26
+             14             23
+             15             22
+             16             21
+                            startmag_type = 2
+                       charge from rho_at = 3.99303
+                         charge should be = 4
+                            startmag_type = 2
+                       charge from rho_at = 17.9731
+                         charge should be = 18
+                            startmag_type = 2
+                       charge from rho_at = 0.997867
+                         charge should be = 1
+ Warning: negative or imaginary starting charge :  neg = -0.000690834 ima = 1.91409e-10 SPIN = 0
+ Warning: negative or imaginary starting charge :  neg = -0.000499713 ima = 1.74095e-10 SPIN = 1
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 156.5
+
+ SETUP ATOMIC RHO FOR SPIN 2
+                 Electron number from rho = 89.5
+           total electron number from rho = 246
+                                should be = 246
+                 charge before normalized = 246
+                  charge after normalized = 246
+                 charge before normalized = 245.99999967701
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 246.000000000001
+                  charge after normalized = 246
+                 charge before normalized = 245.99999933842
+                  charge after normalized = 246.000000000002
+                 charge before normalized = 246.000000000002
+                  charge after normalized = 246
+                 charge before normalized = 245.999999324922
+                  charge after normalized = 246
+                 charge before normalized = 245.999999999998
+                  charge after normalized = 246
+                 charge before normalized = 245.999999198046
+                  charge after normalized = 246
+                 charge before normalized = 246.000000000001
+                  charge after normalized = 246
+                 charge before normalized = 245.999999164683
+                  charge after normalized = 246
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999162835
+                  charge after normalized = 246.000000000004
+                 charge before normalized = 245.999999999998
+                  charge after normalized = 246
+                 charge before normalized = 245.999999160621
+                  charge after normalized = 246.000000000002
+                 charge before normalized = 246.000000000003
+                  charge after normalized = 246
+                 charge before normalized = 245.999999158898
+                  charge after normalized = 245.999999999998
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999157388
+                  charge after normalized = 245.999999999998
+                 charge before normalized = 246.000000000003
+                  charge after normalized = 246
+                 charge before normalized = 245.999999155042
+                  charge after normalized = 246.000000000001
+                 charge before normalized = 245.999999999998
+                  charge after normalized = 246
+                 charge before normalized = 245.999999153672
+                  charge after normalized = 246.000000000001
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999152998
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 246
+                  charge after normalized = 246
+                 charge before normalized = 245.999999152495
+                  charge after normalized = 246
+                 charge before normalized = 246.000000000002
+                  charge after normalized = 246
+                 charge before normalized = 245.99999915218
+                  charge after normalized = 246.000000000001
+                 charge before normalized = 245.999999999998
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151974
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151924
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 246.000000000003
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151848
+                  charge after normalized = 246.000000000001
+                 charge before normalized = 245.999999999997
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151753
+                  charge after normalized = 246.000000000001
+                 charge before normalized = 245.999999999997
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151722
+                  charge after normalized = 246
+                 charge before normalized = 246.000000000007
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 246.000000000002
+                 charge before normalized = 245.999999999997
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151712
+                  charge after normalized = 246.000000000002
+                 charge before normalized = 245.999999999995
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151714
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 246.000000000008
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151711
+                  charge after normalized = 246.000000000003
+                 charge before normalized = 245.999999999996
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151712
+                  charge after normalized = 245.999999999999
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 246
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 246
+                 charge before normalized = 246.000000000003
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 246
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 246
+                 charge before normalized = 245.999999999999
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151712
+                  charge after normalized = 246
+                 charge before normalized = 246.000000000003
+                  charge after normalized = 246
+                 charge before normalized = 245.999999151713
+                  charge after normalized = 245.999999999999
+                            startmag_type = 2
+                       charge from rho_at = 3.99303358802097
+                         charge should be = 4
+                            startmag_type = 2
+                       charge from rho_at = 17.9730965646447
+                         charge should be = 18
+                            startmag_type = 2
+                       charge from rho_at = 0.997866823270309
+                         charge should be = 1
+ Warning: negative or imaginary starting charge :  neg = -0.000690833624715456 ima = 1.91409195458074e-10 SPIN = 0
+ Warning: negative or imaginary starting charge :  neg = -0.000499713350158669 ima = 1.74094726075634e-10 SPIN = 1
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 156.5
+
+ SETUP ATOMIC RHO FOR SPIN 2
+                 Electron number from rho = 89.4999999999995
+           total electron number from rho = 245.999999999999
+                                should be = 246
+ write_dmr  warning : the output type of DMR should be npz or csr.
