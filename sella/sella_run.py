@@ -60,9 +60,8 @@ parameters = {
     'efield_dir': 1,
 }
 
-
 # developers only
-sella_eta = 0.005
+sella_eta = 0.002
 
 # set calculator
 def set_abacus_calc(abacus, parameters, directory, mpi, omp) -> Abacus:

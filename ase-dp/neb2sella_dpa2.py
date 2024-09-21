@@ -39,7 +39,7 @@ NEBSolver = FIRE
 
 # developers only
 neb_sort_tol = 1
-sella_eta = 0.001
+sella_eta = 0.0002
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part
