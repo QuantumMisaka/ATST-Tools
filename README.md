@@ -1,6 +1,7 @@
 # ATST-Tools
 Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
 - NEB, including CI-NEB, IT-NEB and others.
+- Serial Dynamic NEB (DyNEB) calculation.
 - AutoNEB: an automatic NEB workflow.
 - Single-End TS search: Sella, Dimer.
 - IRC analysis by Sella.
@@ -25,9 +26,8 @@ Copyright @ QuantumMisaka from TMC-PKU & AISI
 - Examples Update
 
 ## Dependencies:
-- [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
+- [ASE](https://wiki.fysik.dtu.dk/ase/about.html), but you should install ASE by [ASE-ABACUS interface](https://gitlab.com/1041176461/ase-abacus) as a separate ASE package for ABACUS usage.
 - [ABACUS](https://github.com/deepmodeling/abacus-develop), one can install ABACUS by ABACUS toolchain [ABACUS](https://github.com/deepmodeling/abacus-develop/tree/develop/toolchain), or refer to [ABACUS-docs](https://abacus.deepmodeling.com/en/latest/)
-- [ASE-ABACUS interface](https://gitlab.com/1041176461/ase-abacus)
 - [pymatgen](https://pymatgen.org/) and [pymatgen-analysis-diffusion](https://github.com/materialsvirtuallab/pymatgen-analysis-diffusion) in the usage of new `neb_make.py` script and D2S TS method, which can be installed by `pip install pymatgen pymatgen-analysis-diffusion`
 - [Sella](https://github.com/zadorlab/sella) if one wants to use Sella method for Single-End TS search. which can be installed by `pip install sella`
 - [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel. The installation of GPAW need some efferts, and one can refer to [GPAW installation](https://wiki.fysik.dtu.dk/gpaw/install.html) for more details.
@@ -244,6 +244,8 @@ The Dimer workflow is based on 2 main python scripts and 1 workflow submit scrip
 
 ATST-Tools also offer a double-to-single (D2S) TS exploration method, which is named as `neb2dimer_abacus.py` and `neb2sella_abacus.py` in `dimer` and `sella` directories respectively, which run a rough NEB first and use the maximum information for initial guess of running single-ended method like dimer or Sella, obtaining a high-efficiency TS exploration. 
 
+In D2S workflow, Dynamic NEB acceleration is used for NEB calculation for serial usage for faster rough NEB calculation.
+
 This workflow is only for serial NEB calculation, but is efficient enough for TS exploration. The parallel NEB acceleration is in considering.
 
 ## Vibration Analysis 
@@ -252,7 +254,8 @@ The vibration analysis is based on `ase.vibrations.Vibrations` object, which can
 Also, thermodynamic analysis will be performed based on `ase.thermochemistry.HarmonicThermo` object based on vibration analysis result and specified temperature.
 
 ## Relaxation
-Relaxation method offer by ASE can be used by scripts from `relax` directory, which use ABACUS as SCF calculator.
+Relaxation method offer by ASE can be used by scripts from `relax` directory, which use ABACUS as SCF calculator. 
+> Notes: QuasiNewton method in ASE is BFGSLineSearch, which is default usage in ATST-Tools and can have robust structural relaxation ability.
 
 ## ase-dp
 There are also scripts for Deep-Potential and DPA-2 potential usage in `ase-dp` directory for TS exploration and structural relaxation, some newest examples can be used by `neb2dimer_dp.py`, `neb2sella_dp.py` and `relax_dp.py` for Deep-Potential and DPA-2 potential usage. 
@@ -260,10 +263,10 @@ There are also scripts for Deep-Potential and DPA-2 potential usage in `ase-dp` 
 Parallel NEB version for ase-dp is also in developing.
 
 ## Examples
-- Li-diffu-Si: Li diffusion in Si, very easy example for serial and parallel NEB calculation
-- H2-Au111: H2 dissociation on Au(111) surface. which will have NEB, AutoNEB and Dimer example. The barrier is around 1.1 eV consistent with existing paper and calculation result.
-- CO-Pt111 : CO dissociation on Pt(111) surface. which have high barrier as 3.6 eV and including diffusion part. AutoNEB will always fail due to the low starting image. 
-- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface. The barrier is around 1.3 eV. Noted that the `IT-NEB` result is wrong, but which is consistent to the result in VTST-Tools when using 4 image to do IT-NEB calculation.
+- Li-diffu-Si: Li diffusion in Si, very easy example for serial and parallel NEB calculation about diffusion system. Note that ATS-Tools will tune the parameters towards TS exploration, for those who want to do diffusion calculation, one should check the effectiveness of the parameters by yourself.
+- H2-Au111: H2 dissociation on Au(111) surface. which will have NEB, serial DyNEB, AutoNEB, Dimer, Sella and D2S example. The barrier is around 1.1 eV consistent with existing paper and calculation result. IRC results shows the reaction path is correct.
+- CO-Pt111 : CO dissociation on Pt(111) surface. which have high barrier as 1.5 eV and including diffusion part. AutoNEB will always fail due to the low starting image. By performing Dimer / Sella calculation, or use the D2S method, the TS can be explored in an efficient and accurate way. By using Sella package, one can also get the IRC of C-O dissociaition reaction process.
+- Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface. The barrier is around 1.3 eV. Noted that the `IT-NEB` result is wrong, but which is consistent to the result in VTST-Tools when using 4 image to do IT-NEB calculation. Dimer calculation also get wrong result in this case, while Sella perform good result.
 
 More examples is welcomed from users. 
 
