@@ -22,6 +22,7 @@ def image2dimer(ts, before_ts, after_ts, out_traj = 'dimer_init.traj',
 
 
 def neb2dimer(neb_traj : list, n_max : int = 0, out_traj = 'dimer_init.traj', 
+              out_stru = "STRU",
               out_vec = 'displacement_vector.npy', 
               norm_vector : float = 0.01,
               step_before_TS : int = 1, step_after_TS : int = 1):
@@ -56,6 +57,7 @@ def neb2dimer(neb_traj : list, n_max : int = 0, out_traj = 'dimer_init.traj',
     print(f"=== TS images is output as {out_traj} for dimer init ===")
     # output TS of neb for dimer init
     write(out_traj, TS_info[1], format='traj')
+    write(out_stru, TS_info[1], format="abacus")
     # output displancement vector by using the nearest two images of TS
     ind_before_TS = TS_info[0] - step_before_TS
     ind_after_TS = TS_info[0] + step_after_TS

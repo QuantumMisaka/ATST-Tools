@@ -14,7 +14,7 @@ class AbacusDimer:
     
     def __init__(self, init_Atoms, parameters, abacus='abacus',
                  mpi=1, omp=1, directory='DIMER', 
-                 traj_file='dimer.traj',
+                 traj_file='run_dimer.traj',
                  init_eigenmode_method='displacement',
                  displacement_vector: np.ndarray = None,):
         """Initialize Dimer method by using ASE-ABACUS
