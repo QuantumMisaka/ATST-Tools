@@ -13,7 +13,7 @@ class AbacusDimer:
     """Customize Dimer calculation workflow by using ABACUS"""
     
     def __init__(self, init_Atoms, parameters, abacus='abacus',
-                 mpi=1, omp=1, directory='DIMER', 
+                 mpi=1, omp=1, directory='ABACUS', 
                  traj_file='run_dimer.traj',
                  init_eigenmode_method='displacement',
                  displacement_vector: np.ndarray = None,):
