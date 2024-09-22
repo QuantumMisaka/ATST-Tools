@@ -85,7 +85,7 @@ parameters = {
 
 # developers only
 neb_sort_tol = 1
-sella_eta = 0.002
+sella_eta = 0.005 # 0.002 ~ 0.01
 scale_sigma = 1.0
 
 os.environ['OMP_NUM_THREADS'] = f'{omp}'

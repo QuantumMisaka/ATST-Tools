@@ -61,7 +61,7 @@ parameters = {
 }
 
 # developers only
-sella_eta = 0.002
+sella_eta = 0.005 # 0.002 ~ 0.01
 
 # set calculator
 def set_abacus_calc(abacus, parameters, directory, mpi, omp) -> Abacus:

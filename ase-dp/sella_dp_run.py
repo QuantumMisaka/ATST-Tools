@@ -17,7 +17,7 @@ sella_log = "sella_images.traj"
 # setting for calculator
 omp = 16
 # for developers
-sella_eta = 0.0002
+sella_eta = 0.0002 # 1e-3 ~ 1e-4
 
 if __name__ == "__main__":
     # running process
