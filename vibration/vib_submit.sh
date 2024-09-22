@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=16
+#SBATCH --ntasks=16
 #SBATCH --cpus-per-task=4
 #SBATCH -J vib_test
 #SBATCH -o running_vib.out
@@ -13,9 +13,9 @@
 # part of ATST-Tools scripts
 
 # in developer's PKU-WM2 server
-source /lustre/home/2201110432/apps/miniconda3/etc/profile.d/conda.sh
+source /lustre/home/2201110432/apps/miniconda3/bin/activate
 conda activate ase
-module load abacus/3.7.0-icx
+module load abacus/3.7.5-icx
 
 echo "Vibrational Calculation Start at $(date) !"
 # Job state 
