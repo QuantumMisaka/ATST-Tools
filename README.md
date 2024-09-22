@@ -1,60 +1,53 @@
 # ATST-Tools
 Advanced ASE Transition State Tools for ABACUS and Deep-Potential, including:
-- NEB, including CI-NEB, IT-NEB and others
-- AutoNEB: an automatic NEB workflow
-- Single-End TS search: Dimer, Sella
-- NEB2Dimer/NEB2Sella Workflow
-- Vibration analysis and ideal gas thermochemistry analysis
+- NEB, including CI-NEB, IT-NEB and others.
+- AutoNEB: an automatic NEB workflow.
+- Single-End TS search: Sella, Dimer.
+- IRC analysis by Sella.
+- Double-to-single (D2S) TS workflow: neb2dimer, neb2sella.
+- Vibration analysis and ideal gas thermochemistry analysis.
 
-Version v1.4.4
+Version 1.5.0
 
-Copyright @ QuantumMisaka from PKU & AISI
+Copyright @ QuantumMisaka from TMC-PKU & AISI
 
-## Update 1.4.4
-- Add *neb2dimer_dp.py*, *neb2sella_dp.py*, *relax_dp.py* for deepmd usage, including tf and torch version
-- Change ASE-ABACUS running profile to newest version (already done in 1.4.3 packages)
-- Change default relaxation optimizer to QuasiNewton (BFGSLineSearch)
-
-## Update 1.4.3
-- Default *neb_make.py* change to pymatgen version
+## Update log from 1.4.0 to 1.5.0
+- Add internal reaction coordination (IRC) calculation by using Sella packages.
+- Add *neb2dimer_dp.py*, *neb2sella_dp.py*, *relax_dp.py* for deepmd usage, including tf and torch version, and all D2S method are using pymatgen IDPP.
+- Change default relaxation optimizer from BFGS to QuasiNewton (BFGSLineSearch).
 - change the way to use `AbacusProfile` to march the newest version of ase-abacus interface, which use different command format.
-
-## Update 1.4.2
-- *neb2dimer_dpa2.py* and *neb2sella_dpa2.py* are using pymatgen interpolation
-- Since constraints read-in in ASE-ABACUS interface is fixed, the constraints is the two scripts above is modified.
-
-## Update 1.4.1
-
-- *neb_make_pymatgen.py* scripts by @MoseyQAQ, which use interpolation of pymatgen to do NEB initial guess 
-and avoid edge-crossing problem in NEB guess generation.
-- minor bug fixed
-
-## Update 1.4.0
-- Support DeepPotential and DPA-2 Potential usage scripts in `ase-dp` directory
-- Support use neb2dimer method by DPA-2 Potential (ABACUS calculator have problem in dimer)
-- New function: `neb2vib` method to use NEB chain information to do vibration analysis
-- Thermochemistry analysis for ideal gas system
-- minor bug fixed
+- Since constraints read-in problem in ASE-ABACUS interface is fixed [#28](https://gitlab.com/1041176461/ase-abacus/-/issues/28), the constraints is the two scripts above is modified.
+- Default *neb_make.py* change to pymatgen version below.
+- *neb_make_pymatgen.py* scripts by @MoseyQAQ, which use IDPP of pymatgen to do NEB initial guess, avoiding IDPP problem from ASE including edge-crossing problem in NEB guess generation.
+- Support DeepPotential and DPA-2 Potential usage scripts in `ase-dp` directory.
+- New function: `neb2vib` method to use NEB chain information to do partial vibrational analysis.
+- Thermochemistry analysis for ideal gas system.
+- Examples Update
 
 ## Dependencies:
 - [ASE](https://wiki.fysik.dtu.dk/ase/about.html)
-- [ABACUS](https://abacus.deepmodeling.com/en/latest/)
+- [ABACUS](https://github.com/deepmodeling/abacus-develop), one can install ABACUS by ABACUS toolchain [ABACUS](https://github.com/deepmodeling/abacus-develop/tree/develop/toolchain), or refer to [ABACUS-docs](https://abacus.deepmodeling.com/en/latest/)
 - [ASE-ABACUS interface](https://gitlab.com/1041176461/ase-abacus)
-- [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel
-- [deepmd-kit](https://github.com/deepmodeling/deepmd-kit) or [DPA-2](https://zenodo.org/records/10428497) if one wants to use Deep-Potential or DPA-2 potential
+- [pymatgen](https://pymatgen.org/) and [pymatgen-analysis-diffusion](https://github.com/materialsvirtuallab/pymatgen-analysis-diffusion) in the usage of new `neb_make.py` script and D2S TS method, which can be installed by `pip install pymatgen pymatgen-analysis-diffusion`
+- [Sella](https://github.com/zadorlab/sella) if one wants to use Sella method for Single-End TS search. which can be installed by `pip install sella`
+- [GPAW](https://wiki.fysik.dtu.dk/gpaw/install.html) if one wants to run NEB images relaxation in parallel. The installation of GPAW need some efferts, and one can refer to [GPAW installation](https://wiki.fysik.dtu.dk/gpaw/install.html) for more details.
+- [deepmd-kit](https://github.com/deepmodeling/deepmd-kit) or [DPA-2](https://zenodo.org/records/10428497) if one wants to use Deep-Potential or DPA-2 potential, one can refer to [deepmd-docs](https://docs.deepmodeling.com/projects/deepmd/en/master/)
+
 
 Notice: GPAW and ABACUS should be dependent on same MPI and libraries environments. 
-For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW should NOT be dependent on gcc-toolchain like OpenMPI and OpenBLAS.
+> For instance, if your ABACUS is installed by Intel-OneAPI toolchain, your GPAW should NOT be dependent on gcc-toolchain like OpenMPI and OpenBLAS.
 
 ATST-Tools is Under actively development, please let me know if any problem occurs.
 
-## Tutorial
-
-One can get tutorial from this [Bohrium Notebook](https://nb.bohrium.dp.tech/detail/39369325971)
+## Tutorials
+- One can get ASE-ABACUS usage from this [Bohrium Notebook 1](https://bohrium.dp.tech/notebooks/6516485694)
+- One can get NEB tutorial from this [Bohrium Notebook 2](https://nb.bohrium.dp.tech/detail/39369325971)
+- One can get Single-End TS search tutorial from this [Bohrium Notebook 3](https://bohrium.dp.tech/notebooks/29581597682)
+- D2S TS exploration tutorial is coming soon.
 
 ## Workflow
 
-![ATST-workflow](./img/ATST-workflow.png)
+![ATST-NEB-workflow](./img/ATST-workflow.png)
 
 ## Workflow libraries and setting
 All workflow library files and re-constructed ASE libraries will be put in `./source` directory. including:
@@ -71,10 +64,17 @@ Before use running scripts, you should add these libraries into your PYTHONPATH:
 export PYTHONPATH=/path/to/source:$PYTHONPATH
 ```
 
+There are also other workflow in ATST-Tools
+- AutoNEB TS exploration
+- Double-to-Single (D2S) TS exploration
+
 ## Developing
 - [ ] More fiexible options for NEB, Dimer and AutoNEB, like full properties in trajectory file, and fiexibly utilize SCF wavefunction/charge output files from previous calculation.
 - [ ] Move workflow parts of Deep-Potential and DPA-2 potential to `source` directory
-- [ ] Test for Sella usage to get best performance
+- [ ] Parallel NEB calculation for D2S method and DP usage
+- [ ] [dflow](https://github.com/dptech-corp/dflow) version of ATST-Tools workflow
+- [ ] Bond soft scanning and automatic reaction locating (proposed by [CLAM workflow](https://github.com/lalaheihaihei/catalyticLAM))
+- [x] Test for Sella usage to get best performance
 - [x] Checkout the problem in Dimer-ABACUS calculation
 - [x] Inplement `neb2vib` method in  `neb2dimer` workflow for DPA-2 (and ABACUS)
 - [x] Other TS method usage, like [Sella](https://github.com/zadorlab/sella)
@@ -128,7 +128,7 @@ Users can run NEB each step respectively:
 3. `python neb_post.py neb.traj [n_max]` to post-process NEB calculation result
 
 Users can run AutoNEB each step respectively:
-1. `python neb_make.py [INIT/result] [FINAL/result] [nprocs]` to create initial guess of neb chain
+1. `python neb_make.py -i [INIT/result] [FINAL/result] -n [nprocs]` to create initial guess of neb chain
 2. `mpirun -np [nprocs] gpaw python autoneb_run.py` to run AutoNEB calculation
 3. `python neb_post.py --autoneb run_autoneb???.traj` to post-process NEB calculation result
 
@@ -157,7 +157,7 @@ If NEB or AutoNEB is break down somehow, you can do continuation calculation bas
 
 For NEB, you can simply:
 ```bash
-python neb_make.py -i neb.traj [n_max] [fix and mag information]
+python neb_make.py -i neb.traj -n [n_max] [fix and mag information]
 ```
 to generate `init_neb_chain.traj` for continuation calculation. You can also `python neb_post.py neb.traj` to generate the latest neb band `neb_latest.traj` and do continuation calculation by `python neb_make.py -i neb_latest.traj [n_max]`. note that `n_max = n_image - 2`
 
@@ -215,23 +215,36 @@ Because ATST is originally based on ASE, the trajectory file can be directly rea
 - `traj_transform.py`: This script can transfer traj files into other format like `extxyz`, `abacus`(STRU), `cif` and so on (coming soon). Also if user specify `--neb` option, this script will automatically detect and cut the NEB trajectory when doing format transform. This script will be helpful for analysis and visualization of NEB trajectory.
 - `traj_collect.py`: This script can collect structure files into a trajectory file, which is specifically used for NEB continuation calculation.
 
+## Single-End TS search
 
-## Dimer workflow
+Contrary to NEB, the single-end TS search is based on the exploration of saddle point by using the gradient and Hessian (or only Hessian eigenmode) information of points in PES, which have good efficiency if one have an approximate TS information. ATST-Tools support Dimer method and Sella method.
 
-### Method
-(Waiting for update)
+### Sella workflow
+The Sella workflow is based on 1 main python scripts and 1 submit script, namely:
+- `sella_run.py`  is the key running script of Dimer calculation, which will run Sella calculation based on supplying `STRU` files for initial state of Sella calculation. This script will generate `run_sella.traj` for Sella calculation trajectory. Users should edit this file to set parameters for Sella calculation, and run Sella calculation by `python sella_run.py`. When running, any Sella images calculation will be doing in `ABACUS` directory.
+- `sella_submit.sh` will do Sella workflow in one scripts. The Default setting is for `slurm` job submission system.
+
+Also, Sella package can be used for IRC calculation, one can refer to `sella_IRC.py` for more details.
+
+For more detail on Sella principle and usage, one can refer to [Sella](https://github.com/zadorlab/sella) and [Sella-wiki](https://github.com/zadorlab/sella/wiki)
 
 
-### Usage
-The Dimer workflow is based on 2 main python scripts and 2 workflow submit script. Namely:
+### Dimer workflow
+
+The Dimer workflow is based on 2 main python scripts and 1 workflow submit script, namely:
 - `neb2dimer.py` can be used by `python neb2dimer [neb.traj] ([n_max])`, which will transform NEB trajetory `neb.traj` or NEB result trajectory `neb_result.traj` to Dimer input files,  including:
 - - `dimer_init.traj` for initial state of Dimer calculation, which is the highest energy image, namely, TS state. 
+- - `STRU` files, representing the initial state of Dimer calculation, stored as `STRU` files for ABACUS calculation.
 - - `displacement_vector.npy` for displacement vector of Dimer calculation, which will be generated from position minus of the nearest image before and after TS point, and be normalized to 0.01 Angstrom. 
-- `dimer_run.py` is the key running script of Dimer calculation, which will run Dimer calculation based on `dimer_init.traj` and `displacement_vector.npy` generated by `neb2dimer.py` or based on other setting. This script will generate `dimer.traj` for Dimer calculation trajectory. Users should edit this file to set parameters for Dimer calculation, and run Dimer calculation by `python dimer_run.py`. When running, any Dimer images calculation will be doing in `Dimer` directory.
+- `dimer_run.py` is the key running script of Dimer calculation, which will run Dimer calculation based on `dimer_init.traj` and `displacement_vector.npy` generated by `neb2dimer.py` or based on other setting. This script will generate `run_dimer.traj` for Dimer calculation trajectory. Users should edit this file to set parameters for Dimer calculation, and run Dimer calculation by `python dimer_run.py`. When running, any Dimer images calculation will be doing in `ABACUS` directory.
 - `dimer_submit.sh` will do Dimer workflow in one scripts. The Default setting is for `slurm` job submission system.
 
-> Notice: this dimer method will have some problem in running process if use ABACUS as calculator.
 
+## Double-to-single (D2S) TS exploration
+
+ATST-Tools also offer a double-to-single (D2S) TS exploration method, which is named as `neb2dimer_abacus.py` and `neb2sella_abacus.py` in `dimer` and `sella` directories respectively, which run a rough NEB first and use the maximum information for initial guess of running single-ended method like dimer or Sella, obtaining a high-efficiency TS exploration. 
+
+This workflow is only for serial NEB calculation, but is efficient enough for TS exploration. The parallel NEB acceleration is in considering.
 
 ## Vibration Analysis 
 The vibration analysis is based on `ase.vibrations.Vibrations` object, which can be used by `python vib_analysis.py` to do vibration analysis by finite displacement method for initial, final and transition state. The result will be printed out  and saved in `running_vib.out` file. All force matrix for displaced and normal mode will also be saved and printed.
@@ -239,7 +252,12 @@ The vibration analysis is based on `ase.vibrations.Vibrations` object, which can
 Also, thermodynamic analysis will be performed based on `ase.thermochemistry.HarmonicThermo` object based on vibration analysis result and specified temperature.
 
 ## Relaxation
-Relaxation method offer by ASE can be used by scripts from `relax` directory, which use ABACUS as SCF calculator. 
+Relaxation method offer by ASE can be used by scripts from `relax` directory, which use ABACUS as SCF calculator.
+
+## ase-dp
+There are also scripts for Deep-Potential and DPA-2 potential usage in `ase-dp` directory for TS exploration and structural relaxation, some newest examples can be used by `neb2dimer_dp.py`, `neb2sella_dp.py` and `relax_dp.py` for Deep-Potential and DPA-2 potential usage. 
+
+Parallel NEB version for ase-dp is also in developing.
 
 
 ## Notices
