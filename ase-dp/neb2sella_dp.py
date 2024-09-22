@@ -22,6 +22,8 @@ from pymatgen.analysis.diffusion.neb.pathfinder import IDPPSolver
 from sella import Sella, Constraints
 
 from deepmd.calculator import DP
+# from deepmd_pt.utils.ase_calc import DPCalculator as DP
+
 
 model = "FeCHO-dpa220-100-30656.pt"
 n_neb_images = 12

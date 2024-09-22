@@ -4,13 +4,16 @@ from ase.vibrations import Vibrations
 from ase.thermochemistry import HarmonicThermo
 from ase.io import read, write
 from ase.io import Trajectory
-from deepmd_pt.utils.ase_calc import DPCalculator as DP
+# from deepmd_pt.utils.ase_calc import DPCalculator as DP
+from deepmd.calculator import DP
 
 # setting
 model = "FeCHO-dpa2-full.pt"
 vib_name = "vib"
 vib_indices = None
 T = 523.15 # K
+
+# developer only
 delta = 0.01
 nfree = 2
 

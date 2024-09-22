@@ -12,22 +12,20 @@ from ase.parallel import world, parprint
 from ase.mep.neb import NEBTools
 from neb2vib import neb2vib
 
-
-# indices setting for which atoms to be displaced
-#vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
+# reading usage can be changed by user
 # usage by neb
 neb_traj = read('neb_latest.traj', index=':')
 atoms, vib_indices = neb2vib(neb_traj)
+
 # traditional
 # stru = "STRU"
 # atoms = read(stru)
 # vib_indices = [0, 1, 37]
 
-T = 523.15 # K
+# indices setting for which atoms to be displaced
+# vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
 
-vib_name = 'vib'
-delta = 0.01
-nfree = 2
+T = 523.15 # K
 
 abacus = "abacus"
 mpi = 16
@@ -83,11 +81,15 @@ parameters = {
     'efield_dir': 1,
 }
 
+# developer only
+vib_name = 'vib'
+delta = 0.01
+nfree = 2
 
 def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     """Set Abacus calculators"""
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(command=f"mpirun -np {self.mpi} {self.abacus}")
+    profile = AbacusProfile(f"mpirun -np {self.mpi} {self.abacus}")
     out_directory = f"SCF-rank{world.rank}"
     calc = Abacus(profile=profile, directory=out_directory,
                 **parameters)

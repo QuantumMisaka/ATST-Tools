@@ -1,7 +1,7 @@
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.io import read, write, Trajectory
 from ase.visualize import view
-from sella import Sella, Constraints, IRC
+from sella import IRC
 import os
 
 ts_opt = read("STRU", format="abacus")

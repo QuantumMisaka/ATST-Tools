@@ -20,6 +20,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.analysis.diffusion.neb.pathfinder import IDPPSolver
 
 from deepmd.calculator import DP
+#from deepmd_pt.utils.ase_calc import DPCalculator as DP
+
 
 # parameter setting
 model = "FeCHO-dpa220-100-30656.pt"

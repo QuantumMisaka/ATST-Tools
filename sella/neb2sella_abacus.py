@@ -6,7 +6,6 @@ from ase.io import read, write, Trajectory
 from ase import Atoms
 from ase.optimize import BFGS, FIRE, QuasiNewton
 from ase.mep.neb import NEBTools, NEB, DyNEB
-from ase.mep.autoneb import AutoNEB
 from sella import Sella, Constraints
 from ase.calculators.abacus import Abacus, AbacusProfile
 from copy import deepcopy
