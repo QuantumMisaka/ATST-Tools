@@ -61,7 +61,7 @@ parameters = {
 }
 
 # developers only
-sella_eta = 0.002
+sella_eta = 0.005
 
 
 # set calculator
