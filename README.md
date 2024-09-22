@@ -259,16 +259,6 @@ There are also scripts for Deep-Potential and DPA-2 potential usage in `ase-dp` 
 
 Parallel NEB version for ase-dp is also in developing.
 
-
-## Notices
-### Property Loss in Trajectory 
-Some property should be get via specific way from trajectory files, and some will be lost in trajetory files, 
-- Stress property will not be stored in trajetory file
-- In NEB calculation, the Force property for fixed atoms and Stress property will NOT be stored in trajectroy file, which is still in work
-- in Dimer calculation, the Energy, Forces and Stress property will be stored in trajetory file after specified which properties need to be stored.
-- in AutoNEB calculation, all property in processing trajectory will be stored in AutoNEB_iter directory, but in the result `run_autoneb???.traj`, the forces and stress information will be lost.
-
-
 ## Examples
 - Li-diffu-Si: Li diffusion in Si, very easy example for serial and parallel NEB calculation
 - H2-Au111: H2 dissociation on Au(111) surface. which will have NEB, AutoNEB and Dimer example. The barrier is around 1.1 eV consistent with existing paper and calculation result.
@@ -276,3 +266,13 @@ Some property should be get via specific way from trajectory files, and some wil
 - Cy-Pt_graphene: Cyclohexane dehydrogenation on Pt-doped graphene surface. The barrier is around 1.3 eV. Noted that the `IT-NEB` result is wrong, but which is consistent to the result in VTST-Tools when using 4 image to do IT-NEB calculation.
 
 More examples is welcomed from users. 
+
+## Notices
+### Property Loss in Trajectory 
+Some property should be get via specific way from trajectory files, and some will be lost in trajetory files, 
+- Stress property will not be stored in trajetory file
+- In NEB calculation, the Force property for fixed atoms and Stress property will NOT be stored in trajectory file, one should get it by `get_force(apply_constraint=False)`.
+- in Dimer calculation, the Energy, Forces and Stress property will be stored in trajetory file after specified which properties need to be stored. (Sella calculation should be likely) (The most easiest lost information is the stress information)
+- in AutoNEB calculation, all property in processing trajectory will be stored in AutoNEB_iter directory, but in the result `run_autoneb???.traj`, the forces and stress information will be lost.
+
+
