@@ -89,7 +89,7 @@ nfree = 2
 def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
     """Set Abacus calculators"""
     os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(f"mpirun -np {self.mpi} {self.abacus}")
+    profile = AbacusProfile(f"mpirun -np {mpi} {abacus}")
     out_directory = f"SCF-rank{world.rank}"
     calc = Abacus(profile=profile, directory=out_directory,
                 **parameters)

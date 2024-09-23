@@ -10,7 +10,10 @@ from ase.io import read, write
 from ase.calculators.abacus import Abacus, AbacusProfile
 from ase.parallel import world, parprint
 from ase import units
+from deepmd.calculator import DP
 
+# setting
+model = "FeCHO-dpa2-full.pt"
 stru = "STRU"
 atoms = read(stru)
 # indices setting for which atoms to be displaced
@@ -25,58 +28,10 @@ vib_name = 'vib'
 delta = 0.01
 nfree = 2
 
-abacus = "abacus"
-mpi = 4
-omp = 4
-lib_dir = "/home/james/example/abacus"
-pseudo_dir = f"{lib_dir}/PP"
-basis_dir = f"{lib_dir}/ORB"
-# default pp and basis is supported by ase-abacus interface
-kpts = [1, 1, 1]
-parameters = {
-    'calculation': 'scf',
-    'nspin': 2,
-    'xc': 'pbe',
-    'ecutwfc': 100,
-    'ks_solver': 'genelpa',
-    'symmetry': 0,
-    'vdw_method': 'none',
-    'gamma_only': 1,
-    'smearing_method': 'gau',
-    'smearing_sigma': 0.001,
-    'basis_type': 'lcao',
-    'mixing_type': 'broyden',
-    'scf_thr': 1e-7,
-    'scf_nmax': 300,
-    'kpts': kpts,
-    'pseudo_dir': pseudo_dir,
-    'basis_dir': basis_dir,
-    'init_chg': 'atomic',
-    'init_wfc': 'file',
-    'cal_force': 1,
-    'cal_stress': 1,
-    'out_stru': 1,
-    'out_chg': 1,
-    'out_mul': 0,
-    'out_bandgap': 0,
-    'out_wfc_lcao': 1,
-}
-
-
-def set_calculator(abacus, parameters, mpi=1, omp=1) -> Abacus:
-    """Set Abacus calculators"""
-    os.environ['OMP_NUM_THREADS'] = f'{omp}'
-    profile = AbacusProfile(f"mpirun -np {mpi} {abacus}")
-    out_directory = f"SCF-rank{world.rank}"
-    calc = Abacus(profile=profile, directory=out_directory,
-                **parameters)
-    return calc
-
 if __name__ == "__main__":
     print("==> Starting Vibrational Analysis <==")
 
-    atoms.calc = set_calculator(abacus, parameters, mpi=mpi, omp=omp)
-
+    atoms.calc = DP(model=model)
     vib = Vibrations(atoms, indices=vib_indices, 
                     name=vib_name, delta=delta, nfree=nfree)
 
