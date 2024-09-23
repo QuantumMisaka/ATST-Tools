@@ -17,7 +17,8 @@ Copyright @ QuantumMisaka from TMC-PKU & AISI
 - Add *neb2dimer_dp.py*, *neb2sella_dp.py*, *relax_dp.py* for deepmd usage, including tf and torch version, and all D2S method are using pymatgen IDPP.
 - Change default relaxation optimizer from BFGS to QuasiNewton (BFGSLineSearch).
 - change the way to use `AbacusProfile` to march the newest version of ase-abacus interface, which use different command format.
-- Since constraints read-in problem in ASE-ABACUS interface is fixed [#28](https://gitlab.com/1041176461/ase-abacus/-/issues/28), the constraints is the two scripts above is modified.
+- Since constraints read-in problem in ASE-ABACUS interface is fixed [#28](https://gitlab.com/1041176461/ase-abacus/-/issues/28), the constraints is the two scripts above is modified, make Dimer and Sella useful.
+- Single-End TS search scripts update using Dimer method and Sella packages.
 - Default *neb_make.py* change to pymatgen version below.
 - *neb_make_pymatgen.py* scripts by @MoseyQAQ, which use IDPP of pymatgen to do NEB initial guess, avoiding IDPP problem from ASE including edge-crossing problem in NEB guess generation.
 - Support DeepPotential and DPA-2 Potential usage scripts in `ase-dp` directory.
