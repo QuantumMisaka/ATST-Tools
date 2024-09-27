@@ -80,7 +80,7 @@ parameters = {
 
 
 # developers only
-neb_sort_tol = 1
+neb_sort_tol = 0.5 # set 0 to shut down
 sella_eta = 0.002
 scale_sigma = 1.0
 

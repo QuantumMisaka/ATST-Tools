@@ -40,7 +40,7 @@ NEBSolver = FIRE
 
 # developer only
 sella_eta = 0.0002 # 1e-3 ~ 1e-4
-neb_sort_tol = 1
+neb_sort_tol = 0.5 # set 0 to shut down
 os.environ['OMP_NUM_THREADS'] = "omp"
 
 # reading part

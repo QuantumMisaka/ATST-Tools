@@ -41,7 +41,7 @@ NEBSolver = FIRE
 
 # developer only
 os.environ['OMP_NUM_THREADS'] = "omp"
-neb_sort_tol = 1
+neb_sort_tol = 0.5 # set 0 to shut down
 step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01

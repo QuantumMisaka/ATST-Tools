@@ -93,7 +93,7 @@ scale_sigma = 1.0
 step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01
-neb_sort_tol = 1
+neb_sort_tol = 0.5 # set 0 to shut down
 
 profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
 
