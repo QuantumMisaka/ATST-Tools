@@ -59,7 +59,7 @@ parameters = {
     'cal_force': 1,
     'cal_stress': 1,
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_bandgap': 1,
     'out_wfc_lcao': 0,
     'efield_flag': 1,

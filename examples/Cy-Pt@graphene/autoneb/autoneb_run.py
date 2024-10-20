@@ -59,17 +59,16 @@ parameters = {
     'basis_dir': basis_dir,
     'cal_force': 1,
     'cal_stress': 1,
-    'init_wfc': 'file',
+    'init_wfc': 'atomic',
     'init_chg': 'atomic',
     'out_stru': 1,
-    'out_chg': 0,
+    'out_chg': -1,
     'out_mul': 0,
     'out_bandgap': 0,
-    'out_wfc_lcao': 1,
+    'out_wfc_lcao': 0,
     'efield_flag': 1,
     'dip_cor_flag': 1,
     'efield_dir': 1,
-    'efield_pos_max': 0.0
 }
 
 
