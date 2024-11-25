@@ -7,11 +7,10 @@ import numpy as np
 from abacus_dimer import AbacusDimer
 
 fmax = 0.05
-dimer_input_file = 'dimer_init.traj'
+dimer_input_file = 'dimer_init.traj' # "STRU"
 init_eigenmode_method = 'displacement'
 displacement_input = 'displacement_vector.npy'
 
-ts = "STRU"
 # setting for calculator
 # abacus calculator setting
 abacus = "abacus"
@@ -73,7 +72,7 @@ parameters = {
 if __name__ == "__main__":
 # running process
 # read initial guessed neb chain
-    dimer_init = read(ts)
+    dimer_init = read(dimer_input_file)
     displacement_vector = np.load(displacement_input)
     dimer = AbacusDimer(dimer_init, parameters, abacus=abacus,
                         mpi=mpi, omp=omp, 
