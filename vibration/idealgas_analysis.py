@@ -18,8 +18,9 @@ atoms = read(stru)
 vib_indices = None
 T = 523.15 # K
 P = 1E5 # Pa
-geometry = 'linear'
-symmetrynumber = 1
+geometry = 'linear' # 'nonlinear' or 'linear'
+symmetrynumber = 1 # Symmetry number of the molecule
+spin = 0 # Spin multiplicity, 0 for singlet, 1 for triplet, etc.
 
 vib_name = 'vib'
 delta = 0.01
@@ -99,7 +100,7 @@ if __name__ == "__main__":
                            atoms=atoms,
                            ignore_imag_modes=True,
                            symmetrynumber=symmetrynumber,
-                           spin=0,)
+                           spin=spin,)
     entropy = gasthermo.get_entropy(T,P)
     free_energy = gasthermo.get_gibbs_energy(T,P)
     print(f"==> Entropy: {entropy:.6e} eV/K <==")

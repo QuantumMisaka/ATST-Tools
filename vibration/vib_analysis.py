@@ -25,6 +25,8 @@ atoms, vib_indices = neb2vib(neb_traj)
 # indices setting for which atoms to be displaced
 # vib_indices = [atom.index for atom in atoms if atom.symbol == 'H']
 
+# theoretically, only those atoms of adsobates should be considered in vibrational analysis
+
 T = 523.15 # K
 
 abacus = "abacus"

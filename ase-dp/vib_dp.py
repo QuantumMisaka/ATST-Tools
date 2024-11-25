@@ -7,6 +7,8 @@ from ase.io import Trajectory
 # from deepmd_pt.utils.ase_calc import DPCalculator as DP
 from deepmd.calculator import DP
 
+# theoretically, only those atoms of adsobates should be considered in vibrational analysis
+
 # setting
 model = "FeCHO-dpa2-full.pt"
 vib_name = "vib"
