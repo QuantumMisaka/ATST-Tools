@@ -68,6 +68,9 @@ parameters = {
     'efield_dir': 1,
 }
 
+# dimer setting 
+dimer_separation=0.01
+max_num_rot=3
         
 if __name__ == "__main__":
 # running process
@@ -77,7 +80,9 @@ if __name__ == "__main__":
     dimer = AbacusDimer(dimer_init, parameters, abacus=abacus,
                         mpi=mpi, omp=omp, 
                         init_eigenmode_method=init_eigenmode_method,
-                        displacement_vector=displacement_vector)
+                        displacement_vector=displacement_vector,
+                        dimer_separation=dimer_separation,
+                        max_num_rot=max_num_rot)
     dimer.run(fmax=fmax, moving_atoms_ind=moving_atoms_ind)
 
     # output TS stru file

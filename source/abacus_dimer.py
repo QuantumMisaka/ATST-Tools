@@ -16,7 +16,9 @@ class AbacusDimer:
                  mpi=1, omp=1, directory='ABACUS', 
                  traj_file='run_dimer.traj',
                  init_eigenmode_method='displacement',
-                 displacement_vector: np.ndarray = None,):
+                 displacement_vector: np.ndarray = None,
+                 dimer_separation=0.01,
+                 max_num_rot=3):
         """Initialize Dimer method by using ASE-ABACUS
 
         init_Atoms (Atoms object): starting image, can be from every way including NEB result
@@ -28,6 +30,8 @@ class AbacusDimer:
         traj_file (str): trajectory file name for dimer calculation, when running dimer calculation, trajetory will be written to this file, default is 'dimer.traj'
         init_eigenmode_method (str): dimer initial eigenmode method. Choose from 'displacement' and 'gauss'.
         displacement_vector (np.ndarray): displacement vector for dimer initial eigenmode. Only used when init_eigenmode_method is 'displacement'
+        dimer_separation (float): separation of the dimer's images, default is 0.01
+        max_num_rot (int): maximum number of rotations per optimizer step, default is 3
         """
         self.init_Atoms = init_Atoms
         self.parameters = parameters
@@ -38,6 +42,8 @@ class AbacusDimer:
         self.traj_file = traj_file
         self.init_eigenmode_method = init_eigenmode_method
         self.displacement_vector = displacement_vector
+        self.dimer_separation = dimer_separation
+        self.max_num_rot = max_num_rot
         
     def set_calculator(self):
         """Set Abacus calculators"""
@@ -96,16 +102,24 @@ class AbacusDimer:
             else:
                 d_mask = self.set_d_mask_by_constraint()
                 # d_mask = self.set_d_mask_by_displacement()
-            d_control = DimerControl(initial_eigenmode_method=self.init_eigenmode_method, 
+            d_control = DimerControl(
+                                    initial_eigenmode_method=self.init_eigenmode_method, 
                                     displacement_method="vector", 
-                                    mask=d_mask)
+                                    mask=d_mask,
+                                    dimer_separation=self.dimer_separation,
+                                    max_num_rot=self.max_num_rot,
+                                    )
             d_atoms = MinModeAtoms(dimer_init, d_control)
             d_atoms.displace(displacement_vector=self.displacement_vector)
         elif self.init_eigenmode_method == "gauss":
             # leave a way for random displacement
             d_mask = self.set_d_mask_by_constraint()
-            d_control = DimerControl(initial_eigenmode_method=self.init_eigenmode_method, 
-                                    mask=d_mask)
+            d_control = DimerControl(
+                                    initial_eigenmode_method=self.init_eigenmode_method, 
+                                    mask=d_mask,
+                                    dimer_separation=self.dimer_separation,
+                                    max_num_rot=self.max_num_rot,
+                                    )
             d_atoms = MinModeAtoms(dimer_init, d_control)
         else:
             raise ValueError("init_eigenmode_method must be displacement or gauss")

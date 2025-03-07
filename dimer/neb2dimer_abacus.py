@@ -94,6 +94,8 @@ step_before_TS = 1
 step_after_TS = 1
 norm_vector = 0.01
 neb_sort_tol = 0.5 # set 0 to shut down
+dimer_separation=0.01
+max_num_rot=3
 
 profile = AbacusProfile(f'mpirun -np {mpi} {abacus}')
 
@@ -200,7 +202,10 @@ dimer = AbacusDimer(dimer_init,
                     mpi=mpi, omp=omp, 
                     traj_file=dimer_traj,
                     init_eigenmode_method=init_eigenmode_method,
-                    displacement_vector=displacement_vector)
+                    displacement_vector=displacement_vector,
+                    dimer_separation=0.01,
+                    max_num_rot=3,
+                    )
 dimer.run(fmax=dimer_fmax)
 
 # get struc of IS,FS,TS
