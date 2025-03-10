@@ -1,5 +1,5 @@
 from ase.calculators.abacus import Abacus, AbacusProfile
-from ase.io import read, write
+from ase.io import read, write, Trajectory
 from ase.visualize import view
 from sella import Sella, Constraints
 import os
@@ -10,6 +10,7 @@ abacus = "abacus"
 mpi=16
 omp=4
 lib_dir = "/lustre/home/2201110432/example/abacus"
+task_type = "w"  # a for append and restart from trajectory, w for write new trajectory
 #lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
@@ -81,9 +82,10 @@ if __name__ == "__main__":
     # set cons is optional
     #cons = Constraints(ts_neb)
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
+    traj = Trajectory("run_sella.traj", task_type)
     dyn = Sella(
         ts,
-        trajectory='run_sella.traj',
+        trajectory=traj,
         eta = sella_eta,
     )
     dyn.run(fmax=0.05)

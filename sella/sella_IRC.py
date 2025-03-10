@@ -10,6 +10,7 @@ abacus = "abacus"
 mpi=16
 omp=4
 lib_dir = "/lustre/home/2201110432/example/abacus"
+task_type = "w"  # a for append and restart from trajectory, w for write new trajectory
 #lib_dir = "/data/home/liuzq/example"
 pseudo_dir = f"{lib_dir}/PP"
 basis_dir = f"{lib_dir}/ORB"
@@ -84,7 +85,7 @@ if __name__ == "__main__":
     # set cons is optional
     #cons = Constraints(ts_neb)
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
-    irc_traj = Trajectory(irc_log, 'w')
+    irc_traj = Trajectory(irc_log, task_type)
     irc = IRC(ts_opt, trajectory=irc_traj, dx=dx, eta=sella_eta)
     irc.run(fmax, steps=steps, direction='forward')
     irc.run(fmax, steps=steps, direction='reverse')

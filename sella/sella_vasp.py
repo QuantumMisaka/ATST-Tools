@@ -1,5 +1,5 @@
 from ase.calculators.vasp import Vasp
-from ase.io import read, write
+from ase.io import read, write, Trajectory
 from ase.visualize import view
 from sella import Sella, Constraints
 import os
@@ -11,6 +11,7 @@ exec = 'vasp_std'
 mpi=32
 omp=1
 kpts = [3, 1, 2]
+task_type = "w"  # a for append and restart from trajectory, w for write new trajectory
 parameters = {
     'encut': 520,
     'ispin': 2,
@@ -47,9 +48,10 @@ if __name__ == "__main__":
     # set cons is optional
     #cons = Constraints(ts_neb)
     #cons.fix_translation(ts_neb._get_constraints()[0].get_indices())
+    traj = Trajectory("run_sella.traj", task_type)
     dyn = Sella(
         ts,
-        trajectory='run_sella.traj',
+        trajectory=traj,
         eta = sella_eta,
     )
     dyn.run(fmax=0.05)
