@@ -386,14 +386,14 @@ please cite the underlying methods alongside ATST-Tools itself:
   J. Mater. Inform. **5** (2), 27 (2025).
   <https://doi.org/10.20517/jmi.2024.105>
 - Sella saddle-point search:
-  Ásgeirsson, V.; Birgisson, B. O.; Bjornsson, R.; Becker, U.; Neese, F.;
-  Jónsson, H. *Sella, an Open-Source Chemical Kinetics Environment.*
-  J. Chem. Theory Comput. **18** (8), 4914-4930 (2022).
+  Hermes, E. D.; Sargsyan, K.; Najm, H. N.; Zádor, J.
+  *Sella, an Open-Source Automation-Friendly Molecular Saddle Point Optimizer.*
+  J. Chem. Theory Comput. **18** (11), 6974-6988 (2022).
   <https://doi.org/10.1021/acs.jctc.2c00395>
 - CCQN (cone-shaped constrained quasi-Newton) transition-state optimization:
   Wu, Y.; Wang, H. *Cone-Shaped Constrained Quasi-Newton Method: Efficient
   and Robust Single-Ended Transition State Optimization Algorithm.*
-  J. Chem. Theory Comput. (2025).
+  J. Chem. Theory Comput. **21** (18), 9054-9065 (2025).
   <https://doi.org/10.1021/acs.jctc.5c01015>
 
 ## License
