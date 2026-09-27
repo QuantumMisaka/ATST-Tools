@@ -379,6 +379,12 @@ documentation. Numerical engines remain external:
 If you publish work that uses the transition-state workflows in ATST-Tools,
 please cite the underlying methods alongside ATST-Tools itself:
 
+- ATST-Tools and the double-to-single (D2S) transition-state workflow:
+  Liu, Z.-Q.; Deng, Z.; Zhao, H.; Wang, H.; Chen, M.; Jiang, H.
+  *FT²DP: Large Atomic Model Fine-Tuned Machine Learning Potential for
+  Accelerating Atomistic Simulation of Iron-Based Fischer–Tropsch Synthesis.*
+  J. Mater. Inform. **5** (2), 27 (2025).
+  <https://doi.org/10.20517/jmi.2024.105>
 - Sella saddle-point search:
   Ásgeirsson, V.; Birgisson, B. O.; Bjornsson, R.; Becker, U.; Neese, F.;
   Jónsson, H. *Sella, an Open-Source Chemical Kinetics Environment.*
