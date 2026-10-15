@@ -30,6 +30,7 @@ from atst_tools.utils.convergence import (
     emit_unconverged_advisory,
 )
 from atst_tools.utils.idpp import align_atom_indices, interpolate_path
+from atst_tools.utils.geometry import prepare_fixed_cell_images
 from atst_tools.utils.reactive_modes import enumerate_reactive_bond_modes
 
 # Interpolation-based cone axis (paper eq. 18): the path towards the product is
@@ -916,8 +917,10 @@ class AbacusCCQN:
             from atst_tools.utils.io import read_structure
 
             product_atoms = read_structure(self.calc_config["product_file"])
-            product_atoms.set_cell(atoms.get_cell())
-            product_atoms.set_pbc(atoms.get_pbc())
+        if product_atoms is not None:
+            product_atoms = prepare_fixed_cell_images(
+                [atoms, product_atoms], context="CCQN product"
+            )[-1]
         if product_atoms is not None and self.calc_config.get("align_product_indices"):
             product_atoms = align_atom_indices(atoms, product_atoms)
 

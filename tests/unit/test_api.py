@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from atst_tools.utils import abacus_io
+
 from helpers import FakeWorld, FalseyFakeWorld, make_atoms
 
 
@@ -71,6 +73,7 @@ def test_public_api_has_only_the_supported_contract():
         "RunOptions",
         "WorkflowResult",
         "validate_config",
+        "validate_ts",
         "run_workflow",
         "run_ccqn",
         "neb_energy_profile",
@@ -471,11 +474,10 @@ def test_run_workflow_wraps_check_input_preflight_error(monkeypatch):
     """The public API represents preflight failures with its stable error type."""
     from atst_tools.api import RunOptions, run_workflow
     from atst_tools.api.models import WorkflowExecutionError
-    from atst_tools.scripts import main as run_cli
 
     preflight_error = RuntimeError("ABACUS check-input failed")
     monkeypatch.setattr(
-        run_cli,
+        abacus_io,
         "run_abacus_check_input_dry_run",
         lambda *args, **kwargs: (_ for _ in ()).throw(preflight_error),
     )
@@ -496,7 +498,6 @@ def test_run_workflow_wraps_check_input_preflight_error(monkeypatch):
 def test_mapping_check_input_preflight_uses_current_working_directory(monkeypatch, tmp_path):
     """Mappings must not be coerced to their repr as a fictitious config path."""
     from atst_tools.api import RunOptions, run_workflow
-    from atst_tools.scripts import main as run_cli
 
     monkeypatch.chdir(tmp_path)
     observed = {}
@@ -505,7 +506,7 @@ def test_mapping_check_input_preflight_uses_current_working_directory(monkeypatc
         observed["config_path"] = config_path
         return {"checked": 1, "workdirs": []}
 
-    monkeypatch.setattr(run_cli, "run_abacus_check_input_dry_run", preflight)
+    monkeypatch.setattr(abacus_io, "run_abacus_check_input_dry_run", preflight)
     run_workflow(
         {
             "calculation": {"type": "relax", "init_structure": "initial.traj"},
@@ -522,7 +523,6 @@ def test_yaml_check_input_preflight_uses_api_current_working_directory(
 ):
     """Public YAML paths must not change API preflight path-resolution semantics."""
     from atst_tools.api import RunOptions, run_workflow
-    from atst_tools.scripts import main as run_cli
 
     config_dir = tmp_path / "yaml-parent"
     config_dir.mkdir()
@@ -542,7 +542,7 @@ def test_yaml_check_input_preflight_uses_api_current_working_directory(
         observed["base_dir"] = kwargs.get("base_dir")
         return {"checked": 1, "workdirs": []}
 
-    monkeypatch.setattr(run_cli, "run_abacus_check_input_dry_run", preflight)
+    monkeypatch.setattr(abacus_io, "run_abacus_check_input_dry_run", preflight)
     run_workflow(config_path, RunOptions(dry_run=True, check_input=True, world=FakeWorld()))
 
     assert observed == {"config_path": str(config_path), "base_dir": api_cwd}
@@ -554,7 +554,6 @@ def test_cli_yaml_check_input_preflight_preserves_yaml_parent_base_dir(
     """The legacy CLI adapter retains its established YAML-parent behavior."""
     from atst_tools.api import RunOptions
     from atst_tools.api import services
-    from atst_tools.scripts import main as run_cli
 
     config_dir = tmp_path / "yaml-parent"
     config_dir.mkdir()
@@ -572,7 +571,7 @@ def test_cli_yaml_check_input_preflight_preserves_yaml_parent_base_dir(
         observed["base_dir"] = kwargs.get("base_dir")
         return {"checked": 1, "workdirs": []}
 
-    monkeypatch.setattr(run_cli, "run_abacus_check_input_dry_run", preflight)
+    monkeypatch.setattr(abacus_io, "run_abacus_check_input_dry_run", preflight)
     services.run_workflow_from_cli(
         config_path, RunOptions(dry_run=True, check_input=True, world=FakeWorld())
     )
@@ -813,7 +812,7 @@ def test_run_workflow_preserves_a_workflow_written_manifest(
 
     def dispatch(config, options):
         """Run the real workflow for this calculation type, as the API dispatch does."""
-        from atst_tools.scripts import main as legacy_run
+        from atst_tools.workflows import execution as legacy_run
 
         monkeypatch.setattr(legacy_run, "read_structure", lambda filename: make_atoms("H"))
         if workflow == "relax":
@@ -1284,6 +1283,110 @@ def test_run_workflow_progress_emits_ndjson_events_and_callback(
         assert event["image"] == index
         assert event["energy_eV"] == energy
         assert "step" in event
+
+
+@pytest.mark.parametrize("sink", ["stream", "callback"])
+def test_progress_start_failure_is_typed_before_preflight(monkeypatch, tmp_path, sink):
+    """A failed root progress sink stops dry-run before later rank work."""
+    from atst_tools.api import RunOptions, run_workflow
+    from atst_tools.api import services
+    from atst_tools.api.models import WorkflowExecutionError
+
+    class BrokenStream:
+        def write(self, value):
+            raise OSError("progress stream unavailable")
+
+    cause = RuntimeError("progress callback unavailable")
+
+    def broken_callback(event):
+        raise cause
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        services,
+        "_run_abacus_check_input_preflight",
+        lambda *args, **kwargs: pytest.fail("preflight must not run"),
+    )
+    stream = BrokenStream() if sink == "stream" else io.StringIO()
+    with pytest.raises(WorkflowExecutionError) as caught:
+        run_workflow(
+            {"calculation": {"type": "relax", "init_structure": "unused.traj"},
+             "calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+            RunOptions(
+                dry_run=True, progress=True, progress_stream=stream,
+                progress_callback=broken_callback if sink == "callback" else None,
+                world=FakeWorld(size=2),
+            ),
+        )
+
+    assert caught.value.workflow == "relax"
+    assert isinstance(caught.value.__cause__, OSError if sink == "stream" else RuntimeError)
+    assert caught.value.to_document()["cause"]["message"] == str(caught.value.__cause__)
+
+
+@pytest.mark.parametrize("tail", ["image", "profiles", "plots"])
+def test_progress_tail_failure_is_typed_before_manifest(monkeypatch, tmp_path, tail):
+    """Unexpected root tail errors stop peers before manifest collectives."""
+    from atst_tools.api import RunOptions, run_workflow
+    from atst_tools.api import services
+    from atst_tools.api.models import WorkflowExecutionError
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(services, "_dispatch_normalized", lambda *args: _neb_band((1.0, 2.0)))
+    cause = RuntimeError(f"{tail} tail failed")
+
+    def fail(*args):
+        raise cause
+
+    monkeypatch.setattr(
+        services,
+        {"image": "_emit_image_step_events", "profiles": "_workflow_profiles", "plots": "_workflow_plots"}[tail],
+        fail,
+    )
+    monkeypatch.setattr(
+        services, "_ensure_completed_manifest",
+        lambda *args, **kwargs: pytest.fail("manifest must not run"),
+    )
+    with pytest.raises(WorkflowExecutionError) as caught:
+        run_workflow(
+            _neb_config(),
+            RunOptions(progress=True, progress_stream=io.StringIO(), world=FakeWorld(size=2)),
+        )
+
+    assert caught.value.workflow == "neb"
+    assert caught.value.__cause__ is cause
+
+
+def test_runner_records_progress_failure_as_structured_error(monkeypatch, tmp_path):
+    """The process handoff preserves the typed root progress failure."""
+    from atst_tools.api import runner, services
+
+    config = tmp_path / "input.yaml"
+    config.write_text(
+        "calculation:\n  type: relax\n  init_structure: unused.traj\n"
+        "calculator:\n  name: abacus\n  abacus:\n    parameters: {}\n",
+        encoding="utf-8",
+    )
+    cause = RuntimeError("progress sink unavailable")
+
+    def fail_start(*args):
+        raise cause
+
+    monkeypatch.setattr(services, "_emit_workflow_start", fail_start)
+    exit_code = runner.main(
+        ["--config", str(config), "--workdir", str(tmp_path),
+         "--result-json", "result.json", "--dry-run", "--progress"]
+    )
+
+    assert exit_code == 2
+    document = json.loads((tmp_path / "result.json").read_text(encoding="utf-8"))
+    assert document["schema"] == "atst-api-result-v1"
+    assert document["status"] == "error"
+    assert document["workflow"] == "relax"
+    assert document["error"]["type"] == "WorkflowExecutionError"
+    assert document["error"]["cause"] == {
+        "type": "RuntimeError", "message": str(cause)
+    }
 
 
 def test_run_workflow_progress_keeps_result_document_unchanged(

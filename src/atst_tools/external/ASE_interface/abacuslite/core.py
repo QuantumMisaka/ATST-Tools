@@ -409,29 +409,25 @@ def _normalize_scf_frame(frame, frame_index, expected, frame_is_direct, atol):
 
 
 def _select_scf_frame_for_structure(
-    frames, log_path, directory, atomorder, atol=1e-4, stru_file='STRU', _reference=None
+    frames, log_path, directory, atomorder, atol=1e-5, stru_file='STRU', _reference=None
 ):
     """Return the latest periodic-equivalent frame; malformed SCF data fails closed.
 
-    Parameters
-    ----------
-    frames : list of Atoms
-        按 atomorder 重排后的 running log 帧（read_abacus_out 返回）。
-    log_path : Path
-        running log 路径，用于 fail-closed 异常诊断。
-    directory : Path
-        工作目录（含本次 write_input 落盘的 STRU）。
-    atomorder : list of int
-        species 序位置 -> ASE 序原子的 revmap（spec P3 ①）。
-    stru_file : str or Path
-        The STRU filename recorded by ``write_input``; defaults to ``STRU``.
-    atol : float
-        绝对 Å 容差（spec P3 ③，按坐标打印精度取 ~1e-4 Å 量级）。
+    Args:
+        frames: Running-log frames restored to ASE order by the reader.
+        log_path: Log path used for diagnostics and coordinate-header parsing.
+        directory: Working directory containing this calculation's STRU.
+        atomorder: Mapping from species order to ASE atom order.
+        atol: Absolute Angstrom bound for cell components and periodic
+            Cartesian residuals, with no relative term. Defaults to 1e-5.
+        stru_file: STRU filename recorded by ``write_input``.
+        _reference: Optional previously validated STRU reference mapping.
 
-    Raises
-    ------
-    RuntimeError
-        无与当前 STRU 坐标匹配的帧（异常含 log 路径、帧数与坐标差异摘要）。
+    Returns:
+        The latest original frame matching the input geometry.
+
+    Raises:
+        RuntimeError: If data is malformed or no frame matches the STRU.
     """
     try:
         nframes = len(frames)

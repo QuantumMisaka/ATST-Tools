@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/3fbf/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 124 items / 111 deselected / 13 selected
+
+tests/unit/test_shared_execution.py ..                                   [ 15%]
+tests/unit/test_workflows.py ...........                                 [100%]
+
+====================== 13 passed, 111 deselected in 2.26s ======================

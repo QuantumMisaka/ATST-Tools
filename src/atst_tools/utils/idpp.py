@@ -10,6 +10,8 @@ from ase import Atoms
 from ase.io import write
 from ase.constraints import FixAtoms
 from ase.calculators.singlepoint import SinglePointCalculator
+from ase.geometry import find_mic
+from atst_tools.utils.geometry import prepare_fixed_cell_images
 from atst_tools.utils.neb_endpoints import (
     ENDPOINT_PLACEHOLDER,
     ENDPOINT_PROVIDED,
@@ -27,18 +29,15 @@ def align_atom_indices(atoms_ref: Atoms, atoms_target: Atoms) -> Atoms:
     """
     if len(atoms_ref) != len(atoms_target):
         raise ValueError(f"Atom count mismatch (Ref: {len(atoms_ref)}, Target: {len(atoms_target)})")
+    atoms_ref, atoms_target = prepare_fixed_cell_images(
+        [atoms_ref, atoms_target], context="Atom alignment"
+    )
     
     new_indices = np.zeros(len(atoms_ref), dtype=int)
     
     # Pre-calculation
     cell = atoms_ref.get_cell()
     pbc = atoms_ref.get_pbc()
-    # Calculate inverse cell only if PBC is on and cell is not zero volume
-    if np.any(pbc) and np.linalg.det(cell) > 1e-8:
-        inv_cell = np.linalg.inv(cell)
-        use_mic = True
-    else:
-        use_mic = False
     
     chemical_symbols = np.array(atoms_ref.get_chemical_symbols())
     unique_elements = sorted(list(set(chemical_symbols)))
@@ -69,10 +68,7 @@ def align_atom_indices(atoms_ref: Atoms, atoms_target: Atoms) -> Atoms:
         diff = pos_sub_ref[:, np.newaxis, :] - pos_sub_target[np.newaxis, :, :]
         
         # 3. Minimum Image Convention (MIC) - ONLY for distance calculation
-        if use_mic:
-            scaled_diff = np.dot(diff, inv_cell)
-            scaled_diff -= np.round(scaled_diff)
-            diff = np.dot(scaled_diff, cell)
+        diff = find_mic(diff.reshape(-1, 3), cell, pbc)[0].reshape(diff.shape)
             
         dist_matrix_sq = np.sum(diff**2, axis=2)
         
@@ -88,32 +84,49 @@ def align_atom_indices(atoms_ref: Atoms, atoms_target: Atoms) -> Atoms:
 
     print(f"  [Alignment] Atom indices alignment done. MSD: {total_dist_sq:.4f} Å²")
     
-    # Reorder atoms according to new indices, inheriting ref's cell info
+    # Slicing retains the target's prepared cell, arrays, and constraints.
     sorted_atoms = atoms_target[new_indices]
-    sorted_atoms.set_cell(atoms_ref.get_cell())
-    sorted_atoms.set_pbc(atoms_ref.get_pbc())
+    if atoms_target.calc is not None:
+        results = dict(atoms_target.calc.results)
+        for key in ("forces", "magmoms", "charges", "energies", "stresses"):
+            if key in results:
+                results[key] = np.asarray(results[key])[new_indices]
+        sorted_atoms.calc = SinglePointCalculator(sorted_atoms, **results)
     
     return sorted_atoms
 
 
-def robust_interpolate(start_atoms: Atoms, end_atoms: Atoms, nimages: int) -> List[Atoms]:
-    """Linear interpolation robust to Periodic Boundary Conditions (PBC)."""
-    scaled_start = start_atoms.get_scaled_positions()
-    scaled_end = end_atoms.get_scaled_positions()
-    delta_scaled = scaled_end - scaled_start
-    delta_scaled_mic = delta_scaled - np.round(delta_scaled)
+def robust_interpolate(start_atoms: Atoms, end_atoms: Atoms, nimages: int, *, reference=None) -> List[Atoms]:
+    """Interpolate Cartesian positions using the reference's periodic MIC.
+
+    Args:
+        start_atoms: Starting endpoint, retained as a private copy.
+        end_atoms: Ending endpoint, retained at its input Cartesian position.
+        nimages: Number of intermediate images.
+        reference: Common reference for a segmented path; defaults to start.
+
+    Returns:
+        Prepared endpoints and unconstrained linear intermediate positions.
+    """
+    reference = start_atoms if reference is None else reference
+    start_atoms, end_atoms = prepare_fixed_cell_images(
+        [start_atoms, end_atoms], context="Path interpolation", reference=reference
+    )
+    delta, _ = find_mic(
+        end_atoms.positions - start_atoms.positions, reference.cell, reference.pbc
+    )
     
     path = [start_atoms.copy()]
     total_steps = nimages + 1
     for i in range(1, total_steps):
         alpha = i / total_steps
-        current_scaled_pos = scaled_start + alpha * delta_scaled_mic
+        current_pos = start_atoms.positions + alpha * delta
         image = start_atoms.copy()
         # Preserve the historical linear geometry.  Fast_IDPPSolver anchors
         # each constrained image at this initial position before its first
         # projected update, so a constrained endpoint pair with different
         # coordinates does not acquire a start-to-end jump at the last frame.
-        image.set_scaled_positions(current_scaled_pos)
+        image.set_positions(current_pos, apply_constraint=False)
         path.append(image)
     path.append(end_atoms.copy())
     return path
@@ -165,12 +178,13 @@ class Fast_IDPPSolver:
     The implementation removes the runtime dependency on pymatgen while
     retaining its IDPP update scheme, which is used by the legacy examples.
     """
-    def __init__(self, images: List[Atoms], mic: bool = True):
+    def __init__(self, images: List[Atoms], mic: bool = True, *, reference=None):
+        images = prepare_fixed_cell_images(images, context="IDPP input", reference=reference)
         self.start_atoms = images[0]
         self.end_atoms = images[-1]
         self.nimages = len(images) - 2
         self.natoms = len(self.start_atoms)
-        self.cell = self.start_atoms.get_cell()
+        self.cell = (self.start_atoms if reference is None else reference).get_cell()
         self.images = images
         self._constraint_images = [image.copy() for image in images[1:-1]]
         self._has_constraints = any(image.constraints for image in self._constraint_images)
@@ -193,8 +207,8 @@ class Fast_IDPPSolver:
         self.tol: float | None = None
         self.gtol: float | None = None
         
-        if mic and np.linalg.det(self.cell) > 1e-8:
-            self.inv_cell = np.linalg.inv(self.cell)
+        if mic and np.any(self.start_atoms.pbc):
+            self.inv_cell = np.linalg.inv(self.cell.complete())
             self.mic = True
         else:
             self.inv_cell = np.eye(3)
@@ -318,10 +332,10 @@ class Fast_IDPPSolver:
     def _build_translations(self, images: List[Atoms]) -> np.ndarray:
         """Return per-image nearest-image translations for every atom pair.
 
-        Pairs are processed in blocks and the 27 candidates are scanned
-        vectorized, but the selected shift per pair is the one the reference
-        per-pair scan selects: same candidate order, same replacement rule, same
-        ordered displacement arithmetic.
+        Preserve the historical 27-candidate tie order when it reaches a true
+        nearest image. ASE's general MIC supplies the answer when a pair is
+        unwrapped by multiple cells or a skew cell needs a farther lattice
+        shift. Translations stay fixed during the NEB-like optimization.
 
         Args:
             images: Full image list; only the intermediate images are measured.
@@ -336,6 +350,15 @@ class Fast_IDPPSolver:
         tie_tol = self._mic_tie_tolerance()
         i_index, j_index = np.triu_indices(self.natoms, k=1)
         for image_index, image in enumerate(images[1:-1]):
+            if not self.start_atoms.pbc.all():
+                raw = image.positions[j_index] - image.positions[i_index]
+                mic_vectors = find_mic(raw, self.cell, self.start_atoms.pbc)[0]
+                shifts = np.rint((mic_vectors - raw) @ self.inv_cell)
+                shifts[:, ~self.start_atoms.pbc] = 0
+                cart_shift = self._mic_shift_cartesians(shifts)
+                translations[image_index, i_index, j_index] = cart_shift
+                translations[image_index, j_index, i_index] = -cart_shift
+                continue
             frac = image.get_scaled_positions(wrap=False)
             frac_i = frac[i_index]
             frac_j = frac[j_index]
@@ -344,7 +367,15 @@ class Fast_IDPPSolver:
                 cartesian = self._mic_candidate_cartesians(frac_i[start:stop], frac_j[start:stop])
                 distances = np.sum(cartesian * cartesian, axis=-1)
                 selected = self._scan_nearest_candidates(distances, tie_tol)
-                cart_shift = self._mic_shift_cartesians(_MIC_SHIFT_CANDIDATES[selected])
+                shifts = _MIC_SHIFT_CANDIDATES[selected].copy()
+                raw = image.positions[j_index[start:stop]] - image.positions[i_index[start:stop]]
+                mic_vectors = find_mic(raw, self.cell, self.start_atoms.pbc)[0]
+                selected_distances = distances[np.arange(len(selected)), selected]
+                mic_distances = np.sum(mic_vectors * mic_vectors, axis=-1)
+                missed = selected_distances > mic_distances + tie_tol
+                if np.any(missed):
+                    shifts[missed] = np.rint((mic_vectors[missed] - raw[missed]) @ self.inv_cell)
+                cart_shift = self._mic_shift_cartesians(shifts)
                 translations[image_index, i_index[start:stop], j_index[start:stop]] = cart_shift
                 translations[image_index, j_index[start:stop], i_index[start:stop]] = -cart_shift
         return translations
@@ -486,9 +517,9 @@ class Fast_IDPPSolver:
         return final_images
 
     @classmethod
-    def from_endpoints(cls, start: Atoms, end: Atoms, nimages: int):
-        initial_images = robust_interpolate(start, end, nimages)
-        return cls(initial_images)
+    def from_endpoints(cls, start: Atoms, end: Atoms, nimages: int, *, reference=None):
+        initial_images = robust_interpolate(start, end, nimages, reference=reference)
+        return cls(initial_images, reference=reference)
 
 
 # ==========================================
@@ -574,9 +605,11 @@ def _interpolate(
     n_images: int,
     tol: float,
     path_status: dict | None = None,
+    *,
+    reference=None,
 ):
     if method == 'IDPP':
-        solver = Fast_IDPPSolver.from_endpoints(start, end, n_images)
+        solver = Fast_IDPPSolver.from_endpoints(start, end, n_images, reference=reference)
         images = solver.run(tol=tol)
         if path_status is not None:
             path_status.update(
@@ -591,7 +624,7 @@ def _interpolate(
     if method == 'linear':
         # Linear interpolation reproduces the endpoints exactly and has no
         # iterative solver, so there is no convergence fact to report.
-        return robust_interpolate(start, end, n_images)
+        return robust_interpolate(start, end, n_images, reference=reference)
     raise ValueError(f'{method} not supported')
 
 
@@ -652,6 +685,16 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
     print(f'Reading files: {is_file} and {fs_file}')
     is_atom = read_structure(is_file, format=format, parallel=False)
     fs_atom = read_structure(fs_file, format=format, parallel=False)
+    is_atom, fs_atom = prepare_fixed_cell_images(
+        [is_atom, fs_atom], context="Path generation"
+    )
+
+    # Align before reading cached forces so their atom order follows the output.
+    if not no_align:
+        print("Checking atom index consistency (Hungarian Algorithm)...")
+        fs_atom = align_atom_indices(is_atom, fs_atom)
+    else:
+        print("Skipping atom index alignment.")
     
     # Store single point calculation results if available
     try:
@@ -674,17 +717,6 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
     else:
         fs_status = ENDPOINT_PROVIDED
 
-    # 2. Atom Index Alignment
-    if not no_align:
-        print("Checking atom index consistency (Hungarian Algorithm)...")
-        try:
-            fs_atom = align_atom_indices(is_atom, fs_atom)
-        except Exception as e:
-            print(f"❌ Alignment failed: {e}")
-            return
-    else:
-        print("⚠️ Skipping atom index alignment.")
-
     # IDPP must see the optional fixed-height rule while it optimizes the
     # path.  Prepare private endpoint copies so the public endpoint frames
     # retain their input constraints and positions.
@@ -702,6 +734,9 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
     if ts_file is not None:
         print(f'Using TS guess for segmented interpolation: {ts_file}')
         ts_atom = read_structure(ts_file, format=format, parallel=False)
+        ts_atom = prepare_fixed_cell_images(
+            [is_atom, ts_atom], context="Path TS guess"
+        )[-1]
         if not no_align:
             ts_atom = align_atom_indices(is_atom, ts_atom)
         interpolation_ts = ts_atom.copy()
@@ -709,13 +744,13 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
             set_fix_for_Atoms(interpolation_ts, fix_height, fix_dir)
         left_count = n_images // 2
         right_count = n_images - left_count
-        left_path = _interpolate(method, interpolation_start, interpolation_ts, left_count, tol)
-        right_path = _interpolate(method, interpolation_ts, interpolation_end, right_count, tol)
+        left_path = _interpolate(method, interpolation_start, interpolation_ts, left_count, tol, reference=is_atom)
+        right_path = _interpolate(method, interpolation_ts, interpolation_end, right_count, tol, reference=is_atom)
         ase_path = left_path[:-1] + right_path
     else:
         ase_path = _interpolate(method, interpolation_start, interpolation_end, n_images, tol)
 
-    # Restore endpoint objects exactly as read.  The temporary copies above
+    # Restore the prepared endpoint objects. The temporary copies above
     # exist only to carry generation constraints into IDPP.
     ase_path[0] = is_atom.copy()
     ase_path[-1] = fs_atom.copy()

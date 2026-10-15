@@ -1,9 +1,21 @@
 # ATST-Tools Feature Status Matrix
 
 **Version**: 2.2.8
-**Last Updated**: 2026-09-21
+**Last Updated**: 2026-10-15
 **Status**: Published (PyPI clean-install verified)
 **Owner**: ATST-Tools maintainers
+
+Development worktree supplement (2026-10-15, unreleased): the published capability
+rows below do not certify every boundary input. The current remediation worktree
+contains fixed-cell/MIC/IDPP repairs, Relax input fallback and distribution notice
+fixes, synchronized API progress failures, Dimer termination facts and explicit
+stored-data TS validation. The CLI/API shared execution layer and backend provenance are integrated,
+with 1284 default tests, 27 real-MPI checks, isolated distribution inspection
+and clean-wheel public API checks passing. Validation distinguishes known
+vibration scope from unknown evidence; no calculation automatically certifies a TS.
+See the [architecture and distribution review](ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md)
+for acceptance evidence and validation limits. No new package release,
+backend/GPU run or platform acceptance is claimed.
 
 The 2.2.7 package was published from tag `v2.2.7` at commit
 `af9c8fa6b82386a52055a5b3dced82eb3d8f4ef2`. It adds shared-GPU-node resource binding and run evidence (the
@@ -49,7 +61,8 @@ for fields, artifacts, and failure semantics.
 | **D2S** | ✅ Supported | Double-Ended to Single | `atst run` dispatches endpoint optimization, rough DyNEB, then Dimer, Sella, or CCQN refinement. Experimental `rough_method: dmf` can replace rough DyNEB but is not a supported production default. |
 | **IRC** | ✅ Supported | Intrinsic Reaction Coordinate | Sella backend and descent backend are supported, with controlled boundary diagnostics and artifact manifests. |
 | **MD** | ✅ Supported | Molecular Dynamics | Supports ASE-driven MD with ABACUS/DP calculators and ABACUS-native MD input/run/output orchestration. |
-| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | Published in 2.2.5. `calculation: scf` accepts integer lattice translations in the current cell, including valid cross-cell transition-state/NEB movement, and selects the latest matching frame. Different structures and malformed, non-finite, singular, shape, count, cell, element, or order data remain fail-closed. Native `relax`/`md`/`MD_dump` retain last-frame semantics; no new configuration knob. |
+| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | Base behavior published in 2.2.5. Unreleased vendored default uses `1e-5 Å`, `rtol=0` for cell components and periodic Cartesian residuals; former `1e-5`–`1e-4 Å` matches may now be rejected. Selects the latest matching frame and rejects malformed candidates. Native `relax`/`md`/`MD_dump` retain last-frame semantics; external abacuslite is not patched. |
+| **Fixed-cell input and NEB runtime preparation** | ✅ Implemented (unreleased) | Input fidelity and common periodic runtime boundaries | `1e-5 Å`, `rtol=0`; preserve input rounding, warn/override larger cell or PBC differences on copies. NEB/AutoNEB/DyNEB adapts only necessary periodic runtime rows, invalidates changed-boundary endpoint caches, and records actual boundaries in trajectory and manifest. ASE source unchanged. Local controlled-calculator evidence; no new GPU evidence. |
 | **DMF** | 🧪 Experimental | Direct MaxFlux TS candidate/path optimizer | Standalone `calculation.type: dmf` and D2S `rough_method: dmf` are available for candidate generation. Outputs are TS candidates, not validated TS results. PBC support is limited to explicit `cartesian_unwrapped` experimental mode. Requires `cyipopt`/IPOPT at runtime. |
 | **Artifact Manifests** | ✅ Supported | Workflow output registry | Implemented for NEB, D2S, CCQN, Vibration, IRC, MD, AutoNEB, Sella, Relax, and experimental DMF. |
 | **Convergence Stage Records** | ✅ Supported | Optimizer-owned convergence facts in manifest stages | Every optimize workflow records a strict tri-state `converged` (`true`/`false`/`null`) plus stage identity (`role`, `criterion`, IRC `direction`, AutoNEB `subset`, thresholds, stage-local steps). `null` is unknown and never inferred from trajectories or raw force maxima; advisories are diagnostic only and never change completion or exit codes. Documented in `docs/user/PYTHON_API_REFERENCE.md`; contract fixtures in `docs/reports/data/convergence_fixtures_20260917/`. New in 2.2.6; additive stage fields. |

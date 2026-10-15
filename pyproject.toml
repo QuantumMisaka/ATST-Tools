@@ -35,6 +35,10 @@ dev = [
 [project.scripts]
 atst = "atst_tools.scripts.cli:main"
 
+[tool.setuptools.package-data]
+"atst_tools.external.pydmf" = ["LICENSE", "UPSTREAM.md"]
+"atst_tools.external.ASE_interface" = ["ABACUSLITE_SNAPSHOT.md", "PATCHES.md"]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"

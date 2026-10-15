@@ -506,6 +506,25 @@ def test_scf_selector_accepts_cartesian_integer_lattice_translations(tmp_path):
     ) is frame
 
 
+@pytest.mark.parametrize("delta", [9e-6, 11e-6, 5e-5])
+@pytest.mark.parametrize("field", ["cell", "positions"])
+def test_scf_default_tolerance_accepts_rounding_and_rejects_old_loose_interval(tmp_path, delta, field):
+    """The default is an absolute Angstrom bound for cells and Cartesian residuals."""
+    _, cell, frac, symbols = _synthetic_direct_case(tmp_path)
+    frame_cell = cell.copy()
+    frame_frac = frac.copy()
+    if field == "cell":
+        frame_cell[0, 0] += delta
+    else:
+        frame_frac[0] += np.array([delta, 0, 0]) @ np.linalg.inv(cell)
+    frame = Atoms(symbols=symbols, positions=frame_frac, cell=frame_cell, pbc=True)
+    if delta < 1e-5:
+        assert _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1]) is frame
+    else:
+        with pytest.raises(RuntimeError):
+            _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1])
+
+
 def test_latest_coordinate_parser_uses_periodic_matcher(tmp_path, monkeypatch):
     """The latest running-log parser's Direct header feeds the same matcher contract."""
     from atst_tools.external.ASE_interface.abacuslite.io.latestio import (

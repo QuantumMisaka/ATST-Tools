@@ -26,6 +26,7 @@ from atst_tools.api.models import (
 from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
 from atst_tools.utils.artifacts import (
     SCHEMA_VERSION,
+    add_backend_identity_to_manifest,
     read_artifact_manifest,
     write_artifact_manifest,
 )
@@ -96,7 +97,7 @@ def _run_abacus_check_input_preflight(
     *,
     base_dir: Path | None = None,
 ) -> dict[str, Any] | None:
-    """Run the legacy ABACUS dry-run preflight and return its CLI status."""
+    """Run the ABACUS dry-run preflight and return its status."""
     if not options.check_input:
         return None
 
@@ -104,9 +105,7 @@ def _run_abacus_check_input_preflight(
     if calculator_name != "abacus":
         return {"status": "skipped", "calculator_name": calculator_name}
 
-    # The import remains local because the legacy helper lives with the CLI
-    # implementation, which imports this service for normal command handling.
-    from atst_tools.scripts.main import run_abacus_check_input_dry_run
+    from atst_tools.utils import abacus_io
 
     arguments = {
         "timeout_sec": options.check_input_timeout,
@@ -117,7 +116,7 @@ def _run_abacus_check_input_preflight(
     }
     if base_dir is not None:
         arguments["base_dir"] = base_dir
-    result = run_abacus_check_input_dry_run(
+    result = abacus_io.run_abacus_check_input_dry_run(
         config,
         str(config_source) if isinstance(config_source, (str, Path)) else None,
         **arguments,
@@ -164,34 +163,34 @@ def _dispatch_normalized(config: dict[str, Any], options: RunOptions) -> Any:
     calculator_name = config.get("calculator", {}).get("name", "abacus")
 
     try:
-        # Kept local to avoid importing the CLI module while this service is
-        # imported. The CLI is refactored to call services in a later task.
-        from atst_tools.scripts import main as legacy_run
+        # Import the scientific execution layer only after world selection and
+        # runtime setup. This preserves the API's lightweight import boundary.
+        from atst_tools.workflows import execution
 
         if workflow == "constant_potential":
             from atst_tools.workflows.constant_potential import ConstantPotentialWorkflow
 
             return ConstantPotentialWorkflow(config, calculator_name, calculation).run()
         if workflow == "neb":
-            return legacy_run.run_neb(
+            return execution.run_neb(
                 config, calculator_name, calculation, world=options.world
             )
         if workflow == "autoneb":
-            return legacy_run.run_autoneb(
+            return execution.run_autoneb(
                 config, calculator_name, calculation, world=options.world
             )
         if workflow in {"dimer", "sella", "ccqn"}:
-            return getattr(legacy_run, f"run_{workflow}")(
+            return getattr(execution, f"run_{workflow}")(
                 config, calculator_name, calculation
             )
 
         workflow_class = {
-            "d2s": legacy_run.D2SWorkflow,
-            "dmf": legacy_run.DMFWorkflow,
-            "relax": legacy_run.RelaxWorkflow,
-            "vibration": legacy_run.VibrationWorkflow,
-            "irc": legacy_run.IRCWorkflow,
-            "md": legacy_run.MDWorkflow,
+            "d2s": execution.D2SWorkflow,
+            "dmf": execution.DMFWorkflow,
+            "relax": execution.RelaxWorkflow,
+            "vibration": execution.VibrationWorkflow,
+            "irc": execution.IRCWorkflow,
+            "md": execution.MDWorkflow,
         }[workflow]
         return workflow_class(config, calculator_name, calculation).run()
     except ValueError as exc:
@@ -630,6 +629,52 @@ def _ensure_completed_manifest(
     _synchronize_rank_failure(world, workflow, failure)
 
 
+def _record_backend_identity(
+    config: dict[str, Any],
+    world: Any,
+    *,
+    require_manifest: bool,
+    previous_signature: tuple[int, int, int, int] | None,
+) -> None:
+    """Enrich a completed manifest on root without creating CLI artifacts.
+
+    CLI records identity only when this run produced a valid manifest. The API
+    caller has already finalized its required manifest before reaching here.
+    All ranks observe a failed enrichment before reading the manifest.
+    """
+    workflow = config["calculation"]["type"]
+    path = Path(config["calculation"].get("artifact_manifest", "atst_artifacts.json"))
+    failure = None
+    if int(world.rank) == 0:
+        try:
+            try:
+                current_signature = _manifest_signature(path)
+            except OSError:
+                if require_manifest:
+                    raise
+                current_signature = None
+            fresh_cli_manifest = (
+                current_signature is not None
+                and current_signature != previous_signature
+                and _is_matching_runner_manifest(path, workflow)
+            )
+            if require_manifest or fresh_cli_manifest:
+                from atst_tools.calculators.backend_identity import (
+                    calculator_backend_identity,
+                )
+
+                identity = calculator_backend_identity(config)
+                add_backend_identity_to_manifest(path, identity)
+        except Exception as exc:
+            failure = WorkflowExecutionError(
+                "Unable to record the workflow backend identity.", workflow=workflow
+            )
+            failure.__cause__ = exc
+    _synchronize_rank_failure(world, workflow, failure)
+    if int(world.size) > 1 and hasattr(world, "barrier"):
+        world.barrier()
+
+
 def _result_from_manifest(
     config: dict[str, Any],
     value: Any,
@@ -811,8 +856,17 @@ def _run_workflow(
     runtime_summary: dict[str, Any] | None = None
     workflow_started = time.monotonic()
     try:
+        progress_failure = None
         if int(world.rank) == 0:
-            _emit_workflow_start(options, workflow)
+            try:
+                _emit_workflow_start(options, workflow)
+            except Exception as exc:
+                progress_failure = WorkflowExecutionError(
+                    "Unable to publish the workflow start progress event.",
+                    workflow=workflow,
+                )
+                progress_failure.__cause__ = exc
+        _synchronize_rank_failure(world, workflow, progress_failure)
         if options.dry_run:
             preflight = None
             preflight_failure = None
@@ -847,6 +901,15 @@ def _run_workflow(
                 )
                 manifest_inspection_failure.__cause__ = exc
             _synchronize_rank_failure(world, workflow, manifest_inspection_failure)
+        elif int(world.rank) == 0:
+            # CLI has no manifest requirement; an unreadable pre-existing file
+            # must not prevent dispatch or turn into a synthesized artifact.
+            try:
+                previous_signature = _manifest_signature(
+                    config["calculation"].get("artifact_manifest", "atst_artifacts.json")
+                )
+            except OSError:
+                pass
         value = None
         failure = None
         dispatch_started = time.monotonic()
@@ -867,29 +930,51 @@ def _run_workflow(
         aggregated_counters = _aggregate_runtime_counters(world, workflow)
         profiles = ()
         plots = ()
-        if int(world.rank) == 0:
-            _emit_image_step_events(config, value, options)
-            profiles = _workflow_profiles(config, value, options)
-            plots = _workflow_plots(config, value, options)
-        phase_wall = {
-            "dispatch_s": round(time.monotonic() - dispatch_started, 3),
-            "attempt_s": round(time.monotonic() - workflow_started, 3),
-        }
-        evidence_reference = (
-            evidence.finish(
-                "complete",
-                rank_counters=aggregated_counters,
-                phases=phase_wall,
+        tail_failure = None
+        evidence_reference = None
+        try:
+            if int(world.rank) == 0:
+                _emit_image_step_events(config, value, options)
+                profiles = _workflow_profiles(config, value, options)
+                plots = _workflow_plots(config, value, options)
+            phase_wall = {
+                "dispatch_s": round(time.monotonic() - dispatch_started, 3),
+                "attempt_s": round(time.monotonic() - workflow_started, 3),
+            }
+            if evidence is not None:
+                evidence_reference = evidence.finish(
+                    "complete",
+                    rank_counters=aggregated_counters,
+                    phases=phase_wall,
+                )
+            if int(world.rank) == 0:
+                runtime_summary = _runtime_summary(
+                    config,
+                    status="complete" if evidence_reference else "partial",
+                    evidence=evidence_reference,
+                )
+        except Exception as exc:
+            tail_failure = WorkflowExecutionError(
+                "Unable to finalize workflow progress and results.",
+                workflow=workflow,
             )
-            if evidence is not None
-            else None
-        )
-        if int(world.rank) == 0:
-            runtime_summary = _runtime_summary(
+            tail_failure.__cause__ = exc
+        _synchronize_rank_failure(world, workflow, tail_failure)
+        if ensure_completed_manifest:
+            _ensure_completed_manifest(
                 config,
-                status="complete" if evidence_reference else "partial",
-                evidence=evidence_reference,
+                value,
+                world,
+                previous_signature,
+                plots=plots,
+                runtime_evidence=evidence_reference,
             )
+        _record_backend_identity(
+            config,
+            world,
+            require_manifest=ensure_completed_manifest,
+            previous_signature=previous_signature,
+        )
         if not ensure_completed_manifest:
             legacy_result = _result_without_manifest(config, world, "complete")
             if runtime_summary is not None:
@@ -897,14 +982,6 @@ def _run_workflow(
                     legacy_result, runtime=runtime_summary
                 )
             return legacy_result
-        _ensure_completed_manifest(
-            config,
-            value,
-            world,
-            previous_signature,
-            plots=plots,
-            runtime_evidence=evidence_reference,
-        )
         manifest_result = _result_from_manifest(
             config, value, world, "complete", profiles=profiles
         )
@@ -927,8 +1004,9 @@ def run_workflow(
 ) -> WorkflowResult:
     """Run one YAML-equivalent workflow with API-owned durable artifacts.
 
-    The supplied communicator is used as-is; this service never launches MPI,
-    a scheduler, or a nested calculator process.
+    The supplied communicator is used as-is; this service does not launch an
+    outer image MPI job or request scheduler resources. A configured calculator
+    may execute its backend command.
     """
     if options.check_input and not options.dry_run:
         raise ConfigValidationError(
@@ -1019,6 +1097,12 @@ def run_ccqn(
         raise WorkflowExecutionError(str(exc), workflow="ccqn") from exc
 
     try:
+        from atst_tools.calculators.backend_identity import calculator_backend_identity
+
+        add_backend_identity_to_manifest(
+            options.artifact_manifest,
+            calculator_backend_identity(calculator=calculator, supplied=True),
+        )
         manifest = _read_manifest(options.artifact_manifest)
     except Exception as exc:
         raise WorkflowExecutionError(

@@ -1,0 +1,7 @@
+{
+  "artifact": "atst_tools-2.2.8-py3-none-any.whl",
+  "sha256": "e686cce0d4a9b75a0ea48b2f221c0e203a6c8ae805fd30218fcb17c893a47718",
+  "constant_potential_workflow": true,
+  "explicit_ts_validation_api": false,
+  "PyDMF_license": false
+}

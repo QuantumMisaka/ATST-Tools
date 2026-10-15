@@ -4,7 +4,7 @@
 **Date**: 2026-09-22
 **Status**: Published (PyPI clean-install verified)
 **Branch**: `main`
-**Tag**: `v2.2.8` -> `b6a68f9f` (publish run 35711534156)
+**Tag**: `v2.2.8` -> `b6a68f9` (publish run 35711534156)
 
 ## Summary
 
@@ -53,15 +53,9 @@ makes the GPU facts visible under MPS:
 
 ## Publication Evidence
 
-- Publish workflow run `35711534156` completed successfully on `b6a68f9f`; `Tests` and `abacuslite ASE Interface Tests` passed on the same commit.
+- Publish workflow run `35711534156` completed successfully on `b6a68f9`; `Tests` and `abacuslite ASE Interface Tests` passed on the same commit.
 - PyPI artifacts: `atst_tools-2.2.8-py3-none-any.whl` (395,804 B, sha256 `e686cce0d4a9b75a0ea48b2f221c0e203a6c8ae805fd30218fcb17c893a47718`) and `atst_tools-2.2.8.tar.gz` (349,069 B, sha256 `e39e0d36548901d11fad6ac9d040f8261f23fb68c371312d0e1b5e4185416108`).
 - Official no-cache clean install in an isolated venv: `atst --version` -> `atst 2.2.8` and `package_version()` -> `2.2.8`.
-
-Historical note: the candidate was not published. The maintainer tags `v2.2.8` on the
-release commit; the tag push runs `publish-pypi.yml`, whose preflight (release
-readiness, unit tests, documentation governance, sdist/wheel build,
-distribution checks, wheel public API verification) must pass before the PyPI
-publish job runs.
 
 ## Validation Matrix
 

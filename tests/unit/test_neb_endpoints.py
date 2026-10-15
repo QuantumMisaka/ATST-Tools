@@ -66,6 +66,73 @@ def _placeholder_atoms(x=0.0):
     return atoms
 
 
+def test_runtime_cell_preparation_only_adapts_periodic_rows_and_invalidates_cache():
+    from atst_tools.utils.geometry import prepare_fixed_cell_images, CELL_PREPARATION_KEY
+    reference = Atoms("H", positions=[[1, 2, 3]], cell=[10, 10, 0], pbc=[True, True, False])
+    target = reference.copy()
+    target.cell[0, 0] += 3e-6
+    target.cell[2, 2] = 4e-6
+    target.calc = SinglePointCalculator(target, energy=100, forces=np.zeros((1, 3)))
+    target.info[ENDPOINT_RESULT_KEY] = ENDPOINT_COMPUTED
+    prepared = prepare_fixed_cell_images([reference, target], runtime=True)
+    assert prepared[-1].cell[0, 0] == 10
+    assert prepared[-1].cell[2, 2] == 4e-6
+    assert prepared[-1].calc is None
+    assert ENDPOINT_RESULT_KEY not in prepared[-1].info
+    assert prepared[-1].info[CELL_PREPARATION_KEY][0]["original_cell"][0][0] == 10.000003
+    np.testing.assert_array_equal(prepared[-1].positions, target.positions)
+    assert target.get_potential_energy() == 100
+    assert target.cell[0, 0] == 10.000003
+
+
+@pytest.mark.parametrize("periodic", [False, True])
+def test_runtime_cell_preparation_retains_irrelevant_or_sub_guard_differences(periodic):
+    from atst_tools.utils.geometry import prepare_fixed_cell_images
+    reference = Atoms("H", cell=[10, 10, 10], pbc=periodic)
+    target = reference.copy()
+    target.cell[0, 0] += 3e-9 if periodic else 3e-6
+    prepared = prepare_fixed_cell_images([reference, target], runtime=True)
+    np.testing.assert_array_equal(prepared[-1].cell.array, target.cell.array)
+
+
+def test_runtime_cell_preparation_handles_sub_band_cell_span():
+    from ase.mep import NEB
+    from atst_tools.utils.geometry import prepare_fixed_cell_images
+
+    original = [Atoms("H", positions=[[i*.2, 0, 0]], cell=[10 + delta, 10, 10], pbc=True)
+                for i, delta in enumerate([0, 9e-9, 0, -9e-9])]
+    with pytest.raises(NotImplementedError):
+        NEB(original[1:], method="improvedtangent")
+    prepared = prepare_fixed_cell_images(original, runtime=True)
+    NEB(prepared[1:], method="improvedtangent")
+    assert all(image.cell[0, 0] == 10 for image in prepared)
+    assert original[1].cell[0, 0] > 10
+    assert original[-1].cell[0, 0] < 10
+
+
+def test_fixed_cell_preparation_pbc_override_is_explicit_and_preserves_coordinates():
+    from atst_tools.utils.geometry import prepare_fixed_cell_images
+    reference = Atoms("H", cell=[10, 10, 10], pbc=[1, 1, 0])
+    target = Atoms("H", positions=[[1, 2, 3]], cell=[10, 10, 10], pbc=True)
+    with pytest.warns(UserWarning, match="PBC=.*False"):
+        prepared = prepare_fixed_cell_images([reference, target])
+    np.testing.assert_array_equal(prepared[-1].pbc, reference.pbc)
+    np.testing.assert_array_equal(prepared[-1].positions, target.positions)
+    assert target.pbc.all()
+
+
+def test_fixed_cell_preparation_uses_absolute_tolerance_and_validates_reference():
+    from atst_tools.utils.geometry import prepare_fixed_cell_images
+    reference = Atoms("H", cell=[100000, 10, 10], pbc=True)
+    target = reference.copy()
+    target.cell[0, 0] += 1e-3
+    with pytest.warns(UserWarning, match="atol=1e-05"):
+        prepared = prepare_fixed_cell_images([reference, target])
+    np.testing.assert_array_equal(prepared[-1].cell.array, reference.cell.array)
+    with pytest.raises(ValueError, match="invalid periodic cell"):
+        prepare_fixed_cell_images([Atoms("H", pbc=True)])
+
+
 def _complete_cp_results(atoms, identity, energy):
     """Build a complete durable CP result for endpoint persistence tests."""
     target = float(identity["target_mu_ev"])

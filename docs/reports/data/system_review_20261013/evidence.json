@@ -1,0 +1,932 @@
+{
+  "schema": "atst-repository-review-evidence-v1",
+  "date": "2026-10-13",
+  "source_commit": "45d8c78de8a605c127cd4c36742d0c9525a0a6b6",
+  "package_version": "2.2.8",
+  "scope": "Current checkout code and clean git archive HEAD artifacts; not downloaded PyPI artifacts",
+  "environment": {
+    "python": "3.10.19",
+    "ase": "3.28.0",
+    "numpy": "2.2.6",
+    "scipy": "1.15.2",
+    "sella": "2.5.0",
+    "pydantic": "2.12.5",
+    "pytest": "9.0.2",
+    "mpi": "MPICH 4.3.2"
+  },
+  "checks": [
+    {
+      "name": "default tests",
+      "command": "PYTHONPATH=<repo>/src conda run -n atst-dev python -m coverage run --source=<repo>/src/atst_tools -m pytest tests -o addopts=-ra -q",
+      "exit_code": 0,
+      "summary": "1195 passed, 26 skipped, 8 warnings in 66.66s"
+    },
+    {
+      "name": "real MPI launcher tests",
+      "command": "ATST_RUN_MPI_TESTS=1 PYTHONPATH=<repo>/src conda run -n atst-dev python -m pytest tests/integration -o addopts=-ra -q",
+      "exit_code": 0,
+      "summary": ".......................                                                  [100%]\n23 passed in 52.34s"
+    },
+    {
+      "name": "clean sdist then wheel build",
+      "command": "git archive HEAD exported to <tmp>/source; python -m build --outdir <tmp>/dist <tmp>/source",
+      "exit_code": 0,
+      "summary": "Successfully built atst_tools-2.2.8.tar.gz and atst_tools-2.2.8-py3-none-any.whl"
+    },
+    {
+      "name": "strict distribution check",
+      "command": "python -m twine check --strict <tmp>/dist/*",
+      "exit_code": 0,
+      "summary": "wheel PASSED; sdist PASSED"
+    },
+    {
+      "name": "clean installed wheel public API gate",
+      "command": "python scripts/verify_wheel_api.py --wheel <tmp>/dist/atst_tools-2.2.8-py3-none-any.whl",
+      "exit_code": 0,
+      "summary": "wheel clean-install public API gates passed"
+    },
+    {
+      "name": "post-review documentation governance",
+      "command": "conda run -n atst-dev python scripts/check_docs_governance.py",
+      "exit_code": 0,
+      "summary": "documentation governance checks passed"
+    },
+    {
+      "name": "documentation governance tests",
+      "command": "PYTHONPATH=<repo>/src conda run -n atst-dev python -m pytest tests/unit/test_docs_governance.py -o addopts=-ra -q",
+      "exit_code": 0,
+      "summary": "26 passed in 0.27s"
+    }
+  ],
+  "coverage": {
+    "first_party_covered_lines": 9860,
+    "first_party_statements": 11313,
+    "first_party_percent": 87.16,
+    "including_vendored_percent": 72.24,
+    "kind": "line coverage of default suite; no branch-coverage claim"
+  },
+  "built_artifacts": [
+    {
+      "filename": "atst_tools-2.2.8-py3-none-any.whl",
+      "sha256": "ddde889d12f50351238e3278c750974e6027055036e670a44f04b42ee100fa73",
+      "size_bytes": 395882,
+      "entry_count": 110,
+      "license_and_provenance_members": [
+        "atst_tools-2.2.8.dist-info/licenses/COPYING",
+        "atst_tools-2.2.8.dist-info/licenses/LICENSE"
+      ],
+      "pydmf_python_members": [
+        "atst_tools/external/pydmf/__init__.py",
+        "atst_tools/external/pydmf/dmf/__init__.py",
+        "atst_tools/external/pydmf/dmf/dmf.py",
+        "atst_tools/external/pydmf/dmf/fbenm.py",
+        "atst_tools/external/pydmf/dmf/interpolate.py",
+        "atst_tools/external/pydmf/dmf/torch/__init__.py",
+        "atst_tools/external/pydmf/dmf/torch/_torch_config.py",
+        "atst_tools/external/pydmf/dmf/torch/dmf.py",
+        "atst_tools/external/pydmf/dmf/torch/fbenm.py",
+        "atst_tools/external/pydmf/dmf/torch/interpolate.py"
+      ]
+    },
+    {
+      "filename": "atst_tools-2.2.8.tar.gz",
+      "sha256": "d73d9c9ce0d2c87efd654320991b4c5886f4d7646ef8be4ba7426358eeda2c1e",
+      "size_bytes": 349481,
+      "entry_count": 137,
+      "license_and_provenance_members": [
+        "COPYING",
+        "LICENSE"
+      ],
+      "pydmf_python_members": [
+        "src/atst_tools/external/pydmf/__init__.py",
+        "src/atst_tools/external/pydmf/dmf/__init__.py",
+        "src/atst_tools/external/pydmf/dmf/dmf.py",
+        "src/atst_tools/external/pydmf/dmf/fbenm.py",
+        "src/atst_tools/external/pydmf/dmf/interpolate.py",
+        "src/atst_tools/external/pydmf/dmf/torch/__init__.py",
+        "src/atst_tools/external/pydmf/dmf/torch/_torch_config.py",
+        "src/atst_tools/external/pydmf/dmf/torch/dmf.py",
+        "src/atst_tools/external/pydmf/dmf/torch/fbenm.py",
+        "src/atst_tools/external/pydmf/dmf/torch/interpolate.py"
+      ]
+    }
+  ],
+  "reproductions": [
+    {
+      "finding": "F1",
+      "function": "robust_interpolate / interpolate_path(method=linear)",
+      "input": {
+        "symbols": "H",
+        "cell": [
+          10,
+          10,
+          10
+        ],
+        "pbc": [
+          true,
+          true,
+          false
+        ],
+        "start_positions": [
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "end_positions": [
+          [
+            0,
+            0,
+            8
+          ]
+        ],
+        "interior_images": 1
+      },
+      "observed_midpoint": [
+        [
+          0,
+          0,
+          -0.4999999999999996
+        ]
+      ],
+      "expected_midpoint": [
+        [
+          0,
+          0,
+          4.5
+        ]
+      ]
+    },
+    {
+      "finding": "F1",
+      "input": {
+        "cell": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0.9,
+            0.1,
+            0
+          ],
+          [
+            0,
+            0,
+            5
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          false
+        ],
+        "displacement": [
+          0.931,
+          0.049,
+          0
+        ]
+      },
+      "observed_fractional_round_distance": 0.932288581931582,
+      "ase_find_mic_distance": 0.059682493245507055
+    },
+    {
+      "finding": "F3",
+      "entry_point": "atst_tools.api.run_workflow",
+      "input": {
+        "calculation": {
+          "type": "relax",
+          "init_structure": "missing.traj",
+          "max_steps": 1
+        },
+        "calculator": {
+          "name": "abacus",
+          "abacus": {
+            "parameters": {}
+          }
+        }
+      },
+      "fixture": "H init.traj exists in temporary current directory; calculator construction replaced by ASE EMT only",
+      "observed_exception": "WorkflowExecutionError",
+      "observed_cause": "UnboundLocalError: local variable atoms referenced before assignment"
+    },
+    {
+      "finding": "F1",
+      "function": "interpolate_path(method=linear)",
+      "input": {
+        "symbols": "H",
+        "cell": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "pbc": [
+          false,
+          false,
+          false
+        ],
+        "start_positions": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "end_positions": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "interior_images": 1
+      },
+      "observed_midpoint": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_midpoint": [
+        [
+          0.5,
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "invalidated_evidence": "Initial atst-dev test run imported a different editable checkout and collected no current-source coverage. It is excluded from all pass claims.",
+  "not_run": [
+    "ABACUS/DP GPU calculations",
+    "published PyPI artifact inspection",
+    "remote GitHub environment and branch protection inspection",
+    "Gitee mirror consistency check"
+  ],
+  "design_followup": {
+    "date": "2026-10-13",
+    "source_commit": "45d8c78de8a605c127cd4c36742d0c9525a0a6b6",
+    "command": "PYTHONPATH=<repo>/src conda run --no-capture-output -n atst-dev python <tmp>/probe_geometry.py",
+    "exit_code": 0,
+    "fixtures": "H2 in a 10 Å orthorhombic cell; alignment pbc=[True,True,False], IDPP pbc=False; no calculator or scheduler execution",
+    "observations": {
+      "alignment_partial_pbc": {
+        "reference_z": [
+          0,
+          4
+        ],
+        "target_z": [
+          6,
+          9
+        ],
+        "observed_z": [
+          9.0,
+          6.0
+        ],
+        "expected_minimum_cartesian_assignment_z": [
+          6,
+          9
+        ],
+        "cell_A": [
+          10,
+          10,
+          10
+        ],
+        "pbc": [
+          true,
+          true,
+          false
+        ]
+      },
+      "idpp_nonperiodic_finite_cell": {
+        "positions_z": [
+          1,
+          8
+        ],
+        "pbc": [
+          false,
+          false,
+          false
+        ],
+        "observed_mic_enabled": true,
+        "ase_endpoint_distance": 7.0,
+        "observed_pair_translation": [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        "observed_objective": [
+          0.006663890045814244
+        ],
+        "expected_objective": [
+          0.0
+        ],
+        "max_abs_force": 0.0033319450229071217,
+        "construction": {
+          "symbols": "HH",
+          "cell_A": [
+            10,
+            10,
+            10
+          ],
+          "positions_A": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              8
+            ]
+          ],
+          "image_count": 3,
+          "all_frames_identical": true,
+          "constructor": "Fast_IDPPSolver([atoms, atoms.copy(), atoms.copy()])",
+          "constructor_mic_argument": "omitted, default True",
+          "evaluation": "solver._get_funcs_and_forces(np.array([atoms.positions, atoms.positions, atoms.positions]))"
+        }
+      }
+    },
+    "cell_precision_probe": {
+      "reference_cell_A": [
+        [
+          12.3456789,
+          0,
+          0
+        ],
+        [
+          3.4567891,
+          10.1234567,
+          0
+        ],
+        [
+          0,
+          0,
+          21.2345678
+        ]
+      ],
+      "rounding_decimal_places": 6,
+      "max_delta_A": 2.9999999995311555e-07,
+      "candidate_atol_A": 0.0001,
+      "candidate_rtol": 0,
+      "rounded_cell_accepted": true,
+      "diagonal_change_0_01_A_accepted": false,
+      "scope": "One numeric rounding example; candidate tolerance, not a universal precision guarantee"
+    },
+    "checks": [
+      {
+        "name": "design documentation governance",
+        "command": "conda run -n atst-dev python scripts/check_docs_governance.py",
+        "exit_code": 0,
+        "summary": "documentation governance checks passed"
+      },
+      {
+        "name": "documentation governance tests",
+        "command": "PYTHONPATH=<repo>/src conda run -n atst-dev python -m pytest tests/unit/test_docs_governance.py -o addopts=-ra -q",
+        "exit_code": 0,
+        "summary": "26 passed in 0.25s"
+      }
+    ],
+    "decision_D1": {
+      "date": "2026-10-13",
+      "status": "user_confirmed",
+      "policy": "warning_and_override",
+      "reference": "actual baseline input structure for the workflow; see design section 3.2",
+      "cell_precision": "tolerance-based comparison; recommended default target updated to 1e-5 angstrom, rtol=0 by T1; runtime default not changed",
+      "out_of_tolerance_cell": "warn before adopting reference cell on a private copy",
+      "different_pbc_semantics": "warn before adopting reference PBC on a private copy",
+      "cartesian_positions": "preserved, no scaling or lattice transformation",
+      "original_input": "preserved",
+      "implementation_status": "Historical design-stage status: not implemented at that observation; superseded by implementation_followup (implemented, unreleased).",
+      "within_tolerance_cell": "preserve original cell in files, caller objects, and preprocessing return values; supersedes previous silent normalization proposal"
+    },
+    "ase_neb_cell_probe": {
+      "ase_version": "3.28.0",
+      "source": "ase.mep.neb.BaseNEB.__init__",
+      "periodic_vector_component_tolerance_A": 1e-08,
+      "fixture": {
+        "symbols": "H",
+        "positions_A": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "reference_cell_lengths_A": [
+          10,
+          10,
+          10
+        ],
+        "target_cell_lengths_A": [
+          10.000003,
+          10,
+          10
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "images": "[reference, reference.copy(), target]",
+        "method": "improvedtangent"
+      },
+      "observed_max_cell_delta_A": 2.9999999995311555e-06,
+      "within_candidate_atst_tolerance": true,
+      "observed_exception": "NotImplementedError: Variable cell in periodic directions is not implemented yet for NEB",
+      "calculator_execution": false
+    },
+    "decision_D2": {
+      "date": "2026-10-13",
+      "status": "user_confirmed",
+      "policy": "adapt_only_necessary_neb_runtime_copies_and_record_effective_cell",
+      "input_and_preprocessing": "preserve original cell within ATST tolerance",
+      "positions": "preserve Cartesian coordinates; no scaling",
+      "implementation_status": "Historical design-stage status: not implemented at that observation; superseded by implementation_followup (implemented, unreleased)."
+    },
+    "tolerance_review": {
+      "ase_version": "3.28.0",
+      "scf_fixture": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/multiframe_scf_trial_last",
+      "frame_matching": [
+        {
+          "frame_index": 0,
+          "cell_diff_A": 6.659003481956915e-07,
+          "periodic_coordinate_residual_A": 3.99540208917415e-07,
+          "matches_at_1e_4": true,
+          "matches_at_1e_8": false
+        },
+        {
+          "frame_index": 1,
+          "cell_diff_A": 6.659003481956915e-07,
+          "periodic_coordinate_residual_A": 0.20000026636013946,
+          "matches_at_1e_4": false,
+          "matches_at_1e_8": false
+        },
+        {
+          "frame_index": 2,
+          "cell_diff_A": 6.659003481956915e-07,
+          "periodic_coordinate_residual_A": 0.5000002663601393,
+          "matches_at_1e_4": false,
+          "matches_at_1e_8": false
+        },
+        {
+          "frame_index": 3,
+          "cell_diff_A": 6.659003481956915e-07,
+          "periodic_coordinate_residual_A": 0.40000026636013963,
+          "matches_at_1e_4": false,
+          "matches_at_1e_8": false
+        }
+      ],
+      "neb": {
+        "original_result": "Variable cell in periodic directions is not implemented yet for NEB",
+        "runtime_copy_result": "accepted",
+        "original_target_cell_unchanged": true,
+        "runtime_positions_unchanged": true
+      },
+      "scope": "Retained fixture and constructor checks; no energy or force backend evaluation",
+      "recommendation": "Historical initial assessment, superseded by T1: Retain ASE fixed-cell guard and vendored 1e-4 SCF frame matcher default for their distinct purposes; no universal precision or scientific-error guarantee.",
+      "checks": [
+        {
+          "name": "current-source SCF frame-selection regressions",
+          "command": "PYTHONPATH=<repo>/src conda run --no-capture-output -n atst-dev python -m pytest tests/unit/test_abacuslite_frame_selection.py -o addopts=-ra -q",
+          "exit_code": 0,
+          "summary": "33 passed in 0.51s"
+        },
+        {
+          "name": "documentation governance",
+          "exit_code": 0,
+          "summary": "documentation governance checks passed"
+        },
+        {
+          "name": "independent design review",
+          "result": "No major unsupported tolerance claim or inconsistency; D2 user confirmation respected"
+        }
+      ],
+      "latest_recommendation_reference": "design_followup.tolerance_candidate_comparison.decision_T1"
+    },
+    "tolerance_candidate_comparison": {
+      "paired_STRU_and_log_match_flags": {
+        "1e-08": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "1e-06": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "1e-05": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "0.0001": [
+          true,
+          false,
+          false,
+          false
+        ]
+      },
+      "logged_unit_representation_comparisons": [
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm0-nspin2-multik-cellrelax",
+          "printed_lattice_constant_bohr": 7.884,
+          "printed_lattice_constant_angstrom": 4.17203,
+          "unit_representation_gap_A": 3.128085323211849e-06,
+          "max_printed_vector_component": 1.0,
+          "implied_cell_gap_A": 3.128085323211849e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm0-nspin2-multik-cellrelax_",
+          "printed_lattice_constant_bohr": 7.884,
+          "printed_lattice_constant_angstrom": 4.17203,
+          "unit_representation_gap_A": 3.128085323211849e-06,
+          "max_printed_vector_component": 1.0,
+          "implied_cell_gap_A": 3.128085323211849e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm0-nspin2-multik-relax",
+          "printed_lattice_constant_bohr": 6.1416,
+          "printed_lattice_constant_angstrom": 3.24999,
+          "unit_representation_gap_A": 4.756398887195701e-06,
+          "max_printed_vector_component": 1.6,
+          "implied_cell_gap_A": 7.610238219513122e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm0-nspin2-multik-relax_",
+          "printed_lattice_constant_bohr": 6.1416,
+          "printed_lattice_constant_angstrom": 3.24999,
+          "unit_representation_gap_A": 4.756398887195701e-06,
+          "max_printed_vector_component": 1.6,
+          "implied_cell_gap_A": 7.610238219513122e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm1-nspin1-multik-scf",
+          "printed_lattice_constant_bohr": 6.1416,
+          "printed_lattice_constant_angstrom": 3.24999,
+          "unit_representation_gap_A": 4.756398887195701e-06,
+          "max_printed_vector_component": 1.6,
+          "implied_cell_gap_A": 7.610238219513122e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/lcao-symm1-nspin1-multik-scf_",
+          "printed_lattice_constant_bohr": 6.1416,
+          "printed_lattice_constant_angstrom": 3.24999,
+          "unit_representation_gap_A": 4.756398887195701e-06,
+          "max_printed_vector_component": 1.6,
+          "implied_cell_gap_A": 7.610238219513122e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/multiframe_md_latest/running_md.log",
+          "printed_lattice_constant_bohr": 1.0,
+          "printed_lattice_constant_angstrom": 0.529177,
+          "unit_representation_gap_A": 2.1056384114093163e-07,
+          "max_printed_vector_component": 5.34197,
+          "implied_cell_gap_A": 1.1248257224596225e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/multiframe_md_legacy/running_md.log",
+          "printed_lattice_constant_bohr": 1.0,
+          "printed_lattice_constant_angstrom": 0.529177,
+          "unit_representation_gap_A": 2.1056384114093163e-07,
+          "max_printed_vector_component": 5.34197,
+          "implied_cell_gap_A": 1.1248257224596225e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/multiframe_scf_trial_last/running_scf.log",
+          "printed_lattice_constant_bohr": 1.889726,
+          "printed_lattice_constant_angstrom": 1.0,
+          "unit_representation_gap_A": 6.659003470854685e-08,
+          "max_printed_vector_component": 10.0,
+          "implied_cell_gap_A": 6.659003470854685e-07
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/pw-symm0-nspin4-gamma-md",
+          "printed_lattice_constant_bohr": 1.0,
+          "printed_lattice_constant_angstrom": 0.529177,
+          "unit_representation_gap_A": 2.1056384114093163e-07,
+          "max_printed_vector_component": 5.34197,
+          "implied_cell_gap_A": 1.1248257224596225e-06
+        },
+        {
+          "file": "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/pw-symm0-nspin4-gamma-md_",
+          "printed_lattice_constant_bohr": 1.0,
+          "printed_lattice_constant_angstrom": 0.529177,
+          "unit_representation_gap_A": 2.1056384114093163e-07,
+          "max_printed_vector_component": 5.34197,
+          "implied_cell_gap_A": 1.1248257224596225e-06
+        }
+      ],
+      "printed_unit_comparison_scope": "Two rounded representations within one retained log; not a paired original-STRU validation or a universal parser error bound",
+      "five_decimal_rounding_example": {
+        "original_A": 10.1234567,
+        "rounded_A": 10.12346,
+        "difference_A": 3.299999999484271e-06
+      },
+      "candidate_default_regressions": [
+        {
+          "atol_A": 1e-05,
+          "status": "passed",
+          "passed_tests": 33,
+          "injected_default_calls": 10,
+          "explicit_tolerance_calls": 16,
+          "scope": "In-memory wrapper for omitted atol; current vendored source is unchanged"
+        },
+        {
+          "atol_A": 1e-06,
+          "status": "passed",
+          "passed_tests": 33,
+          "injected_default_calls": 10,
+          "explicit_tolerance_calls": 16,
+          "scope": "In-memory wrapper for omitted atol; current vendored source is unchanged"
+        }
+      ],
+      "decision_T1": {
+        "user_proposed_values_A": [
+          1e-05,
+          1e-06
+        ],
+        "recommended_implementation_default_A": 1e-05,
+        "rtol": 0,
+        "scope": [
+          "ATST input cell comparison",
+          "vendored abacuslite SCF frame matcher"
+        ],
+        "ase_dependency_guard": "unchanged at 1e-8; satisfied by approved runtime-copy adaptation",
+        "status": "Historical recommended implementation target; later user-confirmed and implemented as recorded in implementation_followup.",
+        "reason": "retained log unit representations differ by several e-6 A; both candidate regressions pass, but 1e-6 has insufficient format-error margin"
+      }
+    }
+  },
+  "implementation_followup": {
+    "date": "2026-10-13",
+    "source_state": "Unreleased dirty worktree on 45d8c78de8a605c127cd4c36742d0c9525a0a6b6; source/test changes verified with current PYTHONPATH",
+    "scope": "Confirmed D1/D2/T1 cell tolerance and NEB runtime-copy preparation, with adjoining geometry/cache repairs; not full audit remediation",
+    "default_atol_angstrom": 1e-05,
+    "rtol": 0,
+    "ase_source_modified": false,
+    "external_abacuslite_modified": false,
+    "gpu_jobs_submitted": false,
+    "released": false,
+    "red_evidence": [
+      {
+        "log": "/tmp/atst-cell-red.log",
+        "result": "Original code fails preservation, warning/cache, tightened SCF default and rounded-cell native NEB cases."
+      },
+      {
+        "log": "/tmp/atst-cell-pbc-red.log",
+        "result": "Original partial-PBC alignment and nonperiodic IDPP objective cases fail."
+      },
+      {
+        "result": "Independent reviewer reproduced actual AutoNEB CI subset [1,2,3] rejecting opposite +9e-9/-9e-9 offsets; corrected runtime span logic covered by actual ASE/ATST AutoNEB tests."
+      }
+    ],
+    "checks": [
+      {
+        "name": "Current-source full default suite",
+        "command": "PYTHONPATH=<repo>/src conda run --no-capture-output -n atst-dev python -m pytest tests -q -o addopts=-ra",
+        "exit_code": 0,
+        "summary": "1230 passed, 26 skipped, 3 warnings in 55.31s",
+        "log": "/tmp/atst-cell-full-final.log"
+      },
+      {
+        "name": "Real MPI launcher regressions with controlled calculators",
+        "command": "ATST_RUN_MPI_TESTS=1 PYTHONPATH=<repo>/src conda run --no-capture-output -n atst-dev python -m pytest tests/integration -q -o addopts=-ra",
+        "exit_code": 0,
+        "summary": "23 passed in 50.61s",
+        "log": "/tmp/atst-cell-mpi.log"
+      },
+      {
+        "name": "Vendored package-mode parser and ksampling suites",
+        "exit_code": 0,
+        "summary": "28 tests, OK, 2 skipped",
+        "log": "/tmp/atst-cell-vendored-package.log"
+      },
+      {
+        "name": "Pinned upstream snapshot drift",
+        "command": "PYTHONPATH=<repo>/src conda run --no-capture-output -n atst-dev python scripts/check_abacuslite_snapshot.py --upstream /tmp/atst-cell-upstream-20261013/interfaces/ASE_interface --vendored src/atst_tools/external/ASE_interface",
+        "exit_code": 0,
+        "upstream_sha": "70f7ed69b5677c447afdc78e05240e93da660e66"
+      },
+      {
+        "name": "Documentation governance",
+        "command": "conda run --no-capture-output -n atst-dev python scripts/check_docs_governance.py",
+        "exit_code": 0,
+        "summary": "documentation governance checks passed"
+      },
+      {
+        "name": "Documentation governance regressions",
+        "exit_code": 0,
+        "summary": "26 passed in 0.24s",
+        "log": "/tmp/atst-cell-docs-tests.log"
+      },
+      {
+        "name": "Diff whitespace and conflict checks",
+        "summary": "git diff --check exit 0; required conflict marker search found no matches"
+      }
+    ],
+    "limitations": [
+      "Retained Direct/Cartesian/latestio fixtures plus synthetic 9e-6,11e-6,5e-5 cell/position cases establish the local matching policy, not all historical output-format compatibility.",
+      "Inputs formerly accepted by the 1e-4 SCF default in the 1e-5 to 1e-4 interval may now fail.",
+      "Complete-periodic IDPP retains the finite 27-candidate scan; no claim of arbitrary multi-cell or highly skewed-cell correctness.",
+      "Distribution notice, Relax fallback, execution-layer refactor and other audit follow-ups remain pending.",
+      "No new ABACUS/DeePMD GPU computation, wheel build, publication or upstream PR in this implementation follow-up."
+    ],
+    "independent_review": {
+      "role": "gpt_final_reviewer",
+      "result": "No remaining blocking issue in this implementation scope; AutoNEB span finding fixed and full/MPI/vendored outputs inspected.",
+      "minor_findings": "Historical design statuses labeled superseded; Chinese guide preservation wording restricted to within tolerance.",
+      "scope": "Current source/test worktree, not publication or GPU acceptance."
+    }
+  },
+  "purpose_review_followup": {
+    "date": "2026-10-13",
+    "purpose": "ASE transition-state calculations using ABACUS/DP, consumed by CLI/YAML and Agent Python Interface through shared scientific execution.",
+    "source_state": "Same unreleased dirty source worktree accepted in implementation_followup; this review adds documentation and read-only probes, no runtime code changes.",
+    "accepted_cell_work_package": {
+      "result": "Retained; no new defect blocking its acceptance found.",
+      "focused_recheck": "28 passed, 180 deselected in 3.14s",
+      "exit_code": 0,
+      "log": "/tmp/atst-purpose-cell-recheck.log",
+      "full_and_MPI_evidence": "Reused unchanged-source implementation_followup evidence."
+    },
+    "read_only_probes": {
+      "source_scope": "Current dirty checkout; read-only probes, no ABACUS/DP calculation",
+      "idpp_full_periodic_multicell": {
+        "cell": [
+          [
+            10.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            10.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            10.0
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "positions": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            28.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "identical_frames": 3,
+        "ase_mic_vector": [
+          -2.9999999999999982,
+          0.0,
+          0.0
+        ],
+        "ase_mic_distance_angstrom": 2.9999999999999982,
+        "solver_pair_translation": [
+          -10.0,
+          0.0,
+          0.0
+        ],
+        "solver_target_pair_distance_angstrom": 2.9999999999999982,
+        "solver_measured_pair_distance_angstrom": 17.0,
+        "objective": [
+          2.4197530864197594
+        ],
+        "max_absolute_pair_force": 0.3456790123456799,
+        "expected": "Identical frames with identical pair distances should have zero IDPP objective and force; coordinates differing by integer lattice translations are valid unwrapped representations."
+      },
+      "ts_validation_without_force_evidence": {
+        "schema_version": "atst-ts-validation-v1",
+        "source": "synthetic-subset-screening",
+        "status": "pass",
+        "checks": {
+          "n_imaginary_modes": {
+            "value": 1,
+            "expected": 1,
+            "imaginary_cutoff_cm1": 50.0,
+            "pass": true
+          },
+          "fmax": {
+            "value": null,
+            "threshold": 0.05,
+            "pass": null
+          }
+        },
+        "imaginary_frequencies": [
+          100.0
+        ]
+      }
+    },
+    "progress_callback_mpi_failure": {
+      "command": [
+        "/home/james/apps/miniforge3/envs/atst-dev/bin/mpiexec",
+        "-n",
+        "2",
+        "/home/james/apps/miniforge3/envs/atst-dev/bin/python",
+        "/tmp/atst-progress-mpi-review-20261013/reproduce.py"
+      ],
+      "timeout_seconds": 8,
+      "cwd": "/home/james/work/sidereus/app-tools/toolbox/ABACUS/deps/atst-tools",
+      "scope": "Existing root progress exception path; dry_run=True/progress=True and callback RuntimeError. No calculator/GPU evaluation. Must synchronize rank outcomes; abort/advisory callback semantics still require explicit contract.",
+      "script": "/tmp/atst-progress-mpi-review-20261013/reproduce.py",
+      "timed_out": true,
+      "exit_code": null,
+      "source_import": "Explicit PYTHONPATH; both ranks printed this checkout src/atst_tools/api/services.py in controller_recheck output.",
+      "observation": "ENTER rank0/rank1; workflow_start emitted; rank0 RuntimeError; rank1 did not return before timeout.",
+      "output_log": "/tmp/atst-progress-mpi-review-20261013/output.log",
+      "command_file": "/tmp/atst-progress-mpi-review-20261013/command.txt",
+      "leftover_probe_ranks": "No matching probe ranks remain after owned process-group cleanup (pgrep returned no matches).",
+      "controller_recheck": {
+        "command": [
+          "/home/james/apps/miniforge3/envs/atst-dev/bin/mpiexec",
+          "-n",
+          "2",
+          "/home/james/apps/miniforge3/envs/atst-dev/bin/python",
+          "/tmp/atst-purpose-progress-mpi-20261013/reproduce.py"
+        ],
+        "PYTHONPATH": "/home/james/work/sidereus/app-tools/toolbox/ABACUS/deps/atst-tools/src",
+        "cwd": "/home/james/work/sidereus/app-tools/toolbox/ABACUS/deps/atst-tools",
+        "timed_out": true,
+        "timeout_seconds": 8,
+        "exit_code_after_cleanup": 15,
+        "cleanup": "Owned process group terminated on timeout",
+        "output_log": "/tmp/atst-purpose-progress-mpi-20261013/output.log"
+      }
+    },
+    "baseline_artifact_recheck": {
+      "artifact_scope": "Original clean HEAD build retained in /tmp/atst-audit-20261013/dist, not a new dirty-worktree build or PyPI download.",
+      "wheel_pydmf_python_members": 10,
+      "pydmf_license_and_upstream_present_in_wheel": false,
+      "pydmf_license_and_upstream_present_in_sdist": false
+    },
+    "independent_review": {
+      "role": "gpt_final_reviewer",
+      "result": "Cell work package acceptance retained; five existing issues/debts identified with source evidence. Progress MPI failure reproduced and logs inspected by controller.",
+      "findings": [
+        "MPI progress failure rank mismatch",
+        "TS vibration scope and unknown stationarity",
+        "Dimer optimizer facts discarded",
+        "API-to-CLI reverse dependency",
+        "Backend/model provenance granularity"
+      ],
+      "not_a_defect": "Atoms snapshots without calculators are not contradicted by current API promise; document structure versus frozen-result consumption explicitly."
+    },
+    "pending_priorities": [
+      "Full-periodic unwrapped IDPP MIC correctness",
+      "Progress failure MPI synchronization",
+      "Relax fallback read",
+      "Vendored notice/provenance distribution",
+      "Dimer and scope-aware TS stage facts",
+      "Shared execution layer and paired CLI/API result checks",
+      "Backend/model identity, contributor onboarding, Python/ASE compatibility coverage and release-document source consistency"
+    ],
+    "runtime_changes_in_this_review": false,
+    "published_or_GPU_state_changed": false,
+    "documentation_checks": {
+      "governance_script": "passed",
+      "governance_tests": "26 passed in 0.26s",
+      "diff_whitespace": "passed",
+      "conflict_markers": "none found",
+      "script_log": "/tmp/atst-purpose-docs.log",
+      "tests_log": "/tmp/atst-purpose-docs-tests.log"
+    },
+    "document_review": {
+      "role": "gpt_final_reviewer",
+      "result": "Report section 8 and design rev.8 faithful to purpose and evidence; no material extrapolation or new cell-package blocker.",
+      "minor_adjustment": "MPI callback acceptance now states consistent rank control flow; structured failure if abort, diagnostics if advisory, without preselecting policy."
+    }
+  }
+}

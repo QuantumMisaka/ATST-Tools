@@ -3,14 +3,14 @@
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
-当前 2.2.8 版本（候选，未发布）（详见
+当前 2.2.8 版本已发布（详见
 [release notes](../releases/RELEASE_NOTES_2.2.8.md)）；官方无缓存 clean-install
-复核已通过；包升级不会自动更新既有部署环境。此前已发布的 2.2.5 保留为历史版本。
-当前版本把原 main branch 的脚本集合整理为可安装 Python package，
+复核已通过；包升级不会自动更新既有部署环境。当前开发中的未发布改动不属于该发行包。
+项目把原 main branch 的脚本集合整理为可安装 Python package，
 统一通过 `atst` 命令和 YAML 配置运行 NEB、AutoNEB、Dimer、Sella、CCQN、
 D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 候选路径任务。
-本版本同时携带 ABACUS 恒电势**开发候选**（`calculation.type: constant_potential`）；它的边界和验收状态见
-[功能状态矩阵](../reports/FEATURE_STATUS_MATRIX.md)，按"开发候选"使用，尚无平台/公共工具链验收声明。
+当前开发树还包含 ABACUS 恒电势**开发候选**（`calculation.type: constant_potential`）；它的边界和验收状态见
+[功能状态矩阵](../reports/FEATURE_STATUS_MATRIX.md)，该候选代码随 2.2.8 提供，但不代表成熟生产支持，也没有平台/公共工具链验收声明。
 
 ATST-Tools 的边界是工作流编排、配置校验、calculator 构造、轨迹命名、
 重启辅助、ABACUS 常见前后处理和示例文档。ABACUS、DeePMD-kit、ASE、Sella
@@ -18,10 +18,11 @@ ATST-Tools 的边界是工作流编排、配置校验、calculator 构造、轨�
 
 ### CLI/YAML 与 Python API 的选择
 
-日常交互、站点调度提交和可复现配置优先使用 CLI + YAML；当已有 Python 程序需要
-复用同一 schema、获得结构化结果，或向 ATST 的 CCQN 传入已创建的 ASE
-calculator 时，使用稳定的 `atst_tools.api`。两条路径复用校验和 workflow
-服务；Python API 不启动调度器或 MPI，也不会重建传入 CCQN 的 calculator。详见
+日常交互、站点调度提交和可复现配置可使用 CLI + YAML；Agent 或已有 Python 程序需要
+复用同一 schema、取得结构化结果，或向 ATST 的 CCQN 传入已创建的 ASE
+calculator 时，使用 `atst_tools.api`。两条路径共享科学 workflow；API 不申请资源或
+启动外层 Python MPI，但 YAML 中配置的 calculator 命令可以启动 ABACUS MPI 子进程，且
+API 不重建传入 CCQN 的 calculator。详见
 [Python API reference](PYTHON_API_REFERENCE.md)。
 
 若外部 Python 软件或任务编排器需要独立进程、稳定退出码和 JSON 文件交接，可安装
@@ -44,7 +45,7 @@ pip install atst-tools
 atst --version
 ```
 
-从源代码安装当前 2.2.8：
+从源代码安装当前 checkout：
 
 ```bash
 git clone https://github.com/QuantumMisaka/atst-tools.git
@@ -58,6 +59,9 @@ Sella 2.5+；按需选择以下安装 profile：
 - **Serial（默认）**：`pip install atst-tools`；不安装也不需要 `mpi4py`，可运行全部非 image-parallel 工作流和串行 NEB/AutoNEB。
 - **DP**：`pip install "atst-tools[dp]"`；仅 DeePMD-kit calculator 工作流需要。
 - **Image-parallel NEB/AutoNEB**：`pip install "atst-tools[parallel]"`；仅当通过外部 `mpirun`/`srun` 启动一个 Python rank 对应一个活动 image 时需要。
+
+<details>
+<summary>仅 image-parallel 用户：MPI 环境检查</summary>
 
 使用 image-parallel 前，先验证 `mpi4py` 导入和 two-rank launcher：
 
@@ -75,6 +79,8 @@ MPICC="$(command -v mpicc)" \
 
 仅在站点已加载与外层 launcher 和 ABACUS 一致的 MPI 实现后执行该重装；串行用户不需要安装 mpi4py。
 
+</details>
+
 ATST-Tools 只安装 Python 工作流层。真实计算还需要后端运行时：
 
 - ABACUS 工作流需要可执行的 `abacus`、赝势、数值轨道和可用计算资源。
@@ -88,39 +94,106 @@ ATST-Tools 只安装 Python 工作流层。真实计算还需要后端运行时�
 
 ## 3. 10 分钟快速上手
 
-第一步：确认命令可用并查看支持的 workflow：
+### 3.1 取得示例并完成一次本地操作
+
+这里的“10 分钟”指安装后的命令、配置和文件操作入门；真实 DFT 计算时间取决于
+体系和计算资源。`pip install` 安装 Python 包，不会在当前目录创建 `examples/`。
+首次使用请先取得与安装版本对应的示例；已经在仓库中的用户无需重复克隆：
 
 ```bash
+git clone --branch v2.2.8 https://github.com/QuantumMisaka/atst-tools.git
+cd atst-tools
 atst --version
 atst run --list-types
 ```
 
-第二步：先校验配置，不启动计算：
+使用其他版本时选用对应 tag；源码开发用户使用当前 checkout 的示例与文档。
+以下三组命令按顺序执行。先从仓库根目录校验 YAML：
 
 ```bash
-atst run --dry-run examples/06_relax_H2-Au/config.yaml
 atst config validate examples/06_relax_H2-Au/config.yaml --print-normalized
+atst run --dry-run examples/06_relax_H2-Au/config.yaml
 ```
 
-第三步：运行一个小型 YAML 工作流：
+成功时会显示归一化配置及配置有效信息。普通 `--dry-run` 不执行后端，也不证明
+结构文件、模型、赝势或计算资源已经可用；`--check-input` 是另行请求的 ABACUS
+输入预检，会调用已安装的 ABACUS，详见 [CLI 参考](CLI_REFERENCE.md#workflow-execution)。
+
+接着进入轻量示例，生成初始路径并读取已有结果，无需 ABACUS、DP 模型或 GPU：
 
 ```bash
-cd examples/06_relax_H2-Au
+cd examples/09_lightweight_cli
+atst neb make inputs/init.xyz inputs/final.xyz 3 -o first_chain.traj --method linear
+atst neb summary inputs/neb_result.extxyz --n-max 1 --tail 5
+atst relax post inputs/relax_result.extxyz --output-format traj --output restart.traj
+```
+
+应得到 `first_chain.traj`（两个端点和三个内点，共五帧）、已有 NEB 结果的终端摘要，
+以及提取的 `restart.traj`。`first_chain.traj` 是插值初猜，其占位能量/力不构成计算结果。
+后处理示例中的既有数据用于学习文件交接；新生成结构尚未经过后端计算。
+
+### 3.2 运行真实后端算例
+
+仍从上一步的轻量示例目录开始：
+
+```bash
+cd ../06_relax_H2-Au
+atst config validate config.yaml
+# Confirm the backend and resources before executing the next command.
 atst run config.yaml
 ```
 
-第四步：按目标 workflow 生成模板或切换示例：
+执行前确认：`abacus` 可用，所需赝势/轨道文件存在，MPI 与线程数适合当前资源。
+该示例设置 `mpi: 4`、`ks_solver: cusolver`，需要相应 ABACUS GPU 构建和资源；
+不能直接当作通用 CPU 算例。CPU 或其他站点应先按自己的 ABACUS 配置修改后端设置。
+示例 `max_steps: 1` 用于短运行展示，通常不足以达到 `fmax: 0.05`，完成不代表收敛。
+
+普通 `atst run` 的结构、模型及输出相对路径以**当前工作目录**为基准，不会自动
+切换到 YAML 所在目录。因此先 `cd` 到算例目录，再运行 `config.yaml`；每个独立
+计算使用自己的目录。API/process runner 的路径约定见
+[Python API 参考](PYTHON_API_REFERENCE.md#paths-mpi-and-backends)。
+
+DP 用户先安装 `atst-tools[dp]` 并取得模型，再按
+[示例指南](../../examples/README.md#usage)运行 `config_dp.yaml`。首次学习不需要
+选择 image-parallel；外层 MPI 与后端 MPI 的区别见 [后端指南](ABACUSLITE_WRAPPER_GUIDE.md)。
+
+### 3.3 读取结果与选择下一步
+
+Relax 示例完成后，在当前算例目录查看：
+
+| 文件/操作 | 用途 |
+| --- | --- |
+| `relax.traj` | 优化轨迹；`atst relax summary relax.traj --tail 5` 查看末尾变化。 |
+| `final_relaxed.traj` | 本次最终结构及保存的计算结果。 |
+| `atst_artifacts.json` | 产物清单与阶段事实；读取 `stages` 中的 `converged`。 |
+| `relax_run/` | ABACUS 输入、输出与运行诊断。 |
+
+`converged: true` 表示记录的优化准则达到，`false` 表示未达到，`null` 表示缺少可用
+收敛事实。退出码为零只说明执行完成；TS 搜索完成后，振动和 IRC 仍是显式选择的
+后续步骤。重启前先保留原结果，并查对应 workflow 的 `restart` 语义。
+
+根据科学问题选择下一步：有两个端点时从 NEB 入手；需要自适应插点时看 AutoNEB；
+已有 TS 初猜时看 Dimer/Sella/CCQN；需要粗路径接单端搜索时看 D2S。
+模板由已安装版本生成，避免手抄不兼容字段：
 
 ```bash
 atst run --show-template neb --calculator abacus
-atst run --show-template ccqn --calculator abacus
 atst run --show-template d2s --calculator dp
-atst run --show-template md --calculator abacus
-atst run --show-template dmf --calculator dp
 ```
 
-更多示例学习路径见 [examples/README.md](../../examples/README.md)。完整功能状态见
-[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)。
+更多算例见 [examples/README.md](../../examples/README.md)；完整字段及默认值见
+[YAML 参数表](YAML_INPUT_VARIABLES.md)，组合语义见 [配置参考](CONFIG_REFERENCE.md)。
+
+### 3.4 常见问题
+
+| 现象 | 首先检查 |
+| --- | --- |
+| 找不到 `atst` 或导入包失败 | 是否激活安装包的 Python 环境；用 `python -m pip show atst-tools` 核对安装位置。 |
+| 找不到 `examples/` | pip 安装不会下载示例到当前目录；按 §3.1 取得仓库。 |
+| 找不到 `inputs/...`、模型或赝势 | 当前目录是否为算例目录；配置中的相对路径是否存在。 |
+| 配置通过但无法启动 ABACUS | 普通 dry-run 只校验配置；检查后端命令、MPI、GPU solver 和资源。 |
+| 优化结束但 `converged: false` | 查看步数、阈值及后端错误；短示例的步数上限可能只够展示流程。 |
+| 已安装包没有 `vibration validate` | 该入口属于未发布开发树，使用当前发行版已有的振动结果与后处理入口。 |
 
 ## 4. 支持的工作流
 
@@ -140,6 +213,19 @@ atst run --show-template dmf --calculator dp
 | `md` | 分子动力学；支持 ASE 驱动和 ABACUS 原生 MD | `atst run config.yaml` |
 | `dmf` | Direct MaxFlux 实验性 TS candidate / path optimizer | `atst run config.yaml` |
 | `constant_potential` | ABACUS 恒电势固定几何单点/串行扫描（开发候选） | `atst run config.yaml` |
+
+常规 workflow 交付结构、阶段执行状态和 optimizer 已提供的收敛事实；完成计算
+不会自动运行 IRC，也不等于过渡态已验证。振动/IRC 等额外计算仍由 YAML 中明确配置。
+开发版提供独立只读筛查，消费已保存的振动结果和可选冻结结构证据：
+
+```bash
+atst vibration validate vibration_results.json --structure frozen_ts.traj
+```
+
+它不会启动 calculator 或新振动计算。缺少检查范围或冻结力证据时保持 `unknown`；
+筛查结果不证明 IRC 连通性。此功能属于未发布开发内容，命令和 Python 入口见
+[CLI 参考](CLI_REFERENCE.md#vibration-tools)与
+[Python API 参考](PYTHON_API_REFERENCE.md)。
 
 DMF 当前是 experimental：默认只面向非周期基线，输出 `tmax` TS candidate，
 不能表述为已验证 TS；周期输入默认拒绝，只有显式设置
@@ -174,6 +260,20 @@ fail-closed 并给出诊断，不会用较早的合法帧掩盖损坏输出。�
 检查只用于 SCF 结果选择，且没有新增 `pbc_mode`、容差或其他配置开关。若使用
 `write_input` 的自定义 `stru_file`，检查会读取同一文件名；未调用 `write_input` 时
 仍使用默认 `STRU`。
+
+以下匹配容差、固定晶胞准备与缓存失效行为属于**未发布开发树**，不属于 PyPI 2.2.8。
+
+本仓 vendored 匹配器默认按 `1e-5 Å、rtol=0` 比较晶胞分量和周期等价的 Cartesian
+坐标残差；旧默认 `1e-4 Å` 能接受的较大误差现在可能被拒绝。这是几何匹配容差，
+不是 SCF 或力收敛阈值；独立安装的外部 abacuslite 使用其自身行为。
+
+固定晶胞路径准备也采用 `1e-5 Å、rtol=0`：容差内保留各输入晶胞，超差或 PBC
+不同则 warning，并在副本上采用初始端点／本次加载链首帧的参考边界，不缩放坐标。
+NEB、AutoNEB 和 D2S rough DyNEB 启动前，仅内部运行副本统一必要的周期晶胞向量，
+满足 ASE 原有检查；重启以恢复链为基准。原文件始终保留，容差内预处理结果保留原值，实际轨迹
+写运行晶胞，manifest 的 `metadata.fixed_cell` 记录参考边界与适配。改胞后旧端点
+能量和力失效，`auto` 会重算，`never` 会在缺少有效结果时报错。详见
+[配置语义参考](CONFIG_REFERENCE.md#22-nudged-elastic-band-neb)。
 
 典型 ABACUS 配置：
 
@@ -275,8 +375,8 @@ atst run config.yaml --telemetry                        # 额外写出 runtime_e
 
 - 手写语义参考：[CONFIG_REFERENCE.md](CONFIG_REFERENCE.md)。用于理解常见配置组合、
   workflow 语义、ABACUS/DP calculator 配置和运行边界。
-- 参数总表：[YAML_INPUT_VARIABLES.md](YAML_INPUT_VARIABLES.md)。该文件按已安装版本的
-  schema 生成，是非 calculator YAML 字段的主入口。
+- 参数总表：[YAML_INPUT_VARIABLES.md](YAML_INPUT_VARIABLES.md)。该文件由对应 checkout 的
+  schema 生成，是非 calculator YAML 字段的主入口；阅读时应匹配已安装版本。
 - 快速检查：
 
 ```bash

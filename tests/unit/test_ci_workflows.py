@@ -68,7 +68,12 @@ def test_general_ci_covers_main_and_documentation_governance():
     assert "  test:\n" in workflow
     assert "  documentation-governance:\n" in workflow
     assert "python scripts/check_docs_governance.py" in docs_job
-    assert workflow.count('python-version: "3.10"') == 2
+    assert workflow.count('python-version: "3.10"') == 1
+    test_job = _job_block(workflow, "test")
+    assert 'python-version: ["3.10", "3.12"]' in test_job
+    assert 'python-version: ${{ matrix.python-version }}' in test_job
+    assert 'ase-version: ["3.28.0", "latest"]' in test_job
+    assert 'matrix.ase-version' in test_job
     assert workflow.count('python -m pip install -e ".[test]"') == 2
     assert "id-token: write" not in workflow
 

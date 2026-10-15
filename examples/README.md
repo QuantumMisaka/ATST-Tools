@@ -41,40 +41,58 @@ The examples are organized by chemical system and method to demonstrate the vers
 
 ## Usage
 
-1.  **Environment**: Ensure `atst-tools` is installed with Python 3.10 or newer, and that you have access to `abacus` or the optional calculator stack needed by the example.
-2.  **Inputs**: Each example keeps runnable inputs under `inputs/`; generated trajectories and ABACUS scratch directories are ignored.
-3.  **Data**: The shared `data/` directory is referenced by relative paths (e.g., `../data`) in `config.yaml`.
-4.  **Validate first**:
-    ```bash
-    atst config validate 06_relax_H2-Au/config.yaml --print-normalized
-    atst run --dry-run 06_relax_H2-Au/config.yaml
-    ```
-5.  **Run**:
-    ```bash
-    cd 01_neb_Li-Si
-    atst run config.yaml
-    ```
+`pip install atst-tools` installs the package; obtain this directory from a
+repository checkout at the tag matching your installed version. All paths below
+state their starting directory. For a first session without a backend, follow
+the local CLI path before selecting a real calculation.
 
-    To run the DP variant, install `atst-tools[dp]` or provide an equivalent
-    DeePMD-kit environment. From the repository root, fetch the pinned
-    DPA-3.1-3M model first:
+The **unreleased development tree** uses an absolute `1e-5 Å` cell tolerance.
+Preprocessing preserves rounding within that bound, and NEB runtime copies adapt
+periodic vectors only when required by ASE. This behavior is not part of PyPI
+2.2.8; see the [fixed-cell rules](../docs/user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
 
-    ```bash
-    python scripts/download_dp_model.py
-    python scripts/download_dp_model.py --check-only
-    ```
+1. Install Python 3.10+ and ATST-Tools. A real calculation additionally needs
+   the selected ABACUS/DP runtime, input data and suitable compute resources.
+2. From the repository root, enter the selected case before running its YAML:
 
-    Then run:
+   ```bash
+   cd examples/06_relax_H2-Au
+   atst config validate config.yaml --print-normalized
+   atst run --dry-run config.yaml
+   ```
 
-    ```bash
-    atst run config_dp.yaml
-    ```
+   Relative structure/model paths and generated outputs use the current working
+   directory. The shared pseudopotentials/orbitals are under `../data`. Ordinary
+   dry-run does not evaluate the calculator or prove those files are ready.
+3. After checking the backend, run `atst run config.yaml` from that same case
+   directory. This H2/Au example uses `mpi: 4`, `ks_solver: cusolver` and
+   `max_steps: 1`; it needs an appropriate GPU-enabled ABACUS environment and
+   demonstrates a short run, not guaranteed geometry convergence.
+4. For the DP variant, install `atst-tools[dp]` and obtain the model. Starting
+   again from the repository root:
+
+   ```bash
+   python scripts/download_dp_model.py
+   python scripts/download_dp_model.py --check-only
+   cd examples/06_relax_H2-Au
+   atst run config_dp.yaml
+   ```
+
+   The model is an external download and is not included by pip or git. Confirm
+   its size and local destination in `examples/dp_model_manifest.json` before
+   downloading. Keep independent runs in separate case directories.
+
+After a run, use the workflow's `summary` command and `atst_artifacts.json` to
+inspect outputs and stage convergence. A zero process exit code is not a
+scientific convergence or transition-state validation claim. The
+[Chinese guide](../docs/user/USER_GUIDE_CN.md#33-读取结果与选择下一步) explains the Relax outputs.
 
 ## Suggested Learning Paths
 
 ### Local CLI learning path
 
-This path does not require ABACUS or DP:
+Start from the repository root. This path does not require ABACUS or DP.
+The optional `--plot` command additionally requires `atst-tools[plot]`:
 
 ```bash
 cd examples/09_lightweight_cli
@@ -88,27 +106,38 @@ atst relax summary inputs/relax_result.extxyz --tail 5
 
 ### ABACUS workflow path
 
+With the ABACUS runtime and resources ready, start from the repository root:
+
 ```bash
-atst config validate examples/01_neb_Li-Si/config.yaml --print-normalized
-atst abacus prepare examples/01_neb_Li-Si/config.yaml \
-  --structure examples/01_neb_Li-Si/inputs/init_neb_chain.traj \
-  --output-dir /tmp/atst-abacus-input
-atst run examples/01_neb_Li-Si/config.yaml
-atst abacus collect examples/01_neb_Li-Si/run_neb --output abacus_results.json
+cd examples/06_relax_H2-Au
+atst config validate config.yaml --print-normalized
+atst abacus prepare config.yaml --structure inputs/init.stru --output-dir abacus_input
+atst run config.yaml
+atst relax summary relax.traj --tail 5
+atst abacus collect relax_run --output abacus_results.json
 ```
 
-`atst abacus prepare` and `collect` are helper commands. They do not launch
-ABACUS calculations.
+`atst abacus prepare` and `collect` are helper commands and do not launch
+ABACUS. `atst run` executes the configured backend. Preparation output is a
+separate input preview; the workflow owns its configured calculation directory.
 
 ### D2S transition-state path
 
+Start from the repository root with the selected backend ready:
+
 ```bash
-atst config validate examples/08_d2s_Cy-Pt/config.yaml --print-normalized
-atst run examples/08_d2s_Cy-Pt/config.yaml
+cd examples/08_d2s_Cy-Pt
+atst config validate config.yaml --print-normalized
+atst run config.yaml
 ```
 
 D2S uses the configured calculator backend through `atst run`: rough NEB first,
 then Dimer, Sella, or CCQN, with optional vibration follow-up.
+Optimizer completion and its recorded convergence signal are execution facts;
+they do not automatically launch vibration or IRC and do not by themselves
+validate a transition state. The unreleased development tree provides an
+explicit read-only screen for existing vibration results, documented in the
+[CLI reference](../docs/user/CLI_REFERENCE.md#vibration-tools).
 
 ### Experimental DMF candidate path
 
@@ -225,7 +254,8 @@ with validation status or auxiliary output references.
 
 * `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs and the fixed-electron/force validation sequence.
 
-This is an unreleased development fixture rather than a production benchmark.
+This is a development validation fixture, not a production benchmark. The
+constant-potential workflow code is included in 2.2.8 as a development candidate.
 Its `compensated_gate` inputs use a custom chemical-potential boundary and keep
 gate, blocking, field, dipole, PP, ORB, and KPT settings explicit. The fixture
 does not establish universal basis/cutoff convergence, a calibrated SHE/RHE

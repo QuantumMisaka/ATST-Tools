@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
 **Version**: 2.2.8
-**Last Updated**: 2026-09-20
-**Status**: Release candidate 2.2.8 reference; the CP candidate is documented separately
+**Last Updated**: 2026-10-15
+**Status**: Published 2.2.8 reference; explicitly marked development additions are unreleased
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -78,6 +78,35 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 
 ### 2.2 Nudged Elastic Band (NEB)
 **Type**: `neb`
+
+The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
+described below belong to the **unreleased development tree**, not the published
+PyPI 2.2.8 package.
+
+Fixed-cell input preparation compares the complete cell matrix in Angstrom
+with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
+defines the reference; restart uses the restored band. Cell differences
+within tolerance remain unchanged in preprocessing outputs. Larger differences
+or different parsed PBC flags emit an English warning and adopt the reference
+cell/PBC on private copies, without scaling Cartesian positions. This also
+applies to path generation, atom alignment, and CCQN product preparation.
+
+Before NEB, AutoNEB, or D2S rough DyNEB endpoint preparation, private runtime
+images adopt common periodic vectors only when needed to satisfy ASE's native
+`1e-8` check. Nonperiodic rows within the input tolerance are retained. Changed
+cell/PBC metadata invalidates cached endpoint results: `auto`/`always` computes
+new results, while `never` fails if no valid results remain. The trajectory
+contains the actual runtime cell; `metadata.fixed_cell` in the artifact manifest
+records the reference and adjustments, also retained in image
+`info.atst_cell_preparation`. Original input files and caller images are preserved.
+This is fixed-cell preparation, not variable-cell NEB or an ASE source patch;
+no additional YAML tolerance field is introduced.
+
+The vendored abacuslite SCF frame matcher also defaults to `1e-5` Angstrom for
+cell components and periodic Cartesian residuals, with no relative term. The
+former `1e-4` default accepted mismatches in the `1e-5`–`1e-4` interval that are
+now rejected. This change does not set SCF/fmax convergence thresholds and
+does not alter an independently installed external abacuslite package.
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -304,6 +333,12 @@ calculator:
 | `dimer_separation` | float | `0.01` | Dimer finite-difference separation. |
 | `max_num_rot` | int | `3` | Maximum dimer rotations per step. |
 | `directory` | string | `dimer_run` | Calculator working directory. |
+
+The development version records the Dimer optimizer return value as
+`converged` and its observed `nsteps` as `actual_steps` in the artifact
+manifest. These facts describe optimizer termination; they do not establish
+that the structure is a validated transition state. See the explicit
+read-only screen in the [CLI reference](CLI_REFERENCE.md#vibration-tools).
 
 ### 2.5 Sella (Saddle Point Finder)
 **Type**: `sella`
@@ -585,7 +620,8 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 ### 2.11 Constant-Potential Evaluation (development candidate)
 **Type**: `constant_potential`
 
-`constant_potential` is an unreleased ABACUS-only development candidate. It
+`constant_potential` is an ABACUS-only development candidate included in 2.2.8;
+package inclusion is not a production or platform acceptance claim. It
 evaluates one fixed structure at one target or scans an ordered list of targets
 serially. The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
@@ -890,7 +926,7 @@ calculator:
     share_calculator: true
 ```
 
-For the unreleased constant-potential candidate, keep the gate/dipole settings
+For the constant-potential development candidate, keep the gate/dipole settings
 in the ABACUS block and declare the CP boundary separately. This is a schema
 shape example; derive the target chemical potential and geometry-specific gate
 positions for the actual input:

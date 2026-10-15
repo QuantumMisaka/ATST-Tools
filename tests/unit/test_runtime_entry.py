@@ -145,6 +145,7 @@ def test_worker_child_environment_carries_bound_facts(tmp_path):
 def test_legacy_atst_run_creates_no_new_artifacts(monkeypatch, tmp_path):
     from atst_tools.scripts import cli
     from atst_tools.scripts import main as run_cli
+    from atst_tools.workflows import execution
 
     config = {
         "calculation": {"type": "relax", "init_structure": "init.stru"},
@@ -160,7 +161,7 @@ def test_legacy_atst_run_creates_no_new_artifacts(monkeypatch, tmp_path):
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
-    monkeypatch.setattr(run_cli, "RelaxWorkflow", FakeRelaxWorkflow)
+    monkeypatch.setattr(execution, "RelaxWorkflow", FakeRelaxWorkflow)
 
     cli.main(["run", "config.yaml"])
 

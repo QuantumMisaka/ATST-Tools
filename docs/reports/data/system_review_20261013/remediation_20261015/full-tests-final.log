@@ -1,0 +1,133 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/3fbf/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 1316 items
+
+tests/integration/test_api_progress_mpi.py ssss                          [  0%]
+tests/integration/test_bench_batch_runner_mpi.py ss                      [  0%]
+tests/integration/test_mpi_failure_sync.py sssssssssssssssss             [  1%]
+tests/integration/test_runtime_binding_mpi.py ssss                       [  2%]
+tests/unit/test_abacus_io.py ......                                      [  2%]
+tests/unit/test_abacuslite_ci.py ....                                    [  2%]
+tests/unit/test_abacuslite_frame_selection.py .......................... [  4%]
+.............                                                            [  5%]
+tests/unit/test_abacuslite_io_reorder.py ..                              [  5%]
+tests/unit/test_abacuslite_profile.py ..........................         [  7%]
+tests/unit/test_abacuslite_snapshot_ci.py ...................            [  9%]
+tests/unit/test_api.py ................................................. [ 13%]
+..........................                                               [ 15%]
+tests/unit/test_api_runner.py .......                                    [ 15%]
+tests/unit/test_autoneb_convergence.py ..........                        [ 16%]
+tests/unit/test_autoneb_stress.py ...                                    [ 16%]
+tests/unit/test_backend_identity.py ......                               [ 17%]
+tests/unit/test_banner.py .                                              [ 17%]
+tests/unit/test_bench_batch_runner.py .................................. [ 19%]
+.......                                                                  [ 20%]
+tests/unit/test_bench_batch_worker.py .........                          [ 20%]
+tests/unit/test_bench_record.py ............                             [ 21%]
+tests/unit/test_bench_sweep.py .......                                   [ 22%]
+tests/unit/test_ccqn.py ...................................              [ 25%]
+tests/unit/test_checker_efermi_whitelist.py ...                          [ 25%]
+tests/unit/test_ci_workflows.py .....                                    [ 25%]
+tests/unit/test_cli.py ................................................. [ 29%]
+.................                                                        [ 30%]
+tests/unit/test_config.py .............................................. [ 34%]
+...........                                                              [ 34%]
+tests/unit/test_config_governance.py ...                                 [ 35%]
+tests/unit/test_constant_potential.py .................................. [ 37%]
+                                                                         [ 37%]
+tests/unit/test_constant_potential_reference.py .                        [ 37%]
+tests/unit/test_constant_potential_restart.py .......                    [ 38%]
+tests/unit/test_convergence.py ......................................... [ 41%]
+........................................................                 [ 45%]
+tests/unit/test_convergence_fixtures.py .........                        [ 46%]
+tests/unit/test_cp_validation_diagnostics.py ...                         [ 46%]
+tests/unit/test_dimer.py ....                                            [ 46%]
+tests/unit/test_distribution.py ss                                       [ 47%]
+tests/unit/test_dmf_risk_review.py .....                                 [ 47%]
+tests/unit/test_dmf_validation.py .........                              [ 48%]
+tests/unit/test_dmf_workflow.py .............                            [ 49%]
+tests/unit/test_docs_api.py .........                                    [ 49%]
+tests/unit/test_docs_governance.py ..........................            [ 51%]
+tests/unit/test_dp_model_manifest.py ...                                 [ 52%]
+tests/unit/test_dp_pt_backend.py .............................           [ 54%]
+tests/unit/test_evidence_mps.py ...............                          [ 55%]
+tests/unit/test_examples.py ...........                                  [ 56%]
+tests/unit/test_examples_dp_reference_results.py ...                     [ 56%]
+tests/unit/test_examples_reference_results.py ............               [ 57%]
+tests/unit/test_factory.py ..................                            [ 58%]
+tests/unit/test_gate_compensation.py ...........                         [ 59%]
+tests/unit/test_idpp.py .....................................            [ 62%]
+tests/unit/test_joint_runtime_constant_potential.py ....                 [ 62%]
+tests/unit/test_md_post.py ....                                          [ 62%]
+tests/unit/test_md_workflow.py ....                                      [ 63%]
+tests/unit/test_mpi_parallel.py ........................................ [ 66%]
+......                                                                   [ 66%]
+tests/unit/test_neb_endpoints.py ....................                    [ 68%]
+tests/unit/test_package_metadata.py ...............                      [ 69%]
+tests/unit/test_plot.py ...................                              [ 70%]
+tests/unit/test_post_analysis_io.py .................                    [ 72%]
+tests/unit/test_prepare_examples.py s                                    [ 72%]
+tests/unit/test_program_output_language.py .......                       [ 72%]
+tests/unit/test_reactive_modes.py .....                                  [ 73%]
+tests/unit/test_relax_input_selection.py ....                            [ 73%]
+tests/unit/test_release_readiness.py ................                    [ 74%]
+tests/unit/test_restart_helpers.py ........                              [ 75%]
+tests/unit/test_reverse_config.py ..........s                            [ 76%]
+tests/unit/test_runtime_devices.py ...................................   [ 78%]
+tests/unit/test_runtime_dispatch.py ........                             [ 79%]
+tests/unit/test_runtime_entry.py ................                        [ 80%]
+tests/unit/test_runtime_evidence.py ....................                 [ 82%]
+tests/unit/test_runtime_launch.py ..................                     [ 83%]
+tests/unit/test_runtime_model_sharing.py ...s                            [ 83%]
+tests/unit/test_runtime_restart_isolation.py .....                       [ 84%]
+tests/unit/test_runtime_schema.py ......................                 [ 85%]
+tests/unit/test_runtime_thread_env.py .......                            [ 86%]
+tests/unit/test_sella_events.py ..........                               [ 87%]
+tests/unit/test_shared_execution.py .....                                [ 87%]
+tests/unit/test_summary.py ................                              [ 88%]
+tests/unit/test_thermochemistry.py .......                               [ 89%]
+tests/unit/test_ts_validation.py ..................                      [ 90%]
+tests/unit/test_ts_validation_entry.py ....                              [ 90%]
+tests/unit/test_workflows.py ........................................... [ 94%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+
+=============================== warnings summary ===============================
+tests/unit/test_idpp.py::test_fast_idpp_projects_constraint_positions_and_convergence_forces
+  /home/james/.codex/worktrees/3fbf/atst-tools/src/atst_tools/utils/idpp.py:486: UserWarning: IDPP did not fully converge: maximum iteration number reached
+    warnings.warn("IDPP did not fully converge: maximum iteration number reached")
+
+tests/unit/test_sella_events.py::test_real_sella_event_recording_preserves_steps_positions_and_evaluations[0.01]
+tests/unit/test_sella_events.py::test_real_sella_event_recording_preserves_steps_positions_and_evaluations[100.0]
+  /home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/optimize/optimize.py:92: FutureWarning: Log flushes by default now.  Please do not call flush().  If you want a different flushing behaviour please open logfile yourself and choose buffering mode as appropriate.  This flush() method currently does nothing.
+    warnings.warn('Log flushes by default now.  Please do not call '
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [4] tests/integration/test_api_progress_mpi.py:23: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_bench_batch_runner_mpi.py:26: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_bench_batch_runner_mpi.py:90: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:48: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:99: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:170: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:244: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:314: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:360: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:410: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:460: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:557: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:638: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:724: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:81: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:158: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:188: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:223: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/unit/test_distribution.py:33: set ATST_DIST_SDIST to inspect a built artifact
+SKIPPED [1] tests/unit/test_distribution.py:33: set ATST_DIST_WHEEL to inspect a built artifact
+SKIPPED [1] tests/unit/test_prepare_examples.py:43: no complete ABACUS run dir in examples/; real-dir acceptance is covered by SAI E2E (SPEC R1/R2)
+SKIPPED [1] tests/unit/test_reverse_config.py:285: toolbox utils unavailable; equivalence covered in toolbox Phase 2
+SKIPPED [1] tests/unit/test_runtime_model_sharing.py:330: set ATST_DP_TEST_MODEL to a DeepMD-kit model file to run the real backend
+=========== 1284 passed, 32 skipped, 3 warnings in 62.19s (0:01:02) ============

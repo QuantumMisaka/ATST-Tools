@@ -15,8 +15,13 @@ defaults:
 
 jobs:
   test:
-    name: unit tests
+    name: Python ${{ matrix.python-version }} / ASE ${{ matrix.ase-version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+        ase-version: ["3.28.0", "latest"]
 
     steps:
       - name: Checkout code
@@ -25,12 +30,23 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install ATST-Tools test environment
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
+
+      - name: Select ASE compatibility version
+        env:
+          ASE_VERSION: ${{ matrix.ase-version }}
+        run: |
+          if [[ "$ASE_VERSION" == "latest" ]]; then
+            python -m pip install --upgrade ase
+          else
+            python -m pip install "ase==$ASE_VERSION"
+          fi
+          python -m pip check
 
       - name: Run unit tests
         run: |

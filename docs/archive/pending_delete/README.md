@@ -40,6 +40,8 @@ Before deleting any file from this directory:
 
 ## Current Contents
 
+- `plans/2026-10-13-ase-ts-dual-interface-remediation.md`: local remediation and acceptance completed on 2026-10-15; conclusions and evidence retained in the system review and maintained references. No release or platform acceptance is implied.
+
 - `plans/2026-07-02-abacuslite-backend-upstream-issue-fixes.md`: implemented
   vendored abacuslite fixes; upstream synchronization is tracked by
   `PATCHES.md`, the snapshot baseline, and the cross-repo plan.

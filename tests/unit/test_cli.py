@@ -12,6 +12,8 @@ from ase.calculators.singlepoint import SinglePointCalculator
 from ase.constraints import FixAtoms, FixCartesian
 from ase.io import read, write
 
+from atst_tools.utils import abacus_io
+from atst_tools.workflows import execution as workflow_execution
 from atst_tools.external.ASE_interface.abacuslite.io.generalio import write_stru
 
 
@@ -133,7 +135,7 @@ def test_atst_run_dispatches_d2s(monkeypatch):
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(run_cli.ConfigLoader, "validate", lambda config: True)
-    monkeypatch.setattr(run_cli, "D2SWorkflow", FakeD2SWorkflow)
+    monkeypatch.setattr(workflow_execution, "D2SWorkflow", FakeD2SWorkflow)
 
     cli.main(["run", "config.yaml"])
 
@@ -178,7 +180,7 @@ def test_atst_run_dispatches_dmf(monkeypatch):
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(run_cli.ConfigLoader, "normalize", lambda config: config)
-    monkeypatch.setattr(run_cli, "DMFWorkflow", FakeDMFWorkflow)
+    monkeypatch.setattr(workflow_execution, "DMFWorkflow", FakeDMFWorkflow)
 
     cli.main(["run", "config.yaml"])
 
@@ -203,7 +205,7 @@ def test_atst_run_reports_irc_boundary_without_traceback(monkeypatch):
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(run_cli.ConfigLoader, "validate", lambda config: True)
-    monkeypatch.setattr(run_cli, "IRCWorkflow", FakeIRCWorkflow)
+    monkeypatch.setattr(workflow_execution, "IRCWorkflow", FakeIRCWorkflow)
 
     with pytest.raises(SystemExit) as excinfo:
         cli.main(["run", "config.yaml"])
@@ -230,7 +232,7 @@ def test_atst_run_restart_overrides_config(monkeypatch):
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(run_cli.ConfigLoader, "validate", lambda config: True)
-    monkeypatch.setattr(run_cli, "RelaxWorkflow", FakeRelaxWorkflow)
+    monkeypatch.setattr(workflow_execution, "RelaxWorkflow", FakeRelaxWorkflow)
 
     cli.main(["run", "--restart", "config.yaml"])
 
@@ -260,7 +262,7 @@ def test_atst_run_restart_overrides_invalid_yaml_restart_before_validation(monke
             return None
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
-    monkeypatch.setattr(run_cli, "RelaxWorkflow", FakeRelaxWorkflow)
+    monkeypatch.setattr(workflow_execution, "RelaxWorkflow", FakeRelaxWorkflow)
 
     cli.main(["run", "--restart", "config.yaml"])
 
@@ -306,7 +308,7 @@ def test_atst_run_does_not_synthesize_or_overwrite_legacy_manifest(monkeypatch, 
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
-    monkeypatch.setattr(run_cli, "RelaxWorkflow", FakeRelaxWorkflow)
+    monkeypatch.setattr(workflow_execution, "RelaxWorkflow", FakeRelaxWorkflow)
     manifest = tmp_path / "atst_artifacts.json"
     manifest.write_text("legacy caller-owned data", encoding="utf-8")
 
@@ -475,7 +477,7 @@ def test_atst_run_dry_run_check_input_calls_abacus_preflight(monkeypatch, caplog
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(
-        run_cli,
+        abacus_io,
         "run_abacus_check_input_dry_run",
         lambda config, config_path, timeout_sec=120, abacus_executable="abacus": calls.append(
             (config, config_path, timeout_sec, abacus_executable)
@@ -538,7 +540,7 @@ def test_atst_run_check_input_failure_does_not_log_validation_before_legacy_erro
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(
-        run_cli,
+        abacus_io,
         "run_abacus_check_input_dry_run",
         fail_preflight,
     )
@@ -572,7 +574,7 @@ def test_atst_run_unwraps_api_workflow_error_for_cli_users(monkeypatch):
             raise workflow_error
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
-    monkeypatch.setattr(run_cli, "RelaxWorkflow", FailingRelaxWorkflow)
+    monkeypatch.setattr(workflow_execution, "RelaxWorkflow", FailingRelaxWorkflow)
 
     with pytest.raises(RuntimeError) as excinfo:
         cli.main(["run", "config.yaml"])
@@ -674,7 +676,7 @@ def test_atst_run_dry_run_check_input_skips_non_abacus(monkeypatch, caplog):
 
     monkeypatch.setattr(run_cli.ConfigLoader, "load", lambda path: config)
     monkeypatch.setattr(
-        run_cli,
+        abacus_io,
         "run_abacus_check_input_dry_run",
         lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("DP dry-run must not call ABACUS preflight")),
     )
@@ -752,9 +754,9 @@ def test_run_neb_repairs_placeholder_endpoints_before_neb_construction(tmp_path,
         def run(self, fmax=None, steps=None):
             return None
 
-    monkeypatch.setattr(run_cli.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc())
-    monkeypatch.setattr(run_cli, "AbacusNEB", FakeNEB)
-    monkeypatch.setattr(run_cli, "get_optimizer", lambda name: FakeOptimizer)
+    monkeypatch.setattr(workflow_execution.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc())
+    monkeypatch.setattr(workflow_execution, "AbacusNEB", FakeNEB)
+    monkeypatch.setattr(workflow_execution, "get_optimizer", lambda name: FakeOptimizer)
 
     config = {
         "calculation": {"type": "neb", "init_chain": "chain.traj", "parallel": False},

@@ -24,6 +24,7 @@ from atst_tools.mep.neb import AbacusNEB
 from atst_tools.calculators.factory import CalculatorFactory
 from atst_tools.calculators.dp import is_dp_calculator, should_share_calculator
 from atst_tools.utils.artifacts import write_artifact_manifest
+from atst_tools.utils.geometry import prepare_fixed_cell_images, fixed_cell_metadata
 from atst_tools.utils.config_schema import apply_calculation_defaults
 from atst_tools.utils.convergence import (
     StageRecord,
@@ -784,7 +785,21 @@ class AutoNEBRunner:
         init_chain_file = calc_config['init_chain']
         initial_chain_error = None
         try:
-            self.init_chain = read(init_chain_file, index=':', parallel=False)
+            restored_paths = [
+                Path(f"{self.prefix}{index:03d}.traj")
+                for index in range(self.n_max)
+                if Path(f"{self.prefix}{index:03d}.traj").is_file()
+            ] if self.restart else []
+            if restored_paths:
+                expected = [Path(f"{self.prefix}{index:03d}.traj") for index in range(len(restored_paths))]
+                if restored_paths != expected or len(restored_paths) < 2:
+                    raise ValueError("AutoNEB restart image files must be contiguous and include both endpoints")
+                self.init_chain = [read(path, index=-1, parallel=False) for path in restored_paths]
+            else:
+                self.init_chain = read(init_chain_file, index=':', parallel=False)
+            self.init_chain = prepare_fixed_cell_images(
+                self.init_chain, context="AutoNEB input", runtime=True, world=self.world
+            )
         except Exception as exc:
             initial_chain_error = exc
             self.init_chain = None
@@ -1168,6 +1183,7 @@ class AutoNEBRunner:
                     for index, _ in enumerate(final_images or ())
                 ],
                 stages=stages,
+                metadata={"fixed_cell": fixed_cell_metadata(final_images or self.init_chain)},
             )
 
         if self.parallel:

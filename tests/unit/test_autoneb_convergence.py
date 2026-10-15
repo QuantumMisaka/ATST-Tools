@@ -267,7 +267,8 @@ def test_runner_persists_iteration_records_and_final_subset_scope(
     manifest = json.loads(Path("atst_artifacts.json").read_text(encoding="utf-8"))
     assert manifest["schema_version"] == "atst-artifacts-v1"
     assert manifest["workflow"] == "autoneb"
-    assert manifest["metadata"] == {}
+    assert manifest["metadata"]["fixed_cell"]["reference_image"] == 0
+    assert manifest["metadata"]["fixed_cell"]["adjustments"] == []
     assert [stage["name"] for stage in manifest["stages"]] == [
         "autoneb_iter",
         "autoneb_iter",

@@ -1,15 +1,18 @@
 # 文档系统架构与结构图
 
-**版本**: 2026-09-17
-**日期**: 2026-09-17
+**版本**: 2026-10-15
+**日期**: 2026-10-15
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
 本文档说明 ATST-Tools 文档树的职责边界。它服务于三类读者：用户、开发者和项目管理者。
+文档围绕 ASE 调用 ABACUS/DP 的过渡态计算组织，命令行与 Agent Python Interface
+共同消费同一科学能力；两种入口的使用与结果交接均属于长期用户文档。
 
 ## 1. 目标读者
 
-- **用户**：安装 ATST-Tools，选择示例，编写 YAML，运行 ABACUS/DP 工作流，理解 CLI 行为。
+- **用户**：安装 ATST-Tools，选择示例，经 CLI/YAML 或 Agent Python API/process runner
+  运行 ABACUS/DP 工作流；理解结构、阶段事实、manifest 与科学验证结果的交接。
 - **开发者**：扩展 workflow、calculator backend、YAML schema、CLI、examples、tests 和文档。
 - **项目管理者**：判断功能支持状态、验证证据、发布范围、文档健康度和下一步优先级。
 
@@ -73,7 +76,60 @@ docs/
 - 活跃入口不得链接 `docs/archive/` 或 `docs/archive/pending_delete/`，治理账本和
   pending-delete 说明除外。
 
-## 5. 状态入口
+## 5. 执行入口与共享实现
+
+CLI/YAML 与 Agent Python API 共同调用科学 workflow。内部执行实现位于
+`atst_tools.workflows.execution`；`api.services` 先确定调用方的 MPI world，再调度
+其中的 workflow helper；`scripts.main` 保留 CLI 参数解析、模板、日志与终端错误展示。
+独立 validation API 只读取已保存的振动和冻结结构事实，不会由计算 workflow 自动启动。
+
+### 5.1 代码模块与依赖方向
+
+```mermaid
+flowchart TD
+    CLI[CLI 参数与终端输出] --> API[API application services]
+    PY[Python API / process runner] --> API
+    API --> EXEC[workflows.execution]
+    EXEC --> SCI[workflows / mep]
+    SCI --> ASE[ASE / Sella 数值原语]
+    SCI --> CALC[calculators factory]
+    CALC --> AB[abacuslite / ABACUS]
+    CALC --> DP[DeepMD 官方 ASE calculator]
+    API --> OUT[结构化结果 / manifest]
+    SCI --> OUT
+    RT[runtime 绑定与运行证据] --> API
+    VAL[显式 validate_ts] --> STORED[既有振动与冻结结构事实]
+```
+
+| 模块 | 核心职责与扩展入口 |
+| --- | --- |
+| `scripts/cli.py`、`cli_impl.py`、`main.py` | 轻量 bootstrap、子命令、参数、模板与终端适配；不作为 API 的执行依赖。 |
+| `api/services.py`、`models.py`、`runner.py` | 配置归一化、错误与 MPI 同步、root 产物及 Python/JSON 交接；公共导出由 `api/__init__.py` 管理。 |
+| `workflows/execution.py`、`workflows/`、`mep/` | 分派及科学阶段执行；优化器报告真实收敛事实，复合 workflow 聚合阶段并拥有顶层 manifest。 |
+| `calculators/`、`external/` | calculator 装配和后端委派；ABACUS/DP 数值计算仍属上游，vendored 补丁按快照账本治理。 |
+| `utils/config_schema.py`、`config.py` | YAML 类型、默认值及归一化；`config_docs.py` 生成字段表。 |
+| `utils/geometry.py`、`artifacts.py`、`convergence.py` | 共享几何准备、产物持久化和优化终止事实。 |
+| `runtime/`、`bench/` | 设备/线程绑定、隔离与测量；在已有资源内运行，不承担集群资源申请。 |
+
+新 workflow 的常规修改路径是 schema → workflow/MEP → execution dispatch → 用户
+模板/参考 → 示例及 owning tests。稳定集成入口是 `atst_tools.api`；内部模块不是
+稳定外部 API。CLI 与 API 的产物补齐、错误包装和 preflight 路径历史差异见
+[API 参考](../user/PYTHON_API_REFERENCE.md)，不能因共享执行层而抹平。
+
+### 5.2 文档事实来源
+
+| 事实 | 维护源 | 阅读入口 |
+| --- | --- | --- |
+| 包版本、依赖与安装 extra | `pyproject.toml` | README、安装指南；发布证据引用对应 release notes。 |
+| YAML 类型与默认值 | `config_schema.py` | 生成参数表；手写 CONFIG_REFERENCE 解释组合语义。 |
+| CLI 参数与公共 API | 对应 parser、稳定导出和行为测试 | CLI_REFERENCE、PYTHON_API_REFERENCE。 |
+| 当前支持及未发布边界 | FEATURE_STATUS_MATRIX | 用户导航链接，不复制完整开发历史。 |
+| 实施证据与设计裁决 | 活跃 spec、报告及原始日志 | 治理账本登记；完成计划归档，结论吸收到长期入口。 |
+
+图与模块表描述当前开发树；具体未发布行为必须在用户入口标明，不能仅凭包版本号
+推断其已发行。每次修改应同步受影响的长期入口，避免让新人从历史计划拼接现状。
+
+## 6. 状态入口
 
 - 主入口：[docs/index.md](../index.md)
 - 中文用户指南：[USER_GUIDE_CN.md](../user/USER_GUIDE_CN.md)
@@ -83,6 +139,6 @@ docs/
 - 功能矩阵：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)
 - 文档治理账本：[DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)
 - 发布说明：[RELEASE_NOTES_2.2.8.md](../releases/RELEASE_NOTES_2.2.8.md)，记录当前
-  当前 2.2.8 候选（含 2.2.7 的 tag/CI/PyPI 与 clean-install 证据）。
+  已发布 2.2.8 的 tag/CI/PyPI 与 clean-install 证据；后续未发布开发不改写该记录。
   此前已发布的 [2.2.5 release notes](../releases/RELEASE_NOTES_2.2.5.md) 与
   [2.2.4 release notes](../releases/RELEASE_NOTES_2.2.4.md) 保留为历史发布记录。

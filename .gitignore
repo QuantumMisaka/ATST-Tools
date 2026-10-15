@@ -39,6 +39,7 @@ slurm-*
 !examples/09_lightweight_cli/vib/
 !examples/09_lightweight_cli/vib/cache.*.json
 !docs/reports/*.metrics.json
+!docs/reports/data/system_review_20261013/evidence.json
 *.cif
 *.chg
 *.cube
@@ -126,3 +127,10 @@ examples/09_lightweight_cli/inputs/init_neb_chain.traj
 examples/09_lightweight_cli/inputs/init_neb_chain_ts.traj
 !docs/reports/data/ATST_P2_CLOSEOUT_20260922/**
 !docs/reports/data/ATST_PT_MPS_CLOSEOUT_20260922/**
+
+# Retain the reviewed system-audit evidence with its reports.
+!docs/reports/data/system_review_20261013/evidence.json
+!docs/reports/data/system_review_20261013/documentation_20261015/*.json
+!docs/reports/data/system_review_20261013/documentation_20261015/*.log
+!docs/reports/data/system_review_20261013/remediation_20261015/*.json
+!docs/reports/data/system_review_20261013/remediation_20261015/*.log

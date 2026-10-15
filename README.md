@@ -22,9 +22,10 @@ atst run CONFIG.yaml
 
 Use it when you want repeatable NEB, AutoNEB, Dimer, Sella, CCQN, D2S,
 relaxation, vibration, IRC, MD, or experimental DMF calculations driven by YAML
-instead of one-off Python scripts. The development tree also contains an
-unreleased constant-potential candidate; its scope and validation boundary are
-documented separately below and in the [feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
+or by an Agent's Python integration instead of one-off scripts. The package
+also includes a constant-potential development candidate in 2.2.8; its scope and
+validation boundary are documented separately below and in the [feature status
+matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
 
 ## At A Glance
 
@@ -35,7 +36,11 @@ documented separately below and in the [feature status matrix](docs/reports/FEAT
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.2.8`, published from tag `v2.2.8` at commit `af9c8fa6b82386a52055a5b3dced82eb3d8f4ef2`; official PyPI clean-install, CLI/API, and dependency checks passed as recorded in the [release notes](docs/releases/RELEASE_NOTES_2.2.8.md). |
+| Release | `2.2.8`, published from tag `v2.2.8`; see the canonical [release notes](docs/releases/RELEASE_NOTES_2.2.8.md) for source and artifact evidence. |
+
+The unreleased development tree adds the explicit read-only command
+`atst vibration validate` and the matching `validate_ts` API; neither is in the
+published 2.2.8 package.
 
 ## What You Can Run
 
@@ -53,12 +58,13 @@ documented separately below and in the [feature status matrix](docs/reports/FEAT
 | `md` | Molecular dynamics | ASE-driven MD with ABACUS/DP calculators, or ABACUS native MD input/run/output orchestration. |
 | `dmf` | Direct MaxFlux | Experimental TS candidate/path optimizer; non-periodic first and not a validated TS result. |
 
-The `constant_potential` workflow is a development candidate shipped with the
-2.2.8 line; it carries no Paimon/public tool-chain or platform acceptance claim. The current ATST scope is ABACUS-only
+The `constant_potential` workflow ships in the 2.2.8 package as a development
+candidate; its presence does not establish production readiness or
+Paimon/public tool-chain or platform acceptance. The current ATST scope is ABACUS-only
 fixed-geometry single-point/serial scans plus fixed-cell `relax`/`neb` with the
 explicit `compensated_gate` boundary. The legacy `reference_fcp` boundary is
 reference-only and is rejected for optimization workflows; no Paimon/public
-tool-chain or package-release acceptance is implied. See the
+tool-chain acceptance is implied. See the
 [configuration reference](docs/user/CONFIG_REFERENCE.md) before using it.
 
 Local pre/post-processing commands are intentionally lightweight. They do not
@@ -128,7 +134,7 @@ Choose the path that matches what you need:
 
 | Need | Start here |
 | :--- | :--- |
-| Run a workflow in 10 minutes | [Chinese user guide](docs/user/USER_GUIDE_CN.md) |
+| Learn the CLI and inputs in 10 minutes | [Chinese user guide](docs/user/USER_GUIDE_CN.md) |
 | Pick an example | [Examples overview](examples/README.md) |
 | Check supported features | [Feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md) |
 | Look up YAML semantics | [Configuration reference](docs/user/CONFIG_REFERENCE.md) |
@@ -137,19 +143,32 @@ Choose the path that matches what you need:
 | Embed a workflow in Python | [Stable Python API reference](docs/user/PYTHON_API_REFERENCE.md) |
 | Browse all documentation paths | [Documentation index](docs/index.md) |
 
-Run a small relaxation example:
+After installing the package, obtain the examples separately if you do not
+already have a checkout. Use the tag matching your installed version:
 
 ```bash
-cd examples/06_relax_H2-Au
-atst run config.yaml
-```
-
-Validate an input without launching the calculation:
-
-```bash
-atst run --dry-run examples/06_relax_H2-Au/config.yaml
+git clone --branch v2.2.8 https://github.com/QuantumMisaka/atst-tools.git
+cd atst-tools
 atst config validate examples/06_relax_H2-Au/config.yaml --print-normalized
+atst run --dry-run examples/06_relax_H2-Au/config.yaml
 ```
+
+Try a local operation without ABACUS, a DP model, or a GPU:
+
+```bash
+cd examples/09_lightweight_cli
+atst neb make inputs/init.xyz inputs/final.xyz 3 -o first_chain.traj --method linear
+atst neb summary inputs/neb_result.extxyz --n-max 1 --tail 5
+cd ../..
+```
+
+`first_chain.traj` contains five initial-guess frames, not evaluated energies or
+forces. Configuration validation does not establish backend readiness. Once
+ABACUS, its data files and suitable resources are available, run a calculation
+from its example directory. The H2/Au Relax example uses four backend MPI ranks,
+`cusolver`, and a one-step optimization limit; adapt it to your environment and
+inspect convergence separately. The [Chinese guide](docs/user/USER_GUIDE_CN.md#3-10-分钟快速上手)
+walks through that run, its outputs, and common problems.
 
 Embed the same schema validation from Python when a calling program needs a
 structured result rather than terminal output:
@@ -161,9 +180,16 @@ config = validate_config("examples/06_relax_H2-Au/config.yaml")
 print(config["calculation"]["type"])
 ```
 
-Use CLI/YAML for normal interactive or scheduled calculations; use the API for
-embedding. The [stable Python API reference](docs/user/PYTHON_API_REFERENCE.md)
-defines result ownership, MPI, artifacts, and calculator delegation.
+CLI/YAML and the Agent Python API consume the same ASE transition-state
+workflows. Use CLI/YAML for interactive or scheduled calculations; use the API
+when an Agent or Python application needs structured results or caller-owned
+calculator integration. A calculation reports execution and available optimizer
+facts; it does not automatically establish transition-state validity or launch
+IRC. Transition-state screening is a separate explicit read-only operation:
+In the **unreleased development tree**, `atst vibration validate` or the additive
+`validate_ts` API consumes saved
+vibration and optional frozen structure evidence. The [Python API reference](docs/user/PYTHON_API_REFERENCE.md)
+defines the result, MPI, artifact, and calculator boundaries.
 
 For an external process host that needs a stable JSON handoff without parsing
 terminal output, use the installed API runner:
@@ -172,8 +198,10 @@ terminal output, use the installed API runner:
 python -m atst_tools.api.runner --config config.yaml --workdir run --result-json atst_api_result.json
 ```
 
-It invokes the same configuration-driven API, writes `atst-api-result-v1` only
-from root rank, and never launches Slurm or MPI. See the [Python API
+It invokes the same configuration-driven API and writes `atst-api-result-v1`
+only from root rank. ATST does not allocate resources or start the outer Python
+MPI launch; a configured calculator command may launch its own ABACUS MPI process.
+See the [Python API
 reference](docs/user/PYTHON_API_REFERENCE.md#process-runner-for-external-hosts)
 for flags, exit codes, and artifact ownership.
 
@@ -326,7 +354,7 @@ The main extension points are deliberately small:
 | Add or change YAML inputs | `src/atst_tools/utils/config_schema.py` |
 | Regenerate YAML docs | `python -m atst_tools.utils.config_docs` |
 | Add a calculator backend | `src/atst_tools/calculators/` |
-| Add an `atst run` workflow | `src/atst_tools/scripts/main.py` and `src/atst_tools/workflows/` |
+| Add an `atst run` workflow | `src/atst_tools/workflows/execution.py` and `src/atst_tools/workflows/` |
 | Add lightweight CLI commands | `src/atst_tools/scripts/cli.py` plus focused command components |
 | Add examples | `examples/<case>/config.yaml` and curated `inputs/` |
 

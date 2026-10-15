@@ -1,0 +1,191 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/3fbf/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 5 items / 3 deselected / 2 selected
+
+tests/unit/test_shared_execution.py FF                                   [100%]
+
+=================================== FAILURES ===================================
+______ test_shared_dimer_loads_displacement_vector[chosen.npy-chosen.npy] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8705fd9060>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1312/test_shared_dimer_loads_displa0')
+configured_vector = 'chosen.npy', vector_file = 'chosen.npy'
+
+    @pytest.mark.parametrize(
+        ("configured_vector", "vector_file"),
+        [("chosen.npy", "chosen.npy"), (None, "displacement_vector.npy")],
+    )
+    def test_shared_dimer_loads_displacement_vector(
+        monkeypatch, tmp_path, configured_vector, vector_file
+    ):
+        """Explicit and fallback Dimer vectors reach the scientific runner intact."""
+        from atst_tools.workflows import execution
+    
+        vector = np.array([[0.2, -0.3, 0.4]])
+        np.save(tmp_path / vector_file, vector)
+        monkeypatch.chdir(tmp_path)
+        atoms = Atoms("H", positions=[[0.0, 0.0, 0.0]])
+        monkeypatch.setattr(execution, "read_structure", lambda path: atoms)
+        seen = {}
+    
+        class FakeDimer:
+            def __init__(self, **kwargs):
+                seen.update(kwargs)
+    
+            def run(self, **kwargs):
+                seen["run"] = kwargs
+    
+        monkeypatch.setattr(execution, "AbacusDimer", FakeDimer)
+>       result = execution.run_dimer(
+            {},
+            "abacus",
+            {
+                "type": "dimer",
+                "init_structure": "initial.traj",
+                "init_eigenmode_method": "displacement",
+                "displacement_vector": configured_vector,
+            },
+        )
+
+/home/james/.codex/worktrees/3fbf/atst-tools/tests/unit/test_shared_execution.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = {}, calc_name = 'abacus'
+calc_config = {'dimer_separation': 0.01, 'directory': 'dimer_run', 'displacement_vector': 'chosen.npy', 'fmax': 0.05, ...}
+
+    def run_dimer(config, calc_name, calc_config):
+        """
+        Execute Dimer calculation workflow.
+    
+        Args:
+            config (dict): Full configuration dictionary.
+            calc_name (str): Name of the calculator.
+            calc_config (dict): Calculation-specific configuration.
+        """
+        LOGGER.info("Starting Dimer calculation")
+        calc_config = _normalized_calculation(config, calc_config)
+    
+        # 1. Load Initial Structure
+        # Dimer needs a single structure (Transition State guess)
+        init_structure = calc_config['init_structure']
+        traj_file = calc_config['trajectory']
+        if calc_config.get('restart'):
+            atoms = get_last_frame(traj_file)
+        else:
+            if not os.path.exists(init_structure):
+             # Try traj
+                if os.path.exists('dimer_init.traj'):
+                    init_structure = 'dimer_init.traj'
+            atoms = read_structure(init_structure)
+    
+        # 2. Parameters
+        fmax = calc_config['fmax']
+    
+        # Displacement
+        # User can provide displacement vector or method
+        method = calc_config['init_eigenmode_method']
+        displacement_vector = calc_config.get('displacement_vector', None)
+    
+        if method == 'displacement' and isinstance(displacement_vector, str):
+>           displacement_vector = np.load(displacement_vector)
+E           NameError: name 'np' is not defined
+
+/home/james/.codex/worktrees/3fbf/atst-tools/src/atst_tools/workflows/execution.py:586: NameError
+__ test_shared_dimer_loads_displacement_vector[None-displacement_vector.npy] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f86e1d41540>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1312/test_shared_dimer_loads_displa1')
+configured_vector = None, vector_file = 'displacement_vector.npy'
+
+    @pytest.mark.parametrize(
+        ("configured_vector", "vector_file"),
+        [("chosen.npy", "chosen.npy"), (None, "displacement_vector.npy")],
+    )
+    def test_shared_dimer_loads_displacement_vector(
+        monkeypatch, tmp_path, configured_vector, vector_file
+    ):
+        """Explicit and fallback Dimer vectors reach the scientific runner intact."""
+        from atst_tools.workflows import execution
+    
+        vector = np.array([[0.2, -0.3, 0.4]])
+        np.save(tmp_path / vector_file, vector)
+        monkeypatch.chdir(tmp_path)
+        atoms = Atoms("H", positions=[[0.0, 0.0, 0.0]])
+        monkeypatch.setattr(execution, "read_structure", lambda path: atoms)
+        seen = {}
+    
+        class FakeDimer:
+            def __init__(self, **kwargs):
+                seen.update(kwargs)
+    
+            def run(self, **kwargs):
+                seen["run"] = kwargs
+    
+        monkeypatch.setattr(execution, "AbacusDimer", FakeDimer)
+>       result = execution.run_dimer(
+            {},
+            "abacus",
+            {
+                "type": "dimer",
+                "init_structure": "initial.traj",
+                "init_eigenmode_method": "displacement",
+                "displacement_vector": configured_vector,
+            },
+        )
+
+/home/james/.codex/worktrees/3fbf/atst-tools/tests/unit/test_shared_execution.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = {}, calc_name = 'abacus'
+calc_config = {'dimer_separation': 0.01, 'directory': 'dimer_run', 'displacement_vector': None, 'fmax': 0.05, ...}
+
+    def run_dimer(config, calc_name, calc_config):
+        """
+        Execute Dimer calculation workflow.
+    
+        Args:
+            config (dict): Full configuration dictionary.
+            calc_name (str): Name of the calculator.
+            calc_config (dict): Calculation-specific configuration.
+        """
+        LOGGER.info("Starting Dimer calculation")
+        calc_config = _normalized_calculation(config, calc_config)
+    
+        # 1. Load Initial Structure
+        # Dimer needs a single structure (Transition State guess)
+        init_structure = calc_config['init_structure']
+        traj_file = calc_config['trajectory']
+        if calc_config.get('restart'):
+            atoms = get_last_frame(traj_file)
+        else:
+            if not os.path.exists(init_structure):
+             # Try traj
+                if os.path.exists('dimer_init.traj'):
+                    init_structure = 'dimer_init.traj'
+            atoms = read_structure(init_structure)
+    
+        # 2. Parameters
+        fmax = calc_config['fmax']
+    
+        # Displacement
+        # User can provide displacement vector or method
+        method = calc_config['init_eigenmode_method']
+        displacement_vector = calc_config.get('displacement_vector', None)
+    
+        if method == 'displacement' and isinstance(displacement_vector, str):
+            displacement_vector = np.load(displacement_vector)
+        elif method == 'displacement' and displacement_vector is None:
+            # Try loading from file
+            if os.path.exists('displacement_vector.npy'):
+>               displacement_vector = np.load('displacement_vector.npy')
+E               NameError: name 'np' is not defined
+
+/home/james/.codex/worktrees/3fbf/atst-tools/src/atst_tools/workflows/execution.py:590: NameError
+=========================== short test summary info ============================
+FAILED tests/unit/test_shared_execution.py::test_shared_dimer_loads_displacement_vector[chosen.npy-chosen.npy]
+FAILED tests/unit/test_shared_execution.py::test_shared_dimer_loads_displacement_vector[None-displacement_vector.npy]
+======================= 2 failed, 3 deselected in 2.21s ========================
+ERROR conda.cli.main_run:execute(148): `conda run env PYTHONPATH=/home/james/.codex/worktrees/3fbf/atst-tools/src python -m pytest tests/unit/test_shared_execution.py -k shared_dimer_loads_displacement_vector -o addopts=-ra` failed. (See above for error)

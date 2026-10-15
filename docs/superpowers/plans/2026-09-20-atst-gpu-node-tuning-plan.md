@@ -14,11 +14,11 @@
 **Verification:** CPU 行为/子进程测试 → site-compatible MPI 测试 → 经授权的 GPU 数值/性能基准 → 后续平台 E2E。
 Status: in_progress (P0-P5 complete, P6 in progress; the remaining items are listed below)
 
-**剩余项（2026-09-22 状态口径对齐）**：P0–P5 已完成——P5 压力/收益矩阵无剩余行（host/SIF 成对见 `docs/reports/ATST_RUNTIME_SAI_V100_VALIDATION_2026-09-21.md` §5j，8 图×8 卡见 §5h）；P6 进行中。以下为计划内**仍不成立**的项，状态只有 `open` 或 `condition-blocked`，不得读作完成：
+**剩余项（2026-09-22 状态口径对齐）**：P0–P5 已完成——P5 压力/收益矩阵无剩余行（host/SIF 成对见 `docs/reports/ATST_RUNTIME_SAI_V100_VALIDATION_2026-09-21.md` §5j，8 图×8 卡见 §5h）；P6 进行中。下列记录同时保留已收口事实与仍开放项，以各项最新状态为准：
 
 - P2「计量端点与生命周期」的只读模型共享与重启回归、以及 P2「宿主 sampler」的 MPS 归属**已在 2026-09-22 现场收口**（SAI 作业 1444802）：模型目录摘要前后不变且 `dp.calculator_reused=1`、`ATST_ATTEMPT` 的缓存与证据归属一致、同 workdir 重跑末帧能量等价（Δ=1.6e-05 eV）；MPS 事实证明节点启用 MPS 且计算进程归因不可用（记 `unavailable` + reason，不填 0），见 [P2 收口报告](../../reports/ATST_P2_CLOSEOUT_2026-09-22.md)。两行随之下调为已勾选。
 - `not-planned` — P2「线程预算」的 DP TF 后端维度：**不做特意支持**，算法层兼容（线程预算与制品 kind 判定对 TF 同样生效），不安排 TF 制品验证（2026-09-22 维护者裁定；背景见 [本地验证报告 §10](../../reports/ATST_RUNTIME_LOCAL_GPU_VALIDATION_2026-09-21.md)）。
-- `open`（部分完成）— P6 交付与平台接入：文档面与 2.2.7 发布已完成，父仓 gitlink 已由父仓提交 `52d157dcc` 推进，平台侧 runtime 透传（P6 Task 6）已由父仓 `25df6ab17` 落地；独立终审与共享 image 的参数/runner 迁移仍未完成，见下文「P6」段。
+- `open`（部分完成）— P6 交付与平台接入：文档面与 2.2.7 发布已完成，父仓 gitlink 已由父仓提交 `52d157dcc` 推进，平台侧 runtime 透传（P6 Task 6）已由父仓 `25df6ab17` 落地；独立终审已完成；共享 image 的参数/runner 迁移仍未完成，见下文「P6」段。
 - ~~`open` — 站点 `mpiexec` + runtime 重绑定~~ **2026-09-22 现场复验收口**：修复（`0668d61`）后 `mpiexec --oversubscribe -n 8` + `binding: round_robin` 连续 3 次通过（作业 1451595/96/97，三节点，14.5–19.0 s，`bound=true`、`counters_mpi.world_size=8`），旧挂起现象不可复现；证据切片 `docs/reports/data/ATST_MPI_REBIND_REPEAT_20260922/`。是否属站点/上游已知行为不再作为阻断项：本仓侧根因已修（第三轮复核 P1-2，`0668d61`），修复后 `mpiexec -n 4 + round_robin` 复验通过（1434302），但该现象仍要求站点/上游确认，见 SAI 报告 §6 第 4 项与 §8。
 - `condition-blocked` — DP 通道的容器对照：站点 SIF 是 ABACUS toolbox 交付，deepmd 不在其范围，见 SAI 报告 §5j。
 - `condition-blocked` — FT²DP 单头 EMA 制品：本机无文件、站点钉版路径不可读，见[审阅地图 §4](../../reports/ATST_GPU_TUNING_BRANCH_REVIEW_MAP_2026-09-21.md) 第 6 项。
@@ -185,7 +185,7 @@ harness 语义：case 默认在配置文件所在目录运行（ATST 相对路�
 依赖：P5；平台部分独立排期/授权。
 
 - [x] 更新 atst `CONFIG_REFERENCE.md`、schema 生成参数表、用户指南、examples、FEATURE_STATUS_MATRIX 与文档账本；发布说明区分 CPU/mock、MPI、GPU、SIF 验证范围（2026-09-21/22 已随 2.2.7 发布完成，范围声明见 `docs/releases/RELEASE_NOTES_2.2.7.md` 的 Validation Matrix）。
-- [ ] 相称独立终审，按 atst 版本规则发布；父仓依赖同步与 gitlink 更新独立执行（发布已完成：2.2.7 于 2026-09-21 上线 PyPI/GitHub Release；父仓 gitlink 已由父仓提交 `52d157dcc` 推进到 `af9c8fa`；**独立终审与发布已完成**（2026-09-22：整分支独立终审给 approve with required changes，findings 已修；2.2.8 已上 PyPI 并 clean-install 复核）；父仓 gitlink 待升到 v2.2.8）。
+- [x] 相称独立终审，按 atst 版本规则发布；父仓依赖同步与 gitlink 更新独立执行（发布已完成：2.2.7 于 2026-09-21 上线 PyPI/GitHub Release；父仓 gitlink 已由父仓提交 `52d157dcc` 推进到 `af9c8fa`；**独立终审与发布已完成**（2026-09-22：整分支独立终审给 approve with required changes，findings 已修；2.2.8 已上 PyPI 并 clean-install 复核）；2026-10-15 只读核实父仓 index gitlink 已为 `45d8c78`（包含 v2.2.8）；不据此宣称平台部署完成）。
 - [ ] 平台先消费单任务绑定/运行证据，再单独设计共享 image 的参数、resAlloc/prepare/runner 迁移；不重释现有 `n_gpu`（平台侧消费已落地：父仓 `25df6ab17` 让恒电势与过渡态 `prepare` 暴露 `runtime` 段；共享 image 的参数/runner 迁移仍 open）。
 - [x] 核对恒电势 Task 3.2 共用 `toolkits/atst_runner.py` 抽取进展（2026-09-22 核对：`toolbox/ABACUS/toolkits/atst_runner.py` 已存在，引入提交 `375ef7c6b`；平台 GPU 适配复用该入口），平台 GPU 适配复用届时的 owner 入口；不另造 runner。
 - [ ] 更新对应 owner guide 与交接测试，经本地 E2E、授权的平台发布验证后再宣称平台支持；只有新增依赖确需镜像变化时才插入非活动 SIF 候选。

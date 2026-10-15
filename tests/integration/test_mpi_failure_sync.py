@@ -125,7 +125,7 @@ from atst_tools.api.models import WorkflowExecutionError
 
 rank = MPI.COMM_WORLD.rank
 if {workflow!r} == 'neb':
-    from atst_tools.scripts import main as runner_module
+    from atst_tools.workflows import execution as runner_module
 else:
     from atst_tools.mep import autoneb as runner_module
 
@@ -186,7 +186,7 @@ from mpi4py import MPI
 
 rank = MPI.COMM_WORLD.rank
 if {workflow!r} == 'neb':
-    from atst_tools.scripts import main as runner_module
+    from atst_tools.workflows import execution as runner_module
     world = runner_module.get_ase_world()
     runner_module.write = lambda *args, **kwargs: None
     def fail_sync_read(path, *args, **kwargs):
@@ -270,7 +270,7 @@ from atst_tools.api.models import WorkflowExecutionError
 
 rank = MPI.COMM_WORLD.rank
 if {workflow!r} == 'neb':
-    from atst_tools.scripts import main as runner_module
+    from atst_tools.workflows import execution as runner_module
 else:
     from atst_tools.mep import autoneb as runner_module
 
@@ -491,7 +491,7 @@ rank = MPI.COMM_WORLD.rank
 class NoopCalculator(Calculator):
     implemented_properties = []
 if {workflow!r} == 'neb':
-    from atst_tools.scripts import main as runner_module
+    from atst_tools.workflows import execution as runner_module
     runner_module.ensure_neb_endpoint_results = lambda *args, **kwargs: None
     runner_module._sync_parallel_endpoint_results = lambda images, *args: images
     class FakeNEB:
@@ -577,7 +577,7 @@ from mpi4py import MPI
 from ase.calculators.calculator import Calculator
 from atst_tools.api import RunOptions, run_workflow
 from atst_tools.api.models import WorkflowExecutionError
-from atst_tools.scripts import main
+from atst_tools.workflows import execution as main
 
 rank = MPI.COMM_WORLD.rank
 main.ensure_neb_endpoint_results = lambda *args, **kwargs: None

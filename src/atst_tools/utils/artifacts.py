@@ -30,13 +30,15 @@ def write_artifact_manifest(
     stages: list[dict[str, Any]] | None = None,
     metadata: dict[str, Any] | None = None,
     plots: list[str] | tuple[str, ...] | None = None,
+    backend_identity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Write a stable machine-readable manifest for workflow outputs.
 
     ``plots`` is an optional list of task-relative PNG paths produced for the
     workflow.  It is recorded under a dedicated top-level ``plots`` key only
     when non-empty, so manifests written without plots keep the exact original
-    shape and older manifest consumers ignore the extension.
+    shape and older manifest consumers ignore the extension. ``backend_identity``
+    is included only when explicit facts are provided by the caller.
     """
     manifest = {
         "schema_version": SCHEMA_VERSION,
@@ -47,6 +49,8 @@ def write_artifact_manifest(
     }
     if plots:
         manifest["plots"] = [str(plot) for plot in plots]
+    if backend_identity is not None:
+        manifest["backend_identity"] = backend_identity
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(_jsonable(manifest), indent=2), encoding="utf-8")
@@ -56,3 +60,22 @@ def write_artifact_manifest(
 def read_artifact_manifest(path: str | Path) -> dict[str, Any]:
     """Read an existing ATST artifact manifest without altering it."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def add_backend_identity_to_manifest(
+    path: str | Path, identity: dict[str, Any]
+) -> dict[str, Any]:
+    """Add backend facts to an existing manifest without changing run facts.
+
+    Args:
+        path: Manifest already written by a workflow or the API finalizer.
+        identity: Facts returned by ``calculator_backend_identity``.
+
+    Returns:
+        The enriched manifest as a detached dictionary.
+    """
+    output = Path(path)
+    manifest = read_artifact_manifest(output)
+    manifest["backend_identity"] = _jsonable(identity)
+    output.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return manifest

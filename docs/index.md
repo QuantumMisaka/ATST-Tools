@@ -4,6 +4,19 @@ This is the maintained entry point for ATST-Tools documentation. Files under
 `.trae/` are temporary working notes and are not part of the formal
 documentation set.
 
+## Start Here
+
+| Your starting point | Recommended route |
+| --- | --- |
+| New user without a calculator runtime | [Quick start](user/USER_GUIDE_CN.md#3-10-分钟快速上手): obtain matching examples, validate YAML, then create/read local files. |
+| Ready to run ABACUS or DP | [Examples](../examples/README.md#usage): check resources and data, enter the case directory, run, then inspect convergence. |
+| Agent or Python integration | [Python API](user/PYTHON_API_REFERENCE.md): use typed results or the process runner and keep each calculation in its own directory. |
+| New contributor | [Developer setup](developer/HANDOVER.md#11-新-checkout-与-cpu-开发准备), then [execution architecture](developer/DOCS_ARCHITECTURE.md#5-执行入口与共享实现). |
+
+The current release is 2.2.8. Sections marked **unreleased development tree**
+describe source changes that are not available by installing that release.
+Package versions do not establish scientific convergence or platform acceptance.
+
 ## User Path
 
 Use this path when you want to install ATST-Tools, choose an example, validate a
@@ -14,10 +27,10 @@ YAML file, and run a workflow.
 1. [README quick start](../README.md) for project scope, supported workflows,
    installation, and minimal commands.
 2. [Chinese user guide](user/USER_GUIDE_CN.md) for a 10-minute onboarding path
-   in local and site environments.
+   covering local file operations before a separately configured backend run.
 3. [Examples overview](../examples/README.md) for runnable NEB, AutoNEB, Dimer,
    Sella, CCQN, D2S, Relax, Vibration, IRC, MD, experimental DMF, DP, and MPI
-   examples, plus the unreleased constant-potential validation fixtures.
+   examples, plus the constant-potential development validation fixtures.
 4. [CLI reference](user/CLI_REFERENCE.md) for `atst run`, `atst config`,
    `atst abacus`, and lightweight helper commands.
 5. [Stable Python API reference](user/PYTHON_API_REFERENCE.md) when embedding
@@ -80,9 +93,9 @@ evidence, documentation health, release scope, or cleanup priorities.
 ATST-Tools consumes the official ABACUS ASE interface through `abacuslite`. The
 resolver first tries an independently installed `abacuslite` package, then
 falls back to the vendored snapshot under
-`src/atst_tools/external/ASE_interface/abacuslite`. `abacuslite` has no stable
-release channel yet, so the vendored snapshot is currently the only running
-backend (the external branch stays as a reserved future path).
+`src/atst_tools/external/ASE_interface/abacuslite`. The repository ships the vendored snapshot so a separate installation is not
+required. An independently installed package takes precedence and may behave
+differently; the selected source should be considered when reproducing a run.
 
 Maintenance is *this-repository-first*: fixes and hardening land in the
 vendored snapshot first, are recorded in

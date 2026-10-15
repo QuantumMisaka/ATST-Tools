@@ -72,6 +72,160 @@ def test_robust_interpolate_uses_short_periodic_path():
     np.testing.assert_allclose(path[1].get_scaled_positions(wrap=False), [[1.0, 0.0, 0.0]])
 
 
+@pytest.mark.parametrize("method", ["linear", "IDPP"])
+def test_preprocessing_preserves_cell_rounding_within_tolerance(method):
+    start = Atoms("H", positions=[[1, 0, 0]], cell=[10, 10, 10], pbc=True)
+    end = Atoms("H", positions=[[2, 0, 0]], cell=[10.000003, 10, 10], pbc=True)
+    original_cell = end.cell.array.copy()
+    aligned = align_atom_indices(start, end)
+    path = idpp.interpolate_path(start, end, 1, method=method, quiet=True)
+    np.testing.assert_array_equal(aligned.cell.array, original_cell)
+    np.testing.assert_array_equal(path[-1].cell.array, original_cell)
+    np.testing.assert_array_equal(end.cell.array, original_cell)
+    np.testing.assert_array_equal(path[-1].positions, end.positions)
+
+
+def test_partial_pbc_alignment_keeps_nonperiodic_distance_cartesian():
+    reference = Atoms("HH", positions=[[0, 0, 0], [0, 0, 4]], cell=[10, 10, 10], pbc=[1, 1, 0])
+    target = Atoms("HH", positions=[[0, 0, 6], [0, 0, 9]], cell=[10, 10, 10], pbc=[1, 1, 0])
+    aligned = align_atom_indices(reference, target)
+    np.testing.assert_array_equal(aligned.positions[:, 2], [6, 9])
+
+
+@pytest.mark.parametrize("cell,pbc", [([10, 10, 10], False), ([10, 10, 0], [1, 1, 0])])
+def test_idpp_unchanged_nonperiodic_pair_has_zero_objective(cell, pbc):
+    atoms = Atoms("HH", positions=[[0, 0, 1], [0, 0, 8]], cell=cell, pbc=pbc)
+    solver = Fast_IDPPSolver([atoms, atoms.copy(), atoms.copy()])
+    objective, forces = solver._get_funcs_and_forces(np.array([image.positions for image in solver.images]))
+    np.testing.assert_allclose(objective, 0, atol=1e-14)
+    np.testing.assert_allclose(forces, 0, atol=1e-14)
+
+
+def test_idpp_unwrapped_periodic_pair_uses_nearest_lattice_image():
+    """A 27 Å pair in a 10 Å cell is 3 Å apart under periodic MIC."""
+    atoms = Atoms("H2", positions=[[0, 0, 0], [27, 0, 0]], cell=[10, 10, 10], pbc=True)
+    images = [atoms.copy() for _ in range(3)]
+    solver = Fast_IDPPSolver(images)
+    coords = np.array([image.positions for image in solver.images])
+
+    np.testing.assert_allclose(solver.target_dists[0, 0, 1], 3.0)
+    np.testing.assert_allclose(solver.translations[0, 0, 1], [-30, 0, 0])
+    np.testing.assert_allclose(solver.translations[0, 1, 0], [30, 0, 0])
+    objective, forces = solver._get_funcs_and_forces(coords)
+    np.testing.assert_allclose(objective, 0, atol=1e-14)
+    np.testing.assert_allclose(forces, 0, atol=1e-14)
+
+
+def test_idpp_integer_lattice_shift_preserves_pair_geometry_and_path():
+    """Unwrapping one atom by several lattice vectors leaves IDPP stationary."""
+    cell = np.array([[9.0, 0.0, 0.0], [2.0, 8.0, 0.0], [1.0, -1.0, 7.0]])
+    base = Atoms("H2", positions=[[0, 0, 0], [2, 1, 0]], cell=cell, pbc=True)
+    shifted = base.copy()
+    shifted.positions[1] += np.array([3, -4, 2]) @ cell
+
+    for atoms in (base, shifted):
+        solver = Fast_IDPPSolver([atoms.copy() for _ in range(3)])
+        coords = np.array([image.positions for image in solver.images])
+        objective, forces = solver._get_funcs_and_forces(coords)
+        np.testing.assert_allclose(objective, 0, atol=1e-14)
+        np.testing.assert_allclose(forces, 0, atol=1e-14)
+        path = solver.run(maxiter=2)
+        np.testing.assert_allclose(path[1].positions, atoms.positions, atol=1e-14)
+
+
+def test_idpp_half_cell_tie_is_repeatable_after_integer_unwrapping():
+    """Equal-distance images retain the same signed pair vector after wrapping."""
+    for distance in (5.0, 35.0, -25.0):
+        atoms = Atoms("H2", positions=[[0, 0, 0], [distance, 0, 0]], cell=[10, 10, 10], pbc=True)
+        first = Fast_IDPPSolver([atoms.copy() for _ in range(3)])
+        second = Fast_IDPPSolver([atoms.copy() for _ in range(3)])
+        np.testing.assert_array_equal(first.translations, second.translations)
+        np.testing.assert_allclose(distance + first.translations[0, 0, 1, 0], 5.0)
+        np.testing.assert_array_equal(first.translations[0, 1, 0], -first.translations[0, 0, 1])
+
+
+def test_idpp_skew_cell_uses_image_beyond_neighboring_lattice_shifts():
+    """An acute cell needs a shift much farther than the old 27 candidates."""
+    cell = np.array([[10.0, 0.0, 0.0], [9.9, 0.1, 0.0], [0.0, 0.0, 10.0]])
+    atoms = Atoms("H2", scaled_positions=[[0, 0, 0], [0, 0.5, 0]], cell=cell, pbc=True)
+    solver = Fast_IDPPSolver([atoms.copy() for _ in range(3)])
+    coords = np.array([image.positions for image in solver.images])
+    translated_pair = coords[1, 1] - coords[1, 0] + solver.translations[0, 0, 1]
+
+    np.testing.assert_allclose(np.linalg.norm(translated_pair), np.sqrt(12.505), atol=1e-12)
+    objective, forces = solver._get_funcs_and_forces(coords)
+    np.testing.assert_allclose(objective, 0, atol=1e-14)
+    np.testing.assert_allclose(forces, 0, atol=1e-14)
+
+
+@pytest.mark.parametrize("pbc,mic,expected", [([1, 0, 0], True, 27.0), (True, False, 27.0)])
+def test_idpp_does_not_wrap_disabled_periodic_directions(pbc, mic, expected):
+    """The PBC mask and explicit MIC switch control pair distances."""
+    atoms = Atoms("H2", positions=[[0, 0, 0], [0, 27, 0]], cell=[10, 10, 10], pbc=pbc)
+    solver = Fast_IDPPSolver([atoms.copy() for _ in range(3)], mic=mic)
+    np.testing.assert_allclose(solver.target_dists[0, 0, 1], expected)
+    np.testing.assert_allclose(solver.translations, 0)
+
+
+def test_interpolation_nonperiodic_zero_cell_uses_cartesian_positions():
+    start = Atoms("H", positions=[[0, 0, 0]])
+    end = Atoms("H", positions=[[1, 0, 0]])
+    np.testing.assert_allclose(robust_interpolate(start, end, 1)[1].positions, [[.5, 0, 0]])
+
+
+@pytest.mark.parametrize("no_align", [False, True])
+def test_generate_warns_before_overriding_cell_and_drops_stale_results(tmp_path, no_align):
+    from ase.calculators.singlepoint import SinglePointCalculator
+
+    start = Atoms("H", positions=[[1, 0, 0]], cell=[10, 10, 10], pbc=True)
+    end = Atoms("H", positions=[[2, 0, 0]], cell=[10.00002, 10, 10], pbc=True)
+    for atoms in (start, end):
+        atoms.calc = SinglePointCalculator(atoms, energy=5, forces=np.zeros((1, 3)))
+    write(tmp_path / "start.traj", start)
+    write(tmp_path / "end.traj", end)
+    with pytest.warns(UserWarning, match="reference.*image 0"):
+        idpp.generate("linear", 1, str(tmp_path / "start.traj"),
+                      str(tmp_path / "end.traj"), str(tmp_path / "path.traj"),
+                      format=None, no_align=no_align)
+    path = read(tmp_path / "path.traj", ":")
+    np.testing.assert_array_equal(path[-1].cell.array, start.cell.array)
+    np.testing.assert_array_equal(path[-1].positions, end.positions)
+    assert path[-1].info["atst_endpoint_result"] == "placeholder"
+    np.testing.assert_array_equal(read(tmp_path / "end.traj").cell.array, end.cell.array)
+
+
+@pytest.mark.parametrize("method", ["linear", "IDPP"])
+def test_segmented_preprocessing_keeps_one_input_cell_reference(tmp_path, method):
+    """TS and final rounding do not become an artificial segment mismatch."""
+    import warnings
+
+    endpoints = [Atoms("H", positions=[[1 + i*.2, 0, 0]],
+                       cell=[10 + delta, 10, 10], pbc=True)
+                 for i, delta in enumerate([0, -9e-6, 9e-6])]
+    paths = [tmp_path / f"{label}.traj" for label in ("start", "end", "ts")]
+    for path, atoms in zip(paths, endpoints):
+        write(path, atoms)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        idpp.generate(method, 2, str(paths[0]), str(paths[1]),
+                      str(tmp_path / "path.traj"), format=None,
+                      ts_file=str(paths[2]), no_align=True)
+    assert not caught
+    output = read(tmp_path / "path.traj", ":")
+    np.testing.assert_array_equal(output[-1].cell.array, endpoints[1].cell.array)
+
+
+def test_alignment_reorders_cached_forces_with_atom_indices():
+    from ase.calculators.singlepoint import SinglePointCalculator
+
+    reference = Atoms("HH", positions=[[0, 0, 0], [2, 0, 0]])
+    target = Atoms("HH", positions=[[2, 0, 0], [0, 0, 0]])
+    target.calc = SinglePointCalculator(target, energy=5, forces=[[1, 0, 0], [2, 0, 0]])
+    aligned = align_atom_indices(reference, target)
+    np.testing.assert_array_equal(aligned.get_forces()[:, 0], [2, 1])
+    np.testing.assert_array_equal(target.get_forces()[:, 0], [1, 2])
+
+
 def _constrained_idpp_endpoints():
     """Return a mixed-constraint path with one fixed and two mobile atoms."""
     start = Atoms(
@@ -337,7 +491,7 @@ def test_generate_reads_ts_guess_with_project_structure_io(monkeypatch):
     monkeypatch.setattr(
         idpp,
         "_interpolate",
-        lambda method, start_atoms, end_atoms, n_images, tol: [start_atoms.copy(), end_atoms.copy()],
+        lambda method, start_atoms, end_atoms, n_images, tol, **kwargs: [start_atoms.copy(), end_atoms.copy()],
     )
 
     idpp.generate(
@@ -459,7 +613,7 @@ def test_generate_idpp_from_abacus_stru_matches_example_traj_endpoints(tmp_path)
 
 
 def _reference_build_translations(solver, images):
-    """Reference implementation kept in-test: per-pair scan, no vectorization."""
+    """Return the legacy bounded scan for its valid-domain bitwise checks."""
     translations = np.zeros((solver.nimages, solver.natoms, solver.natoms, 3), dtype=float)
     if not solver.mic:
         return translations
@@ -472,6 +626,26 @@ def _reference_build_translations(solver, images):
                 translations[image_index, i, j] = cart_shift
                 translations[image_index, j, i] = -cart_shift
     return translations
+
+
+def _assert_nearest_translations_with_legacy_ties(solver, images, legacy):
+    """Check ASE MIC distances, preserving legacy bits where the scan is valid."""
+    i_index, j_index = np.triu_indices(solver.natoms, k=1)
+    for image_index, image in enumerate(images[1:-1]):
+        raw = image.positions[j_index] - image.positions[i_index]
+        expected = image.get_all_distances(mic=solver.mic)[i_index, j_index]
+        current = solver.translations[image_index, i_index, j_index]
+        old = legacy[image_index, i_index, j_index]
+        actual_dist = np.linalg.norm(raw + current, axis=1)
+        old_dist = np.linalg.norm(raw + old, axis=1)
+        np.testing.assert_allclose(actual_dist, expected, atol=1e-7)
+        np.testing.assert_array_equal(
+            solver.translations[image_index, j_index, i_index], -current
+        )
+        # The finite scan is a bitwise reference only when it found a genuine
+        # shortest image. Elsewhere its old answer was a geometry error.
+        valid = old_dist**2 <= expected**2 + solver._mic_tie_tolerance()
+        np.testing.assert_array_equal(current[valid], old[valid])
 
 
 def _random_idpp_cells(count, seed):
@@ -512,7 +686,6 @@ def _random_idpp_cells(count, seed):
 
 def test_vectorized_build_translations_matches_reference_scan_bitwise():
     cases = 0
-    worst_difference = 0.0
     for cell, frac, mic in _random_idpp_cells(220, seed=20260920):
         natoms = len(frac)
         images = [
@@ -523,12 +696,10 @@ def test_vectorized_build_translations_matches_reference_scan_bitwise():
         solver = Fast_IDPPSolver(images, mic=mic)
         reference = _reference_build_translations(solver, images)
 
-        assert np.array_equal(solver.translations, reference), f"case {cases} (natoms={natoms}, mic={mic})"
-        worst_difference = max(worst_difference, float(np.max(np.abs(solver.translations - reference))))
+        _assert_nearest_translations_with_legacy_ties(solver, images, reference)
         cases += 1
 
     assert cases >= 200
-    assert worst_difference == 0.0
 
 
 def test_vectorized_translations_match_reference_for_half_cell_ties():
@@ -568,7 +739,7 @@ def test_vectorized_translations_cover_multiple_pair_blocks():
 
     reference = _reference_build_translations(solver, images)
 
-    assert np.array_equal(solver.translations, reference)
+    _assert_nearest_translations_with_legacy_ties(solver, images, reference)
     assert np.count_nonzero(solver.translations) > 0
 
 

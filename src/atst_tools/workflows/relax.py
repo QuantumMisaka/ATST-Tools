@@ -92,13 +92,14 @@ class RelaxWorkflow:
         input_structure = self.init_structure
         if self.restart:
             atoms = get_last_frame(self.traj_file)
-        elif not os.path.exists(input_structure):
-             # Try traj
-             if os.path.exists('init.traj'):
-                 input_structure = 'init.traj'
-             else:
-                 raise FileNotFoundError(f"Initial structure {input_structure} not found")
         else:
+            if not os.path.exists(input_structure):
+                if os.path.exists("init.traj"):
+                    input_structure = "init.traj"
+                else:
+                    raise FileNotFoundError(
+                        f"Initial structure {input_structure} not found"
+                    )
             try:
                 atoms = read_structure(input_structure)
             except Exception as e:

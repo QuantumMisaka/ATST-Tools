@@ -41,7 +41,8 @@ from atst_tools.utils.neb_endpoints import (
 from atst_tools.utils.restart_helpers import get_last_frame, get_last_neb_band
 from atst_tools.utils.thermochemistry import compute_vibration_thermochemistry
 from atst_tools.utils.artifacts import write_artifact_manifest
-from atst_tools.utils.ts_validation import build_ts_validation_summary
+from atst_tools.utils.geometry import prepare_fixed_cell_images, fixed_cell_metadata
+from atst_tools.utils.ts_validation import build_ts_validation_summary, frozen_structure_fact
 from atst_tools.workflows.dmf import DMFWorkflow
 
 
@@ -182,6 +183,10 @@ class D2SWorkflow:
         Returns:
             A ``(init_atoms, final_atoms)`` tuple of the endpoint structures.
         """
+        if self.rough_method == "neb":
+            init_atoms, final_atoms = prepare_fixed_cell_images(
+                [init_atoms, final_atoms], context="D2S endpoints", runtime=True
+            )
         endpoint_config = self._endpoint_optimization_config()
         fmax = endpoint_config["fmax"]
         max_steps = endpoint_config["max_steps"]
@@ -273,7 +278,9 @@ class D2SWorkflow:
                 status="skipped",
                 converged=None,
             )
-            return get_last_neb_band("neb_rough.traj", self.neb_config["n_images"] + 2)
+            images = get_last_neb_band("neb_rough.traj", self.neb_config["n_images"] + 2)
+            self._rough_fixed_cell = fixed_cell_metadata(images)
+            return images
 
         n_images = self.neb_config["n_images"]
         fmax = self.neb_config["fmax"]
@@ -281,6 +288,10 @@ class D2SWorkflow:
         climb = self.neb_config["climb"]
         scale_fmax = self.neb_config["scale_fmax"]
         max_steps = self.neb_config["max_steps"]
+
+        init_atoms, final_atoms = prepare_fixed_cell_images(
+            [init_atoms, final_atoms], context="D2S rough DyNEB", runtime=True
+        )
 
         input_endpoint_results = []
         for atoms in (init_atoms, final_atoms):
@@ -305,6 +316,11 @@ class D2SWorkflow:
                 energy, forces, status = cached
                 freeze_results(images[index], energy, forces, status=status)
 
+        images = prepare_fixed_cell_images(
+            images, context="D2S rough DyNEB", runtime=True
+        )
+        self._rough_fixed_cell = fixed_cell_metadata(images)
+
         ensure_neb_endpoint_results(
             images,
             lambda directory: self._get_calc(f"NEB/{directory}"),
@@ -312,11 +328,6 @@ class D2SWorkflow:
             directories=("endpoint_initial", "endpoint_final"),
             context="D2S rough DyNEB",
         )
-        for index, cached in zip((0, -1), input_endpoint_results):
-            if cached is not None:
-                energy, forces, status = cached
-                if status in {ENDPOINT_PROVIDED, ENDPOINT_COMPUTED, ENDPOINT_OPTIMIZED}:
-                    freeze_results(images[index], energy, forces, status=status)
         allow_shared = should_share_calculator(self.calc_name, self.config, parallel=False)
         shared_calc = self._get_calc("NEB/shared", shared=True) if allow_shared else None
         for index, image in enumerate(images[1:-1], start=1):
@@ -436,6 +447,8 @@ class D2SWorkflow:
             norm = np.linalg.norm(vec)
             disp_vec = None if norm < 1e-3 else vec / norm * 0.01
             dimer_config = self._single_config_with_directory("DIMER")
+            # The parent D2S manifest owns the nested refinement stage.
+            dimer_config["artifact_manifest"] = None
             dimer_traj = dimer_config["trajectory"]
             if self.restart and os.path.exists(dimer_traj):
                 print(f"=== Dimer trajectory exists ({dimer_traj}); skipping single-ended step ===")
@@ -462,14 +475,11 @@ class D2SWorkflow:
                 fmax=dimer_config["fmax"],
                 max_steps=dimer_config.get("max_steps"),
             )
-            # Dimer exposes no optimizer termination signal, so convergence
-            # stays unknown instead of being invented.
-            self._single_ended_stage_record = StageRecord(
-                name="dimer",
-                role="final",
-                criterion="dimer",
-                converged=None,
-            )
+            self._single_ended_stage_record = getattr(dimer, "last_stage_record", None)
+            if self._single_ended_stage_record is None:
+                self._single_ended_stage_record = StageRecord(
+                    name="dimer", role="final", criterion="dimer",
+                )
             return dimer_traj
 
         if self.method == "ccqn":
@@ -493,8 +503,9 @@ class D2SWorkflow:
                 idx_before = max(0, max_idx - 1)
                 ref_idx = idx_after if idx_after != max_idx else idx_before
                 product_atoms = neb_chain[ref_idx].copy()
-                product_atoms.set_cell(ts_guess.get_cell())
-                product_atoms.set_pbc(ts_guess.get_pbc())
+                product_atoms = prepare_fixed_cell_images(
+                    [ts_guess, product_atoms], context="D2S CCQN product"
+                )[-1]
             ccqn = AbacusCCQN(
                 ts_guess,
                 self.config,
@@ -575,6 +586,7 @@ class D2SWorkflow:
         else:
             atoms = ts_guess.copy()
 
+        frozen_fact = frozen_structure_fact(atoms)
         atoms.calc = self._get_calc(vib_config["directory"])
         indices = self._vibration_indices(neb_chain, vib_config)
         name = vib_config["name"]
@@ -592,17 +604,21 @@ class D2SWorkflow:
         frequencies = vib.get_frequencies()
         zpe = vib.get_zero_point_energy()
         thermo = compute_vibration_thermochemistry(atoms, energies, vib_config, zpe)
+        resolved_indices = getattr(vib, "indices", indices)
         results = {
             "frequencies": frequencies.real.tolist(),
             "imaginary_frequencies": frequencies.imag.tolist(),
             "zpe": float(zpe),
-            "indices": indices,
+            "indices": None if resolved_indices is None else [int(index) for index in resolved_indices],
+            "n_atoms": frozen_fact["n_atoms"],
+            "fixed_indices": frozen_fact["fixed_indices"],
+            "geometry": frozen_fact["geometry"],
             "thermo": thermo,
         }
         output = vib_config["results_file"]
         with open(output, "w", encoding="utf-8") as handle:
             json.dump(results, handle, indent=4)
-        validation = build_ts_validation_summary(results, source=output)
+        validation = build_ts_validation_summary(results, source=output, structure=frozen_fact)
         validation_file = vib_config.get("validation_file", "d2s_ts_validation.json")
         with open(validation_file, "w", encoding="utf-8") as handle:
             json.dump(validation, handle, indent=4)
@@ -677,5 +693,6 @@ class D2SWorkflow:
                 _stage_payload(single_ended_record),
                 _stage_payload(vibration_record),
             ],
+            metadata={"fixed_cell": fixed_cell_metadata(neb_chain)} if self.rough_method == "neb" else None,
         )
         print("=== D2S Workflow Finished ===")

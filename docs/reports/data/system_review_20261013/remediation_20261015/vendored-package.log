@@ -1,0 +1,33 @@
+test_input_io (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... ok
+test_kpt_io (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... ok
+test_load_orbital (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... skipped ''
+test_load_pseudo (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... skipped ''
+test_stru_io (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... ok
+test_write_stru_with_magmom (atst_tools.external.ASE_interface.abacuslite.io.generalio.TestAbacusCalculatorIOUtil) ... ok
+test_find_final_info_with_iter_header (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_band_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_energies_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_forces_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_iter_header_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_kpoints_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_magmom_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_stress_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_traj_from_md_dump (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_traj_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.legacyio.TestLegacyIO) ... ok
+test_read_abacus_out_string (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_band_from_eig_occ (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_band_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_esolver_type_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_forces_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_iter_header_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_pw_symm0_nspin4_gamma_md (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_stress_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_read_traj_from_running_log (atst_tools.external.ASE_interface.abacuslite.io.latestio.TestLatestIO) ... ok
+test_convert_kspacing (atst_tools.external.ASE_interface.abacuslite.utils.ksampling.TestKsampling) ... ok
+test_make_kstring (atst_tools.external.ASE_interface.abacuslite.utils.ksampling.TestKsampling) ... ok
+test_merge_ksgm (atst_tools.external.ASE_interface.abacuslite.utils.ksampling.TestKsampling) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.029s
+
+OK (skipped=2)

@@ -21,6 +21,131 @@ def _atoms(energy=0.0):
     return atoms
 
 
+@pytest.mark.parametrize("backend", ["ase", "atst"])
+@pytest.mark.parametrize("restart", [False, True])
+def test_neb_runtime_cell_adaptation_preserves_input_and_recomputes_changed_endpoint(
+    monkeypatch, tmp_path, backend, restart
+):
+    """Real NEB/FIRE accepts rounded cells while cached endpoint energies stay honest."""
+    from ase.io import read
+    from atst_tools.workflows import execution as main
+    from atst_tools.utils.neb_endpoints import ENDPOINT_COMPUTED
+
+    monkeypatch.chdir(tmp_path)
+    chain = []
+    for index in range(3):
+        atoms = Atoms("H", positions=[[1 + index * .2, 0, 0]],
+                      cell=[10 + index * 1.5e-6, 10, 10], pbc=True)
+        atoms.calc = SinglePointCalculator(atoms, energy=100, forces=np.zeros((1, 3)))
+        atoms.info["atst_endpoint_result"] = ENDPOINT_COMPUTED
+        chain.append(atoms)
+    write("input.traj", chain)
+    if restart:
+        # The restored band, rather than unrelated input, owns the reference.
+        restored = [image.copy() for image in chain]
+        for image in restored:
+            image.cell[0, 0] += 1
+        write("run.traj", restored)
+    monkeypatch.setattr(main.CalculatorFactory, "get_calculator", lambda *a, **k: DummyCalc(3))
+    result = main.run_neb({}, "abacus", {
+        "type": "neb", "init_chain": "input.traj", "trajectory": "run.traj",
+        "restart": restart, "neb_backend": backend, "parallel": False,
+        "max_steps": 0, "climb": False,
+    })
+    reference = 11 if restart else 10
+    for image in result:
+        assert image.cell[0, 0] == reference
+    assert result[-1].get_potential_energy() == 3
+    assert read("input.traj", -1).cell[0, 0] == chain[-1].cell[0, 0]
+    assert read("run.traj", -1).cell[0, 0] == reference
+    manifest = json.loads(Path("atst_artifacts.json").read_text())
+    assert manifest["metadata"]["fixed_cell"]["reference_cell"][0][0] == reference
+    assert manifest["metadata"]["fixed_cell"]["adjustments"][-1]["max_cell_delta_angstrom"] > 1e-8
+
+
+@pytest.mark.parametrize("backend", ["ase", "atst"])
+@pytest.mark.parametrize("restart", [False, True])
+def test_autoneb_runtime_cell_adaptation_uses_actual_loaded_band(monkeypatch, tmp_path, backend, restart):
+    from ase.io import read
+    from atst_tools.mep import autoneb
+
+    monkeypatch.chdir(tmp_path)
+    chain = [Atoms("H", positions=[[1 + i*.2, 0, 0]],
+                   cell=[10 + i*1.5e-6, 10, 10], pbc=True) for i in range(3)]
+    write("input.traj", chain)
+    if restart:
+        for i, image in enumerate(chain):
+            image = image.copy()
+            image.cell[0, 0] += 1
+            write(f"band{i:03d}.traj", image)
+    monkeypatch.setattr(autoneb.CalculatorFactory, "get_calculator", lambda *a, **k: DummyCalc(3))
+    runner = autoneb.AutoNEBRunner({}, "abacus", {
+        "type": "autoneb", "init_chain": "input.traj", "prefix": "band",
+        "restart": restart, "neb_backend": backend, "parallel": False,
+        "n_simul": 1, "n_max": 3, "maxsteps": 0, "climb": False,
+    })
+    result = runner.run()
+    reference = 11 if restart else 10
+    assert len(result) == 3
+    assert all(image.cell[0, 0] == reference for image in result)
+    assert read("input.traj", -1).cell[0, 0] == chain[-1].cell[0, 0]
+    assert read("band002.traj").cell[0, 0] == reference
+    manifest = json.loads(Path("atst_artifacts.json").read_text())
+    assert manifest["metadata"]["fixed_cell"]["reference_cell"][0][0] == reference
+
+
+@pytest.mark.parametrize("backend", ["ase", "atst"])
+def test_autoneb_sub_bands_accept_opposite_sub_guard_cell_rounding(monkeypatch, tmp_path, backend):
+    from atst_tools.mep import autoneb
+
+    monkeypatch.chdir(tmp_path)
+    chain = [Atoms("H", positions=[[1 + i*.2, 0, 0]], cell=[10 + delta, 10, 10], pbc=True)
+             for i, delta in enumerate([0, 9e-9, 0, -9e-9])]
+    write("input.traj", chain)
+    class PeakCalc(DummyCalc):
+        def calculate(self, atoms=None, *args, **kwargs):
+            super().calculate(atoms, *args, **kwargs)
+            self.results["energy"] = -(atoms.positions[0, 0] - 1.4)**2
+
+    monkeypatch.setattr(autoneb.CalculatorFactory, "get_calculator", lambda *a, **k: PeakCalc())
+    runner = autoneb.AutoNEBRunner({}, "abacus", {
+        "type": "autoneb", "init_chain": "input.traj", "prefix": "band",
+        "neb_backend": backend, "parallel": False,
+        "n_simul": 1, "n_max": 4, "maxsteps": 0, "climb": True,
+    })
+    result = runner.run()
+    assert all(image.cell[0, 0] == 10 for image in result)
+    manifest = json.loads(Path("atst_artifacts.json").read_text())
+    subsets = [stage["subset"] for stage in manifest["stages"] if stage.get("role") == "subset"]
+    assert [1, 2, 3] in subsets
+
+
+@pytest.mark.parametrize("policy", ["auto", "never"])
+def test_d2s_rounded_cell_never_reuses_energy_from_original_cell(monkeypatch, tmp_path, policy):
+    from atst_tools.workflows import d2s
+
+    monkeypatch.chdir(tmp_path)
+    endpoints = [Atoms("H", positions=[[1 + i*.2, 0, 0]],
+                       cell=[10 + i*3e-6, 10, 10], pbc=True) for i in range(2)]
+    for image in endpoints:
+        image.calc = SinglePointCalculator(image, energy=100, forces=np.zeros((1, 3)))
+        image.info["atst_endpoint_result"] = "computed"
+    monkeypatch.setattr(d2s.CalculatorFactory, "get_calculator", lambda *a, **k: DummyCalc(3))
+    workflow = d2s.D2SWorkflow({}, "abacus", {
+        "type": "d2s", "method": "dimer", "endpoint_singlepoint": policy,
+        "neb": {"n_images": 1, "max_steps": 0},
+    })
+    if policy == "never":
+        with pytest.raises(ValueError, match="final endpoint lacks"):
+            workflow.run_rough_neb(*endpoints)
+    else:
+        result = workflow.run_rough_neb(*endpoints)
+        assert result[-1].get_potential_energy() == 3
+        assert result[-1].cell[0, 0] == 10
+    assert endpoints[-1].cell[0, 0] == 10.000003
+    assert endpoints[-1].get_potential_energy() == 100
+
+
 def _patch_endpoint_optimization(monkeypatch, d2s_module):
     """Replace D2S endpoint optimization with a bounded stub.
 
@@ -341,7 +466,7 @@ def test_d2s_vibration_auto_indices_use_dmf_tmax_index_when_path_energies_missin
 
 
 def test_run_neb_reuses_shared_dp_calculator(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     calls = []
@@ -371,20 +496,21 @@ def test_run_neb_reuses_shared_dp_calculator(monkeypatch, tmp_path):
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
     monkeypatch.setattr(main, "get_optimizer", lambda name: FakeOptimizer)
 
-    main.run_neb(
+    result = main.run_neb(
         {"calculator": {"name": "dp", "dp": {"model": "model.pt"}}},
         "dp",
         {"type": "neb", "init_chain": "chain.traj", "parallel": False, "max_steps": 3},
     )
 
     assert neb_kwargs["allow_shared_calculator"] is True
-    assert chain[1].calc is shared_calc
-    assert chain[2].calc is shared_calc
+    assert result[1].calc is shared_calc
+    assert result[2].calc is shared_calc
+    assert result[1] is not chain[1]
     assert ("run", 0.05, 3) in calls
 
 
 def test_run_neb_two_stage_starts_without_climb_then_enables_ci(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     calls = []
@@ -433,7 +559,7 @@ def test_run_neb_two_stage_starts_without_climb_then_enables_ci(monkeypatch, tmp
 
 
 def test_run_neb_two_stage_omits_steps_for_null_stage1_steps(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     calls = []
@@ -505,7 +631,7 @@ def test_run_neb_convergence_signal_controls_warning_and_manifest(
     monkeypatch, tmp_path, capsys, converged_signal, rank, warning_expected
 ):
     """NEB warns only for known false signals and only on rank zero."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
 
@@ -552,7 +678,11 @@ def test_run_neb_convergence_signal_controls_warning_and_manifest(
             "does not imply",
         ):
             assert token in output
-    assert result is (chain if rank == 0 else None)
+    if rank == 0:
+        assert len(result) == len(chain)
+        assert result[0] is not chain[0]
+    else:
+        assert result is None
     manifest = json.loads((tmp_path / "atst_artifacts.json").read_text(encoding="utf-8"))
     expected_converged = None if converged_signal is None else bool(converged_signal)
     assert manifest["stages"][-1] == {
@@ -569,7 +699,7 @@ def test_run_neb_convergence_signal_controls_warning_and_manifest(
 
 
 def test_run_neb_can_relax_endpoints_before_neb(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.0)]
     calls = []
@@ -608,7 +738,7 @@ def test_run_neb_can_relax_endpoints_before_neb(monkeypatch, tmp_path):
 
 def test_run_neb_serial_endpoint_relaxation_records_stage_facts(monkeypatch, tmp_path, capsys):
     """Serial endpoint relaxation persists truthful endpoint stages before the final stage."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.0)]
 
@@ -630,7 +760,8 @@ def test_run_neb_serial_endpoint_relaxation_records_stage_facts(monkeypatch, tmp
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(main, "read", lambda *args, **kwargs: chain)
     # Only the initial endpoint already carries results, so only it is skipped.
-    monkeypatch.setattr(main, "has_endpoint_results", lambda atoms: atoms is chain[0])
+    chain[0].info["test_endpoint"] = "initial"
+    monkeypatch.setattr(main, "has_endpoint_results", lambda atoms: atoms.info.get("test_endpoint") == "initial")
     monkeypatch.setattr(main, "ensure_neb_endpoint_results", lambda *args, **kwargs: None)
     monkeypatch.setattr(main.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc(1.0))
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
@@ -682,7 +813,7 @@ def test_run_neb_serial_endpoint_relaxation_records_stage_facts(monkeypatch, tmp
 
 
 def test_run_neb_forwards_optimizer_kwargs(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     optimizer_kwargs = {}
@@ -720,7 +851,7 @@ def test_run_neb_forwards_optimizer_kwargs(monkeypatch, tmp_path):
 
 
 def test_run_neb_respects_dp_share_calculator_false(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     neb_kwargs = {}
@@ -759,7 +890,7 @@ def test_run_neb_respects_dp_share_calculator_false(monkeypatch, tmp_path):
 
 
 def test_run_neb_can_use_native_ase_backend(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.0)]
     calls = []
@@ -1071,7 +1202,7 @@ def test_native_autoneb_attachment_uses_global_image_directories(monkeypatch):
             "neb_backend": "ase",
         },
     )
-    runner.attach_calculators([chain[2], chain[3]])
+    runner.attach_calculators([runner.init_chain[2], runner.init_chain[3]])
 
     assert directories == ["autoneb_run/image_002", "autoneb_run/image_003"]
 
@@ -1497,11 +1628,12 @@ def test_d2s_rough_dyneb_reuses_shared_dp_calculator(monkeypatch, tmp_path):
         "dp",
         {"type": "d2s", "method": "dimer", "neb": {"n_images": 2}},
     )
-    workflow.run_rough_neb(chain[0], chain[-1])
+    result = workflow.run_rough_neb(chain[0], chain[-1])
 
     assert dyneb_kwargs["allow_shared_calculator"] is True
-    assert chain[1].calc is shared_calc
-    assert chain[2].calc is shared_calc
+    assert result[1].calc is shared_calc
+    assert result[2].calc is shared_calc
+    assert result[1] is not chain[1]
 
 
 def test_d2s_rough_neb_forwards_optimizer_kwargs(monkeypatch, tmp_path):
@@ -1736,7 +1868,7 @@ def test_d2s_rough_neb_forwards_idpp_controls(monkeypatch, tmp_path):
 
 
 def test_run_dimer_preserves_dp_calculator_selection(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     calls = []
 
@@ -1993,7 +2125,7 @@ def test_dimer_writes_underlying_atoms_with_calculator_results(monkeypatch, tmp_
 
 
 def test_run_sella_preserves_dp_calculator_selection(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     calls = []
 
@@ -2454,6 +2586,12 @@ def test_d2s_vibration_auto_indices_writes_results(monkeypatch, tmp_path):
     workflow.run_vibration([_atoms(0.0), _atoms(1.0), _atoms(0.0)], _atoms(1.0), None)
 
     assert (tmp_path / "d2s_vib.json").exists()
+    results = json.loads((tmp_path / "d2s_vib.json").read_text())
+    screening = json.loads((tmp_path / "d2s_ts_validation.json").read_text())
+    assert results["n_atoms"] == 1
+    assert results["indices"] == [0]
+    assert screening["scope"]["active_indices"] == [0]
+    assert screening["stationarity"]["status"] == "unknown"
 
 
 def test_d2s_endpoint_optimization_skips_valid_inputs(monkeypatch, tmp_path):
@@ -3079,6 +3217,42 @@ def test_d2s_dimer_refinement_manifests_unknown_convergence(monkeypatch, tmp_pat
         "role": "final",
         "criterion": "dimer",
     }
+    assert not Path("d2s_ts_validation.json").exists()
+    assert not Path("d2s_vibration_results.json").exists()
+
+
+def test_d2s_dimer_refinement_uses_own_stage_record_without_nested_manifest(monkeypatch, tmp_path):
+    """D2S consumes Dimer's optimizer facts and owns the only manifest."""
+    from atst_tools.utils.convergence import StageRecord
+    from atst_tools.workflows import d2s
+
+    captured = {}
+    record = StageRecord(
+        name="dimer", role="final", criterion="dimer", converged=False,
+        fmax=0.05, fmax_unit="eV/Angstrom", steps=20, actual_steps=4,
+    )
+
+    class FakeDimer:
+        def __init__(self, atoms, config, calc_name, calc_config, **kwargs):
+            captured["config"] = calc_config
+            self.last_stage_record = record
+
+        def run(self, fmax=None, max_steps=None):
+            pass
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(d2s, "AbacusDimer", FakeDimer)
+    workflow = d2s.D2SWorkflow(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {"type": "d2s", "method": "dimer", "init_file": "i.traj", "final_file": "f.traj"},
+    )
+    chain = [_atoms(0.0), _atoms(1.0), _atoms(0.2)]
+
+    workflow.run_single_ended(chain, 1, chain[1].copy())
+
+    assert captured["config"]["artifact_manifest"] is None
+    assert workflow._single_ended_stage_record is record
 
 
 def test_relax_workflow_runs_with_mocked_io_and_optimizer(monkeypatch, tmp_path):

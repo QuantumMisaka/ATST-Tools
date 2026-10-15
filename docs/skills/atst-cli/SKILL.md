@@ -82,6 +82,7 @@ atst relax post relax.traj --output-format traj --output restart.traj
 atst relax summary relax.traj --tail 5
 atst vibration post config.yaml --output vibration_results.json
 atst vibration summary config.yaml
+atst vibration validate vibration_results.json --structure frozen_ts.traj
 atst d2s summary config.yaml --format json --output d2s_summary.json
 atst traj collect frames/*.xyz -o collection.traj --no-calc
 atst traj transform collection.traj --format extxyz --output-prefix collection
@@ -90,6 +91,9 @@ atst traj transform collection.traj --format extxyz --output-prefix collection
 `atst neb make --method` accepts `IDPP` (default) or `linear`.
 `summary` commands are read-only monitors/post-summaries; they do not create
 calculators or launch ABACUS/DP.
+In the unreleased development tree, `atst vibration validate` is an explicit
+read-only screen of saved vibration data and optional frozen structure evidence.
+It never launches a calculator; missing evidence remains `unknown`.
 
 ## ABACUS Wrapper Boundary
 

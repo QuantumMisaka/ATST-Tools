@@ -1,0 +1,176 @@
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77.0
+* Getting build dependencies for sdist...
+running egg_info
+creating src/atst_tools.egg-info
+writing src/atst_tools.egg-info/PKG-INFO
+writing dependency_links to src/atst_tools.egg-info/dependency_links.txt
+writing entry points to src/atst_tools.egg-info/entry_points.txt
+writing requirements to src/atst_tools.egg-info/requires.txt
+writing top-level names to src/atst_tools.egg-info/top_level.txt
+writing manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+reading manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+adding license file 'COPYING'
+writing manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing src/atst_tools.egg-info/PKG-INFO
+writing dependency_links to src/atst_tools.egg-info/dependency_links.txt
+writing entry points to src/atst_tools.egg-info/entry_points.txt
+writing requirements to src/atst_tools.egg-info/requires.txt
+writing top-level names to src/atst_tools.egg-info/top_level.txt
+reading manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+adding license file 'COPYING'
+writing manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+running check
+creating atst_tools-2.2.8
+creating atst_tools-2.2.8/src/atst_tools
+creating atst_tools-2.2.8/src/atst_tools.egg-info
+creating atst_tools-2.2.8/src/atst_tools/api
+creating atst_tools-2.2.8/src/atst_tools/bench
+creating atst_tools-2.2.8/src/atst_tools/calculators
+creating atst_tools-2.2.8/src/atst_tools/external
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/io
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/utils
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+creating atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+creating atst_tools-2.2.8/src/atst_tools/external/pydmf
+creating atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf
+creating atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+creating atst_tools-2.2.8/src/atst_tools/mep
+creating atst_tools-2.2.8/src/atst_tools/runtime
+creating atst_tools-2.2.8/src/atst_tools/scripts
+creating atst_tools-2.2.8/src/atst_tools/utils
+creating atst_tools-2.2.8/src/atst_tools/workflows
+copying files to atst_tools-2.2.8...
+copying COPYING -> atst_tools-2.2.8
+copying LICENSE -> atst_tools-2.2.8
+copying README.md -> atst_tools-2.2.8
+copying pyproject.toml -> atst_tools-2.2.8
+copying src/atst_tools/__init__.py -> atst_tools-2.2.8/src/atst_tools
+copying src/atst_tools.egg-info/PKG-INFO -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools.egg-info/SOURCES.txt -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools.egg-info/dependency_links.txt -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools.egg-info/entry_points.txt -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools.egg-info/requires.txt -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools.egg-info/top_level.txt -> atst_tools-2.2.8/src/atst_tools.egg-info
+copying src/atst_tools/api/__init__.py -> atst_tools-2.2.8/src/atst_tools/api
+copying src/atst_tools/api/models.py -> atst_tools-2.2.8/src/atst_tools/api
+copying src/atst_tools/api/runner.py -> atst_tools-2.2.8/src/atst_tools/api
+copying src/atst_tools/api/services.py -> atst_tools-2.2.8/src/atst_tools/api
+copying src/atst_tools/api/validation.py -> atst_tools-2.2.8/src/atst_tools/api
+copying src/atst_tools/bench/__init__.py -> atst_tools-2.2.8/src/atst_tools/bench
+copying src/atst_tools/bench/batch_runner.py -> atst_tools-2.2.8/src/atst_tools/bench
+copying src/atst_tools/bench/batch_worker.py -> atst_tools-2.2.8/src/atst_tools/bench
+copying src/atst_tools/bench/record.py -> atst_tools-2.2.8/src/atst_tools/bench
+copying src/atst_tools/bench/sweep.py -> atst_tools-2.2.8/src/atst_tools/bench
+copying src/atst_tools/calculators/__init__.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/abacuslite_backend.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/backend_identity.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/base.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/constant_potential.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/dp.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/calculators/factory.py -> atst_tools-2.2.8/src/atst_tools/calculators
+copying src/atst_tools/external/__init__.py -> atst_tools-2.2.8/src/atst_tools/external
+copying src/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface
+copying src/atst_tools/external/ASE_interface/PATCHES.md -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface
+copying src/atst_tools/external/ASE_interface/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface
+copying src/atst_tools/external/ASE_interface/abacuslite/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite
+copying src/atst_tools/external/ASE_interface/abacuslite/core.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite
+copying src/atst_tools/external/ASE_interface/abacuslite/io/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/generalio.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/latestio.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/legacyio.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/utils/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/utils
+copying src/atst_tools/external/ASE_interface/abacuslite/utils/ksampling.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/abacuslite/utils
+copying src/atst_tools/external/ASE_interface/examples/bandstructure.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/cellrelax.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/constraintmd.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/dos.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/md.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/metadynamics.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/neb.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/relax.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/scf.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/soc.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/tests/band.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/magnetic.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/md.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/relax.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/scf.py -> atst_tools-2.2.8/src/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/pydmf/LICENSE -> atst_tools-2.2.8/src/atst_tools/external/pydmf
+copying src/atst_tools/external/pydmf/UPSTREAM.md -> atst_tools-2.2.8/src/atst_tools/external/pydmf
+copying src/atst_tools/external/pydmf/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf
+copying src/atst_tools/external/pydmf/dmf/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/dmf.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/fbenm.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/interpolate.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/torch/__init__.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/_torch_config.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/dmf.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/fbenm.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/interpolate.py -> atst_tools-2.2.8/src/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/mep/__init__.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/mep/autoneb.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/mep/ccqn.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/mep/dimer.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/mep/neb.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/mep/sella.py -> atst_tools-2.2.8/src/atst_tools/mep
+copying src/atst_tools/runtime/__init__.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/cli_dispatch.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/counters.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/devices.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/errors.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/evidence.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/runtime/launch.py -> atst_tools-2.2.8/src/atst_tools/runtime
+copying src/atst_tools/scripts/__init__.py -> atst_tools-2.2.8/src/atst_tools/scripts
+copying src/atst_tools/scripts/cli.py -> atst_tools-2.2.8/src/atst_tools/scripts
+copying src/atst_tools/scripts/cli_impl.py -> atst_tools-2.2.8/src/atst_tools/scripts
+copying src/atst_tools/scripts/main.py -> atst_tools-2.2.8/src/atst_tools/scripts
+copying src/atst_tools/utils/__init__.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/abacus_io.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/analysis.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/artifacts.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/banner.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/config.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/config_docs.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/config_schema.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/convergence.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/dmf_validation.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/electrochemistry.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/gate_compensation.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/geometry.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/idpp.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/io.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/md_post.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/mpi.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/neb_endpoints.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/plot.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/post.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/reactive_modes.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/restart_helpers.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/reverse_config.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/sella_event_summary.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/sella_events.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/summary.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/thermochemistry.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/utils/ts_validation.py -> atst_tools-2.2.8/src/atst_tools/utils
+copying src/atst_tools/workflows/__init__.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/constant_potential.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/d2s.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/dmf.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/execution.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/irc.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/md.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/relax.py -> atst_tools-2.2.8/src/atst_tools/workflows
+copying src/atst_tools/workflows/vibration.py -> atst_tools-2.2.8/src/atst_tools/workflows
+Writing atst_tools-2.2.8/setup.cfg
+Creating tar archive
+removing 'atst_tools-2.2.8' (and everything under it)
+Successfully built atst_tools-2.2.8.tar.gz

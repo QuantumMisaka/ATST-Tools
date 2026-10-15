@@ -1,7 +1,7 @@
 # 文档系统交接与维护
 
-**版本**: 2026-09-04
-**日期**: 2026-09-04
+**版本**: 2026-10-15
+**日期**: 2026-10-15
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
@@ -21,6 +21,30 @@ release 变更，都先从对应小节确认需要同步的文档。
 - 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md) 和
   [DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)。
 
+## 1.1 新 checkout 与 CPU 开发准备
+
+从 GitHub checkout 开发时，先创建 Python 3.10+ 环境，再以 editable 模式安装
+项目及测试依赖。下面命令不需要 ABACUS、GPU、SAI 或 `mpi4py`，适合跑普通
+CPU-only unit tests：
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[test]"
+python -c "import atst_tools; print(atst_tools.__file__)"
+python -m pytest tests/unit -q
+```
+
+`atst_tools.__file__` 应指向当前 checkout 的 `src/atst_tools`。此环境仅能证明
+不需计算后端的普通测试；ABACUS/DP、image-level MPI 和站点运行时验证另按
+[EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 的证据边界执行。
+不要把未执行的站点或计算验证写成通过。
+
+CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；服务层在
+确定调用方的 MPI world 后调度执行 helper，CLI 层负责参数、模板与输出。独立
+`validate_ts`/`atst vibration validate` 只读已有结果，不是 workflow 的自动后处理。
+
 ## 2. 新增或修改 workflow
 
 - 更新 `README.md` 的支持列表和 quick start 说明。
@@ -30,6 +54,11 @@ release 变更，都先从对应小节确认需要同步的文档。
 - 添加或更新 workflow 测试、example 测试和必要验证报告。
 - 运行期消息（print/warning/logging/异常）统一英文；改动收敛或诊断文案时同步更新
   锁定语义 token 的测试。
+- 固定晶胞准备复用 `utils/geometry.py`：输入容差 `1e-5 Å、rtol=0`，容差内保真；
+  NEB 所需适配只改内部运行副本的必要周期向量。必须在端点校验/计算前完成，
+  cell/PBC 变化后丢弃旧 SPC、端点标记和恒电势事实。调用层传已有 world 协调 root
+  warning 和已有失败同步，不在几何原语创建 communicator；长期说明见
+  [CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb)。
 
 ## 3. 新增或修改 YAML 字段
 
@@ -100,8 +129,8 @@ release 变更，都先从对应小节确认需要同步的文档。
   `python -m twine check --strict dist/*`。
 - 对包含稳定 Python API 的 release，运行
   `python scripts/verify_wheel_api.py`；它在临时目录构建 wheel、在临时 venv
-  non-network clean-install，并验证六个稳定 root imports 和 H2/Au 的 EMT
-  public API example path 和 installed API runner JSON handoff，不在工作树保留 build artifact。若 release 环境已
+  安装 wheel（默认会从配置的包索引解析依赖），并验证公共 root imports、H2/Au 的受控
+  public API example、installed API runner JSON handoff 和显式验证 CLI/API 一致性，不在工作树保留 build artifact。若 release 环境已
   准备 `mpi4py` 和 `mpiexec`，额外运行
   `python scripts/verify_wheel_api.py --mpi-smoke`；该 two-rank smoke 限时，
   验证 image-parallel NEB/AutoNEB 的 rank-0 endpoint failure 以及 rank-local
