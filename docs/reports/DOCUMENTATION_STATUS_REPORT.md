@@ -326,7 +326,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 | 文档 | 当前职责 |
 | :--- | :--- |
-| `docs/reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md` | 保留基线系统审查、几何/MPI/分发/Relax 历史问题与双入口目的；§9 记录本地修复、独立复核、完整验收及原始日志，§11 记录合入与工作区清理条件，长期语义已吸收，未发布与 GPU/平台边界明确。 |
+| `docs/reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md` | 保留基线系统审查、几何/MPI/分发/Relax 历史问题与双入口目的；§9 记录本地修复、独立复核、完整验收及原始日志，§11 记录本地合入、恢复验证、工作区归档与历史分支清理结果，长期语义已吸收，未发布与 GPU/平台边界明确。 |
 | `docs/reports/IRC_INTEGRATION_REVIEW.md` | Sella IRC 集成定位和受控边界说明。 |
 | `docs/reports/NEB_AUTONEB_NATIVE_ASE_BACKEND_REVIEW_2026-05-23.md` | native ASE backend selector 当前边界与默认迁移条件。 |
 | `docs/reports/EXAMPLES_REPRODUCTION_RECHECK_AND_ABACUSLITE_AUDIT_2026-05-24.md` | examples 复现复查和 abacuslite fallback 审计。 |

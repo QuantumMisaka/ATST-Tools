@@ -479,7 +479,7 @@ PyPI 用户应选匹配发行版本的文档。后续新增案例继续补齐“
 
 ## 11. 合入与工作区清理核对（2026-10-15）
 
-当前整改分支与 main 的提交均为 `45d8c78`，整改和文档成果仍在未提交工作树中；
+合入前核对时，整改分支与 main 的提交均为 `45d8c78`，整改和文档成果仍在未提交工作树中；
 不能用分支祖先关系判定这些成果已合入。代码、测试、脚本、CI 配置与最终验证快照
 一致（忽略生成的 egg-info），main 的 tracked diff 与执行前补丁逐字节一致，
 执行前归档的 untracked 文件内容亦未改变。§9 验证证据可用于本次合入判断。
@@ -488,7 +488,7 @@ PyPI 用户应选匹配发行版本的文档。后续新增案例继续补齐“
 
 结论：具备本地整合条件，但须先提交完整候选、保全 main 原始脏树，再整合并核验。
 隔离目录位于 Codex 管理的工作区路径，不直接删除；整合后保留可恢复归档，
-确认工作区不再被使用后再清理登记。本次核对未提交、合并、推送或删除分支。
+确认工作区不再被使用后再清理登记。该次核对未提交、合并、推送或删除分支；后续授权执行结果见下文。
 
 远端分支核对：除 `abacus-demo-hardening` 外，13 个非 main 分支 tip 均已是
 main 的祖先，可列入历史分支清理候选（长期 develop 和版本分支按保留策略处理）。
@@ -500,3 +500,29 @@ main 的祖先，可列入历史分支清理候选（长期 develop 和版本分
 可归档本仓实现并保留父仓 SIF/消费者验收交接；GPU 调优 P0–P5 已完成，
 P6 共享 image 参数/runner 迁移、下游指南/E2E/发布仍开放，DP 容器对照及
 FT²DP singlehead EMA 受制品条件阻塞，不能将整项计划标为完成。
+
+### 授权执行结果
+
+2026-10-15 用户确认按上述顺序执行。完整整改提交 `3163c06` 已快进合入
+本地 main。原 main 脏树保存于 stash 和
+`refs/backup/atst-closeout-20261015/main-dirty`，并在独立恢复副本中验证
+tracked/index 状态可还原；原始文件归档也逐文件校验通过。
+
+合入后以 main 的 `PYTHONPATH=src` 执行 `conda run -n atst-dev python -m pytest
+tests -q`，exit 0，1284 passed / 32 skipped（quiet 输出的进度计数）；文档治理
+与提交差异空白检查通过。代码只有提交前空白规范化，AST 与已审查版本一致。
+原始诊断日志通过限定 `.gitattributes` 规则保留空白，不改写验证输出。
+见 [合入验证日志](data/system_review_20261013/remediation_20261015/post-merge-tests.log)
+和 [收尾摘要](data/system_review_20261013/remediation_20261015/integration.json)。
+
+归档根目录：`~/scratch/atst-tools-closeout-20261015-153534/`。
+`atst-tools-worktree/` 是由 `git worktree move` 移入的可用工作区，原 Codex
+路径已腾出，Git 登记随迁移更新，本轮 fix 分支保留。该工作区仍依赖主仓
+Git common directory；另有独立 `recovery.bundle`、完整文件 tar、原脏树
+文件归档及恢复说明，支持主仓不可用时恢复。未删除归档工作区登记。
+
+11 个历史临时远端分支已在备份后原子删除，每个删除均绑定核对时 SHA；
+其中 `abacus-demo-hardening` 按语义取代收口，其余 10 个是远端 main 的祖先。
+保留远端 `main`、`develop`、`v1.4.2`、`v1.5.0`，删除前 SHA 与恢复引用
+保存在归档。没有推送本轮 main，也没有发布版本；父仓出现子模块 gitlink
+工作树变化，但本次未提交父仓。P6 及跨仓验收边界继续按上文保留。
