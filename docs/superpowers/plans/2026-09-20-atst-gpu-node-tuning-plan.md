@@ -2,7 +2,7 @@
 
 **版本**: 2026-09-20（2026-09-21 迁入 atst-tools 规范源；2026-09-22 状态口径对齐）
 **日期**: 2026-09-20
-**状态**: 执行中（P0–P5 已完成，P6 进行中；未闭合项见下方「剩余项（2026-09-22）」）
+**状态**: 活跃（P0–P5 与 ATST 交付完成；仅 P6 平台部分及注明的条件项开放，2026-10-16 复核）
 **责任人**: ATST-Tools maintainers
 
 > **迁移记录（2026-09-21）**：本计划已由发起方 ABACUS 文档目录迁入 atst-tools 规范源并在文档账本登记；设计源为 [GPU 节点调优设计](../specs/2026-09-20-atst-gpu-node-tuning-design.md)，P0 接口冻结为 [runtime 接口冻结设计](../specs/2026-09-21-atst-runtime-interface-design.md)。原位置只保留交接说明，不得独立演进。
@@ -27,6 +27,14 @@ Status: in_progress (P0-P5 complete, P6 in progress; the remaining items are lis
 
 **实施 owner：** atst-tools 维护者已接手 P0–P5 与 P6 的 atst 交付部分（2026-09-21 迁移完成，规范源为本仓）；ABACUS/MLIP-Agent 开发者仅承接后续平台适配。不要求在 ABACUS Toolbox 内实施通用 runtime；实施基线为 `origin/main` `2cf5b7e6`（SPEC §11 R1）。
 **测试环境依据：** 显式使用 `$sai-user-guide`（§2–§5、§7–§8、性能调优 reference；涉及 SIF 时 §11）；双后端与 FT²DP fixture 规则见 SPEC §7.3，恒电势协调见 §7A。
+
+## 2026-10-16 收口核对
+
+本计划保留为本仓唯一活跃实施计划：P6 的共享 image 参数、resAlloc/prepare/runner
+迁移，以及 owner guide、交接测试、本地 E2E/平台验收尚无完整交付证据，也没有
+迁入另一规范计划的记录。ABACUS/MLIP-Agent owner 承接平台工作，ATST 维护者保留
+生产者接口支持；不重新打开已完成 P0–P5。DP 容器对照和 FT²DP 单头 EMA 保留
+condition-blocked，TF 专项保持 not-planned。常规发版与父仓依赖同步按各自流程执行。
 
 ## 组件与边界
 

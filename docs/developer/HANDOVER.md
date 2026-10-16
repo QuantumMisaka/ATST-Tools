@@ -47,6 +47,20 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 确定调用方的 MPI world 后调度执行 helper，CLI 层负责参数、模板与输出。独立
 `validate_ts`/`atst vibration validate` 只读已有结果，不是 workflow 的自动后处理。
 
+## 1.2 已交付计划的外部交接
+
+2026-10-16 将两份本仓已完成实施计划归档；以下交接仍开放，归档不代表外部验收完成。
+
+| 交接 | 责任方与关闭条件 | 本仓承接 |
+| --- | --- | --- |
+| abacuslite 上游同步 | 维护者按既有延后决定另行安排 PR；上游合入后才更新基线和归一化。 | `PATCHES.md`、`ABACUSLITE_SNAPSHOT.md` 与本页 backend checklist。 |
+| abacuslite 后续 SIF/harness | 父仓 ABACUS owner 负责交付与其验收；历史直接 SAI 力读取检验已通过，不替代后续平台交付。 | 后端快照和版本说明；不在本仓重开已完成实现。 |
+| convergence 消费 | Paimon owner 完成 fixture 映射与联合验收；父仓 companion plan 为 `toolbox/ABACUS/docs/superpowers/plans/2026-09-17-matesbench-toolbox-hardening-plan.md`。 | [API 阶段事实](../user/PYTHON_API_REFERENCE.md)、`docs/reports/data/convergence_fixtures_20260917/`；真实运行时和 curated 产物更新须有相应证据。 |
+| GPU P6 平台迁移 | ABACUS/MLIP-Agent owner 完成共享 image 参数/runner、guide、交接测试与 E2E/平台验收。 | [唯一活跃计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md)，保留 DP 容器/FT²DP 条件项。 |
+
+当前设计来源继续保留；是否归档取决于其决策是否已被长期参考吸收，不以代码已交付
+为唯一依据。逐项处置见 [本地集成与收口](../reports/MAIN_REVIEW_FIXES_2026-10-16.md#6-本地合入与在途收口2026-10-16)。
+
 ## 2. 新增或修改 workflow
 
 - 接入 `utils/config_schema.py` 的判别联合与类型表，更新 CLI 模板和

@@ -10,6 +10,13 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-16（本地合入与在途收口）：九项修复及前轮源码架构文档以 `9e5f3b8`
+  快进合入 main；原 27 项未提交内容保存为 stash、独立恢复引用与 scratch 快照。
+  两份已完成计划、两份已被长期文档承接的设计及一份设计审查移入 pending-delete；
+  GPU P6 计划保持活跃，现行设计规范保留并纠正过时状态。
+  具体处置与剩余责任见 [整改报告 §6](MAIN_REVIEW_FIXES_2026-10-16.md#6-本地合入与在途收口2026-10-16)。
+  本地合入不表示推送、发版、父仓 gitlink 或平台验收完成。
+
 - 2026-10-16（九项问题本地整改完成，未发布）：复用科学契约与 runtime SPEC，
   按 writing-plans + subagent-driven-development 在隔离分支
   `fix/review-nine-findings-20261016` 完成九项修复。默认套件 1347 passed/32 skipped、
@@ -231,7 +238,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   自写 owner manifest，API synthesized 显式 `converged: null`）、运行期诊断统一英文及机械门禁、
   稳定 API 阶段契约与交接 fixtures。本地全量测试、文档治理与 clean-wheel API 门禁已通过；
   tag、CI、PyPI、SIF/SAI 与真实 ABACUS/MPI 运行时验收尚未执行；不得把本候选描述为已发布。
-- 2026-09-17：执行 [workflow convergence handoff plan](../superpowers/plans/2026-09-17-workflow-convergence-handoff-plan.md)（`feature/workflow-convergence`，基于 `origin/main` `cf86790`）：共享 convergence helper（三态记录 + 英文 advisory + root-only 发射）落地；Sella/CCQN/Relax/IRC/NEB/AutoNEB/D2S 的优化器返回值与阶段事实已持久化，Sella/Relax 也自写默认路径 manifest，复合工作流（D2S/AutoNEB）由顶层 workflow 唯一拥有 manifest；API synthesized 阶段显式 `converged: null` 并在 `PYTHON_API_REFERENCE` 记录阶段契约；运行期诊断全英文并有 AST 机械门禁；A4 交接 fixtures（`docs/reports/data/convergence_fixtures_20260917/`）已生成并有契约测试；clean-wheel 门禁验证了安装包中的三态阶段写出。剩余：Paimon 联合消费验收（由其开发者推进）、示例 curated 产物刷新（需要授权的真实 ABACUS/SAI 运行）、A6 下一 patch 发布（`FEATURE_STATUS_MATRIX` 与 release notes 在发布准备时更新），以及真实 MPI/ABACUS 运行时验收。本记录不表示发布或运行时验收完成。
+- 2026-09-17：执行 workflow convergence handoff plan（本仓已完成；当前交接见 HANDOVER §1.2）（`feature/workflow-convergence`，基于 `origin/main` `cf86790`）：共享 convergence helper（三态记录 + 英文 advisory + root-only 发射）落地；Sella/CCQN/Relax/IRC/NEB/AutoNEB/D2S 的优化器返回值与阶段事实已持久化，Sella/Relax 也自写默认路径 manifest，复合工作流（D2S/AutoNEB）由顶层 workflow 唯一拥有 manifest；API synthesized 阶段显式 `converged: null` 并在 `PYTHON_API_REFERENCE` 记录阶段契约；运行期诊断全英文并有 AST 机械门禁；A4 交接 fixtures（`docs/reports/data/convergence_fixtures_20260917/`）已生成并有契约测试；clean-wheel 门禁验证了安装包中的三态阶段写出。剩余：Paimon 联合消费验收（由其开发者推进）、示例 curated 产物刷新（需要授权的真实 ABACUS/SAI 运行）、A6 下一 patch 发布（`FEATURE_STATUS_MATRIX` 与 release notes 在发布准备时更新），以及真实 MPI/ABACUS 运行时验收。本记录不表示发布或运行时验收完成。
 - 2026-09-17：计划归档收口：7 个已在发布/文档/测试中吸收结论的旧计划与 2 个 `docs/developer/plans/` 遗留文件移入 `docs/archive/pending_delete/plans/`；活跃计划目录只保留仍待执行的计划，并要求在账本登记（`check_docs_governance.py` 机械校验）。
 
 - 本轮治理依据是已接受的
@@ -294,6 +301,8 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 | 文档 | 生命周期 | 当前职责 |
 | :--- | :--- | :--- |
+| `docs/superpowers/specs/2026-05-28-documentation-governance-design.md` | spec | 当前文档治理设计来源，继续指导生命周期和账本。 |
+| `docs/superpowers/specs/2026-07-22-abacus-agent-api-runner-design.html` | spec | ATST runner 已交付；保留跨仓 API/Agent/MPI/平台责任边界，历史版本不表示当前验收。 |
 | `docs/user/USER_GUIDE_CN.md` | guide | 中文项目目标、10 分钟快速开始、后端说明、功能矩阵和参数入口；含未发布恒电势候选边界。 |
 | `docs/user/CLI_REFERENCE.md` | reference | `atst` CLI、轻量 post/summary/config/abacus 工具。 |
 | `docs/user/PYTHON_API_REFERENCE.md` | reference | 稳定 `atst_tools.api` 十个 root imports（含 `build_config_from_abacus_dir` 的 NEB-only 配置生成边界）、CLI/API/runner 选择、JSON handoff、结果、artifact、MPI 和 backend delegation 边界；2026-09-20 补齐已存在导出的文档，不新增 API 或发行版本。 |
@@ -326,7 +335,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 ### L2: 当前证据
 
 本轮修复证据：`docs/reports/MAIN_REVIEW_FIXES_2026-10-16.md`，九项审查问题的修复
-行为、兼容迁移与本地验收；九项关闭，未合入 main、未发布。
+行为、兼容迁移与本地验收；九项已合入本地 main，未发布。
 
 | 文档 | 当前职责 |
 | :--- | :--- |
@@ -374,18 +383,17 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ### Spec / Plan / Review 登记
 
+当前活跃计划仅保留 GPU P6；已完成本仓计划的外部义务由 HANDOVER §1.2 和下列
+GPU 计划承接。SPEC 是当前设计来源，保留不表示对应实现仍在途。
+
 | 文档 | 生命周期 | 当前职责 |
 | :--- | :--- | :--- |
 | `docs/superpowers/specs/2026-10-13-scientific-contracts-and-delivery-design.md` | spec | rev.8 明确 ASE 调用 ABACUS/DP 做过渡态计算与 CLI/Agent Python Interface 共用定位；D1/D2/T1 在本地未发布工作区已实施，保留 ASE 原检查和容差内原值。2026-10-15 本地工作包已完成并验收，当前结论见 spec §10 与系统审查 §9；未发布。 |
 | `docs/superpowers/specs/2026-09-21-atst-gpu-node-tuning-p0-review.md` | review | P0 复核（性能前提与 DP 并行 NEB 证据审查）：GPU 调优前提未证实、DP mpi4py 并行 NEB 零证据、原稿作业记录不可达；结论已回写 SPEC §2 与 PLAN P4/P5 验收项。 |
-| `docs/superpowers/specs/2026-09-21-atst-runtime-interface-design.md` | spec | P0 接口冻结（接手 GPU 节点调优）：`runtime` schema 与冻结错误消息、CLI/env 优先级、设备解析与过度暴露边界、bootstrap 与嵌入 API 语义、OMP 优先级、证据 sidecar、恒电势共享文件顺序、P0 验收对照表；待相称独立设计审查。 |
+| `docs/superpowers/specs/2026-09-21-atst-runtime-interface-design.md` | spec | P0 接口冻结（接手 GPU 节点调优）：`runtime` schema 与冻结错误消息、CLI/env 优先级、设备解析与过度暴露边界、bootstrap 与嵌入 API 语义、OMP 优先级、证据 sidecar、恒电势共享文件顺序、P0 验收对照表；审查与 ATST 实施已完成，保留当前接口规范。 |
 | `docs/superpowers/specs/2026-09-20-atst-gpu-node-tuning-design.md` | spec | GPU 节点调优设计（2026-09-21 自发起方迁入）：设备与进程契约、独立 case 与 MPI 并发、分层计量、基准与科学验收、恒电势协调；pin 对照与 Ruling 见 §11。 |
 | `docs/superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md` | plan | 执行中（P0–P5 已完成，P6 进行中）：先 atst 后平台的分期计划（P0–P6）；P0–P5 已交付并以本地 + SAI V100 证据闭合（P5 压力/收益矩阵见 SAI 报告 §5h/§5j）；P2 的只读模型共享、重启回归与 MPS 归属已于 2026-09-22 现场收口（见 [P2 收口报告](ATST_P2_CLOSEOUT_2026-09-22.md)）。TF 专项支持已裁定 not-planned，站点重绑定和独立终审已收口；DP 容器/FT²DP 制品条件项与 P6 共享 image 平台迁移仍按 owner 分别跟踪。父仓 gitlink 于 2026-10-15 本地核实已为 `45d8c78`。 |
-| `docs/superpowers/plans/2026-09-17-workflow-convergence-handoff-plan.md` | plan | 本仓 A0–A6 已随 2.2.6 交付；以计划头部和 §6 为准，旧未勾选项不是当前欠账。Paimon 联合消费和真实运行时验收归相应 owner，不引入平台/调度依赖。 |
 | `docs/superpowers/specs/2026-08-04-abacuslite-cross-repo-and-force-read-design.html` | spec | abacuslite 力读取一致性与跨仓维护设计（R1-R8 / D1-D8 / P1-P8），含 CI 基线单一事实源 `ABACUSLITE_SNAPSHOT.md`（R4/P6）与文档账本登记要求（R7/P8）。 |
-| `docs/superpowers/specs/2026-08-04-abacuslite-cross-repo-and-force-read-design-review.md` | review | spec 两轮审查结论与 P1-P8 缺口补强记录；全部结论已落入 spec。 |
-| `docs/superpowers/plans/2026-08-04-abacuslite-force-read-and-cross-repo-plan.md` | plan | Tasks 1–8 已在 2.2.5–2.2.8 交付；Task 9 SIF 转父仓，upstream PR 按维护者决定延后。旧复选框不代表当前欠账。 |
-| `docs/superpowers/specs/2026-09-04-user-distribution-and-mpi-installation-design.html` | spec | 本地实施完成，2.2.4 已发布；GitHub/PyPI 外部验收已登记，Gitee 渲染按授权范围排除：GitHub 规范源 / 维护者手动拉取的 Gitee 同内容只读镜像 / PyPI 分发、跨渠道用户入口、串行与 image-parallel MPI 安装分层，以及 SAI 维护证据边界设计。 |
 | `docs/superpowers/specs/2026-09-04-github-governance-and-release-gates-design.html` | spec | 本地实施完成，待 GitHub 设置与发布后外部验收：GitHub 治理、按需跨家族审阅证据、发布前机械门禁和 GitHub/PyPI/Gitee 发布后责任边界。 |
 
 ### L4: 历史或已被取代材料
@@ -414,6 +422,11 @@ L4 材料不保留在活跃 `docs/reports/`、`docs/developer/plans/` 或
 
 | 原路径 | 新路径 | 判据 |
 | :--- | :--- | :--- |
+| `docs/superpowers/plans/2026-08-04-abacuslite-force-read-and-cross-repo-plan.md` | `docs/archive/pending_delete/plans/2026-08-04-abacuslite-force-read-and-cross-repo-plan.md` | 本仓 Tasks 1–8 已交付；历史力读取决定性 SAI 检验通过，后续 SIF/harness 责任仍在父仓，上游 PR 继续按维护者决定延后。日常规则由 HANDOVER、PATCHES.md 与 ABACUSLITE_SNAPSHOT.md 承接。 |
+| `docs/superpowers/plans/2026-09-17-workflow-convergence-handoff-plan.md` | `docs/archive/pending_delete/plans/2026-09-17-workflow-convergence-handoff-plan.md` | 本仓 A0–A6 已随 2.2.6 交付；契约由 PYTHON_API_REFERENCE、convergence fixtures 与发布说明承接。Paimon 联合消费与真实运行时验收仍由相应 owner 完成，旧示例产物不视为已刷新。 |
+| `docs/superpowers/specs/2026-08-12-atst-prepare-reverse-and-trajectory-stress-design.md` | `docs/archive/pending_delete/specs/2026-08-12-atst-prepare-reverse-and-trajectory-stress-design.md` | 已随 2.2.3 交付；当前 CLI/API/配置语义和 stress 保留由长期参考、2.2.3 release notes 及行为测试承接。保留原跨仓决策作为历史记录。 |
+| `docs/superpowers/specs/2026-09-04-user-distribution-and-mpi-installation-design.html` | `docs/archive/pending_delete/specs/2026-09-04-user-distribution-and-mpi-installation-design.html` | 已随 2.2.4 交付并登记发布验收；渠道与安装边界由 README、USER_GUIDE_CN、DOCS_ARCHITECTURE、发布说明和测试承接。 |
+| `docs/superpowers/specs/2026-08-04-abacuslite-cross-repo-and-force-read-design-review.md` | `docs/archive/pending_delete/specs/2026-08-04-abacuslite-cross-repo-and-force-read-design-review.md` | 审查结论已吸收到仍活跃的 abacuslite 设计及维护文档；历史诊断保留，不作为当前待实施计划。 |
 | `docs/superpowers/plans/2026-07-02-abacuslite-backend-upstream-issue-fixes.md` | `docs/archive/pending_delete/plans/2026-07-02-abacuslite-backend-upstream-issue-fixes.md` | 计划自记 implementation 完成；vendored 补丁身份与上游同步纪律由 `PATCHES.md`、`ABACUSLITE_SNAPSHOT.md` 和 2026-08-04 跨仓计划承载。 |
 | `docs/superpowers/plans/2026-07-05-atst-cli-banner.md` | `docs/archive/pending_delete/plans/2026-07-05-atst-cli-banner.md` | `atst banner` 已发布并有 CLI 测试与用户文档覆盖。 |
 | `docs/superpowers/plans/2026-07-05-ci-test-development.md` | `docs/archive/pending_delete/plans/2026-07-05-ci-test-development.md` | snapshot-drift checker、abacuslite 工作流和通用 PR 测试工作流已上线；结论由 HANDOVER 与 CI 契约承载。 |

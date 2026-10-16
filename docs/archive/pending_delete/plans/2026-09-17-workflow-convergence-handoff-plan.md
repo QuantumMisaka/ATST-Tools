@@ -1,5 +1,7 @@
 # Workflow Convergence Handoff Implementation Plan
 
+> 2026-10-16 归档（待删除复核）：本仓 A0–A6 已随 2.2.6 交付；契约由 PYTHON_API_REFERENCE、convergence fixtures 与发布说明承接。Paimon 联合消费与真实运行时验收仍由相应 owner 完成，旧示例产物不视为已刷新。
+
 **Goal:** Preserve optimizer convergence facts across ATST workflows and their public artifacts, with unified English runtime diagnostics and backward-compatible CLI/API execution semantics.
 **Spec:** none - requirements supplied directly in the 2026-09-17 maintainer discussion of MatESBench A4-5, extended by the 2026-09-17 maintainer decisions that (a) all program-visible runtime strings in ATST-Tools are English and (b) convergence stage facts and advisories are owned by one shared helper, not per-workflow implementations.
 **Authorization:** The maintainer requested development plans in ATST and the Paimon consumer repository. This document is the producer-side handoff, not evidence that implementation, dependency installation, computation, push, tagging or publication has been authorized or completed. On 2026-09-17 the ATST maintainer directed that this plan be revised against the actual repository state before implementation.

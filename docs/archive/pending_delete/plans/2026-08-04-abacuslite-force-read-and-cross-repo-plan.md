@@ -1,5 +1,7 @@
 # abacuslite 力读取一致性与跨仓维护 实施计划
 
+> 2026-10-16 归档（待删除复核）：本仓 Tasks 1–8 已交付；历史力读取决定性 SAI 检验通过，后续 SIF/harness 责任仍在父仓，上游 PR 继续按维护者决定延后。日常规则由 HANDOVER、PATCHES.md 与 ABACUSLITE_SNAPSHOT.md 承接。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 修复 vendored abacuslite 力读取一致性问题（sella 2 步停根因），并建立"本仓为主 + 收敛后上游同步 + 阶段性拉取"的跨仓维护纪律，解锁 CI drift gate。

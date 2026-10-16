@@ -1,13 +1,13 @@
 {
   "date": "2026-10-16",
-  "status": "local_acceptance_complete_unreleased",
+  "status": "local_main_integrated_unreleased",
   "base": "5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e",
   "branch": "fix/review-nine-findings-20261016",
   "worktree": "/home/james/.codex/worktrees/5738/atst-tools",
   "release": {
     "version": "2.2.8",
     "new_release": false,
-    "committed": false,
+    "committed": true,
     "pushed": false
   },
   "scope": "Nine user-confirmed defects; unchanged module architecture; additional bench config-path identity repair found in independent review",
@@ -221,7 +221,8 @@
   "original_checkout": {
     "path": "/home/james/work/sidereus/app-tools/toolbox/ABACUS/deps/atst-tools",
     "status_and_27_predispatch_file_hashes_unchanged": true,
-    "recovery": "/tmp/atst-nine-fixes-20261016"
+    "recovery": "/tmp/atst-nine-fixes-20261016",
+    "scope": "Unchanged at repair acceptance; subsequently preserved in the integration stash before fast-forward."
   },
   "checks": [
     {
@@ -405,6 +406,25 @@
     "mpi-tests-final.log": "24c716103d5a75fb6d8f4f1735b6b3fc1b867f3a150f5f70381b27a4692bb7f3",
     "wheel-api-final.log": "74ce9a187a901dc1685dc31b9c068558943af3d8e5a7b6c65823bdb59f57b725",
     "governance-final.log": "91426b4fc1ee128f4bcecfb9c5f194bdb3939b0ff40d96437a33c7c4539be587",
-    "docs-tests-final.log": "5a1a300cd65e2997f1b8f4c715b85427bf6dfb71679e7b3187e16028d64db1b8"
+    "docs-tests-final.log": "5a1a300cd65e2997f1b8f4c715b85427bf6dfb71679e7b3187e16028d64db1b8",
+    "postmerge-regressions.log": "f08fcdd472afdae281e4110d2dabfac537b11b94612329640dc4f9b241f984e0"
+  },
+  "integration": {
+    "implementation_commit": "9e5f3b8",
+    "main_fast_forward_from": "5ad5de5",
+    "post_merge_regressions": 63,
+    "preserved_main_stash": "09bfc9a6eae61dde6dcba0ec3c293a970a235cbd",
+    "archive": "/home/james/scratch/atst-tools-closeout-20261016-124622",
+    "pushed": false,
+    "released": false,
+    "parent_index_gitlink_unchanged": "45d8c78de8a605c127cd4c36742d0c9525a0a6b6",
+    "post_merge_check": {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python -m pytest tests/unit/test_neb_restart_contract.py tests/unit/test_irc_result_contract.py tests/unit/test_dmf_endpoint_contract.py tests/unit/test_manifest_path_contract.py tests/unit/test_bench_boundary_contract.py tests/unit/test_cp_facts_compatibility.py -o addopts=-ra -q",
+      "exit_code": 0,
+      "passed": 63,
+      "log": "postmerge-regressions.log",
+      "workdir": "/home/james/work/sidereus/app-tools/toolbox/ABACUS/deps/atst-tools"
+    },
+    "documentation_review": "pass; archive restoration separately verified in scratch integration.json"
   }
 }

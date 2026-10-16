@@ -2,7 +2,7 @@
 
 **版本**: 2026-10-16（2.2.8 后未发布修复）
 **日期**: 2026-10-16
-**状态**: 九项源码修复与本地验收完成，未合入 main、未发布
+**状态**: 九项修复已合入本地 main；未推送、未发布
 **责任人**: ATST-Tools maintainers
 
 生命周期：validation；报告级别：L2。需求来自用户逐项确认的九项缺陷；历史现象、
@@ -19,7 +19,8 @@ writing-plans + subagent-driven-development，按 NEB、IRC/DMF、manifest、ben
 执行分支为 `fix/review-nine-findings-20261016`，worktree 为
 `/home/james/.codex/worktrees/5738/atst-tools`，BASE 为
 `5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e`。原 main 的 27 项未提交文档/证据完整
-带入并逐项校验；原 checkout 保持不动，带入内容不计作本轮源码实现。
+带入并逐项校验；修复验收阶段原 checkout 保持不动，带入内容不计作本轮源码实现。
+随后获授权执行本地合入，见 §6。
 恢复快照位于 `/tmp/atst-nine-fixes-20261016/`。
 
 环境使用 `atst-dev`，执行检查明确 `PYTHONPATH=<worktree>/src`，避免环境中的
@@ -119,3 +120,40 @@ ABACUS 示例、外部 Toolbox 或 DP 模型，跳过原因保留在日志。三
 本轮 CPU 与本地 MPI 证据只验证科学工作流契约、进程/文件交接及资源输入边界。
 受控 Sella IRC 不能代替真实 Sella 路径科学验收，DMF 输入检查不等于 IPOPT 求解
 或 TS 验证，恒电势互读不等于真实电化学有效性；平台 P6 和发行仍各自独立。
+
+
+## 6. 本地合入与在途收口（2026-10-16）
+
+用户随后明确授权核验、合入与归档。九项修复、回归和前轮架构/源码导览文档以
+`9e5f3b8` 提交，并从 `5ad5de5` 快进进入本地 main；没有重写已有历史。冻结的
+198 项源码/测试/构建输入与验收记录一致，复用完整套件、MPI 和 wheel 证据；合入
+后在 main 实跑六个新增回归文件，**63 passed**。
+
+原 main 的 27 项未提交内容先保存为 stash
+`09bfc9a6eae61dde6dcba0ec3c293a970a235cbd`，逐项核验文件内容，并建立独立恢复引用
+`refs/archive/closeout-20261016/pre-integration-main`。其内容已由合入提交吸收，
+不重复应用该 stash。父仓 HEAD 与 index gitlink（`45d8c78`）保持不变；未推送或发布。
+
+| 对象 | 处置 | 理由与承接 |
+| --- | --- | --- |
+| abacuslite 08-04 计划 | 本仓收口、归档 | Tasks 1–8 已交付；父仓 SIF/harness 与延后的上游同步由 HANDOVER §1.2 保留。 |
+| convergence 09-17 计划 | 本仓收口、归档 | A0–A6 随 2.2.6 交付；API 参考/fixtures 承接事实，Paimon 联合消费仍由其 owner 验收。 |
+| prepare/stress 08-12 设计 | 归档 | CLI/API/配置参考、2.2.3 发布记录及测试已吸收。 |
+| 用户分发/MPI 安装 09-04 设计 | 归档 | 用户/开发者长期入口、2.2.4 发布验收及测试已吸收。 |
+| abacuslite 08-04 设计审查 | 归档 | 结论已纳入仍活跃的跨仓设计，保留历史原文。 |
+| GPU 09-20 计划 | 继续活跃 | P6 共享 image 参数/runner、owner guide、交接测试和平台验收未完成；DP 容器/FT²DP 条件项仍开放，TF 专项仍 not-planned。 |
+| 其他现行 SPEC / GPU P0 review | 保留 | 仍指导科学、runtime、后端、治理与跨仓边界；GPU/runtime/runner 的过时状态已更新，历史基线保留。 |
+
+工作区和恢复资料采用保留式归档：
+
+- 本轮 Codex 管理的工作树 `/home/james/.codex/worktrees/5738/atst-tools` 保留路径、
+  分支和注册；完整文件快照（含 ignored 产物）、独立 Git bundle 与恢复说明归档至
+  `/home/james/scratch/atst-tools-closeout-20261016-124622`。
+  当前工具只有创建/列出能力，没有解除挂载能力；不移动当前受管路径以免破坏会话
+  附件。该分支已吸收，不再有独立未合入代码。
+- 旧 `fix/ase-ts-dual-interface-20261013` 的 `3163c06` 已是 main 祖先；其工作树
+  `/home/james/scratch/atst-tools-closeout-20261015-153534/atst-tools-worktree` 已在归档
+  位置，tracked/untracked 干净，历史 ignored 产物保留，无需重复搬移或删除分支。
+
+归档和文档状态经独立审查；最终文档治理、检查日志与恢复说明随收口保存。所有
+移动均保留原文，不把跨仓待办或平台 P6 写成已验收。

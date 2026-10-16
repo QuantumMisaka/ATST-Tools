@@ -2,10 +2,10 @@
 
 **版本**: 2026-09-21（rev.3，两轮独立审查后定稿）
 **日期**: 2026-09-21
-**状态**: 草案（P0 交付；首轮审查 block → rev.2 修订 → 复审 approve with required changes → rev.3 闭合 N1–N10；P1 可启动，入口工作项先落 N1 规则）
+**状态**: 当前接口规范；两轮审查已闭合，ATST 实现与本地/站点验收已交付，P6 平台部分仍开放（2026-10-16 核对）
 **责任人**: ATST-Tools maintainers
 
-设计来源：[GPU 节点调优设计](2026-09-20-atst-gpu-node-tuning-design.md)；执行计划：[GPU 节点优化开发与验证计划](../plans/2026-09-20-atst-gpu-node-tuning-plan.md)；审查记录：[P0 复核](2026-09-21-atst-gpu-node-tuning-p0-review.md)与独立设计审查（2026-09-21，findings 已逐条处理，见 §10）。本文冻结 P0 要求的接口语义，不表示代码、真实计算或发布已执行。实现与本文冲突时以本文为准；变更需回写本文并列 Ruling。
+设计来源：[GPU 节点调优设计](2026-09-20-atst-gpu-node-tuning-design.md)；执行计划：[GPU 节点优化开发与验证计划](../plans/2026-09-20-atst-gpu-node-tuning-plan.md)；审查记录：[P0 复核](2026-09-21-atst-gpu-node-tuning-p0-review.md)与独立设计审查（2026-09-21，findings 已逐条处理，见 §10）。本文保留 P0 冻结的接口语义及历史审查过程；当前实现/发布和验收状态由执行计划及其报告维护，旧基线不是当前运行环境。实现与本文冲突时以本文为准；变更需回写本文并列 Ruling。
 
 ## 1. 实施基线与环境身份
 

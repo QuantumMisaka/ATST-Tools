@@ -18,8 +18,8 @@ for acceptance evidence and validation limits. No new package release,
 backend/GPU run or platform acceptance is claimed.
 
 The nine issues found in the independent review of `5ad5de5` (one P1 and eight
-P2) are repaired in the local, unreleased branch
-`fix/review-nine-findings-20261016`: segmented NEB restart, IRC default output
+P2) are repaired and fast-forwarded into local `main` as `9e5f3b8`
+(unreleased), from `fix/review-nine-findings-20261016`: segmented NEB restart, IRC default output
 and frozen results, DMF endpoint element order, manifest path bases, bench
 directory/resource/case-ID boundaries, and constant-potential facts-v1 compatibility.
 The final source passes 1347 default tests (32 skipped), 27 opt-in local MPI

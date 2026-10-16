@@ -19,8 +19,9 @@
 <body>
   <header>
     <h1>ATST API Runner 与 ABACUS Agent 集成设计</h1>
-    <div class="meta"><p><strong>Status:</strong> 实施中；Agent 1.2.8 基线已验证</p><p><strong>Owner:</strong> ATST-Tools 与 ABACUS Agent 维护团队</p><p><strong>Updated:</strong> 2026-07-23</p></div>
-  </header>
+    <div class="meta"><p><strong>Status:</strong> ATST runner 已交付；保留跨仓责任边界，Agent/平台验收由对应 owner 维护（2026-10-16 核对）</p><p><strong>Owner:</strong> ATST-Tools 与 ABACUS Agent 维护团队</p><p><strong>Updated:</strong> 2026-07-23</p></div>
+  <p>当前 ATST 接口见 <a href="../../user/PYTHON_API_REFERENCE.md">Python API reference</a>；下文 Agent 1.2.8/1.2.9 与 2.2.0 是历史实施基线，不代表当前版本或新的平台验收结论。</p>
+</header>
   <nav aria-label="目录"><h2>目录</h2><ol><li><a href="#summary">概述</a></li><li><a href="#goals">目标与非目标</a></li><li><a href="#requirements">需求</a></li><li><a href="#decisions">决策与备选</a></li><li><a href="#architecture">架构与数据流</a></li><li><a href="#errors">错误与 MPI</a></li><li><a href="#testing">测试与验收</a></li><li><a href="#rollout">发布与迁移</a></li><li><a href="#risks">风险与开放项</a></li></ol></nav>
   <main>
     <section id="summary"><h2>概述</h2>
