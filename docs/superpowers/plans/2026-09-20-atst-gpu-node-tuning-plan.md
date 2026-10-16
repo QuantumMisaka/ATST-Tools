@@ -215,16 +215,19 @@ ATST 维护者在本计划维护规范与生产者支持；ABACUS 改动进入�
   runner → calculator 追踪；58 项相关离线测试通过。复现串行 image 配置的内层
   ranks 与 run 分配未对齐、prepare mapping 被带入下一任务两项缺口。
   证据见接手报告 §2–§4；这是代码/模拟边界检查，不是 ABACUS 真实多卡验收。
-- [ ] **P6.2：完善既有串行 image 的内部多卡交接。** 依赖 P6.1。
+- [x] **P6.2：完善既有串行 image 的内部多卡交接。** 2026-10-16 已在父仓隔离分支实现，尚未合入或发布。依赖 P6.1。
   修复落点为父仓 `abacus_transition.py`、`toolkits/transition_atst.py`，复用
   `toolkits/atst_runner.py`、`utils/env_setting.py`。先以真实失败回归覆盖
   `parallel=False` + 4-rank command + run 省略/少报 GPU，以及跨任务 mapping 变化；
   检查必须早于 check-input 和正式进程。`resAlloc` 仍只读 args/class metadata；
   不改变现有参数默认值和 image-parallel 的单 rank calculator 限制。
-  受管理生成 command 与自定义 launcher/wrapper 的识别、迁移和拒绝边界尚需设计确认；
-  不能简单解析任意 shell 字符串后视为可信意图，也不能静默覆盖用户 command。
+  已采用有限标准语法：直接 `mpirun`/`mpiexec` 的 ranks、map-by、bind-to 与 SAI
+  prtemca；未知直接 MPI 语法拒绝，不透明站点 wrapper 保持调用方契约。
+  原 YAML 不变，当前 mapping 写入同目录 normalized 执行副本；binding 冲突拒绝。
+  聚焦回归 182 passed，独立复审通过；完整门禁与构建身份由父仓交接报告记录。
   纯 prepare 的资源成本优化另列候选，不随修复擅自改变其 hook。
-- [ ] **P6.3：内层多卡的可审阅验收包。** 依赖 P6.2。更新父仓 runtime owner guide、
+- [ ] **P6.3：内层多卡的可审阅验收包。** 依赖 P6.2。本地 owner guide、参数说明和
+  1/4 卡固定输入及请求已准备；真实 Slurm/SIF/本地 E2E 与平台验收尚未执行。更新父仓 runtime owner guide、
   Agent 参数说明和交接测试，制作同一结构/solver/精度的 1 卡与 4 卡对照，记录环境、
   ranks、GPU 身份、线程、E/F、收敛、延迟和卡时。先通过本地离线门禁与构建，
   再按明确授权执行 Slurm/SIF/本地 E2E；平台发布与验收独立留证。
@@ -234,7 +237,8 @@ ATST 维护者在本计划维护规范与生产者支持；ABACUS 改动进入�
   再在获授权 allocation 中验证 launcher；通过后才确认公共入口与 worker 架构。
   不直接解除 nested MPI guard，不借运行时改写全局环境实现并发分组，
   不以乘大外层 ranks 的方式绕过一 rank 一 image 校验。
-- [ ] **P6.5：默认路径回归与 owner 收口。** 检查 NEB TS guess 的实际内部图数与
+- [ ] **P6.5：默认路径回归与 owner 收口。** TS guess 计数已局部修复并回归：
+  `n_images=3` 加 TS guess 按 4 张内部图、6 帧处理；其余现场闭环继续开放。检查实际内部图数与
   父仓推导一致、AutoNEB active window、端点/重启及 runtime evidence 归属；
   汇总 standalone、SIF、本地 E2E、平台各自证据。MLIP 接入与 DP 制品条件项继续
   保留 owner，不以 ABACUS 局部通过代替整个 P6 完成。
@@ -242,7 +246,13 @@ ATST 维护者在本计划维护规范与生产者支持；ABACUS 改动进入�
 Ruling：复用现有规范与计划，不新增并列 PLAN；以用户最新选择调整 P6 优先级。
 已明确授权的是接手、核验与本地推进；高阶混合并行当前仅授权探索。新增公共入口或
 更换执行架构先交回维护者确认；真实计算、依赖同步及平台发布按 owner 的已有授权
-边界执行。本轮只完成 P6.1，P6 保持开放。
+边界执行。P6.1/P6.2 的本地工作已完成，P6 保持开放。
+
+实施身份：父仓隔离分支 `fix/abacus/atst-gpu-p6-20261016`，提交 `419196f7d`，
+基线 `18b341f2f`，
+ATST gitlink 保持 `45d8c78`，未将独立 main 的未发布修复混入。实施与验收记录在父仓
+`toolbox/ABACUS/docs/reports/2026-10-16-atst-p6-inner-mpi-handoff.md`；ATST 本仓不复制
+父仓 owner 规则。隔离分支交付不等同于平台接入完成，本计划不归档。
 
 ## 环境与验收命令
 

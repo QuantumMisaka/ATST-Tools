@@ -2,7 +2,7 @@
 
 **版本**: 2026-10-16
 **日期**: 2026-10-16
-**状态**: 可行性核验完成；平台修复、真实计算与发布验收尚未完成
+**状态**: 可行性核验与父仓隔离分支修复完成；真实计算、合入与发布验收尚未完成
 **责任人**: ATST-Tools maintainers / ABACUS Toolbox maintainers
 
 生命周期：review；报告级别：L3。执行状态由既有
@@ -141,3 +141,27 @@ MPI 的图像求值路径，但并不替 ATST 分配 GPU 或创建相互隔离�
 独立 reviewer 已复核本轮文档、探针及相关调用路径，未发现 P1/P2 实质问题；
 确认 prepare hook 的真实资源行为与模拟执行边界的表述。文档治理脚本与既有
 `tests/unit/test_docs_governance.py` 的 26 项检查通过，差异空白检查通过。
+
+## 7. 2026-10-16 本地实施推进
+
+维护者确认推进后，父仓新建 `fix/abacus/atst-gpu-p6-20261016` 隔离分支（基线
+`18b341f2f`，交付提交 `419196f7d`），按父仓 gitlink 初始化依赖，ATST 继续 pin `45d8c78`。上文 §2–§4
+保留接手时事实；其中标准内部多卡的资源/mapping 缺口已在该隔离分支修复，尚未合入。
+
+run 在任何子进程前校验标准 MPI ranks 与显式 `n_gpu`，采用当前 allocation 的
+mapping/launcher 写入同目录 normalized 执行副本，保持原 YAML 与相对路径基准。
+有限语法支持 bind-to 并保留；未知直接 MPI 参数和 binding 冲突拒绝，不透明站点
+wrapper 仍由调用方负责。共享 dry-run 入口同步，未开放恒电势多卡或 nested MPI。
+NEB TS guess 额外内部图的推导也已修正。原始失败回归已复现，聚焦回归 182 项通过，
+独立审查曾发现的 bind-to 绕过已修复并复审通过。
+
+本地完整门禁、环境依赖取证、构建包和待授权 1/4 卡输入包以父仓
+`toolbox/ABACUS/docs/reports/2026-10-16-atst-p6-inner-mpi-handoff.md` 为记录源。
+1/4 卡输入使用仓库既有 Cy-Pt 双端生成相同 5 帧链，未执行 ABACUS。
+本仓仅更新 P6 状态，不把离线通过记成 GPU、SIF 或平台验收；P6.3/P6.4/P6.5 仍开放。
+
+父仓候选包 `ABACUS_1.2.76.zip` 构建和实包检查通过；55 项集成测试通过、1 项跳过。
+全量 unit 得到 6763 passed / 2 文案契约 failed / 1 skipped，最后仅修订参数说明后以
+61 项对应文件测试闭环，没有将该次全量 exit 2 改写为通过。旧环境依赖导致的 CP
+失败亦经原基线复现、锁定依赖复验消除。输入包与机器可读身份已随父仓报告保存。
+本次 ATST 文档在 `atst-dev` 通过治理检查及 35 项文档测试。

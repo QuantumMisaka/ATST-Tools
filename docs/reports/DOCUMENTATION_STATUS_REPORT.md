@@ -10,6 +10,10 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-16（GPU P6 本地实施）：父仓隔离分支已修复标准内部 MPI 的资源/mapping
+  交接及 TS guess 图数推导，聚焦回归 182 项与独立复审通过；P6.2 标记本地完成。
+  实施/完整门禁/构建证据由父仓交接报告维护，见 [接手报告 §7](ATST_GPU_P6_TAKEOVER_2026-10-16.md#7-2026-10-16-本地实施推进)。
+  真实计算、合入、依赖升级和发布未执行；P6 保持活跃，不归档。
 - 2026-10-16（GPU P6 接手）：维护者选择保留默认行为、探索单 image 内 MPI 多卡；
   多图共享少卡的新增平台入口转为 deferred。已完成既有入口追踪、58 项离线检查，
   并复现串行 image 的 run 资源一致性和跨任务 mapping 缺口；未修改生产源码、
@@ -375,7 +379,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 | :--- | :--- |
 | `docs/reports/MAIN_BRANCH_REVIEW_2026-10-15.md` | main 的 734 个提交按 11 个互斥批次追溯；§6 对 `5ad5de5` 独立系统复核，确认 1 项 P1、8 项 P2 待整改，保存当前测试、CPU 复现及分发内容对照；区分历史完整性、代码正确性、发布和平台验收。 |
 | `docs/reports/ARCHITECTURE_REVIEW_2026-10-16.md` | 当前源码架构复核；记录依赖扫描、入口检查、科学与结果所有权、runtime/bench 边界、设计债与整改顺序。保留模块结构；修复前快照不变，九项缺陷的后续关闭证据见整改验收报告。 |
-| `docs/reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md` | GPU P6 接手与 image 内 MPI 多卡可行性核验；含默认模式边界、父仓入口取证、资源/mapping 交接缺口及离线复现。未宣称生产修复或平台支持。 |
+| `docs/reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md` | GPU P6 接手与 image 内 MPI 多卡核验；含默认模式边界、父仓入口取证、原始缺口复现及隔离分支修复进展。未宣称平台支持。 |
 | `docs/reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md` | 保留基线系统审查、几何/MPI/分发/Relax 历史问题与双入口目的；§9 记录本地修复、独立复核、完整验收及原始日志，§11 记录本地合入、恢复验证、工作区归档与历史分支清理结果，长期语义已吸收，未发布与 GPU/平台边界明确。 |
 | `docs/reports/IRC_INTEGRATION_REVIEW.md` | Sella IRC 集成定位和受控边界说明。 |
 | `docs/reports/NEB_AUTONEB_NATIVE_ASE_BACKEND_REVIEW_2026-05-23.md` | native ASE backend selector 当前边界与默认迁移条件。 |
