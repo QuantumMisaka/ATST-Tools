@@ -11,7 +11,8 @@ documentation set.
 | New user without a calculator runtime | [Quick start](user/USER_GUIDE_CN.md#3-10-分钟快速上手): obtain matching examples, validate YAML, then create/read local files. |
 | Ready to run ABACUS or DP | [Examples](../examples/README.md#usage): check resources and data, enter the case directory, run, then inspect convergence. |
 | Agent or Python integration | [Python API](user/PYTHON_API_REFERENCE.md): use typed results or the process runner and keep each calculation in its own directory. |
-| New contributor | [Developer setup](developer/HANDOVER.md#11-新-checkout-与-cpu-开发准备), then [execution architecture](developer/DOCS_ARCHITECTURE.md#5-执行入口与共享实现). |
+| New contributor | [Developer setup](developer/HANDOVER.md#11-新-checkout-与-cpu-开发准备), then [source architecture](../src/atst_tools/README.md). |
+| Project maintainer exploring implementation | [Source architecture](../src/atst_tools/README.md) for package responsibilities, execution relationships, and the purpose of runtime and bench. |
 
 The current release is 2.2.8. Sections marked **unreleased development tree**
 describe source changes that are not available by installing that release.
@@ -50,7 +51,8 @@ YAML file, and run a workflow.
 Use this path when you need to modify a workflow, YAML schema, calculator
 backend, CLI command, example, or documentation.
 
-1. [README for developers](../README.md#for-developers) for extension points.
+1. [Source architecture guide](../src/atst_tools/README.md) for package
+   responsibilities, execution relationships, and change entry points.
 2. [Handover checklist](developer/HANDOVER.md) for routine maintenance tasks.
 3. [Example validation operations](developer/EXAMPLE_VALIDATION_OPERATIONS.md)
    for maintainer checks, site execution, curated-output provenance, and
@@ -73,6 +75,9 @@ backend, CLI command, example, or documentation.
 
 Use this path when you need to judge current feature support, validation
 evidence, documentation health, release scope, or cleanup priorities.
+
+For a map of what the implementation contains and why each directory exists,
+start with the [source architecture guide](../src/atst_tools/README.md).
 
 1. [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md) for current
    supported, partial, and unsupported capabilities.

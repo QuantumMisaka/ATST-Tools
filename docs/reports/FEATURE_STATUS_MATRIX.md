@@ -1,12 +1,12 @@
 # ATST-Tools Feature Status Matrix
 
 **Version**: 2.2.8
-**Last Updated**: 2026-10-15
+**Last Updated**: 2026-10-16
 **Status**: Published (PyPI clean-install verified)
 **Owner**: ATST-Tools maintainers
 
-Development worktree supplement (2026-10-15, unreleased): the published capability
-rows below do not certify every boundary input. The current remediation worktree
+Local main supplement (2026-10-15, unreleased): the published capability
+rows below do not certify every boundary input. The current main branch
 contains fixed-cell/MIC/IDPP repairs, Relax input fallback and distribution notice
 fixes, synchronized API progress failures, Dimer termination facts and explicit
 stored-data TS validation. The CLI/API shared execution layer and backend provenance are integrated,
@@ -16,6 +16,25 @@ vibration scope from unknown evidence; no calculation automatically certifies a 
 See the [architecture and distribution review](ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md)
 for acceptance evidence and validation limits. No new package release,
 backend/GPU run or platform acceptance is claimed.
+
+The nine issues found in the independent review of `5ad5de5` (one P1 and eight
+P2) are repaired in the local, unreleased branch
+`fix/review-nine-findings-20261016`: segmented NEB restart, IRC default output
+and frozen results, DMF endpoint element order, manifest path bases, bench
+directory/resource/case-ID boundaries, and constant-potential facts-v1 compatibility.
+The final source passes 1347 default tests (32 skipped), 27 opt-in local MPI
+checks, and clean-wheel public API gates; independent source review passed.
+See [the repair acceptance report](MAIN_REVIEW_FIXES_2026-10-16.md) for evidence
+and migration limits. The original findings remain in
+[the historical review](MAIN_BRANCH_REVIEW_2026-10-15.md#6-当前实现独立系统复核2026-10-15).
+These fixes are not part of the published 2.2.8 package; “Supported” below
+continues to describe capability availability.
+
+The [2026-10-16 architecture review](ARCHITECTURE_REVIEW_2026-10-16.md) confirms
+the current modular package, shared scientific execution and runtime/bench split
+as the basis for continued development. Its recommended local contract repairs
+are recorded in the acceptance report above; this does not certify a release or
+close platform P6.
 
 The 2.2.7 package was published from tag `v2.2.7` at commit
 `af9c8fa6b82386a52055a5b3dced82eb3d8f4ef2`. It adds shared-GPU-node resource binding and run evidence (the
@@ -32,26 +51,27 @@ publication and the official no-cache clean-install verification passed;
 SIF/SAI/platform runtime evidence has not been performed. The 2.2.5 release
 evidence stays in the 2.2.5 release notes.
 
-Unreleased development (2026-09-20): CCQN now records effective bond endpoints,
+Development history (2026-09-20; subsequently included in 2.2.7): CCQN records effective bond endpoints,
 direction provenance and initial-structure identity. PRFO evaluates the previous
 step with its original Hessian and applies the updated radius to the next step.
 Local unit validation: 875 passed, 2 skipped; no DFT or deployment claim.
 See the CCQN section of [CONFIG_REFERENCE](../user/CONFIG_REFERENCE.md).
 
-Unreleased development (2026-09-20): the constant-potential candidate adds an
+Development history (2026-09-20; candidate code subsequently shipped in 2.2.7/2.2.8): the constant-potential candidate adds an
 ABACUS calculator decorator, a fixed-geometry single-point/serial-scan workflow,
 and fixed-cell `relax`/`neb` routing for the explicit `compensated_gate`
 boundary. The legacy `reference_fcp` boundary remains reference-only. Local
 ATST behavior checks, bounded numerical profile evidence and a 2026-09-21 SAI 4V100
 joint run with the `runtime` section exist (gate single point plus three-point scan,
-2/2 cases), but this candidate is not part of 2.2.6/PyPI and has no Paimon/public
-tool-chain or deployment acceptance claim. See the [CP configuration section](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+2/2 cases). It was absent from 2.2.6 and is included in the published 2.2.8 wheel
+as a development candidate, with no Paimon/public tool-chain or deployment
+acceptance claim. See the [CP configuration section](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
 for fields, artifacts, and failure semantics.
 
 | Feature | Status | Description | Notes |
 | :--- | :--- | :--- | :--- |
 | **Relax** | ✅ Supported | Geometry Optimization | Uses ASE optimizers. |
-| **Constant-potential** | 🧪 Unreleased candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It ships as a development candidate in the 2.2.7 line; the public Paimon chain remains pending. |
+| **Constant-potential** | 🧪 Development candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It ships as a development candidate in the 2.2.7 line; the public Paimon chain remains pending. The unreleased CP-01 repair restores the legacy `profile_status` label on facts-v1 output and tests actual 2.2.8 readers; transition facts without the label require validated republishing for old consumers. |
 | **Vibration** | ✅ Supported | Frequency Analysis and TS validation | Finite difference method with JSON results, TS validation, and artifact manifest support. |
 | **NEB** | ✅ Supported | Nudged Elastic Band | CI-NEB, two-stage NEB, endpoint single-point repair, optional endpoint relaxation, native ASE selector, artifact manifest, ABACUS STRU inputs for `atst neb make`, and MPI image-level parallelism are supported. |
 | **AutoNEB** | ✅ Supported | Automated NEB | Adaptive image handling, native ASE selector, endpoint single-point repair, and MPI image-level parallelism are supported. |
@@ -73,7 +93,7 @@ for fields, artifacts, and failure semantics.
 | **Result Profiles/Plots Extensions** | ✅ Supported | Opt-in result-envelope fields | `RunOptions(profiles=True)` / `--profiles` and `RunOptions(plots=True)` / `--plots` add optional per-image/per-step summaries and plot PNG paths to `atst-api-result-v1` documents without changing the established fields. |
 | **Image-Level MPI Parallelism** | ✅ Supported | ASE NEB/AutoNEB image parallelism | Requires MPI-launched Python and compatible `mpi4py`; ABACUS nested MPI remains site-launcher dependent. |
 | **Portable MPI Diagnostics** | ✅ Supported | Recovery guidance for missing `mpi4py` in image-parallel launches | Names the explicit `parallel` extra and site-compatible `MPICC` source rebuild; does not promise arbitrary MPI ABI compatibility. New in 2.2.4; additive diagnostic/documentation change. |
-| **Runtime Device Binding & Evidence** | ✅ Supported | Optional device selection, thread budgets and run evidence | The optional `runtime` YAML section plus `--devices/--binding/--threads/--telemetry` on `atst run` and the API runner: requests are resolved against the caller's binding and trusted allocation facts (`ATST_ALLOCATION_DEVICES`), `round_robin` is fail-closed for unverified pools, and `runtime_evidence.json` records the environment triple, device facts, process-scope counters, host samples and the sampled memory peak. Legacy calls without runtime keys are unchanged. Local real-GPU evidence exists, and the SAI V100 P5 matrix completed on 2026-09-21 (DP matrix 12/12, ABACUS examples 4/4, multi-card NEB, 8 ranks on one card, 8 graphs x 8 GPU cards, and the host/SIF pairing; see sections 5h/5j of the SAI validation report). Still open or condition-blocked, and not to be read as complete: the DP TF backend dimension (not specifically supported by decision: the thread budget and artifact-kind detection apply to TF graphs at the algorithm level, with no TF artifact validation planned) and the site `mpiexec` + runtime rebind hang (root cause fixed in this line, site/upstream confirmation pending). Read-only model sharing and restart regression were closed on 2026-09-22 with a read-only model directory, a shared-worker DP batch, per-attempt attribution and a same-workdir restart on SAI V100; on the same site MPS is enabled, so per-process attribution stays `unavailable` by design instead of being inferred (see the P2 closeout report). A 2026-09-21 joint run with the constant-potential workflow passed on SAI; it also exposed a schema default that kept `runtime.threads` from reaching the ABACUS backend, which was fixed in `5e26789` before 2.2.7 and re-verified on site (SAI job 1436782; tracked in the GPU tuning review map). New in 2.2.7; additive. |
+| **Runtime Device Binding & Evidence** | ✅ Supported | Optional device selection, thread budgets and run evidence | The optional `runtime` YAML section plus `--devices/--binding/--threads/--telemetry` on `atst run` and the API runner: requests are resolved against the caller's binding and trusted allocation facts (`ATST_ALLOCATION_DEVICES`), `round_robin` is fail-closed for unverified pools, and `runtime_evidence.json` records the environment triple, device facts, process-scope counters, host samples and the sampled memory peak. Legacy calls without runtime keys are unchanged. Local real-GPU evidence exists, and the SAI V100 P5 matrix completed on 2026-09-21 (DP matrix 12/12, ABACUS examples 4/4, multi-card NEB, 8 ranks on one card, 8 graphs x 8 GPU cards, and the host/SIF pairing; see sections 5h/5j of the SAI validation report). The DP TF artifact dimension is not specifically supported and its dedicated validation is not planned. The site `mpiexec` + runtime rebind fix passed three consecutive site runs (see the archived MPI repeat evidence); remaining site/upstream coordination is distinct from the reproduced runtime fix. P6 platform migration and downstream acceptance remain open. Read-only model sharing and restart regression were closed on 2026-09-22 with a read-only model directory, a shared-worker DP batch, per-attempt attribution and a same-workdir restart on SAI V100; on the same site MPS is enabled, so per-process attribution stays `unavailable` by design instead of being inferred (see the P2 closeout report). A 2026-09-21 joint run with the constant-potential workflow passed on SAI; it also exposed a schema default that kept `runtime.threads` from reaching the ABACUS backend, which was fixed in `5e26789` before 2.2.7 and re-verified on site (SAI job 1436782; tracked in the GPU tuning review map). New in 2.2.7; additive. |
 | **atst prepare** | ✅ Supported | Reverse config generation from an ABACUS run directory | `atst prepare` and `atst_tools.api.build_config_from_abacus_dir` generate runnable transition YAML (currently NEB) from `INPUT`/`STRU`/`KPT`/`PP`/`ORB`. User-controlled ABACUS values are kept verbatim with three technical floors (`calculation`→`scf`, `cal_force`→`1`, KPT line-mode rejected) and an optional endpoint energy+forces gate (`--no-gate` skips it). New in 2.2.3; backward-compatible. |
 | **Trajectory Stress Retention** | ✅ Supported | NEB/AutoNEB trajectories carry per-image stress when the ABACUS calculator requests it | `cal_stress=1` retains per-image stress on NEB/AutoNEB trajectories (serial and image-parallel); `cal_stress=0` behavior is identical to 2.2.x. New in 2.2.3; additive. |
 | **GA** | ❌ Not Supported | Genetic Algorithm | ASE 3.28.0 moved GA implementation to the standalone `ase-ga` project; ATST-Tools does not expose GA workflows. |

@@ -300,7 +300,9 @@ def run_neb(config, calc_name, calc_config, world=None):
     try:
         if restart:
             n_images = (
-                make_config['n_images'] + 2
+                # Segmented interpolation joins two endpoint-inclusive paths
+                # at the TS guess, adding one image to the ordinary band.
+                make_config['n_images'] + 2 + (make_config.get('ts_guess') is not None)
                 if has_make
                 else len(read(init_chain_file, index=':', parallel=False))
             )

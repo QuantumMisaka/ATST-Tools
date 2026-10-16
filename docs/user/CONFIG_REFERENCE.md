@@ -1,7 +1,7 @@
 # ATST-Tools Configuration Reference
 
 **Version**: 2.2.8
-**Last Updated**: 2026-10-15
+**Last Updated**: 2026-10-16
 **Status**: Published 2.2.8 reference; explicitly marked development additions are unreleased
 
 This document is the hand-written semantic reference for `config.yaml` files
@@ -148,6 +148,14 @@ calculation:
 
 The nested NEB `make.method` value accepts `IDPP` (default) or `linear`. `IDPP` starts from the aligned linear interpolation and then runs the in-repository `Fast_IDPPSolver`; `linear` writes the aligned linear interpolation directly. `init_structure`, `final_structure`, and `ts_guess` may be ABACUS `STRU` / `.stru` files. Their mobility flags are preserved as ASE constraints in the generated chain and in ABACUS image input writing, including full `m 0 0 0` fixed atoms and partial Cartesian mobility such as `m 1 0 1`. `sort_tol` / pymatgen autosort is intentionally dropped.
 
+Without `ts_guess`, the generated band contains `n_images + 2` images. With a
+TS guess, the two segments contain `n_images` interpolated images in total,
+plus the TS guess and both endpoints (`n_images + 3`). The unreleased restart
+fix (2026-10-16) uses the same band width; it preserves existing generated
+paths and rejects incomplete bands. Keep the original `make` configuration
+when resuming its trajectory. For example, `n_images: 3` with a TS guess
+produces and restores six images per band.
+
 ASE NEB/DyNEB does not optimize endpoint images, but tangent and barrier analysis use endpoint energies. If a chain was made from pure structures, `atst neb make` writes placeholder endpoint results. `atst run` repairs these by default with endpoint single-point calculations before constructing NEB:
 
 ```yaml
@@ -274,6 +282,11 @@ transition state.
 
 ATST-Tools vendors PyDMF under `atst_tools.external.pydmf`, but runtime still
 requires `cyipopt` and IPOPT in the active environment.
+
+Both endpoints must contain the same number of atoms in the same element
+order. The unreleased correspondence check (2026-10-16) rejects mismatches
+before constructing the DMF optimizer; it does not reorder the final structure
+automatically. Prepare the intended atom mapping before running DMF.
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -602,7 +615,7 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `init_structure` | string | **Required** | TS structure used as the IRC starting point. |
 | `trajectory` | string | `irc_log.traj` | IRC trajectory. Restart appends from the last frame. |
 | `artifact_manifest` | string | `atst_artifacts.json` | Workflow artifact manifest JSON output. |
-| `normalized_trajectory` | string | `norm_<trajectory>` | Output for normalized forward/reverse trajectory when `direction: both`. |
+| `normalized_trajectory` | string/null | `norm_<trajectory filename>` | Output for normalized forward/reverse trajectory when `direction: both`; omitted/null selects the default in the workdir. |
 | `direction` | string | `both` | `both`, `forward`, or `reverse`. |
 | `mode_vector` | string/null | `None` | Required NumPy mode vector for `backend: descent`. |
 | `descent_delta` | float | `0.1` | Initial displacement along the normalized mode vector for descent backend. |
@@ -614,6 +627,12 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `irctol` | float | `0.01` | IRC tolerance. |
 | `keep_going` | bool | `false` | Forwarded to `sella.IRC`. |
 | `directory` | string | `irc_run` | Calculator working directory. |
+
+Unreleased fixes (2026-10-16): the combined Sella run accepts an omitted or
+null `normalized_trajectory` and preserves an explicit filename. Descent IRC
+keeps valid frozen energy and force results on its returned endpoints and in
+the main and normalized trajectories, matching the direction-specific files.
+Saving these results does not request another backend evaluation.
 
 ---
 
@@ -819,6 +838,17 @@ non-finite, geometrically changed, boundary-changed, or asset-changed facts;
 moving an unchanged asset file is allowed because content hashes, not paths,
 define the physical identity. Reference-fcp facts remain reference-only and
 must not be used to claim optimization energy/force consistency.
+
+Unreleased facts-v1 compatibility fix (2026-10-16): new persisted facts again
+include the historical `profile_status` field required by the 2.2.8 reader.
+Its values remain `reference_only_unvalidated` for `reference_fcp` and
+`compensated_gate_pending_scientific_acceptance` for `compensated_gate`; these
+are compatibility labels, not scientific validation results. The current
+reader accepts both older frames containing this field and transitional
+unreleased frames that omitted it. The old 2.2.8 reader still cannot consume
+those transitional frames directly; use the current reader and validated
+republication when such a frame needs to be handed back to it. Geometry,
+Hamiltonian identity and residual validation remain required.
 
 ### 3.2 Deep Potential (DP)
 **Name**: `dp`

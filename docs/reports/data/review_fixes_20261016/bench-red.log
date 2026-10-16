@@ -1,0 +1,299 @@
+.FFF.FFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+_______________ test_resolved_workdirs_cannot_collide[explicit] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_resolved_workdirs_cannot_1')
+alias = 'explicit'
+
+    @pytest.mark.parametrize("alias", ["implicit", "explicit", "relative", "symlink"])
+    def test_resolved_workdirs_cannot_collide(tmp_path, alias):
+        source = tmp_path / "source"
+        source.mkdir()
+        config_a = source / "a.yaml"
+        config_b = source / "b.yaml"
+        config_a.write_text("{}\n", encoding="utf-8")
+        config_b.write_text("{}\n", encoding="utf-8")
+        first = {"case_id": "a", "config": str(config_a)}
+        second = {"case_id": "b", "config": str(config_b)}
+        if alias == "explicit":
+            second["workdir"] = str(source)
+        elif alias == "relative":
+            second["workdir"] = os.path.relpath(source, tmp_path / "out")
+        elif alias == "symlink":
+            link = tmp_path / "source-link"
+            link.symlink_to(source, target_is_directory=True)
+            second["workdir"] = str(link)
+>       with pytest.raises(ValueError, match="distinct directories"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:40: Failed
+_______________ test_resolved_workdirs_cannot_collide[relative] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_resolved_workdirs_cannot_2')
+alias = 'relative'
+
+    @pytest.mark.parametrize("alias", ["implicit", "explicit", "relative", "symlink"])
+    def test_resolved_workdirs_cannot_collide(tmp_path, alias):
+        source = tmp_path / "source"
+        source.mkdir()
+        config_a = source / "a.yaml"
+        config_b = source / "b.yaml"
+        config_a.write_text("{}\n", encoding="utf-8")
+        config_b.write_text("{}\n", encoding="utf-8")
+        first = {"case_id": "a", "config": str(config_a)}
+        second = {"case_id": "b", "config": str(config_b)}
+        if alias == "explicit":
+            second["workdir"] = str(source)
+        elif alias == "relative":
+            second["workdir"] = os.path.relpath(source, tmp_path / "out")
+        elif alias == "symlink":
+            link = tmp_path / "source-link"
+            link.symlink_to(source, target_is_directory=True)
+            second["workdir"] = str(link)
+>       with pytest.raises(ValueError, match="distinct directories"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:40: Failed
+________________ test_resolved_workdirs_cannot_collide[symlink] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_resolved_workdirs_cannot_3')
+alias = 'symlink'
+
+    @pytest.mark.parametrize("alias", ["implicit", "explicit", "relative", "symlink"])
+    def test_resolved_workdirs_cannot_collide(tmp_path, alias):
+        source = tmp_path / "source"
+        source.mkdir()
+        config_a = source / "a.yaml"
+        config_b = source / "b.yaml"
+        config_a.write_text("{}\n", encoding="utf-8")
+        config_b.write_text("{}\n", encoding="utf-8")
+        first = {"case_id": "a", "config": str(config_a)}
+        second = {"case_id": "b", "config": str(config_b)}
+        if alias == "explicit":
+            second["workdir"] = str(source)
+        elif alias == "relative":
+            second["workdir"] = os.path.relpath(source, tmp_path / "out")
+        elif alias == "symlink":
+            link = tmp_path / "source-link"
+            link.symlink_to(source, target_is_directory=True)
+            second["workdir"] = str(link)
+>       with pytest.raises(ValueError, match="distinct directories"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:40: Failed
+__________ test_case_id_cannot_leave_its_report_directory[../escape] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_0')
+case_id = '../escape'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+_____________ test_case_id_cannot_leave_its_report_directory[a/b] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_1')
+case_id = 'a/b'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+_____________ test_case_id_cannot_leave_its_report_directory[a\\b] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_2')
+case_id = 'a\\b'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+______________ test_case_id_cannot_leave_its_report_directory[.] _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_3')
+case_id = '.'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+______________ test_case_id_cannot_leave_its_report_directory[..] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_4')
+case_id = '..'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+__________ test_case_id_cannot_leave_its_report_directory[bad\nline] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_id_cannot_leave_its_5')
+case_id = 'bad\nline'
+
+    @pytest.mark.parametrize("case_id", ["../escape", "a/b", "a\\b", ".", "..", "bad\nline"])
+    def test_case_id_cannot_leave_its_report_directory(tmp_path, case_id):
+>       with pytest.raises(ValueError, match="case_id"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:54: Failed
+___________ test_case_env_preserves_managed_facts_and_custom_values ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_case_env_preserves_manage0')
+
+    def test_case_env_preserves_managed_facts_and_custom_values(tmp_path):
+        overrides = {
+            "CUDA_VISIBLE_DEVICES": "7", "OMP_NUM_THREADS": "99",
+            "OPENBLAS_NUM_THREADS": "99", "ATST_THREADS_SOURCE": "explicit",
+            "ATST_ATTEMPT": "99", "NUMBA_CACHE_DIR": "/tmp/shared",
+            "ATST_RUNTIME_BOUND": "0", "ATST_INHERITED_DEVICES": "7",
+            "ATST_EFFECTIVE_DEVICES": "7", "ATST_BINDING": "round_robin",
+            "MY_FLAG": "kept",
+        }
+        case = batch_runner.CaseSpec.from_mapping(
+            {"case_id": "one", "config": "input.yaml", "threads": 2, "env": overrides}
+        )
+        base = {"ATST_RUNTIME_BOUND": "1", "ATST_INHERITED_DEVICES": "0",
+                "ATST_EFFECTIVE_DEVICES": "0", "ATST_BINDING": "inherit"}
+        env = batch_runner.case_environment(case, ("0",), base=base, attempt=1, workdir=tmp_path)
+        for key in batch_runner._launch.THREAD_ENV_KEYS:
+>           assert env[key] == "2"
+E           AssertionError: assert '99' == '2'
+E             
+E             - 2
+E             + 99
+
+tests/unit/test_bench_boundary_contract.py:81: AssertionError
+____ test_runtime_threads_and_runner_args_cannot_expand_batch_budget[False] ____
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_runtime_threads_and_runne0')
+shared = False
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_runtime_threads_and_runner_args_cannot_expand_batch_budget(tmp_path, shared):
+        config = tmp_path / "input.yaml"
+        config.write_text("runtime:\n  threads: 8\n", encoding="utf-8")
+        options = _options(tmp_path, share_worker=shared)
+        row = {"case_id": "one", "config": str(config), "workdir": "one", "threads": 2}
+>       with pytest.raises(ValueError, match="runtime.threads|thread budget"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:98: Failed
+____ test_runtime_threads_and_runner_args_cannot_expand_batch_budget[True] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_runtime_threads_and_runne1')
+shared = True
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_runtime_threads_and_runner_args_cannot_expand_batch_budget(tmp_path, shared):
+        config = tmp_path / "input.yaml"
+        config.write_text("runtime:\n  threads: 8\n", encoding="utf-8")
+        options = _options(tmp_path, share_worker=shared)
+        row = {"case_id": "one", "config": str(config), "workdir": "one", "threads": 2}
+>       with pytest.raises(ValueError, match="runtime.threads|thread budget"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/unit/test_bench_boundary_contract.py:98: Failed
+________________ test_safe_space_id_runs_and_is_reported[False] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_safe_space_id_runs_and_is0')
+shared = False
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_safe_space_id_runs_and_is_reported(tmp_path, shared):
+        script = tmp_path / "worker.py"
+        script.write_text(
+            "import json,os,sys\nfrom pathlib import Path\n"
+            "if len(sys.argv)==3:\n"
+            " jobs=json.loads(Path(sys.argv[1]).read_text())\n"
+            " for job in jobs:\n"
+            "  p=Path(sys.argv[2])/job['case_id'];p.mkdir(parents=True,exist_ok=True)\n"
+            "  (p/'atst_api_result.json').write_text('{}')\n"
+            "  print(f\"[batch_worker] case={job['case_id']} status=success wall_s=0.001\",flush=True)\n"
+            "else:\n"
+            " (Path.cwd()/'atst_api_result.json').write_text('{}')\n",
+            encoding="utf-8",
+        )
+        factory = lambda case, workdir, devices: [sys.executable, str(script)]
+        shared_factory = lambda jobs, out: [sys.executable, str(script), str(jobs), str(out)]
+        options = _options(tmp_path, share_worker=shared, worker_factory=factory,
+                           shared_worker_factory=shared_factory)
+        summary = batch_runner.run_manifest(
+            {"cases": [{"case_id": "foo bar", "config": "input.yaml", "workdir": "safe"}]},
+            options,
+        )
+        assert summary["cases"][0]["case_id"] == "foo bar"
+        assert summary["cases"][0]["status"] == "succeeded"
+        assert (tmp_path / "out" / "foo bar" / batch_runner.CASE_REPORT).is_file()
+>       assert batch_worker.parse_progress_line(
+            batch_worker.format_progress_line("foo bar", "success", 0.001)
+        ) == ("foo bar", "success", 0.001)
+E       AssertionError: assert ('foo', 'success', 0.001) == ('foo bar', 'success', 0.001)
+E         
+E         At index 0 diff: 'foo' != 'foo bar'
+E         Use -v to get more diff
+
+tests/unit/test_bench_boundary_contract.py:132: AssertionError
+________________ test_safe_space_id_runs_and_is_reported[True] _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1517/test_safe_space_id_runs_and_is1')
+shared = True
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_safe_space_id_runs_and_is_reported(tmp_path, shared):
+        script = tmp_path / "worker.py"
+        script.write_text(
+            "import json,os,sys\nfrom pathlib import Path\n"
+            "if len(sys.argv)==3:\n"
+            " jobs=json.loads(Path(sys.argv[1]).read_text())\n"
+            " for job in jobs:\n"
+            "  p=Path(sys.argv[2])/job['case_id'];p.mkdir(parents=True,exist_ok=True)\n"
+            "  (p/'atst_api_result.json').write_text('{}')\n"
+            "  print(f\"[batch_worker] case={job['case_id']} status=success wall_s=0.001\",flush=True)\n"
+            "else:\n"
+            " (Path.cwd()/'atst_api_result.json').write_text('{}')\n",
+            encoding="utf-8",
+        )
+        factory = lambda case, workdir, devices: [sys.executable, str(script)]
+        shared_factory = lambda jobs, out: [sys.executable, str(script), str(jobs), str(out)]
+        options = _options(tmp_path, share_worker=shared, worker_factory=factory,
+                           shared_worker_factory=shared_factory)
+        summary = batch_runner.run_manifest(
+            {"cases": [{"case_id": "foo bar", "config": "input.yaml", "workdir": "safe"}]},
+            options,
+        )
+        assert summary["cases"][0]["case_id"] == "foo bar"
+>       assert summary["cases"][0]["status"] == "succeeded"
+E       AssertionError: assert 'failed' == 'succeeded'
+E         
+E         - succeeded
+E         + failed
+
+tests/unit/test_bench_boundary_contract.py:130: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_bench_boundary_contract.py::test_resolved_workdirs_cannot_collide[explicit]
+FAILED tests/unit/test_bench_boundary_contract.py::test_resolved_workdirs_cannot_collide[relative]
+FAILED tests/unit/test_bench_boundary_contract.py::test_resolved_workdirs_cannot_collide[symlink]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[../escape]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[a/b]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[a\\b]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[.]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[..]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_id_cannot_leave_its_report_directory[bad\nline]
+FAILED tests/unit/test_bench_boundary_contract.py::test_case_env_preserves_managed_facts_and_custom_values
+FAILED tests/unit/test_bench_boundary_contract.py::test_runtime_threads_and_runner_args_cannot_expand_batch_budget[False]
+FAILED tests/unit/test_bench_boundary_contract.py::test_runtime_threads_and_runner_args_cannot_expand_batch_budget[True]
+FAILED tests/unit/test_bench_boundary_contract.py::test_safe_space_id_runs_and_is_reported[False]
+FAILED tests/unit/test_bench_boundary_contract.py::test_safe_space_id_runs_and_is_reported[True]
+14 failed, 2 passed in 1.84s
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_bench_boundary_contract.py -q -o addopts=-ra` failed. (See above for error)

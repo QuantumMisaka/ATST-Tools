@@ -1,0 +1,7 @@
+fixture_root=/tmp/atst-runtime-findings-5tbep6_l
+workdir_collision.accepted=True actual_paths=[PosixPath('/tmp/atst-runtime-findings-5tbep6_l/same-workdir'), PosixPath('/tmp/atst-runtime-findings-5tbep6_l/same-workdir')]
+environment_override.status=succeeded allocated=0/1 observed={'CUDA_VISIBLE_DEVICES': '7', 'OMP_NUM_THREADS': '99', 'ATST_RUNTIME_BOUND': None}
+environment_override.runner_plan=None contract_guard=passed
+case_id_escape.accepted='../escape' report_path=/tmp/atst-runtime-findings-5tbep6_l/escape/case_report.json
+case_id_space.progress='[batch_worker] case=foo bar status=success wall_s=0.001' parsed=('foo', 'success', 0.001)
+case_id_space.result_exists=True worker_exit=0 report_status=failed classification=shared worker exited

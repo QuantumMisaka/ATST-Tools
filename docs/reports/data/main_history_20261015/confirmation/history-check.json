@@ -1,0 +1,68 @@
+{
+  "audited_head": "5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e",
+  "manifest_base": "065da5a722232bb040c52733b8406f811a5e1e24",
+  "head_commit_count": 735,
+  "manifest_commit_count": 734,
+  "exact_partition_and_metadata": true,
+  "batches": [
+    {
+      "batch": "B01",
+      "range": "v1.5.1",
+      "count": 291
+    },
+    {
+      "batch": "B02",
+      "range": "v1.5.1..v2.0.2",
+      "count": 103
+    },
+    {
+      "batch": "B03",
+      "range": "v2.0.2..v2.1.4",
+      "count": 42
+    },
+    {
+      "batch": "B04",
+      "range": "v2.1.4..v2.2.0",
+      "count": 56
+    },
+    {
+      "batch": "B05",
+      "range": "v2.2.0..v2.2.4",
+      "count": 77
+    },
+    {
+      "batch": "B06",
+      "range": "v2.2.4..v2.2.5",
+      "count": 2
+    },
+    {
+      "batch": "B07",
+      "range": "v2.2.5..v2.2.6",
+      "count": 26
+    },
+    {
+      "batch": "B08",
+      "range": "v2.2.6..v2.2.7",
+      "count": 110
+    },
+    {
+      "batch": "B09",
+      "range": "v2.2.7..v2.2.8",
+      "count": 20
+    },
+    {
+      "batch": "B10",
+      "range": "v2.2.8..45d8c78",
+      "count": 5
+    },
+    {
+      "batch": "B11",
+      "range": "45d8c78..065da5a",
+      "count": 2
+    }
+  ],
+  "published_tag": "b6a68f925c8c5c9e8a5afc13890d16f853956e9f",
+  "local_origin_main": "45d8c78de8a605c127cd4c36742d0c9525a0a6b6",
+  "ahead_origin": 3,
+  "since_release": 8
+}

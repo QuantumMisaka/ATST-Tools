@@ -85,6 +85,22 @@ class DMFWorkflow:
         if not self.calc_config["confirm_pbc_risk"]:
             raise ValueError("DMF pbc_mode=cartesian_unwrapped requires confirm_pbc_risk=true")
 
+    @staticmethod
+    def _validate_endpoints(init_atoms: Atoms, final_atoms: Atoms) -> None:
+        """Require one-to-one atomic identity across the two DMF endpoints.
+
+        Args:
+            init_atoms: Initial endpoint in the requested atom order.
+            final_atoms: Final endpoint in the requested atom order.
+
+        Raises:
+            ValueError: If atom counts or ordered chemical symbols differ.
+        """
+        if len(init_atoms) != len(final_atoms):
+            raise ValueError("DMF endpoints must have the same number of atoms")
+        if not np.array_equal(init_atoms.numbers, final_atoms.numbers):
+            raise ValueError("DMF endpoints must have identical ordered chemical symbols")
+
     def _ipopt_options(self) -> dict[str, Any]:
         ipopt_options = dict(self.calc_config.get("ipopt_options", {}))
         if isinstance(self.calc_config["tol"], float):
@@ -162,6 +178,7 @@ class DMFWorkflow:
         """Execute DMF and write path, candidate, summary, and manifest artifacts."""
         init_atoms = read_structure(self.calc_config["init_file"])
         final_atoms = read_structure(self.calc_config["final_file"])
+        self._validate_endpoints(init_atoms, final_atoms)
         self._validate_pbc(init_atoms, final_atoms)
 
         DirectMaxFlux, interpolate_fbenm = self._load_pydmf()

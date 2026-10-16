@@ -40,6 +40,8 @@ Before deleting any file from this directory:
 
 ## Current Contents
 
+- `plans/2026-10-16-review-findings-remediation.md`: nine review findings repaired and locally accepted; maintained references and MAIN_REVIEW_FIXES_2026-10-16 retain behavior, migration and evidence. Isolated worktree retained, no merge or release.
+
 - `plans/2026-10-13-ase-ts-dual-interface-remediation.md`: local remediation and acceptance completed on 2026-10-15; conclusions and evidence retained in the system review and maintained references. No release or platform acceptance is implied.
 
 - `plans/2026-07-02-abacuslite-backend-upstream-issue-fixes.md`: implemented

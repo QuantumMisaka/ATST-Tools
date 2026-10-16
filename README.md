@@ -347,16 +347,9 @@ Each calculation example uses `config.yaml` for ABACUS and, where available,
 
 ## For Developers
 
-The main extension points are deliberately small:
-
-| Task | Start here |
-| :--- | :--- |
-| Add or change YAML inputs | `src/atst_tools/utils/config_schema.py` |
-| Regenerate YAML docs | `python -m atst_tools.utils.config_docs` |
-| Add a calculator backend | `src/atst_tools/calculators/` |
-| Add an `atst run` workflow | `src/atst_tools/workflows/execution.py` and `src/atst_tools/workflows/` |
-| Add lightweight CLI commands | `src/atst_tools/scripts/cli.py` plus focused command components |
-| Add examples | `examples/<case>/config.yaml` and curated `inputs/` |
+Start with the [source architecture guide](src/atst_tools/README.md) to understand
+package responsibilities, the shared CLI/API execution path, the purpose of
+`runtime` and `bench`, and where to make changes.
 
 Developer governance starts from these maintained entry points:
 

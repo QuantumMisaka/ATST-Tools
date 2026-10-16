@@ -1,0 +1,104 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________ test_relative_config_identity_survives_worker_chdir[False] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1531/test_relative_config_identity_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72cbb76ee980>
+shared = False
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_relative_config_identity_survives_worker_chdir(tmp_path, monkeypatch, shared):
+        monkeypatch.chdir(tmp_path)
+        config = tmp_path / "input.yaml"
+        config.write_text("runtime:\n  threads: 1\n", encoding="utf-8")
+        workdir = tmp_path / "out" / "case"
+        workdir.mkdir(parents=True)
+        (workdir / "input.yaml").write_text("runtime:\n  threads: 8\n", encoding="utf-8")
+        script = tmp_path / "read_config.py"
+        script.write_text(
+            "import json,sys\nfrom pathlib import Path\n"
+            "if len(sys.argv)==3:\n"
+            " jobs=json.loads(Path(sys.argv[1]).read_text())\n"
+            " for job in jobs:\n"
+            "  source=Path(job['config'])\n"
+            "  (Path(sys.argv[2])/'observed.txt').write_text(str(source.resolve())+'\\n'+source.read_text())\n"
+            "  print(f\"[batch_worker] case={job['case_id']} status=success wall_s=0.001\",flush=True)\n"
+            "else:\n"
+            " source=Path(sys.argv[1])\n"
+            " Path('observed.txt').write_text(str(source.resolve())+'\\n'+source.read_text())\n",
+            encoding="utf-8",
+        )
+        options = _options(
+            tmp_path, share_worker=shared,
+            worker_factory=lambda case, cwd, devices: [sys.executable, str(script), case.config],
+            shared_worker_factory=lambda jobs, out: [sys.executable, str(script), str(jobs), str(out)],
+        )
+        row = {"case_id": "case", "config": "input.yaml", "workdir": "case", "threads": 2}
+        cases = batch_runner.load_cases({"cases": [row]}, options)
+        summary = batch_runner.run_manifest({"cases": [row]}, options)
+        assert summary["cases"][0]["status"] == "succeeded"
+        observed = (tmp_path / "out" / "observed.txt" if shared else workdir / "observed.txt")
+>       assert observed.read_text(encoding="utf-8") == str(config.resolve()) + "\nruntime:\n  threads: 1\n"
+E       AssertionError: assert '/tmp/pytest-... threads: 8\n' == '/tmp/pytest-... threads: 1\n'
+E         
+E         Skipping 55 identical leading characters in diff, use -v to show
+E         - dentity_0/input.yaml
+E         + dentity_0/out/case/input.yaml
+E         ?          +++++++++
+E           runtime:
+E         -   threads: 1...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_bench_boundary_contract.py:175: AssertionError
+__________ test_relative_config_identity_survives_worker_chdir[True] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1531/test_relative_config_identity_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72cbb682bc10>
+shared = True
+
+    @pytest.mark.parametrize("shared", [False, True])
+    def test_relative_config_identity_survives_worker_chdir(tmp_path, monkeypatch, shared):
+        monkeypatch.chdir(tmp_path)
+        config = tmp_path / "input.yaml"
+        config.write_text("runtime:\n  threads: 1\n", encoding="utf-8")
+        workdir = tmp_path / "out" / "case"
+        workdir.mkdir(parents=True)
+        (workdir / "input.yaml").write_text("runtime:\n  threads: 8\n", encoding="utf-8")
+        script = tmp_path / "read_config.py"
+        script.write_text(
+            "import json,sys\nfrom pathlib import Path\n"
+            "if len(sys.argv)==3:\n"
+            " jobs=json.loads(Path(sys.argv[1]).read_text())\n"
+            " for job in jobs:\n"
+            "  source=Path(job['config'])\n"
+            "  (Path(sys.argv[2])/'observed.txt').write_text(str(source.resolve())+'\\n'+source.read_text())\n"
+            "  print(f\"[batch_worker] case={job['case_id']} status=success wall_s=0.001\",flush=True)\n"
+            "else:\n"
+            " source=Path(sys.argv[1])\n"
+            " Path('observed.txt').write_text(str(source.resolve())+'\\n'+source.read_text())\n",
+            encoding="utf-8",
+        )
+        options = _options(
+            tmp_path, share_worker=shared,
+            worker_factory=lambda case, cwd, devices: [sys.executable, str(script), case.config],
+            shared_worker_factory=lambda jobs, out: [sys.executable, str(script), str(jobs), str(out)],
+        )
+        row = {"case_id": "case", "config": "input.yaml", "workdir": "case", "threads": 2}
+        cases = batch_runner.load_cases({"cases": [row]}, options)
+        summary = batch_runner.run_manifest({"cases": [row]}, options)
+        assert summary["cases"][0]["status"] == "succeeded"
+        observed = (tmp_path / "out" / "observed.txt" if shared else workdir / "observed.txt")
+        assert observed.read_text(encoding="utf-8") == str(config.resolve()) + "\nruntime:\n  threads: 1\n"
+>       assert cases[0].config == str(config.resolve())
+E       AssertionError: assert 'input.yaml' == '/tmp/pytest-..._1/input.yaml'
+E         
+E         - /tmp/pytest-of-james/pytest-1531/test_relative_config_identity_1/input.yaml
+E         + input.yaml
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_bench_boundary_contract.py:176: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_bench_boundary_contract.py::test_relative_config_identity_survives_worker_chdir[False]
+FAILED tests/unit/test_bench_boundary_contract.py::test_relative_config_identity_survives_worker_chdir[True]
+2 failed in 0.39s
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_bench_boundary_contract.py::test_relative_config_identity_survives_worker_chdir -q -o addopts=-ra` failed. (See above for error)

@@ -105,6 +105,10 @@ _CP_FACT_KEYS = (
     "cp_history",
 )
 _CP_REQUIRED_FACT_KEYS = frozenset(_CP_FACT_KEYS)
+_CP_LEGACY_PROFILE_STATUS = {
+    "reference_fcp": "reference_only_unvalidated",
+    "compensated_gate": "compensated_gate_pending_scientific_acceptance",
+}
 _CP_REQUIRED_IDENTITY_KEYS = frozenset(
     {
         "energy_boundary",
@@ -393,6 +397,10 @@ def _constant_potential_facts_error(
         return "constant-potential facts energy_boundary is unsupported"
     if facts["energy_boundary"] != identity["energy_boundary"]:
         return "constant-potential facts boundary disagrees with identity"
+    if "profile_status" in facts and (
+        not isinstance(facts["profile_status"], str) or not facts["profile_status"]
+    ):
+        return "constant-potential facts profile_status is malformed"
     if not isinstance(facts["boundary_parameters"], Mapping):
         return "constant-potential facts boundary_parameters is malformed"
     if not isinstance(identity["boundary_parameters"], Mapping):
@@ -570,6 +578,11 @@ def publish_constant_potential_facts(
     if not isinstance(results, Mapping) or not isinstance(identity, Mapping):
         raise ConstantPotentialEvaluationError("constant-potential facts require result and identity mappings")
     facts = {key: _jsonable(results[key]) for key in _CP_FACT_KEYS if key in results}
+    # Keep facts-v1 readable by v2.2.8 without using this legacy label as
+    # evidence of scientific validation or a calculator state transition.
+    legacy_status = _CP_LEGACY_PROFILE_STATUS.get(facts.get("energy_boundary"))
+    if legacy_status is not None:
+        facts["profile_status"] = legacy_status
     payload = {
         "schema": CP_FACTS_SCHEMA,
         "workflow": "constant_potential",

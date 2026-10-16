@@ -11,6 +11,7 @@ from pathlib import Path
 
 ACTIVE_MARKDOWN_ROOTS = (
     Path("README.md"),
+    Path("src/atst_tools/README.md"),
     Path("examples/README.md"),
     Path("AGENTS.md"),
     Path("docs"),

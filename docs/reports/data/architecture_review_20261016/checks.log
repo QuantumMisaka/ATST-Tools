@@ -1,0 +1,38 @@
+Architecture review checks, 2026-10-16
+Source HEAD: 5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e
+Production Python source, tests, pyproject.toml and CI: unchanged from HEAD.
+
+Command: PYTHONPATH="$PWD/src" conda run --no-capture-output -n atst-dev python -m pytest tests/unit/test_runtime_entry.py tests/unit/test_shared_execution.py -o addopts=-ra -q
+Exit code: 0
+.....................                                                    [100%]
+21 passed in 13.48s
+
+Fresh-process import probe: one atst-dev subprocess per module with PYTHONPATH bound to this checkout.
+Each probe imports its target with importlib.import_module and inspects sys.modules.
+Checked names: numpy, ase, deepmd, torch, tensorflow, jax, sella, mpi4py.
+atst_tools: []
+atst_tools.api: []
+atst_tools.api.runner: []
+atst_tools.scripts.cli: []
+atst_tools.runtime.cli_dispatch: []
+atst_tools.runtime.launch: []
+All six probes exited 0 and passed the empty-list assertion.
+
+AST audit command: python docs/reports/data/architecture_review_20261016/import_audit.py --output docs/reports/data/architecture_review_20261016/import-audit.json
+Exit code: 0. Full source hashes, explicit edges and method limits are in import-audit.json.
+
+Command: PYTHONPATH="$PWD/src" conda run -n atst-dev python scripts/check_docs_governance.py
+Exit code: 0
+documentation governance checks passed
+
+Command: PYTHONPATH="$PWD/src" conda run --no-capture-output -n atst-dev python -m pytest tests/unit/test_docs_governance.py -o addopts=-ra -q
+Exit code: 0
+..........................                                               [100%]
+26 passed in 0.29s
+
+git diff --check: exit 0.
+Source hash and new-file whitespace check: passed for all 72 audited source files.
+Required broad conflict scan: only pre-existing pytest log heading matches; exact conflict-marker scan found none.
+Independent final review: no architectural/evidence blocker; corrected one wording issue (all capabilities need not pass through a single workflow class).
+
+

@@ -60,7 +60,7 @@ import subprocess
 import sys
 import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -93,6 +93,27 @@ SHARED_BATCH_SLOT = "__batch__"
 SHARED_WORKER_EXIT_REASON = "shared worker exited"
 _SHARED_SUCCESS_STATUSES = frozenset({"success", "succeeded"})
 _SHARED_ERROR_STATUSES = frozenset({"error", "failed"})
+_MANAGED_CASE_ENV = frozenset(
+    {
+        _devices.CUDA_VISIBLE_DEVICES,
+        _devices.VISIBLE_DEVICES_ENV,
+        _devices.ALLOCATION_DEVICES_ENV,
+        _devices.RUNTIME_BOUND_ENV,
+        _devices.INHERITED_DEVICES_ENV,
+        _devices.EFFECTIVE_DEVICES_ENV,
+        _devices.REQUESTED_DEVICES_ENV,
+        _devices.REQUESTED_SOURCE_ENV,
+        _devices.BINDING_ENV,
+        _launch.THREADS_SOURCE_ENV,
+        _launch.ATTEMPT_ENV,
+        "CUDA_DEVICE_ORDER",
+        *_launch.THREAD_ENV_KEYS,
+        *_launch.CACHE_ENV_KEYS,
+    }
+)
+_OWNED_RUNNER_OPTIONS = frozenset(
+    {"--threads", "--devices", "--binding", "--config", "--workdir", "--result-json"}
+)
 
 STATUS_SUCCEEDED = "succeeded"
 STATUS_FAILED = "failed"
@@ -110,6 +131,52 @@ _OOM_MARKERS = (
 def _now() -> str:
     """Return the current UTC timestamp in ISO-8601 form."""
     return datetime.now(timezone.utc).isoformat()
+
+
+def _validate_case_resources(case: "CaseSpec") -> None:
+    """Refuse worker requests that could exceed or relocate a case reservation."""
+    for arg in case.args:
+        option = arg.partition("=")[0]
+        if option.startswith("--") and any(
+            owned.startswith(option) for owned in _OWNED_RUNNER_OPTIONS
+        ):
+            raise ValueError(f"case {case.case_id}: runner option {option} is owned by the batch")
+    config_path = Path(case.config)
+    if not config_path.is_file():
+        return
+    from atst_tools.utils.config import ConfigLoader
+
+    try:
+        config = ConfigLoader.load(str(config_path))
+    except (OSError, ValueError):
+        return  # The worker reports a malformed config as a case failure.
+    if not isinstance(config, Mapping):
+        return
+    runtime = config.get("runtime")
+    if isinstance(runtime, Mapping):
+        requested = runtime.get("threads")
+        if isinstance(requested, str) and requested.strip().lower() == "auto":
+            requested = _launch.cpu_affinity_count()
+        if isinstance(requested, int) and not isinstance(requested, bool):
+            if requested > case.threads:
+                raise ValueError(
+                    f"case {case.case_id}: runtime.threads={requested} exceeds "
+                    f"the reserved per-rank thread budget {case.threads}"
+                )
+    from atst_tools.utils.config_schema import parse_config
+
+    try:
+        calculator = parse_config(config).calculator
+    except ValueError:
+        return  # Invalid configurations fail in the worker as before.
+    for backend in ("abacus", "dp"):
+        section = getattr(calculator, backend)
+        omp = None if section is None else section.omp
+        if omp is not None and omp > case.threads:
+            raise ValueError(
+                f"case {case.case_id}: calculator.{backend}.omp={omp} "
+                f"exceeds the reserved per-rank thread budget {case.threads}"
+            )
 
 
 @dataclass(frozen=True)
@@ -134,6 +201,7 @@ class CaseSpec:
         config = str(payload.get("config") or "").strip()
         if not case_id or not config:
             raise ValueError("each case requires a non-empty case_id and config")
+        _batch_worker.validate_case_id(case_id)
         slots = int(payload.get("slots", 1))
         threads = int(payload.get("threads", 1))
         if slots < 1 or threads < 1:
@@ -226,19 +294,17 @@ def load_cases(manifest: Mapping[str, Any], options: BatchOptions) -> list[CaseS
             "timeout_s", defaults.get("timeout_s", options.default_timeout_s)
         )
         case = CaseSpec.from_mapping(merged)
+        # Resolve the config before the isolated worker changes cwd.  The
+        # resource preflight and both worker modes must read the same file.
+        case = replace(case, config=str(Path(case.config).resolve()))
         if case.case_id in seen:
             raise ValueError(f"duplicate case_id {case.case_id!r}")
+        _validate_case_resources(case)
         seen.add(case.case_id)
         cases.append(case)
-    shared: dict[str, list[str]] = {}
+    shared: dict[Path, list[str]] = {}
     for case in cases:
-        if case.workdir is not None:
-            location = f"workdir:{case.workdir}"
-        else:
-            # Without an explicit workdir a case runs in its configuration
-            # directory, so two cases whose configs share a directory would
-            # overwrite each other's trajectories, manifests and caches.
-            location = f"config-dir:{Path(case.config).resolve().parent}"
+        location = case_workdir(case, Path(options.output_dir).resolve()).resolve()
         shared.setdefault(location, []).append(case.case_id)
     clashes = {value: ids for value, ids in shared.items() if len(ids) > 1}
     if clashes:
@@ -551,6 +617,7 @@ def case_environment(
 ) -> dict[str, str]:
     """Build the isolated environment of one case (caller-bound devices)."""
     env = dict(base)
+    env.update({key: value for key, value in case.env.items() if key not in _MANAGED_CASE_ENV})
     env[_devices.CUDA_VISIBLE_DEVICES] = ",".join(devices)
     for key in _launch.THREAD_ENV_KEYS:
         env[key] = str(case.threads)
@@ -568,7 +635,6 @@ def case_environment(
         env[key] = str(cache_dir)
     if case_telemetry:
         env.setdefault(_launch.TELEMETRY_ENV, "1")
-    env.update(case.env)
     return env
 
 

@@ -603,6 +603,7 @@ def _ensure_completed_manifest(
                     stages=manifest.get("stages", []),
                     metadata=metadata,
                     plots=plots,
+                    path_base=manifest.get("path_base", "."),
                 )
         except Exception as exc:
             failure = WorkflowExecutionError(

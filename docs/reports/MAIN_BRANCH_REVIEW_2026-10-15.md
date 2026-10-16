@@ -5,6 +5,10 @@
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
+> §1–§5 保留首次历史整理审查；§6 是对 `5ad5de5` 的独立系统复核。
+> 提交清单完整性得到确认，另确认 1 项 P1、8 项 P2（含原有恒电势风险）。§1–6 保留
+> 修复前审查事实；后续源码整改及验收见 §7 与 [整改报告](MAIN_REVIEW_FIXES_2026-10-16.md)。
+
 ## 1. 范围与方法
 
 冻结对象为 main `065da5a`（本报告提交自身不在统计内），共 **734 个可达提交**，
@@ -160,3 +164,149 @@ StageRecord/advisory；不应重新 cherry-pick 旧中文提示实现。
 - [2.2.7 发布说明](../releases/RELEASE_NOTES_2.2.7.md)：runtime/bench/恒电势候选。
 - [2.2.8 发布说明](../releases/RELEASE_NOTES_2.2.8.md)：PT 与证据收口。
 - [系统审查](ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md)：本轮实现、文档与合入验证。
+
+## 6. 当前实现独立系统复核（2026-10-15）
+
+### 6.1 结论与审查边界
+
+**历史批次整理准确，架构演进与项目定位一致；已有整改及本地测试证据成立，但当前
+实现仍有可复现缺陷，不能据测试全绿判定可无条件发布。** 本轮确认 9 项问题：
+1 项 P1、8 项 P2；其中 CP-01 是 §4 已知问题，其余 8 项为本轮新确认的历史缺陷。
+未确认 `3163c06` 新引入的代码回归，不把这句话扩大为对该提交全部路径的证明。
+
+审查冻结在 `5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e`，开始时工作树干净；
+该树的 `src/`、`tests/`、`pyproject.toml`、`scripts/` 和 `.github/` 自 `3163c06`
+未变。本轮仅更新审查、状态账本与证据，不实施运行代码修复，不提交、不推送、不发布。
+工作流按 L2 有界审查执行；四个当前模型家族的独立 reviewer 分别审查科学工作流、
+API/结果契约、runtime/bench 和状态证据，主代理核对实现、复现输出并运行本地检查。
+
+- 独立重算全部批次集合与 734 条提交的 SHA、父提交、作者日期、标题，完全匹配。
+  当前 HEAD 共 735 个可达提交；较本地 `origin/main=45d8c78` 领先 3 条，较
+  `v2.2.8=b6a68f925c8c5c9e8a5afc13890d16f853956e9f` 多 8 条。未刷新远端引用。
+- B01–B03 的主要成果是从脚本转向可安装包、统一配置与工作流；B04–B07 建立稳定
+  API、进程交接和收敛事实；B08–B09 加入资源约束、运行证据和 DP 制品诊断；
+  B10–B11 处理发布后修订及科学输入、执行层、分发问题。此演进没有偏离
+  ASE/abacuslite wrapper 定位，也没有把 bench 扩张为集群调度器。
+- 当前科学执行由共享 `workflows.execution` 承担，CLI/API 共同消费；后端优先导入、
+  vendored 来源、optional extras 和结果事实分层合理。历史 MIC/IDPP、Relax 回退、
+  MPI 进度失败同步、Dimer 终止事实及 notice 打包的整改仍有对应回归与产物证据。
+- 历史提交没有全部逐行重审。代码审查优先当前可达路径及近几批高风险合约；没有
+  新跑 ABACUS/DP GPU、真实 Sella IRC 积分或 IPOPT 求解，没有完成 P6 平台验收。
+
+### 6.2 已确认问题
+
+以下行号绑定冻结源码；优先级表示修复建议，不代表本轮已经修复。
+
+| ID / 等级 | 触发与实际影响 | 源码位置 | 版本归属 |
+| --- | --- | --- | --- |
+| SCI-01 / **P1** | `make.ts_guess` 生成 `n_images+3` 帧，重启按 `n_images+2` 切带；通常报错，累计帧数恰好整除时会把中间像当作固定初态继续计算。 | [execution.py](../../src/atst_tools/workflows/execution.py) L302–307；[idpp.py](../../src/atst_tools/utils/idpp.py) L745–749 | v2.2.8 已存在；B11 迁移执行位置时保留。 |
+| SCI-02 / P2 | 默认 Sella IRC、`direction=both` 且省略 `normalized_trajectory`：schema 注入 `None`，两方向结束后 `write(None, ...)` 失败，manifest 尚未写出。 | [irc.py](../../src/atst_tools/workflows/irc.py) L79–81、121；[config_schema.py](../../src/atst_tools/utils/config_schema.py) L812 | v2.2.8 已存在。 |
+| SCI-03 / P2 | descent IRC 对分支执行 `Atoms.copy()` 后丢失 calculator，主轨迹/normalized 轨迹及返回帧无能量和力；分方向轨迹虽有结果，却未列入 manifest。 | [irc.py](../../src/atst_tools/workflows/irc.py) L306–318 | v2.2.8 已存在。 |
+| SCI-04 / P2 | DMF 不核对端点有序元素，`HO` → `OH` 被接受，实际末像变成首帧元素 `HO` 配末帧坐标，候选对应错误终态。 | [dmf.py](../../src/atst_tools/workflows/dmf.py) L163–169；[PyDMF](../../src/atst_tools/external/pydmf/dmf/dmf.py) L257–259 | v2.2.8 已存在；实验性路径。 |
+| IO-01 / P2 | `artifact_manifest: reports/artifacts.json` 时，工作流记录相对运行目录的 `neb.traj`，summary 相对 manifest 目录读取，成功产物被报告为缺失。 | [execution.py](../../src/atst_tools/workflows/execution.py) L530；[summary.py](../../src/atst_tools/utils/summary.py) L289–296 | 早于 v2.2.5；v2.2.8 已存在。 |
+| BENCH-01 / P2 | 显式 `workdir` 与默认配置目录即使解析为同一实际目录，也因检查键前缀不同而通过；路径别名同样可绕过，运行产物可能互相覆盖。 | [batch_runner.py](../../src/atst_tools/bench/batch_runner.py) L233–242、316–330 | v2.2.8 已存在，之后文件未改。 |
+| BENCH-02 / P2 | `case.env` 在绑定后覆盖设备、线程、缓存变量；分配卡 0 / 线程 1 的子进程可收到卡 7 / 线程 99，调度预算与实际运行不符。 | [batch_runner.py](../../src/atst_tools/bench/batch_runner.py) L555–571 | v2.2.8 已存在，之后文件未改。 |
+| BENCH-03 / P2 | `case_id` 仅检查非空：`../escape` 使报告路径越出输出目录；含空格的 ID 被进度解析截断，成功 worker 被记为失败。 | [batch_runner.py](../../src/atst_tools/bench/batch_runner.py) L133–136、979–989、1284；[batch_worker.py](../../src/atst_tools/bench/batch_worker.py) L116–146 | v2.2.8 已存在，之后文件未改。 |
+| CP-01 / P2 | 沿用 facts-v1 却删除 `profile_status`，旧版 restart 拒绝新版 facts；允许重算时丢弃 checkpoint 电子数，新读旧仍可行。 | [constant_potential.py](../../src/atst_tools/calculators/constant_potential.py) L57、80–107、572 起 | `715056b`，发布后 B10 已知风险。 |
+
+**科学路径复现**：SCI-01 使用真实 ASE EMT/FIRE，`n_images=3` 首次运行得到 6 帧，
+重启却要求 5 帧；5 个 6 帧带共 30 帧通过整除检查，初态 x 从 0 变为 0.15。
+SCI-02 仅用受控优化器替代 Sella 积分，两方向完成后由实际 workflow/schema/ASE IO
+复现 `TypeError`，不将替身完成称为真实 IRC 科学验收。SCI-03 使用 EMT/FIRE，
+分方向轨迹读回有 calculator，交付主轨迹读回为 `calc=None`。SCI-04 使用真实
+PyDMF 初始化，仅替代缺失的 `cyipopt.Problem` 空壳，未执行 solve。
+
+**执行与消费复现**：IO-01 经公共 `run_workflow` 和 ASE NEB/FIRE/LennardJones
+完成，实际 `neb.traj` 存在而 summary 为 `n_missing=1, complete=False`；
+有限步数未收敛已正确记录为 advisory，不是本项缺陷。BENCH-01 比较接受后的真实目录；
+BENCH-02 通过真实 batch 子进程捕获环境，普通无 runtime 请求路径没有后续纠正；
+BENCH-03 经实际 shared-worker 进度消费链确认 worker exit 0、有结果文件却报告失败。
+没有实际使用 GPU 7，越界路径与环境覆盖仅在 CPU 临时目录中验证，不宣称权限提升。
+CP-01 用当前 CPU fixture 生成真实 facts，再在内存加载 tag `v2.2.8` 读取器，旧
+restart 抛缺字段错误，当前 restart 返回约 10 个电子；补回旧字段后新旧均接受。
+
+### 6.3 处置顺序与验收边界
+
+1. **先修 SCI-01**：从实际初始链或可信带宽元数据恢复图像数，统一 TS guess 计数。
+   覆盖非整除报错与恰好整除的静默错带，验证重启前后固定端点不变。
+2. **保护输入和交付**：SCI-02 明确 `None` 的禁用/默认语义并统一写出条件；
+   SCI-03 冻结已有能量/力，避免额外后端计算；SCI-04 在构建路径及 calculator 前
+   核对原子数和有序原子序数，必要时经显式对齐；IO-01 统一写读路径基准，兼顾
+   默认布局和已有消费者，不能只改 summary 后破坏另一种历史布局。
+3. **修 bench 隔离**：用实际规范化路径做冲突判断，限制资源/绑定/缓存环境覆盖，
+   对 case ID 建立安全单路径段及进度编码规则；补真实子进程的预算与报告验证。
+4. **再裁定发布兼容**：CP-01 需要兼容字段或明确的消费迁移方案。单独改 schema
+   字符串不会让旧消费者自动接受；应补双向跨版本回归、发布说明与版本语义裁定。
+
+另有两项维护观察，不计入上述 9 项代码问题：
+
+- **发行自动检查缺口**：`tests/unit/test_distribution.py` 依赖 `ATST_DIST_SDIST` /
+  `ATST_DIST_WHEEL`，默认跳过；`.github/workflows/publish-pypi.yml` 在构建前跑测试，
+  构建后仅跑 Twine/API 检查。本次手工 notice 内容检查有效，但 CI 未自动防止同类
+  漏打包复发。建议在上传分发物前显式运行这两项；这不是当前修复产物仍漏许可的证明。
+- **状态文字漂移已在本轮校正**：feature matrix 保留了 9 月 20 日“未发布/不在 PyPI”
+  的历史段落，但候选已随 2.2.7/2.2.8 包分发；站点重绑定三次复验与后续上游确认
+  也需区分。当前矩阵明确发行、开发候选、未发布整改和 P6 平台验收四个边界。
+
+Ruling: 本轮保留可复现问题及下一步验收，不顺带修改运行逻辑或选定 CP 协议策略。
+原因是用户要求系统审查确认，输入计数/消费兼容的修复应有独立可审阅范围；代价是
+这些缺陷仍存在，下一次发布评估必须明确处理，不能把审查完成写成整改完成。
+
+### 6.4 当前验证与证据
+
+| 检查 | 结果 | 结论范围 |
+| --- | --- | --- |
+| 全部历史分区及每条元数据重算 | 734/734 匹配，无重复/漏项 | 原清单止于 `065da5a`，不应伪增到 735。 |
+| 当前 checkout 默认 tests | 1284 passed、32 skipped、3 warnings，exit 0 | Python 3.10.19 / ASE 3.28.0；不覆盖本轮全部新增边界。 |
+| `ATST_RUN_MPI_TESTS=1` integration | 27 passed，exit 0 | 实际本地 MPI launcher、受控 calculator/进程 fixture，不是 GPU 科学作业。 |
+| 三组额外 CPU 复现 | 均 exit 0，症状得到确认 | 复现脚本的成功表示缺陷存在，不表示缺陷已修复。 |
+| 既有修复 wheel 与当前源码比较 | 111 个包内文件已对照，仅 execution.py 空白变化，AST 相同 | wheel SHA 与既有归档一致，可复用相应构建/notice/Twine/clean-install 证据；未新发布。 |
+| 文档治理、文档测试与差异检查 | governance 通过，26 tests passed，diff check 通过 | 宽泛冲突扫描仅命中 pytest 日志分隔标题；精确冲突标记检查无命中。 |
+
+32 项默认 skips 为 27 项 opt-in MPI、2 项需指定分发物的检查，以及完整 ABACUS
+run-dir、toolbox 等价、真实 DP 模型各 1 项。MPI 27 项本轮另跑通过；其余 5 项没有
+冒称本轮默认验收通过。没有读取实时 PyPI/Gitee/远端 CI 状态，发行包边界复用先前
+归档的官方 wheel 检查；其 PyDMF LICENSE 缺失不能被本地修复产物的检查覆盖。
+
+证据目录：[confirmation](data/main_history_20261015/confirmation/)：
+
+- [命令与结果汇总](data/main_history_20261015/confirmation/verification.json)、
+  [文档测试](data/main_history_20261015/confirmation/docs-tests.log)、
+  [文档治理](data/main_history_20261015/confirmation/governance.log)。
+- [历史重算](data/main_history_20261015/confirmation/history-check.json)、
+  [当前默认测试](data/main_history_20261015/confirmation/default-tests.log)、
+  [当前 MPI 测试](data/main_history_20261015/confirmation/mpi-tests.log)。
+- [科学复现脚本](data/main_history_20261015/confirmation/science_findings.py)与
+  [输出](data/main_history_20261015/confirmation/science-findings.log)；
+  [API/CP 复现脚本](data/main_history_20261015/confirmation/contract_findings.py)与
+  [输出](data/main_history_20261015/confirmation/contract-findings.log)；
+  [bench 复现脚本](data/main_history_20261015/confirmation/runtime_findings.py)与
+  [输出](data/main_history_20261015/confirmation/runtime-findings.log)。
+- [分发内容对照](data/main_history_20261015/confirmation/distribution-comparison.json)；
+  构建/notice/Twine/clean-install 原始日志仍在
+  [整改证据](data/system_review_20261013/remediation_20261015/verification.json) 所列位置。
+
+复现命令（从仓库根执行，产物进入系统临时目录）：
+
+```bash
+PYTHONPATH="$PWD/src" conda run -n atst-dev python docs/reports/data/main_history_20261015/confirmation/science_findings.py
+PYTHONPATH="$PWD/src" conda run -n atst-dev python docs/reports/data/main_history_20261015/confirmation/contract_findings.py
+PYTHONPATH="$PWD/src" conda run -n atst-dev python docs/reports/data/main_history_20261015/confirmation/runtime_findings.py
+```
+
+审查后的状态为：核心工作流及交付架构已有稳定基础；9 项缺陷待独立整改；
+恒电势仍为开发候选、DMF 仍为实验性；P6 共享 image/runner 迁移、下游 E2E 与平台
+验收仍开放。源码未发布整改、已发行 2.2.8 和站点历史验证须继续分别描述。
+
+
+## 7. 九项问题后续整改（2026-10-16，未发布）
+
+§6 的九项缺陷已在隔离分支 `fix/review-nine-findings-20261016` 修复，并通过逐包
+回归、独立源码终审和集成检查。冻结源码默认套件 **1347 passed、32 skipped**，
+本地真实 MPI **27 passed**，clean-wheel public API 门禁通过。bench 终审额外发现
+预检与 worker 的相对配置路径不一致，已统一绝对路径并完成 RED/GREEN 与复审。
+
+逐项行为、旧轨迹/manifest/facts 迁移、原始日志及源码哈希见
+[九项问题整改验收](MAIN_REVIEW_FIXES_2026-10-16.md)。本节只更新后续处理状态，
+不重写 §1–6 的历史证据。原 main 与发布的 2.2.8 均未改变，未执行新的 GPU 科学
+验收或平台 P6。

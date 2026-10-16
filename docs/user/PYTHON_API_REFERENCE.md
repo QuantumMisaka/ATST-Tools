@@ -287,6 +287,20 @@ manifest, while a valid manifest written by that run is preserved. The CLI
 adapter deliberately does not synthesize or replace manifests for legacy
 workflows that did not write them themselves.
 
+Unreleased path fix (2026-10-16): artifact paths remain relative to the run
+workdir. When the manifest is stored elsewhere, including an absolute output
+location, it records an optional top-level `path_base`: the relative path from
+the manifest directory to that workdir. Manifest consumers resolve relative
+artifact paths against `manifest.parent / path_base`; absolute artifact paths
+are unchanged. Root-directory manifests omit the redundant `.` base. API
+enrichment preserves the base, and the JSON envelope continues to provide its
+absolute `workdir` and `artifact_manifest` without changing artifact strings.
+Manifests without `path_base` keep the legacy manifest-directory interpretation.
+An old nested manifest whose paths actually referred to a different workdir
+must be given the correct base explicitly; consumers do not search for a
+similarly named existing file. Older consumers must support `path_base` before
+reading the new nested layout; the default root layout is unchanged.
+
 `plots` is a tuple of rendered energy-plot PNG paths and `profiles` a tuple of
 per-image (NEB/AutoNEB) or per-step (Sella/CCQN) energy/force summaries; both
 are populated only when the corresponding `RunOptions` flag was set. In the

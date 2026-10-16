@@ -1,0 +1,86 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/5738/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 3 items
+
+tests/unit/test_manifest_path_contract.py F.F                            [100%]
+
+=================================== FAILURES ===================================
+_________ test_nested_manifest_resolves_workdir_paths_from_another_cwd _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7542d531b520>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1510/test_nested_manifest_resolves_0')
+
+    def test_nested_manifest_resolves_workdir_paths_from_another_cwd(monkeypatch, tmp_path):
+        workdir = tmp_path / "run"
+        workdir.mkdir()
+        trajectory = workdir / "neb.traj"
+        trajectory.write_text("frames", encoding="utf-8")
+        absolute = workdir / "absolute.traj"
+        absolute.write_text("frames", encoding="utf-8")
+        monkeypatch.chdir(workdir)
+    
+        written = write_artifact_manifest(
+            "reports/nested/artifacts.json",
+            workflow="neb",
+            artifacts=[
+                {"role": "trajectory", "path": "neb.traj"},
+                {"role": "absolute", "path": str(absolute)},
+                {"role": "missing", "path": "missing.traj"},
+            ],
+        )
+        manifest_path = workdir / "reports/nested/artifacts.json"
+        monkeypatch.chdir(tmp_path)
+        summary = summarize_artifact_manifest(manifest_path)
+    
+>       assert written["path_base"] == "../.."
+E       KeyError: 'path_base'
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_manifest_path_contract.py:38: KeyError
+_____________ test_api_rewrite_preserves_nested_manifest_path_base _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7542d531b7f0>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1510/test_api_rewrite_preserves_nes0')
+
+    def test_api_rewrite_preserves_nested_manifest_path_base(monkeypatch, tmp_path):
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / "neb.traj").write_text("frames", encoding="utf-8")
+    
+        def complete_neb(config, options):
+            write_artifact_manifest(
+                config["calculation"]["artifact_manifest"],
+                workflow="neb",
+                artifacts=[{"role": "trajectory", "path": "neb.traj"}],
+                metadata={"manifest_source": "runner"},
+            )
+            return None
+    
+        monkeypatch.setattr(services, "_dispatch_normalized", complete_neb)
+        monkeypatch.setattr(services, "_workflow_plots", lambda *args: ("neb_profile.png",))
+        config = {
+            "calculation": {
+                "type": "neb",
+                "init_chain": "chain.traj",
+                "artifact_manifest": "reports/artifacts.json",
+            },
+            "calculator": {"name": "abacus", "abacus": {"parameters": {}}},
+        }
+    
+        result = run_workflow(config, RunOptions(world=FakeWorld(), plots=True))
+        document = result.to_document(tmp_path)
+        manifest_path = Path(document["artifact_manifest"])
+        first = read_artifact_manifest(manifest_path)
+        monkeypatch.chdir(tmp_path.parent)
+        summary = summarize_artifact_manifest(manifest_path)
+    
+>       assert first["path_base"] == ".."
+E       KeyError: 'path_base'
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_manifest_path_contract.py:96: KeyError
+=========================== short test summary info ============================
+FAILED tests/unit/test_manifest_path_contract.py::test_nested_manifest_resolves_workdir_paths_from_another_cwd
+FAILED tests/unit/test_manifest_path_contract.py::test_api_rewrite_preserves_nested_manifest_path_base
+========================= 2 failed, 1 passed in 0.56s ==========================
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_manifest_path_contract.py -o addopts=-ra` failed. (See above for error)

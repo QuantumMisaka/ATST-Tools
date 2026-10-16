@@ -283,15 +283,19 @@ def summarize_vibration_config(config_file: str | Path) -> dict[str, Any]:
 
 
 def summarize_artifact_manifest(manifest_file: str | Path) -> dict[str, Any]:
-    """Read an ATST artifact manifest and add per-artifact existence status."""
+    """Read an ATST artifact manifest and add per-artifact existence status.
+
+    Relative artifact paths use the manifest's explicit ``path_base`` when
+    present. Older manifests without that field retain a manifest-local base.
+    """
     manifest_path = Path(manifest_file)
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
-    base_dir = manifest_path.parent
+    base_dir = manifest_path.resolve().parent / data.get("path_base", ".")
     artifacts = []
     for artifact in data.get("artifacts", []):
         item = dict(artifact)
         path = Path(item.get("path", ""))
-        resolved = path if path.is_absolute() else base_dir / path
+        resolved = path if path.is_absolute() else (base_dir / path).resolve()
         item["resolved_path"] = str(resolved)
         item["exists"] = resolved.exists()
         artifacts.append(item)

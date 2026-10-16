@@ -1,7 +1,7 @@
 # 文档治理状态报告
 
 **版本**: 2.2.8
-**日期**: 2026-10-15
+**日期**: 2026-10-16
 **状态**: 已发布（PyPI clean-install 已验证）
 **责任人**: ATST-Tools maintainers
 
@@ -9,6 +9,34 @@
 L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
+
+- 2026-10-16（九项问题本地整改完成，未发布）：复用科学契约与 runtime SPEC，
+  按 writing-plans + subagent-driven-development 在隔离分支
+  `fix/review-nine-findings-20261016` 完成九项修复。默认套件 1347 passed/32 skipped、
+  本地真实 MPI 27 passed、clean-wheel API 门禁及独立源码终审通过；审查发现的
+  bench 同名配置路径差异也已修复。长期参考、源码导览及矩阵已吸收兼容语义，
+  计划移入 pending-delete；详见 [整改验收](MAIN_REVIEW_FIXES_2026-10-16.md)。
+  原 main 保持不变，不更改旧发行记录或平台 P6 状态。以下条目保留各轮历史事实。
+
+- 2026-10-16（源码架构复核）：检查实际导入、执行与结果所有权、ASE 后端扩展和
+  runtime/bench 资源边界，确认保留现有模块结构；优先修复既有九项缺陷并统一共性
+  契约。源码 README 补长期设计边界，HANDOVER 补工作流接入项并纠正 bench 目录
+  检查过强表述。详见 [架构复核](ARCHITECTURE_REVIEW_2026-10-16.md)；本轮不修改
+  科学运行代码，不将架构判断视为缺陷关闭或发布验收。
+
+- 2026-10-15（源码导览入口）：新增 `src/atst_tools/README.md`，说明九个模块的
+  目标、主要内容、执行关系和修改位置，明确 bench 性能实验与 runtime 单次运行的
+  分工，以及 examples/tests/workdir 的关系。源码架构主体从 DOCS_ARCHITECTURE §5
+  迁入，原页保留链接与文档事实来源；README、文档索引和 HANDOVER 接入导航，
+  新入口纳入既有链接与冲突检查。此次为文档整理，既有审查发现仍待整改。
+
+- 2026-10-15（当前实现独立系统复核）：`5ad5de5` 的历史分区与 734 条提交元数据
+  独立重算完全匹配；默认测试 1284 passed/32 skipped、真实本地 MPI 27 passed。
+  额外边界复现确认 1 项 P1、8 项 P2（含已知恒电势兼容问题），涉及分段 NEB
+  重启、IRC、DMF 输入、manifest 路径和 bench 隔离；尚未修改运行代码。
+  详见 [主线审查 §6](MAIN_BRANCH_REVIEW_2026-10-15.md#6-当前实现独立系统复核2026-10-15)
+  及随附脚本/日志。feature matrix 同步当前风险与候选发行边界，不将测试通过写成
+  缺陷已清零或下一版已验收；P6 平台范围仍开放。
 
 - 2026-10-15（文档体系与新人路径核对）：保留三类读者与现有目录，补无后端入门、
   示例获取/版本匹配、cwd、真实计算前提、结果解读及排障；代码架构补依赖图和事实源。
@@ -277,6 +305,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 | 文档 | 生命周期 | 当前职责 |
 | :--- | :--- | :--- |
+| `src/atst_tools/README.md` | guide | 源码架构与导航主入口；解释各模块目的、主要内容、执行关系、bench/runtime 分工和修改入口，面向开发者与项目管理者。 |
 | `docs/developer/DOCS_ARCHITECTURE.md` | guide | 文档目录职责、目标读者、生命周期类型和导航原则。 |
 | `docs/developer/DOCUMENTATION_STANDARDS.md` | guide | 元数据、生命周期、reports 分级、更新映射、归档流程和检查命令。 |
 | `docs/developer/HANDOVER.md` | guide | workflow、YAML、CLI、backend、example、report、release 变更 checklist。 |
@@ -295,6 +324,9 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 | `docs/reports/DOCUMENTATION_STATUS_REPORT.md` | 当前文档治理账本。 |
 
 ### L2: 当前证据
+
+本轮修复证据：`docs/reports/MAIN_REVIEW_FIXES_2026-10-16.md`，九项审查问题的修复
+行为、兼容迁移与本地验收；九项关闭，未合入 main、未发布。
 
 | 文档 | 当前职责 |
 | :--- | :--- |
@@ -326,7 +358,8 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 | 文档 | 当前职责 |
 | :--- | :--- |
-| `docs/reports/MAIN_BRANCH_REVIEW_2026-10-15.md` | main 的 734 个提交按 11 个互斥批次追溯，记录来源分支、吸收方式、发布边界与恒电势字段兼容风险；完整提交清单随报告保存。 |
+| `docs/reports/MAIN_BRANCH_REVIEW_2026-10-15.md` | main 的 734 个提交按 11 个互斥批次追溯；§6 对 `5ad5de5` 独立系统复核，确认 1 项 P1、8 项 P2 待整改，保存当前测试、CPU 复现及分发内容对照；区分历史完整性、代码正确性、发布和平台验收。 |
+| `docs/reports/ARCHITECTURE_REVIEW_2026-10-16.md` | 当前源码架构复核；记录依赖扫描、入口检查、科学与结果所有权、runtime/bench 边界、设计债与整改顺序。保留模块结构；修复前快照不变，九项缺陷的后续关闭证据见整改验收报告。 |
 | `docs/reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md` | 保留基线系统审查、几何/MPI/分发/Relax 历史问题与双入口目的；§9 记录本地修复、独立复核、完整验收及原始日志，§11 记录本地合入、恢复验证、工作区归档与历史分支清理结果，长期语义已吸收，未发布与 GPU/平台边界明确。 |
 | `docs/reports/IRC_INTEGRATION_REVIEW.md` | Sella IRC 集成定位和受控边界说明。 |
 | `docs/reports/NEB_AUTONEB_NATIVE_ASE_BACKEND_REVIEW_2026-05-23.md` | native ASE backend selector 当前边界与默认迁移条件。 |
@@ -369,6 +402,11 @@ L4 材料不保留在活跃 `docs/reports/`、`docs/developer/plans/` 或
 | `docs/archive/pending_delete/` | 已过时但待最终删除确认的文件 | 删除前确认无活跃链接、无唯一验证证据、结论已被吸收。 |
 
 ## 6. 本轮待删除复核结果
+
+2026-10-16 新增：`docs/archive/pending_delete/plans/2026-10-16-review-findings-remediation.md`。
+九项问题整改 Tasks 1–6 已完成；实现、回归、兼容迁移和独立审查结论由
+`docs/reports/MAIN_REVIEW_FIXES_2026-10-16.md` 与长期参考吸收。隔离分支保留，尚未
+合入 main 或发布；计划仅供历史复核。
 
 2026-10-15 新增：`docs/archive/pending_delete/plans/2026-10-13-ase-ts-dual-interface-remediation.md`。
 本地 Tasks 1–7 已完成，科学/API/执行层/交付结论及日志已由系统审查 §9、用户参考

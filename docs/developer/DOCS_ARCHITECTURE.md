@@ -67,8 +67,8 @@ docs/
 - 完整 reports 账本放在
   [DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)。
 - 用户路径不得要求先阅读 `docs/reports/` 才能运行示例。
-- 开发者路径从 [HANDOVER.md](HANDOVER.md) 和
-  [YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md) 开始。
+- 开发者先由 [源码导览](../../src/atst_tools/README.md) 理解模块分工，再按
+  [HANDOVER.md](HANDOVER.md) 和 [YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md) 开发。
 - 项目管理路径从
   [FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md) 和
   [DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)
@@ -78,43 +78,16 @@ docs/
 
 ## 5. 执行入口与共享实现
 
-CLI/YAML 与 Agent Python API 共同调用科学 workflow。内部执行实现位于
-`atst_tools.workflows.execution`；`api.services` 先确定调用方的 MPI world，再调度
-其中的 workflow helper；`scripts.main` 保留 CLI 参数解析、模板、日志与终端错误展示。
-独立 validation API 只读取已保存的振动和冻结结构事实，不会由计算 workflow 自动启动。
+源码架构与模块职责统一维护在
+[`src/atst_tools/README.md`](../../src/atst_tools/README.md)。该入口面向开发者与项目
+管理者，说明 CLI/API 的共享执行关系、科学工作流与搜索组件、后端适配，以及
+`runtime` 单次运行管理和 `bench` 性能实验的分工，并提供按修改目标定位代码的导航。
 
 ### 5.1 代码模块与依赖方向
 
-```mermaid
-flowchart TD
-    CLI[CLI 参数与终端输出] --> API[API application services]
-    PY[Python API / process runner] --> API
-    API --> EXEC[workflows.execution]
-    EXEC --> SCI[workflows / mep]
-    SCI --> ASE[ASE / Sella 数值原语]
-    SCI --> CALC[calculators factory]
-    CALC --> AB[abacuslite / ABACUS]
-    CALC --> DP[DeepMD 官方 ASE calculator]
-    API --> OUT[结构化结果 / manifest]
-    SCI --> OUT
-    RT[runtime 绑定与运行证据] --> API
-    VAL[显式 validate_ts] --> STORED[既有振动与冻结结构事实]
-```
-
-| 模块 | 核心职责与扩展入口 |
-| --- | --- |
-| `scripts/cli.py`、`cli_impl.py`、`main.py` | 轻量 bootstrap、子命令、参数、模板与终端适配；不作为 API 的执行依赖。 |
-| `api/services.py`、`models.py`、`runner.py` | 配置归一化、错误与 MPI 同步、root 产物及 Python/JSON 交接；公共导出由 `api/__init__.py` 管理。 |
-| `workflows/execution.py`、`workflows/`、`mep/` | 分派及科学阶段执行；优化器报告真实收敛事实，复合 workflow 聚合阶段并拥有顶层 manifest。 |
-| `calculators/`、`external/` | calculator 装配和后端委派；ABACUS/DP 数值计算仍属上游，vendored 补丁按快照账本治理。 |
-| `utils/config_schema.py`、`config.py` | YAML 类型、默认值及归一化；`config_docs.py` 生成字段表。 |
-| `utils/geometry.py`、`artifacts.py`、`convergence.py` | 共享几何准备、产物持久化和优化终止事实。 |
-| `runtime/`、`bench/` | 设备/线程绑定、隔离与测量；在已有资源内运行，不承担集群资源申请。 |
-
-新 workflow 的常规修改路径是 schema → workflow/MEP → execution dispatch → 用户
-模板/参考 → 示例及 owning tests。稳定集成入口是 `atst_tools.api`；内部模块不是
-稳定外部 API。CLI 与 API 的产物补齐、错误包装和 preflight 路径历史差异见
-[API 参考](../user/PYTHON_API_REFERENCE.md)，不能因共享执行层而抹平。
+模块表、执行关系图和源码修改入口已迁入上述源码导览；本页保留文档组织与事实来源。
+从源码开始阅读时直接进入源码导览，从开发环境和维护任务开始时阅读
+[HANDOVER](HANDOVER.md)。新增或调整模块职责时同步源码导览，避免在两处维护同一份架构说明。
 
 ### 5.2 文档事实来源
 
@@ -126,7 +99,7 @@ flowchart TD
 | 当前支持及未发布边界 | FEATURE_STATUS_MATRIX | 用户导航链接，不复制完整开发历史。 |
 | 实施证据与设计裁决 | 活跃 spec、报告及原始日志 | 治理账本登记；完成计划归档，结论吸收到长期入口。 |
 
-图与模块表描述当前开发树；具体未发布行为必须在用户入口标明，不能仅凭包版本号
+源码导览描述当前开发树；具体未发布行为必须在用户入口标明，不能仅凭包版本号
 推断其已发行。每次修改应同步受影响的长期入口，避免让新人从历史计划拼接现状。
 
 ## 6. 状态入口

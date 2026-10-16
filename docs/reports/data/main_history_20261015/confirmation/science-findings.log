@@ -1,0 +1,31 @@
+ARTIFACT_DIRECTORY /tmp/atst-science-findings-zijfws6t
+Reading files: start.traj and end.traj
+Skipping atom index alignment.
+Generating path, number of images: 3
+Optimizing path using linear method
+Using TS guess for segmented interpolation: ts.traj
+Writing path: init_neb_chain.traj, Number of images: 6
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 16:11:09        3.210000        0.000000
+PUBLIC NEB initial run completed, actual band size: 6 restart expected band size: 5
+PUBLIC NEB restart exception: ValueError NEB trajectory contains 6 frame(s), not a whole number of bands with 5 images.
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 16:11:09        3.210000        0.000000
+PUBLIC NEB 30-frame restart completed, actual initial x: 0.15 expected initial x: 0.0 actual band size: 5
+      Step     Time          Energy          fmax
+FIRE:    0 16:11:09        3.210000        0.000000
+      Step     Time          Energy          fmax
+FIRE:    0 16:11:09        3.210000        0.000000
+IRC descent output: irc_forward.traj calculators: [True]
+IRC descent output: irc_reverse.traj calculators: [True]
+IRC descent output: irc.traj calculators: [False, False]
+IRC descent output: norm_irc.traj calculators: [False, False]
+IRC controlled optimizer completed: forward
+IRC controlled optimizer completed: reverse
+PUBLIC IRC post-run exception: TypeError expected str, bytes or os.PathLike object, not NoneType
+DMF requested endpoint: ['O', 'H'] [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]]
+DMF actual endpoint: ['H', 'O'] [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]]
+ALL FOUR CURRENT DEFECTS CONFIRMED BY ASSERTIONS

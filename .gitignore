@@ -134,3 +134,9 @@ examples/09_lightweight_cli/inputs/init_neb_chain_ts.traj
 !docs/reports/data/system_review_20261013/documentation_20261015/*.log
 !docs/reports/data/system_review_20261013/remediation_20261015/*.json
 !docs/reports/data/system_review_20261013/remediation_20261015/*.log
+!docs/reports/data/main_history_20261015/confirmation/*.json
+!docs/reports/data/main_history_20261015/confirmation/*.log
+!docs/reports/data/architecture_review_20261016/*.json
+!docs/reports/data/architecture_review_20261016/*.log
+!docs/reports/data/review_fixes_20261016/*.json
+!docs/reports/data/review_fixes_20261016/*.log

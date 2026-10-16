@@ -1,0 +1,56 @@
+sssssssssssssssssssssssssss............................................. [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 20%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 36%]
+........................................................................ [ 41%]
+........................................................................ [ 46%]
+..............ss........................................................ [ 52%]
+........................................................................ [ 57%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 73%]
+.....s..................................................s............... [ 78%]
+........................................................................ [ 83%]
+.............s.......................................................... [ 88%]
+........................................................................ [ 93%]
+........................................................................ [ 99%]
+...........                                                              [100%]
+=============================== warnings summary ===============================
+tests/unit/test_idpp.py::test_fast_idpp_projects_constraint_positions_and_convergence_forces
+  /home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/utils/idpp.py:486: UserWarning: IDPP did not fully converge: maximum iteration number reached
+    warnings.warn("IDPP did not fully converge: maximum iteration number reached")
+
+tests/unit/test_sella_events.py::test_real_sella_event_recording_preserves_steps_positions_and_evaluations[0.01]
+tests/unit/test_sella_events.py::test_real_sella_event_recording_preserves_steps_positions_and_evaluations[100.0]
+  /home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/optimize/optimize.py:92: FutureWarning: Log flushes by default now.  Please do not call flush().  If you want a different flushing behaviour please open logfile yourself and choose buffering mode as appropriate.  This flush() method currently does nothing.
+    warnings.warn('Log flushes by default now.  Please do not call '
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [4] tests/integration/test_api_progress_mpi.py:23: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_bench_batch_runner_mpi.py:26: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_bench_batch_runner_mpi.py:90: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:48: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:99: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:170: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:244: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:314: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:360: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:410: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:460: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_mpi_failure_sync.py:557: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:638: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [2] tests/integration/test_mpi_failure_sync.py:724: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:81: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:158: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:188: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/integration/test_runtime_binding_mpi.py:223: set ATST_RUN_MPI_TESTS=1 to run real MPI launcher regressions
+SKIPPED [1] tests/unit/test_distribution.py:33: set ATST_DIST_SDIST to inspect a built artifact
+SKIPPED [1] tests/unit/test_distribution.py:33: set ATST_DIST_WHEEL to inspect a built artifact
+SKIPPED [1] tests/unit/test_prepare_examples.py:43: no complete ABACUS run dir in examples/; real-dir acceptance is covered by SAI E2E (SPEC R1/R2)
+SKIPPED [1] tests/unit/test_reverse_config.py:285: toolbox utils unavailable; equivalence covered in toolbox Phase 2
+SKIPPED [1] tests/unit/test_runtime_model_sharing.py:330: set ATST_DP_TEST_MODEL to a DeepMD-kit model file to run the real backend
+1347 passed, 32 skipped, 3 warnings in 67.57s (0:01:07)
