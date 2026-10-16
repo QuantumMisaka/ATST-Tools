@@ -10,6 +10,12 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-16（GPU P6 接手）：维护者选择保留默认行为、探索单 image 内 MPI 多卡；
+  多图共享少卡的新增平台入口转为 deferred。已完成既有入口追踪、58 项离线检查，
+  并复现串行 image 的 run 资源一致性和跨任务 mapping 缺口；未修改生产源码、
+  未执行 GPU/平台验收。见 [接手报告](ATST_GPU_P6_TAKEOVER_2026-10-16.md)及原计划 P6；
+  计划继续活跃，不以可行性核验代替实现收口。
+
 - 2026-10-16（本地合入与在途收口）：九项修复及前轮源码架构文档以 `9e5f3b8`
   快进合入 main；原 27 项未提交内容保存为 stash、独立恢复引用与 scratch 快照。
   两份已完成计划、两份已被长期文档承接的设计及一份设计审查移入 pending-delete；
@@ -369,6 +375,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 | :--- | :--- |
 | `docs/reports/MAIN_BRANCH_REVIEW_2026-10-15.md` | main 的 734 个提交按 11 个互斥批次追溯；§6 对 `5ad5de5` 独立系统复核，确认 1 项 P1、8 项 P2 待整改，保存当前测试、CPU 复现及分发内容对照；区分历史完整性、代码正确性、发布和平台验收。 |
 | `docs/reports/ARCHITECTURE_REVIEW_2026-10-16.md` | 当前源码架构复核；记录依赖扫描、入口检查、科学与结果所有权、runtime/bench 边界、设计债与整改顺序。保留模块结构；修复前快照不变，九项缺陷的后续关闭证据见整改验收报告。 |
+| `docs/reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md` | GPU P6 接手与 image 内 MPI 多卡可行性核验；含默认模式边界、父仓入口取证、资源/mapping 交接缺口及离线复现。未宣称生产修复或平台支持。 |
 | `docs/reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md` | 保留基线系统审查、几何/MPI/分发/Relax 历史问题与双入口目的；§9 记录本地修复、独立复核、完整验收及原始日志，§11 记录本地合入、恢复验证、工作区归档与历史分支清理结果，长期语义已吸收，未发布与 GPU/平台边界明确。 |
 | `docs/reports/IRC_INTEGRATION_REVIEW.md` | Sella IRC 集成定位和受控边界说明。 |
 | `docs/reports/NEB_AUTONEB_NATIVE_ASE_BACKEND_REVIEW_2026-05-23.md` | native ASE backend selector 当前边界与默认迁移条件。 |
@@ -392,7 +399,7 @@ GPU 计划承接。SPEC 是当前设计来源，保留不表示对应实现仍�
 | `docs/superpowers/specs/2026-09-21-atst-gpu-node-tuning-p0-review.md` | review | P0 复核（性能前提与 DP 并行 NEB 证据审查）：GPU 调优前提未证实、DP mpi4py 并行 NEB 零证据、原稿作业记录不可达；结论已回写 SPEC §2 与 PLAN P4/P5 验收项。 |
 | `docs/superpowers/specs/2026-09-21-atst-runtime-interface-design.md` | spec | P0 接口冻结（接手 GPU 节点调优）：`runtime` schema 与冻结错误消息、CLI/env 优先级、设备解析与过度暴露边界、bootstrap 与嵌入 API 语义、OMP 优先级、证据 sidecar、恒电势共享文件顺序、P0 验收对照表；审查与 ATST 实施已完成，保留当前接口规范。 |
 | `docs/superpowers/specs/2026-09-20-atst-gpu-node-tuning-design.md` | spec | GPU 节点调优设计（2026-09-21 自发起方迁入）：设备与进程契约、独立 case 与 MPI 并发、分层计量、基准与科学验收、恒电势协调；pin 对照与 Ruling 见 §11。 |
-| `docs/superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md` | plan | 执行中（P0–P5 已完成，P6 进行中）：先 atst 后平台的分期计划（P0–P6）；P0–P5 已交付并以本地 + SAI V100 证据闭合（P5 压力/收益矩阵见 SAI 报告 §5h/§5j）；P2 的只读模型共享、重启回归与 MPS 归属已于 2026-09-22 现场收口（见 [P2 收口报告](ATST_P2_CLOSEOUT_2026-09-22.md)）。TF 专项支持已裁定 not-planned，站点重绑定和独立终审已收口；DP 容器/FT²DP 制品条件项与 P6 共享 image 平台迁移仍按 owner 分别跟踪。父仓 gitlink 于 2026-10-15 本地核实已为 `45d8c78`。 |
+| `docs/superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md` | plan | 执行中（P0–P5 已完成，P6 进行中）：先 atst 后平台的分期计划（P0–P6）；P0–P5 已交付并以本地 + SAI V100 证据闭合（P5 压力/收益矩阵见 SAI 报告 §5h/§5j）；P2 的只读模型共享、重启回归与 MPS 归属已于 2026-09-22 现场收口（见 [P2 收口报告](ATST_P2_CLOSEOUT_2026-09-22.md)）。TF 专项支持已裁定 not-planned，站点重绑定和独立终审已收口；DP 容器/FT²DP 制品条件项继续独立跟踪。P6 于 2026-10-16 接手：保留默认入口，优先单 image 内 MPI 多卡交接核验；混合并行仅探索，多图共享少卡平台扩展 deferred。父仓 gitlink 于 2026-10-15 本地核实已为 `45d8c78`。 |
 | `docs/superpowers/specs/2026-08-04-abacuslite-cross-repo-and-force-read-design.html` | spec | abacuslite 力读取一致性与跨仓维护设计（R1-R8 / D1-D8 / P1-P8），含 CI 基线单一事实源 `ABACUSLITE_SNAPSHOT.md`（R4/P6）与文档账本登记要求（R7/P8）。 |
 | `docs/superpowers/specs/2026-09-04-github-governance-and-release-gates-design.html` | spec | 本地实施完成，待 GitHub 设置与发布后外部验收：GitHub 治理、按需跨家族审阅证据、发布前机械门禁和 GitHub/PyPI/Gitee 发布后责任边界。 |
 

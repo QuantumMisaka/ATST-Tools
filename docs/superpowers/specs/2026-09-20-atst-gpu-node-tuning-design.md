@@ -19,6 +19,13 @@
 
 用户已确认先完成 atst 独立运行器，再接入平台。首期交付设备绑定、隔离进程入口、可组合的运行证据，以及独立批任务与 MPI 图像并行两类基准。ABACUS Toolbox 当前的一图一卡契约在平台接入阶段单独迁移，不能直接把 `n_gpu` 改成“可任意共享的卡数”。
 
+**2026-10-16 P6 接手裁决**：维护者选择“以默认行为为主”，优先探索单 image
+内部 ABACUS MPI 多卡，不选择本轮提出的共享 GPU 新入口。保留默认资源、`parallel`
+默认值和已启用 image 并行时的一图一卡契约。平台多图共享少卡扩展转为 deferred；
+先核验既有 `parallel=False` 的 image 串行、内部 MPI 多卡路径，混合 image/内部 MPI
+仅进入可行性探索，不据此解除 §5.3 的 nested MPI 限制。事实、复现和候选方案见
+[P6 接手报告](../../reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md)，后续验收以现行计划为准。
+
 区分三个优化目标：
 
 - 独立 case 吞吐：DP 优先研究每卡多个独立进程；ABACUS 优先研究每卡一个独立单点或工作流。
@@ -225,7 +232,7 @@ DP fixture 建议两层：atst 已有 `examples/dp_model_manifest.json` 的通�
 | 平台概念 | atst 消费 | 接入安排 |
 | --- | --- | --- |
 | `GPU` / `resAlloc` | 已分配设备集合及 worker 可见性 | 保持平台权威，分开记录请求/实际 |
-| ABACUS `n_gpu` | 普通任务逻辑 GPU；当前 image 模式为图数/rank 数 | 首期不重释，共享模式后续迁移 |
+| ABACUS `n_gpu` | 普通任务逻辑 GPU；当前 image 模式为图数/rank 数 | 保持语义；P6 优先核验单 image 内 MPI，多图共享扩展 deferred |
 | MLIP `n_gpu/n_cpu` | 平台管理字段 | adapter 消费 runtime facts |
 | CPU / 内存 | 线程预算与观测 | 不从 `mem_per_cpu` 推导显存 |
 | `PARTITION` / QOS | 无 core 映射 | 仅平台/SAI adapter |
