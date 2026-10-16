@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -17,6 +18,7 @@ from atst_tools.calculators.constant_potential import (
     ConstantPotentialCalculator,
     ConstantPotentialConvergenceError,
     ConstantPotentialEvaluationError,
+    _backend_scf_converged,
     constant_potential_identity_for_config,
     fixed_hamiltonian_identity_for_config,
     publish_constant_potential_facts,
@@ -403,6 +405,41 @@ def test_constant_potential_accepts_the_lts_scf_success_marker(tmp_path):
     atoms.calc = calculator
     atoms.get_potential_energy()
     assert calculator.results["cp_converged"] is True
+
+
+@pytest.mark.parametrize(("log_text", "expected"), [
+    (" #SCF IS CONVERGED#\n", True),
+    (" !!SCF IS NOT CONVERGED!!\n", False),
+    (" charge density convergence is achieved\n", True),
+    (" charge density convergence is not achieved\n", False),
+    (" #TOTAL ENERGY# -39567.338218 eV\n #FERMI ENERGY# 9.325994746 eV\n", None),
+    (" !!SCF IS NOT CONVERGED!!\n #SCF IS CONVERGED#\n", False),
+    (" #SCF IS CONVERGED#\n !!SCF IS NOT CONVERGED!!\n", False),
+    (" charge density convergence is achieved\n"
+     " charge density convergence is not achieved\n", False),
+    (" charge density convergence is not achieved\n"
+     " charge density convergence is achieved\n", False),
+    (" charge density convergence is achieved\n #SCF IS CONVERGED#\n", True),
+    ("prefix #SCF IS CONVERGED# suffix\n", None),
+])
+def test_backend_scf_convergence_uses_explicit_log_markers_with_failure_priority(
+    tmp_path, log_text, expected
+):
+    output = tmp_path / "OUT.CP"
+    output.mkdir()
+    (output / "running_scf.log").write_text(log_text, encoding="utf-8")
+    inner = SimpleNamespace(directory=tmp_path, suffix="CP", parameters={}, results={})
+
+    assert _backend_scf_converged(inner, inner.results) is expected
+
+
+def test_backend_scf_convergence_does_not_search_other_suffix(tmp_path):
+    output = tmp_path / "OUT.ABACUS"
+    output.mkdir()
+    (output / "running_scf.log").write_text(" #SCF IS CONVERGED#\n", encoding="utf-8")
+    inner = SimpleNamespace(directory=tmp_path, suffix="CP", parameters={}, results={})
+
+    assert _backend_scf_converged(inner, inner.results) is None
 
 
 def test_constant_potential_rejects_negative_candidate_electrons(tmp_path):

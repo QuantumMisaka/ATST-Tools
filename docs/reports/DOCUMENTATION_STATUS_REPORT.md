@@ -10,6 +10,17 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-17（当前 ABACUS CP 收敛证据兼容候选）：Ruling：固定电子数
+  evaluation 仍要求同目录 `OUT.<suffix>/running_scf.log` 的明确 SCF 状态；
+  `4b92455ca` 引擎写出的整行 `#SCF IS CONVERGED#` / `!!SCF IS NOT CONVERGED!!`
+  增量纳入识别，旧 LTS 正则保持原样。出现任何已识别失败时继续失败优先；
+  缺失标记、能量或 Fermi 值本身均不推断为收敛。真实 SAI `1820042`
+  CP 日志第 2000 行有新成功标记，旧解析器因遗漏而报告
+  `missing convergence evidence`；离线用该原始 evaluation 验证新解析器可返回
+  `True`。无插件 Python 3.13 离线全套 `1223 passed, 32 skipped`，Python 3.12
+  双 wheel 安装态 CP 专项 `54 passed`；新 ATST 候选 wheel SHA256
+  `4008ca72bcacbd0393d8c154eaf1cbbc80d320e1b64178cb8588fbfd072c5e40`，
+  公共 API clean-install 检查与依赖检查通过。真实 CP 重跑仍待执行。
 - 2026-10-17（原生 MD 输出目录修复候选）：Ruling：按本次运行 `INPUT` 的
   `suffix` 精确选择 `OUT.<suffix>`（默认 `OUT.ABACUS`）；目录不存在时保留旧版
   run directory 平铺输出兼容，不混合不同 `OUT.*` 的 log、MD_dump 与 eig_occ。
