@@ -20,8 +20,11 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   `uv pip check` 与 `scripts/verify_wheel_api.py --wheel` 均通过，导入位置均为
   隔离环境的 site-packages。Python 3.13 的 AST 空字段序列化与既有登记指纹不兼容，
   检查器采用 `show_empty=True` 维持 Python 3.12 指纹；两版的快照 suite 均
-  19 passed，语义 mutation 拒绝保持。本轮是本地/PR CI 候选，尚无最新 ABACUS
-  develop 的 SAI 工作流、独立审查、远程 CI 或索引发版证据，生产依赖未切换。
+  19 passed，语义 mutation 拒绝保持。独立审查发现无混用 guard 安装过晚的漏检；
+  已改为首次 ATST 导入前的独立子进程检查，恢复旧 `utils.io` 顶层 vendored
+  导入的 mutation 正确失败，Python 3.12 消费者 suite 复验为 52 passed / 2 skipped，
+  Python 3.13 聚焦检查为 3 passed / 1 skipped。本轮是本地/PR CI 候选，尚无最新
+  ABACUS develop 的 SAI 工作流、远程 CI 或索引发版证据，生产依赖未切换。
   入口同步 README、wrapper guide、HANDOVER 和 FEATURE_STATUS_MATRIX。
 
 - 2026-09-21：接管 GPU 节点调优交接（发起方 ABACUS/Toolbox 文档目录）：[设计](../superpowers/specs/2026-09-20-atst-gpu-node-tuning-design.md)与[计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md)迁入本仓规范源并登记；P0 产出 [runtime 接口冻结设计](../superpowers/specs/2026-09-21-atst-runtime-interface-design.md)（`runtime` schema 与错误消息、CLI/env 优先级、设备解析与过度暴露边界、bootstrap/嵌入 API 语义、OMP 优先级、证据 sidecar、恒电势共享文件顺序、P0 验收对照表）。裁定实施基线 `origin/main` `2cf5b7e6`（v2.2.6 + 7 个未发布提交）；发现 `atst-dev` editable 安装仍指向旧 checkout（v2.2.4+1），验证以 `PYTHONPATH=src` 为默认并记录环境三元组。未开始代码实施、未运行真实 GPU、未推送；P0→P1 门为相称独立设计审查与恒电势共享文件顺序确认。

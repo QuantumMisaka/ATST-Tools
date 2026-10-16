@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import builtins
 import shutil
+import subprocess
+import sys
 from importlib.util import find_spec
 from pathlib import Path
 
@@ -23,17 +25,39 @@ def _reject_vendored_imports(monkeypatch):
     monkeypatch.setattr(builtins, "__import__", checked_import)
 
 
-def test_external_consumers_do_not_import_vendored_backend(monkeypatch, tmp_path):
+def test_external_consumers_do_not_import_vendored_backend(tmp_path):
+    """Guard the first consumer import, independent of pytest collection order."""
+    if find_spec("abacuslite") is None:
+        pytest.skip("This case runs in the installed external-package lane")
+    script = """
+import runpy
+import sys
+from pathlib import Path
+import pytest
+
+checks = runpy.run_path(sys.argv[1])
+with pytest.MonkeyPatch.context() as patch:
+    checks['_reject_vendored_imports'](patch)
+    checks['_exercise_external_consumers'](Path(sys.argv[2]))
+assert not any(name.startswith('atst_tools.external.ASE_interface.abacuslite')
+               for name in sys.modules)
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(Path(__file__).resolve()), str(tmp_path)],
+        capture_output=True, text=True, timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _exercise_external_consumers(tmp_path):
     """Exercise actual structure, reverse, MD and gate consumer entry points."""
     from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
 
-    if BACKEND_SOURCE != "external":
-        pytest.skip("This case runs in the installed external-package lane")
+    assert BACKEND_SOURCE == "external"
 
     from atst_tools.utils import abacus_io, gate_compensation, io, reverse_config
     from atst_tools.workflows import md
 
-    _reject_vendored_imports(monkeypatch)
     assert abacus_io._import_generalio().__name__ == "abacuslite.io.generalio"
     assert abacus_io._import_latestio().__module__ == "abacuslite.io.latestio"
     assert md._import_legacyio().__module__ == "abacuslite.io.legacyio"

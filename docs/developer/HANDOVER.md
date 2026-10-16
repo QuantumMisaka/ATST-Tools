@@ -72,6 +72,8 @@ release 变更，都先从对应小节确认需要同步的文档。
   ATST wheel 消费者测试并核对 `BACKEND_SOURCE` 和两个导入路径。更新候选提交时
   同步记录插件 wheel 与 ATST wheel 的版本和验证结果。普通 unit job 无插件，
   验证仅顶层包缺失时的 vendored 回退；插件内部导入失败必须向调用者传播。
+  无混用检查须在全新子进程的首次 ATST 导入之前安装 guard，防止模块顶层绑定
+  绕过检查；恢复旧 `utils.io` 的 vendored import 应使该检查失败。
   `test_abacuslite_io_reorder.py` 和 `test_abacuslite_frame_selection.py`
   仍显式针对 vendored 快照，不能充当独立包验收证据。
 - 同步 `temp_repos/abacus-develop/interfaces/ASE_interface` 时，先运行
