@@ -10,6 +10,7 @@
 | `abacuslite/io/legacyio.py` | band parser | 容差块（`_legacy_band_parser_tolerant_block`） | 2026-05-10 | 已由 #7588 上游化（checker 归一化保留至基线推进后清理） |
 | `abacuslite/core.py` | SCF 帧身份匹配与 STRU 文件名交接 | PBC-aware 周期性整数晶格平移判定；校验 cell/元素/映射/有限值，损坏帧 fail-closed；保留原生 relax/md | 2026-09-16 | 未上游化（待 PR） |
 | `abacuslite/io/generalio.py` | `_read_kpoint` | `0b01ed2`：坐标正则的小数部分改为非捕获组，并将权重读取从捕获组 6 修正为组 3（保证 point-KPT 小数坐标精确往返） | 2026-08-12 | 未上游化（待 PR） |
+| `abacuslite/io/latestio.py` | `read_abacus_out` 的 `running_md.log`/`MD_dump` 分支 | 将 MD_dump 无量纲晶胞乘 `alat_in_angstrom`，MD Atoms 设 `pbc=True`；running-log SCF/relax 数据保持原有单位和 PBC 返回契约 | 2026-10-17 | 独立 abacuslite 候选 `dc020430bfa8c76edfc275b0f1eab2f12cc29d4d` 已修；vendored ABACUS 基线未推进 |
 
 ## 维护触点
 
@@ -22,3 +23,5 @@
   AST 身份，再剥离登记补丁、恢复固定上游方法。不再按 helper 名字无条件忽略函数体。
   注释、格式和 docstring 变化不影响身份；可执行代码演进须先复核行为回归和实际 diff，
   再更新对应登记值及归一化。登记 hash 只证明补丁身份，不替代正确性测试或审查。
+- latestio MD 晶胞补丁仅在两个精确代码块**同时**匹配时归一化；测试对晶胞
+  缩放、PBC、分支条件和无关返回语句的 mutation 均要求 drift checker 拒绝。

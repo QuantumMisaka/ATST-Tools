@@ -66,6 +66,62 @@ def test_reader_uses_same_run_density_and_actual_pp_valence(evaluation):
         read_gate_compensation(evaluation, 1.1, 2.)
 
 
+def test_reader_accepts_current_single_spin_cube_name(evaluation):
+    out = evaluation / 'OUT.ABACUS'
+    (out / 'SPIN1_CHG.cube').rename(out / 'chg.cube')
+
+    result = read_gate_compensation(evaluation, 1.1, 1.)
+
+    assert result['integrated_electrons'] == pytest.approx(1.1)
+
+
+@pytest.mark.parametrize('names', [
+    ('SPIN1_CHG.cube', 'SPIN2_CHG.cube'),
+    ('chgs1.cube', 'chgs2.cube'),
+])
+def test_reader_accepts_complete_two_spin_cube_family(evaluation, names):
+    inp = evaluation / 'INPUT'
+    inp.write_text(inp.read_text().replace('nspin 1', 'nspin 2'))
+    out = evaluation / 'OUT.ABACUS'
+    cube = (out / 'SPIN1_CHG.cube').read_text().replace('0.0011', '0.00055')
+    (out / 'SPIN1_CHG.cube').unlink()
+    for name in names:
+        (out / name).write_text(cube)
+
+    result = read_gate_compensation(evaluation, 1.1, 1.)
+
+    assert result['integrated_electrons'] == pytest.approx(1.1)
+
+
+@pytest.mark.parametrize('other', ['chg.cube', 'chgs1.cube'])
+def test_reader_rejects_mixed_cube_families(evaluation, other):
+    out = evaluation / 'OUT.ABACUS'
+    (out / other).write_bytes((out / 'SPIN1_CHG.cube').read_bytes())
+
+    with pytest.raises(ValueError, match='density cube naming'):
+        read_gate_compensation(evaluation, 1.1, 1.)
+
+
+def test_reader_rejects_incomplete_two_spin_family(evaluation):
+    inp = evaluation / 'INPUT'
+    inp.write_text(inp.read_text().replace('nspin 1', 'nspin 2'))
+    out = evaluation / 'OUT.ABACUS'
+    (out / 'SPIN1_CHG.cube').rename(out / 'chgs1.cube')
+
+    with pytest.raises(ValueError, match='Incomplete density cube'):
+        read_gate_compensation(evaluation, 1.1, 1.)
+
+
+def test_reader_rejects_indexed_cube_output(evaluation):
+    inp = evaluation / 'INPUT'
+    inp.write_text(inp.read_text() + 'out_freq_ion 1\n')
+    out = evaluation / 'OUT.ABACUS'
+    (out / 'SPIN1_CHG.cube').rename(out / 'chgg1.cube')
+
+    with pytest.raises(ValueError, match='out_freq_ion'):
+        read_gate_compensation(evaluation, 1.1, 1.)
+
+
 @pytest.mark.parametrize('old,new,error', [
     ('nelec 1.1', '', 'electron number'),
     ('nelec 1.1', 'nelec nan', 'electron number'),

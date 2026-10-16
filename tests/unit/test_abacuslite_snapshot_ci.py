@@ -131,6 +131,45 @@ def test_snapshot_checker_reports_implementation_drift(tmp_path, capsys):
     assert "+VALUE = 2" in output
 
 
+def _compare_latest_md_patch(tmp_path: Path, patched: str) -> int:
+    checker = _load_checker()
+    upstream = tmp_path / "upstream"
+    vendored = tmp_path / "vendored"
+    prefix = "def read_abacus_out(fileobj):\n"
+    middle = "    for frame in trajectory:\n"
+    suffix = "        return atoms\n"
+    before = (prefix + checker._MD_TRAJECTORY_UPSTREAM + middle
+              + checker._MD_ATOMS_UPSTREAM + suffix)
+    _write(upstream / "abacuslite/io/latestio.py", before)
+    _write(vendored / "abacuslite/io/latestio.py", patched)
+    return checker.compare_snapshots(upstream, vendored)
+
+
+def _latest_md_patch_source() -> str:
+    checker = _load_checker()
+    return ("def read_abacus_out(fileobj):\n"
+            + checker._MD_TRAJECTORY_PATCHED
+            + "    for frame in trajectory:\n"
+            + checker._MD_ATOMS_PATCHED
+            + "        return atoms\n")
+
+
+def test_snapshot_checker_accepts_exact_latest_md_cell_patch(tmp_path, capsys):
+    assert _compare_latest_md_patch(tmp_path, _latest_md_patch_source()) == 0
+    assert capsys.readouterr().out == ""
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda source: source.replace("pbc=is_md_dump", "pbc=False"),
+    lambda source: source.replace("frame['alat_in_angstrom']", "1.0"),
+    lambda source: source.replace("if is_md_dump else", "if False else"),
+    lambda source: source.replace("return atoms", "return None"),
+])
+def test_snapshot_checker_rejects_latest_md_patch_mutation(tmp_path, capsys, mutation):
+    assert _compare_latest_md_patch(tmp_path, mutation(_latest_md_patch_source())) == 1
+    assert "Implementation drift detected in abacuslite/io/latestio.py" in capsys.readouterr().out
+
+
 def test_snapshot_checker_ignores_python_comment_only_churn(tmp_path, capsys):
     checker = _load_checker()
     upstream = tmp_path / "upstream"

@@ -39,6 +39,25 @@ def _read_density_cube(path):
     return values.reshape(shape), grid[:, 1:]*np.asarray(shape)[:, None], atoms
 
 
+def _density_cube_paths(out: Path, spin: int) -> tuple[Path, ...]:
+    """Select one complete ABACUS density naming family without mixing spins."""
+    legacy = tuple(f'SPIN{index}_CHG.cube' for index in range(1, spin + 1))
+    current = ('chg.cube',) if spin == 1 else ('chgs1.cube', 'chgs2.cube')
+    recognized = {'SPIN1_CHG.cube', 'SPIN2_CHG.cube',
+                  'chg.cube', 'chgs1.cube', 'chgs2.cube'}
+    present = {name for name in recognized if (out / name).is_file()}
+    old_present = present & {'SPIN1_CHG.cube', 'SPIN2_CHG.cube'}
+    new_present = present & {'chg.cube', 'chgs1.cube', 'chgs2.cube'}
+    if old_present and new_present:
+        raise ValueError('Ambiguous density cube naming: LTS and current files coexist')
+    if not present:
+        raise FileNotFoundError(f'No supported density cube files in {out}')
+    selected = current if new_present else legacy
+    if present != set(selected):
+        raise ValueError(f'Incomplete density cube family for nspin={spin}: {sorted(present)}')
+    return tuple(out / name for name in selected)
+
+
 def read_gate_compensation(directory, nelec, reference_electrons):
     """Read the compensation derivative from a completed ABACUS evaluation.
 
@@ -91,10 +110,17 @@ def read_gate_compensation(directory, nelec, reference_electrons):
     spin = int(params.get('nspin', 1))
     if spin not in (1, 2) or 'nupdown' in params or flag('two_fermi'):
         raise ValueError('Compensation supports nspin 1 or common-Fermi nspin 2')
+    try:
+        output_frequency = int(params.get('out_freq_ion', 0))
+    except (TypeError, ValueError) as exc:
+        raise ValueError('Invalid out_freq_ion for compensated_gate density') from exc
+    if output_frequency > 0:
+        raise ValueError('out_freq_ion > 0 indexed density cubes are unsupported for compensated_gate')
+    cube_paths = _density_cube_paths(out, spin)
     rho = None
     valences = None
-    for index in range(1, spin+1):
-        data, cube_cell, atoms = _read_density_cube(out/f'SPIN{index}_CHG.cube')
+    for cube_path in cube_paths:
+        data, cube_cell, atoms = _read_density_cube(cube_path)
         # Cube grid vectors and atom positions are serialized to six decimals.
         grid_tolerance = max(data.shape)*.51e-6
         if not np.allclose(cube_cell, cell, rtol=0, atol=grid_tolerance):

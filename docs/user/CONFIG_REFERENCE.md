@@ -1,7 +1,7 @@
 # ATST-Tools Configuration Reference
 
 **Version**: 2.2.8
-**Last Updated**: 2026-09-20
+**Last Updated**: 2026-10-17
 **Status**: Release candidate 2.2.8 reference; the CP candidate is documented separately
 
 This document is the hand-written semantic reference for `config.yaml` files
@@ -195,7 +195,12 @@ ATST-Tools supports two MD drivers:
   DP provides forces through the normal ASE calculator interface.
 - `driver: abacus_native`: ABACUS owns the MD run. ATST-Tools uses abacuslite to
   prepare `INPUT`, `KPT`, and `STRU`, starts the ABACUS command in the configured
-  directory, then collects `running_md.log` / `MD_dump` outputs.
+  directory, then collects `running_md.log`, `MD_dump`, and `eig_occ.txt` from
+  the exact `OUT.<suffix>` directory named by that run's `INPUT` (`OUT.ABACUS`
+  by default). Historical flat outputs in the run directory remain readable
+  when that output directory is absent. It does not combine files across
+  directories. A zero-exit engine run without MD frames records a failed
+  summary/manifest and raises an error instead of reporting completion.
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -616,6 +621,10 @@ The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
 fixed-cell `relax` and ordinary `neb`. Those optimization workflows require one
 scalar target and do not support a target list, cell relaxation, or CP stress.
+The density reader accepts one complete cube naming family per evaluation:
+`SPIN1_CHG.cube`/`SPIN2_CHG.cube` (LTS), or `chg.cube` for one spin and
+`chgs1.cube`/`chgs2.cube` for two spins (current ABACUS). Mixed or incomplete
+families and `out_freq_ion > 0` indexed cubes are rejected explicitly.
 
 For CP `relax` and `neb`, restart reads the last complete trajectory frame or
 band. Each restarted calculator uses the corresponding frame's last evaluated

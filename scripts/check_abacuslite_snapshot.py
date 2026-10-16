@@ -213,6 +213,50 @@ def _normalize_efermi_tolerance(relative_path: Path, source: str) -> str:
     return source.replace("efermi=ener['E_Fermi']", "efermi=ener.get('E_Fermi')")
 
 
+_MD_TRAJECTORY_UPSTREAM = """\
+    trajectory = read_traj_from_running_log(abacus_lines) \\
+        if fileobj.name != 'running_md.log' else \\
+        read_traj_from_md_dump(fileobj.parent / 'MD_dump')
+"""
+_MD_TRAJECTORY_PATCHED = """\
+    is_md_dump = fileobj.name == 'running_md.log'
+    trajectory = read_traj_from_md_dump(fileobj.parent / 'MD_dump') \\
+        if is_md_dump else read_traj_from_running_log(abacus_lines)
+"""
+_MD_ATOMS_UPSTREAM = """\
+        ind = ind or list(range(len(frame['elem'])))
+        atoms = Atoms(symbols=np.array(frame['elem'])[ind].tolist(),
+                      positions=frame['coords'][ind],
+                      cell=frame['cell'],
+                      magmoms=mag[ind])
+"""
+_MD_ATOMS_PATCHED = """\
+        ind = ind or list(range(len(frame['elem'])))
+        cell = frame['cell'] * frame['alat_in_angstrom'] \\
+            if is_md_dump else frame['cell']
+        atoms = Atoms(symbols=np.array(frame['elem'])[ind].tolist(),
+                      positions=frame['coords'][ind],
+                      cell=cell,
+                      pbc=is_md_dump,
+                      magmoms=mag[ind])
+"""
+
+
+def _normalize_latest_md_cell_patch(relative_path: Path, source: str) -> str:
+    """Accept the two exact, paired MD parser edits; expose every other drift."""
+    if relative_path != Path("abacuslite/io/latestio.py"):
+        return source
+    # Whitespace/comments are normalized elsewhere; these are executable lines.
+    canonical = re.sub(
+        r"[ \t]+$", "", _normalize_python_comment_churn(source), flags=re.MULTILINE
+    )
+    if (canonical.count(_MD_TRAJECTORY_PATCHED) != 1
+            or canonical.count(_MD_ATOMS_PATCHED) != 1):
+        return source
+    canonical = canonical.replace(_MD_TRAJECTORY_PATCHED, _MD_TRAJECTORY_UPSTREAM)
+    return canonical.replace(_MD_ATOMS_PATCHED, _MD_ATOMS_UPSTREAM)
+
+
 _POINT_KPOINT_UPSTREAM_REGEX = r"r'^(-?\d+(\.\d+)?)\s+(-?\d+(\.\d+)?)\s+(-?\d+(\.\d+)?)\s*'"
 _POINT_KPOINT_PATCHED_REGEX = r"r'^(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*'"
 _POINT_KPOINT_UPSTREAM_WEIGHT = "'weights': [int(m.groups()[6]) for m in mymatch]"
@@ -389,6 +433,7 @@ def _normalize_frame_selection(source: str) -> str:
 def _normalize_documented_atst_adaptations(relative_path: Path, source: str) -> str:
     source = _normalize_efermi_tolerance(relative_path, source)
     source = _normalize_point_kpoint_parser(relative_path, source)
+    source = _normalize_latest_md_cell_patch(relative_path, source)
     if relative_path == Path("abacuslite/io/legacyio.py"):
         return _normalize_legacy_band_parser_adaptation(source)
     if relative_path == Path("abacuslite/core.py"):

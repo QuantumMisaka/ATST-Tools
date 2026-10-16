@@ -387,6 +387,24 @@ def test_native_md_latestio_md_dump_keeps_last_frame_semantics(tmp_path, monkeyp
     assert results["energy"] == pytest.approx(MD_LATEST_ENERGY)
 
 
+def test_latestio_md_dump_cell_is_physical_and_periodic(tmp_path):
+    from atst_tools.external.ASE_interface.abacuslite.io.latestio import (
+        read_abacus_out as read_latest_out,
+        read_traj_from_md_dump,
+    )
+
+    directory = _md_fixture_latest(tmp_path)
+    out = directory / "OUT.ABACUS"
+    raw = read_traj_from_md_dump(out / "MD_dump")
+    frames = read_latest_out(out / "running_md.log")
+    assert len(frames) == len(raw) == 2
+    for atoms, frame in zip(frames, raw):
+        expected = np.asarray(frame["cell"]) * frame["alat_in_angstrom"]
+        assert np.allclose(atoms.cell.array, expected, atol=1e-10)
+        assert atoms.pbc.all()
+    assert frames[-1].cell.volume == pytest.approx(45.17906195, abs=1e-5)
+
+
 def test_latestio_md_eig_occ_single_consumption(tmp_path, monkeypatch):
     """P5 eig_occ.txt 一次性消费：latestio read_abacus_out 读取后 unlink；
     重复读取前须重建 eig_occ.txt（未重建 → FileNotFoundError；重建后恢复完整读取）。"""

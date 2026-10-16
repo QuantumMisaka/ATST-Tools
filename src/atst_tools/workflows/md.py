@@ -287,8 +287,27 @@ class AbacusNativeMDRunner:
             stderr.close()
         return process
 
-    def _read_frames_from_md_dump(self) -> list[Atoms]:
-        dump = self.run_dir / "MD_dump"
+    def _output_dir(self) -> Path:
+        """Select the output directory declared by this run's INPUT.
+
+        ABACUS writes native MD output to ``OUT.<suffix>``.  A flat run
+        directory remains supported for historical outputs, but files from
+        different directories must never be combined into one trajectory.
+        """
+        input_file = self.run_dir / "INPUT"
+        if input_file.is_file():
+            suffix = _import_generalio().read_input(str(input_file)).get("suffix", "ABACUS")
+        else:
+            parameters = _merged_abacus_parameters(_abacus_section(self.config))
+            suffix = parameters.get("suffix", "ABACUS")
+        suffix = str(suffix).strip()
+        if not suffix or suffix in {".", ".."} or "/" in suffix or "\\" in suffix:
+            raise ValueError(f"Invalid ABACUS output suffix: {suffix!r}")
+        output_dir = self.run_dir / f"OUT.{suffix}"
+        return output_dir if output_dir.is_dir() else self.run_dir
+
+    def _read_frames_from_md_dump(self, output_dir: Path | None = None) -> list[Atoms]:
+        dump = (output_dir or self._output_dir()) / "MD_dump"
         if not dump.exists():
             return []
         read_traj_from_md_dump = _import_legacyio()
@@ -297,16 +316,18 @@ class AbacusNativeMDRunner:
             atoms = Atoms(
                 symbols=frame["elem"],
                 positions=frame["coords"],
-                cell=frame["cell"],
+                cell=np.asarray(frame["cell"], dtype=float) * float(frame["alat_in_angstrom"]),
                 pbc=True,
             )
             frames.append(atoms)
         return frames
 
     def _collect_frames(self) -> list[Atoms]:
-        log = self.run_dir / "running_md.log"
-        dump = self.run_dir / "MD_dump"
-        eig = self.run_dir / "eig_occ.txt"
+        """Collect the native MD files from one selected output directory."""
+        output_dir = self._output_dir()
+        log = output_dir / "running_md.log"
+        dump = output_dir / "MD_dump"
+        eig = output_dir / "eig_occ.txt"
         if log.exists() and dump.exists() and eig.exists():
             read_abacus_out = _import_latestio()
             with tempfile.TemporaryDirectory() as tmp:
@@ -316,7 +337,7 @@ class AbacusNativeMDRunner:
                 shutil.copy2(eig, tmpdir / "eig_occ.txt")
                 parsed = read_abacus_out(tmpdir / "running_md.log")
             return parsed if isinstance(parsed, list) else [parsed]
-        return self._read_frames_from_md_dump()
+        return self._read_frames_from_md_dump(output_dir)
 
     def _stderr_tail(self) -> str:
         path = self.run_dir / "atst_abacus_native_md.err"
@@ -413,7 +434,12 @@ class AbacusNativeMDRunner:
         if frames:
             write(self.calc_config["trajectory"], frames)
             write(self.calc_config["final_structure"], frames[-1])
-        summary = self._write_summary(returncode=process.returncode, frames=frames)
+        missing_frames = process.returncode == 0 and not frames
+        summary = self._write_summary(
+            returncode=process.returncode,
+            frames=frames,
+            error="ABACUS native MD produced no MD frames" if missing_frames else None,
+        )
         postprocess_artifacts = []
         if not process.returncode and frames:
             postprocess = run_md_workflow_postprocess(
@@ -423,7 +449,7 @@ class AbacusNativeMDRunner:
             postprocess_artifacts = postprocess["artifacts"]
         self._write_manifest(
             summary,
-            status="failed" if process.returncode else "complete",
+            status="failed" if process.returncode or missing_frames else "complete",
             postprocess_artifacts=postprocess_artifacts,
         )
         if process.returncode:
@@ -431,3 +457,5 @@ class AbacusNativeMDRunner:
                 f"ABACUS native MD failed with return code {process.returncode}. "
                 f"Run directory: {self.run_dir}. Stderr tail: {self._stderr_tail()}"
             )
+        if missing_frames:
+            raise RuntimeError(f"ABACUS native MD produced no MD frames. Run directory: {self.run_dir}")

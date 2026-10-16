@@ -1,7 +1,7 @@
 # 文档治理状态报告
 
 **版本**: 2.2.6
-**日期**: 2026-09-20
+**日期**: 2026-10-17
 **状态**: 已发布（PyPI clean-install 已验证）
 **责任人**: ATST-Tools maintainers
 
@@ -10,10 +10,32 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-17（原生 MD 输出目录修复候选）：Ruling：按本次运行 `INPUT` 的
+  `suffix` 精确选择 `OUT.<suffix>`（默认 `OUT.ABACUS`）；目录不存在时保留旧版
+  run directory 平铺输出兼容，不混合不同 `OUT.*` 的 log、MD_dump 与 eig_occ。
+  进度与最终收集共用选择规则。引擎退出码为零却没有 MD 帧时，summary/manifest
+  记录失败并抛错，避免伪造完成。ATST 直接由 MD_dump 字典构造 ASE Atoms 的
+  兜底路径将无量纲 cell 乘 `alat_in_angstrom`；完整 latestio 路径的同类问题归
+  独立 abacuslite parser `dc020430` 修复，本仓只镜像该精确修复至 vendored
+  snapshot，并登记严格 drift 白名单，不加 ATST 后处理掩盖。已有真实多帧 fixture 的
+  default/custom suffix、平铺兼容、跨目录隔离和单位回归；最新引擎实算仍待验收。
+- 2026-10-17（恒电势密度文件兼容候选）：Ruling：完整识别 LTS
+  `SPIN1_CHG.cube`/`SPIN2_CHG.cube` 与当前引擎 `chg.cube` 或
+  `chgs1.cube`/`chgs2.cube`；两套并存、缺失一自旋或 `out_freq_ion > 0`
+  索引输出均明确拒绝，不猜测目录中的最后一份文件。电子数、几何和输出精度校验保留。
+- 2026-10-17（上述修复本地验收）：Python 3.13 无独立插件离线全套
+  `1211 passed, 32 skipped`；Python 3.12 双 wheel 安装、仓库外消费者测试
+  `63 passed, 2 skipped`，导入均来自隔离 `site-packages`，`uv pip check` 通过；
+  固定 ABACUS 快照 drift checker、vendored 专项回归、文档治理和 wheel 公共 API
+  clean-install 检查均通过。当前 ATST 候选 wheel SHA256 为
+  `0c760fa985949b777864c41d87ed4910526bdb5697a50b12fdcfd5d4b37d2f08`；
+  配套独立包 wheel SHA256 为
+  `c809d0714c36ee52358e5a102912d979c0a1b82ad4a5b97811582a62066e27fd`。
+  真实引擎的完整工作流结论留待 SAI 验收，以上是接口与离线行为证据。
 - 2026-10-17（独立 abacuslite 候选接入）：ATST 的计算器、INPUT/STRU/KPT、
   latest/legacy reader、逆向配置、原生 MD 与 gate compensation 共用一次后端决策；
   仅顶层包缺失回退 vendored，已安装插件内部损坏向上报错。`tests.yml` 新增固定
-  候选提交 `136783baf4b6832c13d02a2542753439fbacc6df` 的双 wheel 安装与
+  候选提交 `dc020430bfa8c76edfc275b0f1eab2f12cc29d4d` 的双 wheel 安装与
   仓库外消费者测试，普通 unit job 保留无插件路径；vendored 快照 CI 独立保留。
   本地 Python 3.13 离线 suite 为 1194 passed / 32 skipped；Python 3.12 和 3.13
   独立安装双 wheel 后在 checkout 外执行消费者 suite 均为 52 passed / 2 skipped，

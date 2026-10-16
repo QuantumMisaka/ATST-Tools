@@ -79,7 +79,13 @@ def test_abacus_native_md_rejects_non_abacus_calculator(tmp_path):
         workflow.run()
 
 
-def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch, tmp_path):
+@pytest.mark.parametrize(
+    ("output_layout", "suffix"),
+    [("out", None), ("out", "CUSTOM"), ("flat", None)],
+)
+def test_abacus_native_md_prepares_inputs_runs_process_and_collects(
+    monkeypatch, tmp_path, output_layout, suffix
+):
     from atst_tools.workflows import md
 
     init = Atoms("H", positions=[[0.0, 0.0, 0.0]], cell=[5, 5, 5], pbc=True)
@@ -105,9 +111,11 @@ def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch,
 
         def communicate(self, timeout=None):
             run_dir = tmp_path / "native"
-            shutil.copy2(fixture_dir / "pw-symm0-nspin4-gamma-md", run_dir / "running_md.log")
-            shutil.copy2(fixture_dir / "nspin4-gamma-mddump", run_dir / "MD_dump")
-            shutil.copy2(fixture_dir / "nspin4-gamma-eigocc", run_dir / "eig_occ.txt")
+            output_dir = run_dir if output_layout == "flat" else run_dir / f"OUT.{suffix or 'ABACUS'}"
+            output_dir.mkdir(exist_ok=True)
+            latest = fixture_dir / "multiframe_md_latest"
+            for name in ("running_md.log", "MD_dump", "eig_occ.txt"):
+                shutil.copy2(latest / name, output_dir / name)
             return "", ""
 
     def fake_popen(command, cwd=None, stdout=None, stderr=None, text=None):
@@ -127,6 +135,7 @@ def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch,
                     "kpts": [1, 1, 1],
                     "parameters": {
                         "calculation": "md",
+                        **({"suffix": suffix} if suffix else {}),
                         "basis_type": "lcao",
                         "pseudo_dir": ".",
                         "orbital_dir": ".",
@@ -165,6 +174,8 @@ def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch,
     assert (run_dir / "INPUT").exists()
     assert (run_dir / "KPT").exists()
     assert (run_dir / "STRU").exists()
+    if output_layout == "out":
+        assert (run_dir / f"OUT.{suffix or 'ABACUS'}" / "MD_dump").exists()
     assert popen_calls and popen_calls[0][1] == str(run_dir)
     assert summary["driver"] == "abacus_native"
     assert summary["returncode"] == 0
@@ -184,6 +195,83 @@ def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch,
     assert (run_dir / "md_final.traj").exists()
     assert not Path("md_final.traj").exists()
     assert len(frames) == 2
+    assert frames[-1].pbc.all()
+    np.testing.assert_allclose(
+        frames[-1].cell.array,
+        np.array([[5.34197, 5.34197, 0], [0, 5.34197, 5.34197], [5.34197, 0, 5.34197]])
+        * 0.529177,
+        atol=1e-10,
+    )
+    assert np.isfinite(frames[-1].get_potential_energy())
+
+
+def test_abacus_native_md_does_not_mix_output_directories(tmp_path):
+    from atst_tools.workflows.md import AbacusNativeMDRunner
+
+    fixtures = (
+        Path(__file__).resolve().parents[2]
+        / "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles/multiframe_md_latest"
+    )
+    run_dir = tmp_path / "native"
+    selected = run_dir / "OUT.CUSTOM"
+    other = run_dir / "OUT.OTHER"
+    selected.mkdir(parents=True)
+    other.mkdir()
+    (run_dir / "INPUT").write_text("INPUT_PARAMETERS\nsuffix CUSTOM\n", encoding="utf-8")
+    shutil.copy2(fixtures / "MD_dump", selected / "MD_dump")
+    for name in ("running_md.log", "eig_occ.txt"):
+        shutil.copy2(fixtures / name, other / name)
+    # An existing INPUT is authoritative on restart, even if the newly
+    # supplied config names another suffix.
+    runner = AbacusNativeMDRunner(
+        {"calculator": {"abacus": {"parameters": {"suffix": "ABACUS"}}}},
+        "abacus",
+        {"directory": str(run_dir), "restart": True},
+    )
+
+    frames = runner._collect_frames()
+
+    assert len(frames) == 2
+    assert all(frame.calc is None for frame in frames)
+    assert all(frame.pbc.all() for frame in frames)
+    np.testing.assert_allclose(
+        frames[-1].cell.array,
+        np.array([[5.34197, 5.34197, 0], [0, 5.34197, 5.34197], [5.34197, 0, 5.34197]])
+        * 0.529177,
+        atol=1e-10,
+    )
+
+
+def test_abacus_native_md_zero_frames_is_failed_result(monkeypatch, tmp_path):
+    from atst_tools.workflows import md
+
+    write(tmp_path / "init.traj", Atoms("H", positions=[[0, 0, 0]], cell=[5, 5, 5], pbc=True))
+
+    class FakeProcess:
+        returncode = 0
+
+        def communicate(self, timeout=None):
+            return "", ""
+
+    monkeypatch.setattr(md.subprocess, "Popen", lambda *args, **kwargs: FakeProcess())
+    run_dir = tmp_path / "native_empty"
+    workflow = md.MDWorkflow(
+        {"calculator": {"name": "abacus", "abacus": {"command": "abacus", "parameters": {
+            "calculation": "md", "pseudopotentials": {"H": "H.upf"}, "basissets": {"H": "H.orb"}}}}},
+        "abacus",
+        {"type": "md", "driver": "abacus_native", "init_structure": str(tmp_path / "init.traj"),
+         "steps": 1, "directory": str(run_dir), "summary_file": str(run_dir / "md_summary.json"),
+         "artifact_manifest": str(run_dir / "atst_artifacts.json")},
+    )
+
+    with pytest.raises(RuntimeError, match="no MD frames"):
+        workflow.run()
+    summary = json.loads((run_dir / "md_summary.json").read_text(encoding="utf-8"))
+    manifest = json.loads((run_dir / "atst_artifacts.json").read_text(encoding="utf-8"))
+    assert summary["frames"] == 0
+    assert summary["returncode"] == 0
+    assert summary["error"] == "ABACUS native MD produced no MD frames"
+    assert manifest["stages"][0]["status"] == "failed"
 
 
 def test_abacus_native_md_records_failed_process(monkeypatch, tmp_path):

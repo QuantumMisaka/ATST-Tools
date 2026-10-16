@@ -139,13 +139,18 @@ def test_external_frame_selection_fermi_order_and_native_md(monkeypatch, tmp_pat
     assert results["fermi_level"] == pytest.approx(results["efermi"])
 
     md_run = tmp_path / "md"
-    md_run.mkdir()
+    md_output = md_run / "OUT.ABACUS"
+    md_output.mkdir(parents=True)
+    (md_run / "INPUT").write_text("INPUT_PARAMETERS\nsuffix ABACUS\n", encoding="utf-8")
     for name in ("running_md.log", "MD_dump", "eig_occ.txt"):
-        shutil.copy2(fixtures / "multiframe_md_latest" / name, md_run / name)
+        shutil.copy2(fixtures / "multiframe_md_latest" / name, md_output / name)
     runner = AbacusNativeMDRunner({}, "abacus", {"directory": str(md_run)})
     frames = runner._collect_frames()
     assert len(frames) == 2
     assert frames[-1].get_chemical_symbols() == ["As", "Ga"]
+    assert frames[-1].pbc.all()
+    np.testing.assert_allclose(frames[-1].cell.array[0, 0], 5.34197 * 0.529177, atol=1e-10)
+    assert np.isfinite(frames[-1].get_potential_energy())
 
     from atst_tools.utils.abacus_io import collect_abacus_output
 

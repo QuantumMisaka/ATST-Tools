@@ -40,7 +40,7 @@ jobs:
     name: installed external abacuslite candidate
     runs-on: ubuntu-latest
     env:
-      ABACUSLITE_REF: 136783baf4b6832c13d02a2542753439fbacc6df
+      ABACUSLITE_REF: dc020430bfa8c76edfc275b0f1eab2f12cc29d4d
 
     steps:
       - name: Checkout ATST-Tools
