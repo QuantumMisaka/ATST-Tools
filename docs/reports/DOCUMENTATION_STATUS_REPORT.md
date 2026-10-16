@@ -10,6 +10,26 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-17（独立 abacuslite 本地集成验收通过）：最终运行代码为
+  ATST `53d6b7c50c17cb536ea464ec0335ee1e69c206cd` + abacuslite
+  `dc020430bfa8c76edfc275b0f1eab2f12cc29d4d`；ABACUS 最新 develop
+  `4b92455cab1b1a51e8534b7eb869798ae1241b1b` 单独构建 GPU 二进制，
+  SAI 4V100 / LCAO cusolver / 临时双 wheel 安装环境完成验证。
+  作业 1820042 的 Relax、ASE MD/续跑、原生 MD、串行 NEB、Pt 固定电子数基准
+  及独立 LTS 3.10.1 reader 检查通过；该作业 CP 因新收敛标记遗漏失败，保留失败状态。
+  修复后作业 1820187 的 CP 和双 rank image-parallel NEB 均通过，CP batch、
+  外层 mpirun 和总退出码均为 0。CP 电势残差 0.0 eV，原始能量/力及
+  grand-potential 记账对照通过；此为有界接口交接验收，不是科学收敛基准。
+  两版 wheel 的 103 个生产 Python 文件只有 CP reader 不同；未受影响的实算
+  沿用 1820042 证据，明确记录各 case 的实际源码/作业。复用 Pt 基准前校验
+  evidence/raw log、引擎二进制、插件 wheel 与全部输入资产 hash。站点 UCX 退出
+  warning 保留，已确认 MPI 返回 0。完整聚合证据位于维护者本地
+  `~/scratch/abacuslite-integration-acceptance-final.json`，最后作业 archive SHA256
+  `b1803ced6d92c856634b0119dfb8775cc355d6fa617c858307c93c9430e4b373`。
+  ABACUS 候选 `bca816410` 的内置/独立 CPU 实算均 9/9 通过；本仓最终离线
+  1223 passed / 32 skipped，安装态 CP 54 passed；未变消费者路径的安装态
+  63 passed / 2 skipped 证据保持有效。独立审查无阻塞。尚未推送或提 PR、
+  未跑远程 CI、未发布独立包或切换生产依赖；按维护者要求先完成本地阶段。
 - 2026-10-17（当前 ABACUS CP 收敛证据兼容候选）：Ruling：固定电子数
   evaluation 仍要求同目录 `OUT.<suffix>/running_scf.log` 的明确 SCF 状态；
   `4b92455ca` 引擎写出的整行 `#SCF IS CONVERGED#` / `!!SCF IS NOT CONVERGED!!`
@@ -20,7 +40,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   `True`。无插件 Python 3.13 离线全套 `1223 passed, 32 skipped`，Python 3.12
   双 wheel 安装态 CP 专项 `54 passed`；新 ATST 候选 wheel SHA256
   `4008ca72bcacbd0393d8c154eaf1cbbc80d320e1b64178cb8588fbfd072c5e40`，
-  公共 API clean-install 检查与依赖检查通过。真实 CP 重跑仍待执行。
+  公共 API clean-install 检查与依赖检查通过。真实 CP 重跑结果见本节开头。
 - 2026-10-17（原生 MD 输出目录修复候选）：Ruling：按本次运行 `INPUT` 的
   `suffix` 精确选择 `OUT.<suffix>`（默认 `OUT.ABACUS`）；目录不存在时保留旧版
   run directory 平铺输出兼容，不混合不同 `OUT.*` 的 log、MD_dump 与 eig_occ。
@@ -29,7 +49,7 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   兜底路径将无量纲 cell 乘 `alat_in_angstrom`；完整 latestio 路径的同类问题归
   独立 abacuslite parser `dc020430` 修复，本仓只镜像该精确修复至 vendored
   snapshot，并登记严格 drift 白名单，不加 ATST 后处理掩盖。已有真实多帧 fixture 的
-  default/custom suffix、平铺兼容、跨目录隔离和单位回归；最新引擎实算仍待验收。
+  default/custom suffix、平铺兼容、跨目录隔离和单位回归；最新引擎实算结果见本节开头。
 - 2026-10-17（恒电势密度文件兼容候选）：Ruling：完整识别 LTS
   `SPIN1_CHG.cube`/`SPIN2_CHG.cube` 与当前引擎 `chg.cube` 或
   `chgs1.cube`/`chgs2.cube`；两套并存、缺失一自旋或 `out_freq_ion > 0`
@@ -38,11 +58,11 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   `1211 passed, 32 skipped`；Python 3.12 双 wheel 安装、仓库外消费者测试
   `63 passed, 2 skipped`，导入均来自隔离 `site-packages`，`uv pip check` 通过；
   固定 ABACUS 快照 drift checker、vendored 专项回归、文档治理和 wheel 公共 API
-  clean-install 检查均通过。当前 ATST 候选 wheel SHA256 为
+  clean-install 检查均通过。该目录/密度兼容修复候选 wheel SHA256 为
   `0c760fa985949b777864c41d87ed4910526bdb5697a50b12fdcfd5d4b37d2f08`；
   配套独立包 wheel SHA256 为
   `c809d0714c36ee52358e5a102912d979c0a1b82ad4a5b97811582a62066e27fd`。
-  真实引擎的完整工作流结论留待 SAI 验收，以上是接口与离线行为证据。
+  以上是该候选的接口与离线行为证据；后续 SAI 验收结果见本节开头。
 - 2026-10-17（独立 abacuslite 候选接入）：ATST 的计算器、INPUT/STRU/KPT、
   latest/legacy reader、逆向配置、原生 MD 与 gate compensation 共用一次后端决策；
   仅顶层包缺失回退 vendored，已安装插件内部损坏向上报错。`tests.yml` 新增固定
