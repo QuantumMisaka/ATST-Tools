@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import shlex
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Literal
 
@@ -14,19 +15,52 @@ BackendSource = Literal["external", "vendored"]
 
 
 def _load_abacuslite_backend():
-    try:
-        from abacuslite import Abacus, AbacusProfile
-
-        return Abacus, AbacusProfile, "external"
-    except ModuleNotFoundError as exc:
-        if exc.name != "abacuslite":
-            raise
+    if find_spec("abacuslite") is None:
         from atst_tools.external.ASE_interface.abacuslite import Abacus, AbacusProfile
 
         return Abacus, AbacusProfile, "vendored"
+    from abacuslite import Abacus, AbacusProfile
+
+    return Abacus, AbacusProfile, "external"
 
 
 Abacus, AbacusProfile, BACKEND_SOURCE = _load_abacuslite_backend()
+
+
+def import_generalio():
+    """Return general I/O from the selected calculator backend."""
+    if BACKEND_SOURCE == "external":
+        from abacuslite.io import generalio
+    else:
+        from atst_tools.external.ASE_interface.abacuslite.io import generalio
+    return generalio
+
+
+def import_latestio():
+    """Return current-output readers from the selected backend."""
+    if BACKEND_SOURCE == "external":
+        from abacuslite.io import latestio
+    else:
+        from atst_tools.external.ASE_interface.abacuslite.io import latestio
+    return latestio
+
+
+def import_legacyio():
+    """Return legacy-output readers from the selected backend."""
+    if BACKEND_SOURCE == "external":
+        from abacuslite.io import legacyio
+    else:
+        from atst_tools.external.ASE_interface.abacuslite.io import legacyio
+    return legacyio
+
+
+def import_ksampling():
+    """Return K-point conversion helpers from the selected backend."""
+    if BACKEND_SOURCE == "external":
+        from abacuslite.utils import ksampling
+    else:
+        from atst_tools.external.ASE_interface.abacuslite.utils import ksampling
+    return ksampling
 
 
 def _command_executable(command: str) -> str:

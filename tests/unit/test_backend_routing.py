@@ -1,0 +1,147 @@
+"""Consumer regressions for a single ABACUS backend decision."""
+
+from __future__ import annotations
+
+import builtins
+import shutil
+from importlib.util import find_spec
+from pathlib import Path
+
+import numpy as np
+
+import pytest
+
+
+def _reject_vendored_imports(monkeypatch):
+    original_import = builtins.__import__
+
+    def checked_import(name, *args, **kwargs):
+        if name.startswith("atst_tools.external.ASE_interface.abacuslite"):
+            raise AssertionError(f"Vendored backend import: {name}")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", checked_import)
+
+
+def test_external_consumers_do_not_import_vendored_backend(monkeypatch, tmp_path):
+    """Exercise actual structure, reverse, MD and gate consumer entry points."""
+    from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
+
+    if BACKEND_SOURCE != "external":
+        pytest.skip("This case runs in the installed external-package lane")
+
+    from atst_tools.utils import abacus_io, gate_compensation, io, reverse_config
+    from atst_tools.workflows import md
+
+    _reject_vendored_imports(monkeypatch)
+    assert abacus_io._import_generalio().__name__ == "abacuslite.io.generalio"
+    assert abacus_io._import_latestio().__module__ == "abacuslite.io.latestio"
+    assert md._import_legacyio().__module__ == "abacuslite.io.legacyio"
+    assert reverse_config.endpoint_has_energy_forces(tmp_path) is False
+
+    run = tmp_path / "run"
+    run.mkdir()
+    (run / "INPUT").write_text("INPUT_PARAMETERS\ngamma_only 1\n", encoding="utf-8")
+    (run / "STRU").write_text(
+        "ATOMIC_SPECIES\nH 1 H.upf\nLATTICE_CONSTANT\n1\n"
+        "LATTICE_VECTORS\n10 0 0\n0 10 0\n0 0 10\n"
+        "ATOMIC_POSITIONS\nDirect\nH\n0\n1\n.2 .2 .2 1 1 1\n",
+        encoding="utf-8",
+    )
+    assert io.read_abacus_stru(run / "STRU").get_chemical_symbols() == ["H"]
+    assert reverse_config._read_input(run)["gamma_only"] == "1"
+    assert reverse_config._read_stru_species(run)[0] == {"H": "H.upf"}
+    assert reverse_config._resolve_kpts(run, {"gamma_only": "1"}) == [1, 1, 1]
+    assert reverse_config._derive_kgrid_from_kspacing(run, "1") is not None
+
+    # A missing cube is an expected file error; the parser import must already
+    # have been resolved from the selected external backend.
+    with pytest.raises((ValueError, FileNotFoundError)):
+        gate_compensation.read_gate_compensation(run, 1.0, 1.0)
+
+
+def test_missing_internal_external_module_never_uses_vendored(monkeypatch):
+    from atst_tools.calculators import abacuslite_backend
+
+    if abacuslite_backend.BACKEND_SOURCE != "external":
+        pytest.skip("This case runs in the installed external-package lane")
+    original_import = builtins.__import__
+
+    def broken_generalio(name, *args, **kwargs):
+        if name == "abacuslite.io":
+            raise ModuleNotFoundError("broken installed plugin", name="abacuslite.io")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", broken_generalio)
+    from atst_tools.utils import abacus_io
+
+    with pytest.raises(ModuleNotFoundError, match="broken installed plugin"):
+        abacus_io._import_generalio()
+
+
+def test_external_frame_selection_fermi_order_and_native_md(monkeypatch, tmp_path):
+    """Use real parser fixtures through installed calculator and MD consumers."""
+    from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
+
+    if BACKEND_SOURCE != "external":
+        pytest.skip("This case runs in the installed external-package lane")
+    from atst_tools.workflows.md import AbacusNativeMDRunner
+
+    fixtures = (
+        Path(__file__).resolve().parents[2]
+        / "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles"
+    )
+    gold = fixtures / "multiframe_scf_trial_last"
+    run = tmp_path / "scf"
+    out = run / "OUT.ABACUS"
+    out.mkdir(parents=True)
+    shutil.copy2(gold / "STRU", run / "STRU")
+    shutil.copy2(gold / "running_scf.log", out / "running_scf.log")
+
+    _reject_vendored_imports(monkeypatch)
+    from abacuslite.core import AbacusTemplate
+
+    template = AbacusTemplate()
+    template.suffix = "ABACUS"
+    template.calculation = "scf"
+    template.atomorder = [0, 2, 1]
+    results = template.read_results(run)
+    np.testing.assert_allclose(
+        results["forces"],
+        [[-0.5, -0.01, 0], [0, 0, 0], [0.5, 0.01, 0]],
+        atol=1e-12,
+    )
+    assert results["efermi"] == pytest.approx(-2.04)
+    assert results["fermi_level"] == pytest.approx(results["efermi"])
+
+    md_run = tmp_path / "md"
+    md_run.mkdir()
+    for name in ("running_md.log", "MD_dump", "eig_occ.txt"):
+        shutil.copy2(fixtures / "multiframe_md_latest" / name, md_run / name)
+    runner = AbacusNativeMDRunner({}, "abacus", {"directory": str(md_run)})
+    frames = runner._collect_frames()
+    assert len(frames) == 2
+    assert frames[-1].get_chemical_symbols() == ["As", "Ga"]
+
+    from atst_tools.utils.abacus_io import collect_abacus_output
+
+    summary = collect_abacus_output(str(md_run), str(tmp_path / "summary.json"))
+    assert summary["backend"] == "external"
+    assert summary["parsed"] is True
+    assert summary["energy_eV"] == pytest.approx(-1940.6311063727)
+    assert summary["max_force_eV_per_ang"] > 0
+
+
+def test_absent_package_uses_vendored_backend():
+    """Run in the ordinary offline test job without the optional plugin."""
+    from atst_tools.calculators import abacuslite_backend
+
+    if find_spec("abacuslite") is not None:
+        pytest.skip("This case runs in the separate no-plugin environment")
+    assert abacuslite_backend.BACKEND_SOURCE == "vendored"
+    assert abacuslite_backend.import_generalio().__name__.startswith(
+        "atst_tools.external.ASE_interface.abacuslite."
+    )
+    assert abacuslite_backend.import_legacyio().__name__.startswith(
+        "atst_tools.external.ASE_interface.abacuslite."
+    )

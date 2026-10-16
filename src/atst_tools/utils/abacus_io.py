@@ -15,7 +15,11 @@ from typing import Any
 import numpy as np
 from ase.io import write
 
-from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
+from atst_tools.calculators.abacuslite_backend import (
+    BACKEND_SOURCE,
+    import_generalio,
+    import_latestio,
+)
 from atst_tools.utils.config import ConfigLoader
 from atst_tools.utils.io import read_structure
 
@@ -38,19 +42,11 @@ _ABACUS_NON_INPUT_KEYS = {
 
 
 def _import_generalio():
-    try:
-        from abacuslite.io import generalio
-    except ImportError:
-        from atst_tools.external.ASE_interface.abacuslite.io import generalio
-    return generalio
+    return import_generalio()
 
 
 def _import_latestio():
-    try:
-        from abacuslite.io.latestio import read_abacus_out
-    except ImportError:
-        from atst_tools.external.ASE_interface.abacuslite.io.latestio import read_abacus_out
-    return read_abacus_out
+    return import_latestio().read_abacus_out
 
 
 def _as_mp_kpts(kpts: Any) -> dict[str, Any]:
@@ -324,6 +320,8 @@ def _parse_last_abacus_frame(log: Path):
         copied_log = tmpdir / log.name
         shutil.copy2(log, copied_log)
         shutil.copy2(log.parent / "eig_occ.txt", tmpdir / "eig_occ.txt")
+        if (log.parent / "MD_dump").is_file():
+            shutil.copy2(log.parent / "MD_dump", tmpdir / "MD_dump")
         atoms_or_frames = read_abacus_out(copied_log)
     if isinstance(atoms_or_frames, list):
         return atoms_or_frames[-1] if atoms_or_frames else None

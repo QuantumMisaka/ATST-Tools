@@ -11,6 +11,8 @@ from __future__ import annotations
 import numpy as np
 from pathlib import Path
 
+from atst_tools.calculators.abacuslite_backend import import_generalio
+
 ABACUS_RY_EV = 13.605698
 
 
@@ -46,10 +48,10 @@ def read_gate_compensation(directory, nelec, reference_electrons):
     SCF convergence and evaluation-directory identity before invoking this.
     """
     from ase.data import atomic_numbers
-    from atst_tools.external.ASE_interface.abacuslite.io.generalio import read_input, read_stru
+    generalio = import_generalio()
 
     root = Path(directory)
-    params = read_input(str(root/'INPUT'))
+    params = generalio.read_input(str(root/'INPUT'))
     def flag(key):
         value = str(params.get(key, '0')).lower()
         if value in ('1', 'true', '.true.'): return True
@@ -72,7 +74,7 @@ def read_gate_compensation(directory, nelec, reference_electrons):
     precision = str(params.get('out_chg', '')).split()
     if len(precision) != 2 or int(precision[0]) != 1 or int(precision[1]) < 10:
         raise ValueError('compensated_gate requires out_chg 1 10 or higher precision')
-    stru = read_stru(str(root/params.get('stru_file', 'STRU')))
+    stru = generalio.read_stru(str(root/params.get('stru_file', 'STRU')))
     cell = np.asarray(stru['lat']['vec'], float)*float(stru['lat']['const'])
     coordinates = np.asarray([a['coord'] for s in stru['species'] for a in s['atom']], float)
     kind = stru['coord_type'].lower()

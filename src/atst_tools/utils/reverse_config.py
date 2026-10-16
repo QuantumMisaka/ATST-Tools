@@ -7,6 +7,12 @@ from typing import Any
 
 import numpy as np
 
+from atst_tools.calculators.abacuslite_backend import (
+    import_generalio,
+    import_ksampling,
+    import_legacyio,
+)
+
 
 _DROP_INPUT_KEYS = {"stru_file", "kpoint_file", "read_file_dir", "basis_dir"}
 _PROMOTE_INPUT_KEYS = {"pseudo_dir", "orbital_dir"}
@@ -65,12 +71,9 @@ def _read_stru_species(run_dir: Path) -> tuple[dict[str, str], dict[str, str]]:
 
 def _derive_kgrid_from_kspacing(run_dir: Path, kspacing: str) -> list[int] | None:
     """Derive a Gamma grid from kspacing (Bohr^-1) and the STRU cell (Bohr)."""
+    read_stru = import_generalio().read_stru
+    convert_kspacing_to_kpts = import_ksampling().convert_kspacing_to_kpts
     try:
-        from atst_tools.external.ASE_interface.abacuslite.io.generalio import read_stru
-        from atst_tools.external.ASE_interface.abacuslite.utils.ksampling import (
-            convert_kspacing_to_kpts,
-        )
-
         stru_path = run_dir / "STRU"
         stru = read_stru(str(stru_path))
         const = float(stru["lat"]["const"])
@@ -82,6 +85,8 @@ def _derive_kgrid_from_kspacing(run_dir: Path, kspacing: str) -> list[int] | Non
         else:
             ksp_ang = tuple(float(t) * _ANGSTROM_PER_BOHR for t in tokens[:3])
         return list(convert_kspacing_to_kpts(cell_angstrom, ksp_ang))
+    except ImportError:
+        raise
     except Exception:
         return None
 
@@ -137,12 +142,7 @@ def endpoint_has_energy_forces(run_dir: str | Path) -> bool:
     Uses the legacyio parser family (no eig_occ.txt requirement) so real relax
     endpoint directories are accepted (SPEC R-8; aligned with the 08-11 bridge).
     """
-    from atst_tools.external.ASE_interface.abacuslite.io.legacyio import (
-        find_final_info_with_iter_header,
-        read_energies_from_running_log,
-        read_forces_from_running_log,
-        read_iter_header_from_running_log,
-    )
+    legacyio = import_legacyio()
 
     base = Path(run_dir)
     logs = sorted(base.glob("running*.log")) + sorted(base.glob("OUT*/running*.log"))
@@ -151,17 +151,19 @@ def endpoint_has_energy_forces(run_dir: str | Path) -> bool:
     log = logs[-1]
     try:
         lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
-        headers = read_iter_header_from_running_log(lines)
+        headers = legacyio.read_iter_header_from_running_log(lines)
         # read_energies_from_running_log returns (Rydberg, eV) table pairs; the
         # final-iteration energies are selected by the iteration header indices.
-        energies = find_final_info_with_iter_header(
-            read_energies_from_running_log(lines)[1], headers
+        energies = legacyio.find_final_info_with_iter_header(
+            legacyio.read_energies_from_running_log(lines)[1], headers
         )
-        forces = read_forces_from_running_log(lines)
+        forces = legacyio.read_forces_from_running_log(lines)
         if not energies or not forces:
             return False
         f_arr = np.asarray(forces[-1], dtype=float)
         return f_arr.ndim == 2 and f_arr.shape[1] == 3
+    except ImportError:
+        raise
     except Exception:
         return False
 

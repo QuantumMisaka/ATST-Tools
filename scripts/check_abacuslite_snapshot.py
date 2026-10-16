@@ -9,6 +9,7 @@ import difflib
 import hashlib
 import io
 import re
+import sys
 import tokenize
 from pathlib import Path
 from typing import Iterable
@@ -340,7 +341,12 @@ def _frame_patch_fingerprints(source: str) -> dict[str, str]:
                     and isinstance(body[0].value, ast.Constant)
                     and isinstance(body[0].value.value, str)):
                 child.body = body[1:]
-        canonical = ast.dump(node, include_attributes=False).replace(", type_params=[]", "")
+        # Python 3.13 omits empty AST fields by default. Preserve the 3.10-3.12
+        # canonical form so registered semantic fingerprints stay unchanged.
+        dump_options = {"show_empty": True} if sys.version_info >= (3, 13) else {}
+        canonical = ast.dump(node, include_attributes=False, **dump_options).replace(
+            ", type_params=[]", ""
+        )
         result[name] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     return result
 

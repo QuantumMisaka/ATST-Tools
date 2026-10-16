@@ -36,6 +36,50 @@ jobs:
         run: |
           python -m pytest tests -q
 
+  external-abacuslite-candidate:
+    name: installed external abacuslite candidate
+    runs-on: ubuntu-latest
+    env:
+      ABACUSLITE_REF: 136783baf4b6832c13d02a2542753439fbacc6df
+
+    steps:
+      - name: Checkout ATST-Tools
+        uses: actions/checkout@v4
+
+      - name: Checkout reviewed abacuslite candidate
+        uses: actions/checkout@v4
+        with:
+          repository: QuantumMisaka/abacuslite
+          ref: ${{ env.ABACUSLITE_REF }}
+          path: abacuslite-candidate
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build and install both wheels
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --outdir "$RUNNER_TEMP/plugin-dist" abacuslite-candidate
+          python -m build --wheel --outdir "$RUNNER_TEMP/atst-dist" .
+          python -m pip install "$RUNNER_TEMP"/plugin-dist/*.whl "$RUNNER_TEMP"/atst-dist/*.whl 'pytest>=8.4,<10'
+          python -m pip check
+          test "$(git -C abacuslite-candidate rev-parse HEAD)" = "$ABACUSLITE_REF"
+
+      - name: Verify installed import provenance and consumer paths
+        run: |
+          cd "$RUNNER_TEMP"
+          python -c 'import importlib.metadata as m; from pathlib import Path; import abacuslite, atst_tools; from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE, import_generalio; root = Path(__import__("os").environ["GITHUB_WORKSPACE"]).resolve(); paths = (Path(abacuslite.__file__).resolve(), Path(atst_tools.__file__).resolve()); print("abacuslite", m.version("abacuslite"), paths[0]); print("atst-tools", m.version("atst-tools"), paths[1]); assert BACKEND_SOURCE == "external"; assert all(not path.is_relative_to(root) for path in paths); assert import_generalio().__name__ == "abacuslite.io.generalio"'
+          python -m pytest \
+            "$GITHUB_WORKSPACE/tests/unit/test_backend_routing.py" \
+            "$GITHUB_WORKSPACE/tests/unit/test_abacus_io.py" \
+            "$GITHUB_WORKSPACE/tests/unit/test_reverse_config.py" \
+            "$GITHUB_WORKSPACE/tests/unit/test_gate_compensation.py" \
+            "$GITHUB_WORKSPACE/tests/unit/test_md_workflow.py" \
+            "$GITHUB_WORKSPACE/tests/unit/test_factory.py" \
+            -q
+
   documentation-governance:
     name: documentation governance
     runs-on: ubuntu-latest

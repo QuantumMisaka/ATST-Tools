@@ -19,13 +19,23 @@ from atst_tools.external.ASE_interface.abacuslite.core import (
 from atst_tools.external.ASE_interface.abacuslite.io.generalio import file_safe_backup, read_stru, write_stru
 
 
-def test_abacuslite_backend_does_not_hide_external_package_import_errors(monkeypatch):
+@pytest.mark.parametrize(
+    "error",
+    [
+        ImportError("external abacuslite internal dependency failed"),
+        ModuleNotFoundError(
+            "external abacuslite internal dependency failed", name="abacuslite"
+        ),
+    ],
+)
+def test_abacuslite_backend_does_not_hide_external_package_import_errors(monkeypatch, error):
     """Only a missing top-level external package may trigger the vendored fallback."""
     original_import = builtins.__import__
+    monkeypatch.setattr(abacuslite_backend, "find_spec", lambda name: object())
 
     def broken_external_import(name, *args, **kwargs):
         if name == "abacuslite":
-            raise ImportError("external abacuslite internal dependency failed")
+            raise error
         return original_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", broken_external_import)

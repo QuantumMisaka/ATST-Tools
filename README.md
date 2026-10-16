@@ -237,7 +237,12 @@ for hand-written guidance.
 
 ABACUS is integrated through `abacuslite`. ATST-Tools first tries an installed
 `abacuslite` package and then falls back to the vendored snapshot under
-`src/atst_tools/external/ASE_interface/abacuslite`.
+`src/atst_tools/external/ASE_interface/abacuslite` only when the top-level
+package is absent. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
+configuration, native MD and gate compensation share that choice. An installed
+package with a broken import fails visibly. The independent package is a
+candidate; it is not yet a declared runtime dependency or a published release
+requirement.
 
 Typical example files use:
 

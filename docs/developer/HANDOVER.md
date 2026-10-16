@@ -67,6 +67,13 @@ release 变更，都先从对应小节确认需要同步的文档。
   package-mode upstream-style parser tests 和 snapshot drift check；不要直接使用
   上游 `xtest.sh`，因为 ATST vendored copy 使用包内相对导入，直接脚本模式会
   绕过包上下文。
+- 独立 `abacuslite` 候选路径在 `.github/workflows/tests.yml` 的
+  `external-abacuslite-candidate` job 中从固定提交构建 wheel；在仓库外执行
+  ATST wheel 消费者测试并核对 `BACKEND_SOURCE` 和两个导入路径。更新候选提交时
+  同步记录插件 wheel 与 ATST wheel 的版本和验证结果。普通 unit job 无插件，
+  验证仅顶层包缺失时的 vendored 回退；插件内部导入失败必须向调用者传播。
+  `test_abacuslite_io_reorder.py` 和 `test_abacuslite_frame_selection.py`
+  仍显式针对 vendored 快照，不能充当独立包验收证据。
 - 同步 `temp_repos/abacus-develop/interfaces/ASE_interface` 时，先运行
   `conda run -n atst-dev python scripts/check_abacuslite_snapshot.py --upstream temp_repos/abacus-develop/interfaces/ASE_interface --vendored src/atst_tools/external/ASE_interface`。
   若上游 reference commit 更新，更新

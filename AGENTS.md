@@ -35,16 +35,19 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 - 开展调用ABACUS和DeePMD-kit的测试需要将任务通过slurm脚本交到4V100节点上，使用GPU节点计算。对于ABACUS，你需要在INPUT中设置ks_solver cusolver (在默认的basis lcao下)。
 
 ### 基本边界
-- abacuslite 是项目的 ABACUS-ASE backend，运行时默认走 vendored 快照
-  （若环境安装了独立 abacuslite 包则优先导入，external 为预留通道，尚无稳定发布）。vendored 快照在
+- abacuslite 是项目的 ABACUS-ASE backend。运行时优先使用已安装的独立
+  `abacuslite`；仅在顶层包缺失时回退 vendored 快照，已安装但损坏的包须报错。
+  独立包的实现与发布由 `QuantumMisaka/abacuslite` 维护；当前仍是候选接入，
+  尚无稳定索引版本或生产依赖切换。vendored 快照在
   `src/atst_tools/external/ASE_interface`（对照上游
   `abacus-develop/interfaces/ASE_interface`；本地开发时通常置于
-  `temp_repos/abacus-develop`，以 `ABACUSLITE_SNAPSHOT.md` 记录的基线 SHA 为准）。维护模式为
-  **本仓为主 + 定期上游同步**：修复先在 vendored 落地并登记
+  `temp_repos/abacus-develop`，以 `ABACUSLITE_SNAPSHOT.md` 记录的基线 SHA 为准）。
+  快照维护模式为 **本仓为主 + 定期上游同步**：快照修复登记
   `src/atst_tools/external/ASE_interface/PATCHES.md`，再向上游同步；基线 SHA
   记录于 `src/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md`（CI
   `ABACUS_DEVELOP_REF` 的单一事实源），上游更新按该基线定期拉取。长期目标：
-  abacuslite 可独立安装后改为直接依赖，退位 vendored。
+  独立包通过正式验证和发布后改为直接依赖；在已知的 Paimon 外部调用方迁移
+  或兼容转发经验证前，保留 vendored 的旧导入路径。
 - ase-abacus 是 legacy ABACUS-ASE backend 参考基线，位于 temp_repos/ase-abacus
   （若本地存在）；main 分支运行时不再使用，仅作功能对照，不能参与项目开发。
 - temp_repo下存放有本项目的可参考代码库，该目录下内容不进入git仓库。

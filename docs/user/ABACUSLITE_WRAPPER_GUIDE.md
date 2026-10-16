@@ -5,8 +5,14 @@
 ATST-Tools integrates ABACUS through `abacuslite`. Runtime resolution is:
 
 1. Import an independently installed `abacuslite` package.
-2. If unavailable, fall back to the vendored snapshot under
+2. If the top-level package is absent, fall back to the vendored snapshot under
    `src/atst_tools/external/ASE_interface/abacuslite`.
+
+The chosen backend is shared by the calculator and ATST's ABACUS file readers
+and writers, including reverse configuration, native MD and gate compensation.
+An installed package whose own imports fail raises an error; it is not treated
+as an absent package. The external package remains a candidate and is not yet
+required by the published ATST dependency list.
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow

@@ -10,7 +10,7 @@ from ase.constraints import FixAtoms, FixCartesian
 from ase.io import read
 from ase.units import Bohr
 
-from atst_tools.external.ASE_interface.abacuslite.io.generalio import read_stru
+from atst_tools.calculators.abacuslite_backend import import_generalio
 
 
 def read_structure(filename: str | Path, format: str | None = None, *, parallel: bool = True) -> Atoms:
@@ -23,7 +23,7 @@ def read_structure(filename: str | Path, format: str | None = None, *, parallel:
 
 def read_abacus_stru(filename: str | Path) -> Atoms:
     """Convert an ABACUS STRU file into an ASE Atoms object."""
-    data = read_stru(str(filename))
+    data = import_generalio().read_stru(str(filename))
     scale = float(data["lat"].get("const", 1.0)) * Bohr
     cell = np.array(data["lat"]["vec"], dtype=float) * scale
     coord_type = data.get("coord_type", "Cartesian").lower()

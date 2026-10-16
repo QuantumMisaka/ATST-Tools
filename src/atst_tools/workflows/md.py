@@ -21,6 +21,11 @@ from ase.md.nvtberendsen import NVTBerendsen
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary, ZeroRotation
 
 from atst_tools.calculators.factory import CalculatorFactory, _build_abacus_command
+from atst_tools.calculators.abacuslite_backend import (
+    import_generalio,
+    import_latestio,
+    import_legacyio,
+)
 from atst_tools.runtime.launch import resolve_calculator_omp
 from atst_tools.utils.abacus_io import _as_mp_kpts, _input_parameters, _merged_abacus_parameters
 from atst_tools.utils.artifacts import write_artifact_manifest
@@ -32,27 +37,15 @@ from atst_tools.utils.restart_helpers import get_last_frame
 
 
 def _import_generalio():
-    try:
-        from abacuslite.io import generalio
-    except ImportError:
-        from atst_tools.external.ASE_interface.abacuslite.io import generalio
-    return generalio
+    return import_generalio()
 
 
 def _import_latestio():
-    try:
-        from abacuslite.io.latestio import read_abacus_out
-    except ImportError:
-        from atst_tools.external.ASE_interface.abacuslite.io.latestio import read_abacus_out
-    return read_abacus_out
+    return import_latestio().read_abacus_out
 
 
 def _import_legacyio():
-    try:
-        from abacuslite.io.legacyio import read_traj_from_md_dump
-    except ImportError:
-        from atst_tools.external.ASE_interface.abacuslite.io.legacyio import read_traj_from_md_dump
-    return read_traj_from_md_dump
+    return import_legacyio().read_traj_from_md_dump
 
 
 def _abacus_section(config: dict[str, Any]) -> dict[str, Any]:

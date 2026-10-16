@@ -84,7 +84,10 @@ def test_abacus_native_md_prepares_inputs_runs_process_and_collects(monkeypatch,
 
     init = Atoms("H", positions=[[0.0, 0.0, 0.0]], cell=[5, 5, 5], pbc=True)
     write(tmp_path / "init.traj", init)
-    fixture_dir = Path("src/atst_tools/external/ASE_interface/abacuslite/io/testfiles").resolve()
+    fixture_dir = (
+        Path(__file__).resolve().parents[2]
+        / "src/atst_tools/external/ASE_interface/abacuslite/io/testfiles"
+    )
     popen_calls = []
 
     class FakeProcess:
