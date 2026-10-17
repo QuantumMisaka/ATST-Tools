@@ -1,8 +1,8 @@
 # GPU P6 接手：默认入口与 image 内 MPI 多卡
 
-**版本**: 2026-10-16
-**日期**: 2026-10-16
-**状态**: 可行性核验与父仓隔离分支修复完成；真实计算、合入与发布验收尚未完成
+**版本**: 2026-10-17
+**日期**: 2026-10-17
+**状态**: ATST 2.2.9 已发布、父仓集成分支已推送；P6 验收受 SIF 依赖与 Lustre 发布契约阻塞
 **责任人**: ATST-Tools maintainers / ABACUS Toolbox maintainers
 
 生命周期：review；报告级别：L3。执行状态由既有
@@ -165,3 +165,33 @@ NEB TS guess 额外内部图的推导也已修正。原始失败回归已复现�
 61 项对应文件测试闭环，没有将该次全量 exit 2 改写为通过。旧环境依赖导致的 CP
 失败亦经原基线复现、锁定依赖复验消除。输入包与机器可读身份已随父仓报告保存。
 本次 ATST 文档在 `atst-dev` 通过治理检查及 35 项文档测试。
+
+## 8. 2026-10-17 发布与真实入口验收
+
+用户已授权本轮收口。ATST 2.2.9 已发布 GitHub/PyPI，完整测试、MPI 集成、
+构建、正式 wheel 干净安装及后续 CI 通过，见 [发布说明](../releases/RELEASE_NOTES_2.2.9.md)。
+父仓 `fix/abacus/atst-gpu-p6-20261016` 的 `f98ca504e` 已推送；合体 unit 基线
+6874 passed、集成 55 passed、消费端 65 passed、来源回放 61 passed、corpus quality
+2 passed，治理和同一候选 ZIP 检查通过。独立复核补齐了 manifest `path_base` 消费、
+TS guess 绘图完整 band 及来源索引镜像字段。
+
+ABACUS 1.2.76 冻结候选已上传 dev，ZIP SHA-256
+`3fc561835b620ee170f4eb245e9ee85236a4909204c88e75ace19f7b665ae06b`。
+真实入口验证发现两个前置阻塞：
+
+1. 私有验证 SIF 与活动 `abacus_1.1.1.sif` 均缺少父仓要求的 abacusagent
+   `slugify_work_note` 接口。CPU job `1824863` / `1824879` 输入准备失败。
+2. 私有覆盖层挂载父仓锁定依赖后，CPU job `1825036` 越过导入，但 Lustre
+   不支持 prepared 目录发布所需的 `renameat2(RENAME_NOREPLACE)`。现有父仓
+   note-first 计划要求不支持时失败，不能静默降级为可覆盖发布；兼容设计待决定。
+
+所有会话尚无 GPU invocation，1/4 卡 E/F 比较未执行；不得将 CPU 工具、Slurm
+完成或 runtime preflight 等同于真实 NEB 通过。监督接管时一个参考 read 的
+preparation 被中断，SDK 留下 `remote_preparation_uncertain`；保留身份，不重放、
+不标终态，不把它隐去或解释为计算结果。
+
+dev demo task `12579` 完成前置检索/读取后已停止，`calculation_count=0`；Flow
+registry 返回 HTTP 500。prod 未发布 ABACUS 1.2.76，活动 SIF 未变。
+详细身份、失败与门禁原始记录由父仓
+`docs/reports/2026-10-17-atst-229-p6-closeout.md` 及其 verification.json 维护。
+P6.3/P6.5 仍开放；P6.4 混合并行与 MLIP/DP 条件项不在本次完成声明中。
