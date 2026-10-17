@@ -2,17 +2,13 @@
 
 ## Current Integration State
 
-ATST-Tools integrates ABACUS through `abacuslite`. Runtime resolution is:
-
-1. Import an independently installed `abacuslite` package.
-2. If the top-level package is absent, fall back to the vendored snapshot under
-   `src/atst_tools/external/ASE_interface/abacuslite`.
-
-The chosen backend is shared by the calculator and ATST's ABACUS file readers
-and writers, including reverse configuration, native MD and gate compensation.
-An installed package whose own imports fail raises an error; it is not treated
-as an absent package. The external package remains a candidate and is not yet
-required by the published ATST dependency list.
+ATST-Tools uses the independently installed `abacuslite>=1.1.0,<2` package
+for every ABACUS calculator and file reader/writer. Missing or broken imports
+fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
+forward to the same installed implementation for existing callers, including
+Paimon; they do not select a separate backend. This describes the current
+source integration candidate. The published ATST-Tools 2.2.9 predates the
+required-dependency cutover.
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow
@@ -52,40 +48,20 @@ preserved. These semantics are included in the published 2.2.5 package; upgradin
 the package does not automatically update an existing deployed runtime, whose
 external runtime validation has not been performed.
 
-## Vendored Backend Notes
+## Historical Snapshot Evidence
 
-ATST-Tools still resolves an independently installed `abacuslite` package before
-the vendored fallback. An external `abacuslite` package may differ from the
-vendored snapshot.
-
-As of 2026-07-23, the vendored snapshot is synchronized with upstream
-`deepmodeling/abacus-develop` commit `70f7ed69b5677c447afdc78e05240e93da660e66`
-after normalizing ATST package-layout differences. It intentionally preserves these local
-differences from `temp_repos/abacus-develop/interfaces/ASE_interface/abacuslite`:
-
-- Relative imports so the package works under `atst_tools.external`.
-- First-occurrence species grouping for generated STRU files.
-- ASE `FixAtoms` and `FixCartesian` constraints written as ABACUS mobility flags.
-- Tolerant legacy ABACUS band-row parsing.
-- SCF coordinate frame selection（2.2.5 release）：`read_results` 在
-  `calculation=scf` 下按 PBC-aware 结构身份从 running log 反向选择最新匹配帧并
-  fail-closed；原生 relax/md 保持末帧语义。该候选修复不改变投影/收敛语义，也不改
-  `read_abacus_out` 公共签名。
-
-The synchronized snapshot accepts both dotted and undotted prerelease banners
-such as `v3.11.0-beta.1` and `v3.11.0-beta1`; its fixed-density helper also
-uses `OUT.ABACUS` as the explicit charge-file directory expected by current
-upstream behavior.
+The former vendored implementation was compared against the independent
+package before this cutover. Its frozen baseline, patch ledger and paired
+consumer/engine evidence remain recorded in the developer status report;
+they are audit history, not a live fallback or a current parser contract.
+ABACUS parser and calculator changes now belong in the independent
+`QuantumMisaka/abacuslite` repository. The old import paths are thin
+forwarders, and the ATST consumer suite verifies their object identity.
 
 ATST workflow YAML already defaults NEB, AutoNEB, and the D2S rough DyNEB path
 to ASE's recommended `improvedtangent` method. Direct `AbacusNEB(...)`
-construction now pins the same default explicitly, so its behavior does not
+construction pins the same default explicitly, so its behavior does not
 depend on an ASE release's implicit default.
-
-The vendored snapshot also carries upstream-sync fixes for numbered backup
-rotation, property-derived ABACUS keyword conflict detection, unsupported TDDFT
-`dipole` de-advertising, and `read_abacus_out` calculator `magmoms` reordering
-when atoms are sorted during result parsing.
 
 ### Force / fmax 口径（RAW vs 投影，2026-08-04 确认）
 
@@ -93,7 +69,7 @@ ABACUS 的 `running_*.log` 中 `TOTAL-FORCE` 输出的是**全原子原始力（
 STRU 中 `m 0 0 0` 固定原子——这是期望行为（与 VASP OUTCAR 等 DFT 惯例一致），
 固定原子由驱动层约束处理。下游消费口径：
 
-- **计算器层（vendored backend）**：返回 RAW 全原子力，不做预投影；约束投影由 ASE
+- **计算器层（独立 abacuslite backend）**：返回 RAW 全原子力，不做预投影；约束投影由 ASE
   `Atoms.get_forces()`（默认 `apply_constraint=True`，按 `FixAtoms`）执行。
 - **优化器层（sella/ASE）**：收敛判据使用**投影后自由原子力**；不要把 RAW 全原子
   fmax 直接与收敛阈值比较。
@@ -172,11 +148,9 @@ configured with `endpoint_singlepoint: auto`, and recomputes both endpoints unde
 
 ## NEB Image-Level MPI
 
-The vendored abacuslite tree includes a working NEB pattern in
-`src/atst_tools/external/ASE_interface/examples/neb.py`: each image receives an
-independent `Abacus` calculator directory, and ASE runs `NEB(...,
-parallel=True)`. ATST-Tools follows this image-isolated directory model for
-ABACUS-backed NEB and AutoNEB.
+ATST-Tools assigns each NEB image an independent `Abacus` calculator
+directory and uses ASE image-level parallelism for ABACUS-backed NEB and
+AutoNEB.
 
 Use an MPI-enabled Python environment compatible with the site launcher and
 the installed ABACUS runtime. For ordinary NEB, the outer MPI world size must

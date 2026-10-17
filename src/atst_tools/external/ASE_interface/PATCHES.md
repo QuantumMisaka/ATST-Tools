@@ -1,4 +1,8 @@
-# vendored abacuslite 语义补丁清单
+# 旧 vendored abacuslite 语义补丁清单（冻结审计）
+
+> 2026-10-18：此清单记录退役实现的历史差异，不再驱动运行时选择或在线
+> drift CI；后续 parser/calculator 修复由独立 abacuslite 仓维护。
+
 
 与上游逐字节差异的**语义补丁**（非结构适配：相对导入/删内嵌测试/注释 churn 由 checker 机械归一化）。每条登记后由 `scripts/check_abacuslite_snapshot.py` 归一化。
 

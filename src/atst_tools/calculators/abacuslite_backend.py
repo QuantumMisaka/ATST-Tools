@@ -11,14 +11,15 @@ from typing import Literal
 from ase.calculators.genericfileio import read_stdout
 
 
-BackendSource = Literal["external", "vendored"]
+BackendSource = Literal["external"]
 
 
 def _load_abacuslite_backend():
     if find_spec("abacuslite") is None:
-        from atst_tools.external.ASE_interface.abacuslite import Abacus, AbacusProfile
-
-        return Abacus, AbacusProfile, "vendored"
+        raise ModuleNotFoundError(
+            "abacuslite is required by ATST-Tools; install abacuslite>=1.1.0,<2",
+            name="abacuslite",
+        )
     from abacuslite import Abacus, AbacusProfile
 
     return Abacus, AbacusProfile, "external"
@@ -28,38 +29,26 @@ Abacus, AbacusProfile, BACKEND_SOURCE = _load_abacuslite_backend()
 
 
 def import_generalio():
-    """Return general I/O from the selected calculator backend."""
-    if BACKEND_SOURCE == "external":
-        from abacuslite.io import generalio
-    else:
-        from atst_tools.external.ASE_interface.abacuslite.io import generalio
+    """Return general I/O from the installed calculator backend."""
+    from abacuslite.io import generalio
     return generalio
 
 
 def import_latestio():
-    """Return current-output readers from the selected backend."""
-    if BACKEND_SOURCE == "external":
-        from abacuslite.io import latestio
-    else:
-        from atst_tools.external.ASE_interface.abacuslite.io import latestio
+    """Return current-output readers from the installed backend."""
+    from abacuslite.io import latestio
     return latestio
 
 
 def import_legacyio():
-    """Return legacy-output readers from the selected backend."""
-    if BACKEND_SOURCE == "external":
-        from abacuslite.io import legacyio
-    else:
-        from atst_tools.external.ASE_interface.abacuslite.io import legacyio
+    """Return legacy-output readers from the installed backend."""
+    from abacuslite.io import legacyio
     return legacyio
 
 
 def import_ksampling():
-    """Return K-point conversion helpers from the selected backend."""
-    if BACKEND_SOURCE == "external":
-        from abacuslite.utils import ksampling
-    else:
-        from atst_tools.external.ASE_interface.abacuslite.utils import ksampling
+    """Return K-point conversion helpers from the installed backend."""
+    from abacuslite.utils import ksampling
     return ksampling
 
 

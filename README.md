@@ -96,7 +96,9 @@ it installs the current published release.
 
 ATST-Tools requires Python 3.10 or newer. Sella-backed workflows install
 `sella>=2.5` with the default package because Sella is a first-class workflow
-backend.
+backend. The external-only integration candidate also requires the published
+`abacuslite>=1.1.0,<2`; the currently published ATST-Tools 2.2.9 predates this
+dependency change.
 
 安装 profile：
 
@@ -263,14 +265,12 @@ for hand-written guidance.
 
 ### ABACUS
 
-ABACUS is integrated through `abacuslite`. ATST-Tools first tries an installed
-`abacuslite` package and then falls back to the vendored snapshot under
-`src/atst_tools/external/ASE_interface/abacuslite` only when the top-level
-package is absent. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
-configuration, native MD and gate compensation share that choice. An installed
-package with a broken import fails visibly. The independent package is a
-candidate; it is not yet a declared runtime dependency or a published release
-requirement.
+ABACUS is integrated through the independently installed `abacuslite` package.
+In this source candidate it is a required dependency; missing or broken imports
+fail visibly. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
+configuration, native MD and gate compensation use that one package. Historical
+imports under `atst_tools.external.ASE_interface.abacuslite` remain as forwarding
+paths for existing consumers and do not contain a second implementation.
 
 Typical example files use:
 

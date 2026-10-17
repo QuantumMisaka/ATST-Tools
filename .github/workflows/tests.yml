@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       abacuslite_ref:
-        description: "abacuslite commit, tag, or branch for coordinated candidate validation"
+        description: "Optional abacuslite commit, tag, or branch for coordinated validation"
         required: false
         type: string
   schedule:
@@ -59,34 +59,22 @@ jobs:
         run: |
           python -m pytest tests -q
 
-  external-abacuslite-candidate:
-    name: paired installed abacuslite consumer parity
+  installed-abacuslite-consumer:
+    name: installed external abacuslite consumer
     runs-on: ubuntu-latest
     env:
-      ABACUSLITE_PIN: 06f97b1bda59f3d29e93dd5c7a4bf598808b89b8
       DISPATCH_REF: ${{ inputs.abacuslite_ref }}
 
     steps:
       - name: Checkout ATST-Tools
         uses: actions/checkout@v4
 
-      - name: Resolve abacuslite candidate ref
-        id: candidate
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
-            ref=main
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && -n "$DISPATCH_REF" ]]; then
-            ref="$DISPATCH_REF"
-          else
-            ref="$ABACUSLITE_PIN"
-          fi
-          echo "ref=$ref" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout reviewed abacuslite candidate
+      - name: Checkout optional coordinated abacuslite ref
+        if: github.event_name == 'workflow_dispatch' && inputs.abacuslite_ref != ''
         uses: actions/checkout@v4
         with:
           repository: QuantumMisaka/abacuslite
-          ref: ${{ steps.candidate.outputs.ref }}
+          ref: ${{ inputs.abacuslite_ref }}
           path: abacuslite-candidate
 
       - name: Set up Python
@@ -94,54 +82,54 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build both wheels
+      - name: Build ATST wheel and optional coordinated plugin wheel
         run: |
           python -m pip install --upgrade pip build
-          python -m build --wheel --outdir "$RUNNER_TEMP/plugin-dist" abacuslite-candidate
           python -m build --wheel --outdir "$RUNNER_TEMP/atst-dist" .
-          git -C abacuslite-candidate rev-parse HEAD
-          sha256sum "$RUNNER_TEMP"/plugin-dist/*.whl "$RUNNER_TEMP"/atst-dist/*.whl
-          if [[ "$GITHUB_EVENT_NAME" != "schedule" && "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]]; then
-            test "$(git -C abacuslite-candidate rev-parse HEAD)" = "$ABACUSLITE_PIN"
+          git rev-parse HEAD
+          sha256sum "$RUNNER_TEMP"/atst-dist/*.whl
+          if [[ -n "$DISPATCH_REF" ]]; then
+            python -m build --wheel --outdir "$RUNNER_TEMP/plugin-dist" abacuslite-candidate
+            git -C abacuslite-candidate rev-parse HEAD
+            sha256sum "$RUNNER_TEMP"/plugin-dist/*.whl
           fi
 
-      - name: Install identical ATST wheels in isolated environments
+      - name: Install ATST and required abacuslite in an isolated environment
         run: |
           ATST_WHEEL=("$RUNNER_TEMP"/atst-dist/*.whl)
-          PLUGIN_WHEEL=("$RUNNER_TEMP"/plugin-dist/*.whl)
           test "${#ATST_WHEEL[@]}" -eq 1
-          test "${#PLUGIN_WHEEL[@]}" -eq 1
-          python -m venv "$RUNNER_TEMP/venv-vendored"
           python -m venv "$RUNNER_TEMP/venv-external"
-          for lane in vendored external; do
-            PYTHON="$RUNNER_TEMP/venv-$lane/bin/python"
-            "$PYTHON" -m pip install --upgrade pip
-            "$PYTHON" -m pip install "${ATST_WHEEL[0]}[test]" 'ase==3.28.0'
-            if [[ "$lane" == external ]]; then
-              "$PYTHON" -m pip install "${PLUGIN_WHEEL[0]}"
-            fi
-            "$PYTHON" -m pip check
-          done
+          PYTHON="$RUNNER_TEMP/venv-external/bin/python"
+          "$PYTHON" -m pip install --upgrade pip
+          "$PYTHON" -m pip install "${ATST_WHEEL[0]}[test]" 'ase==3.28.0'
+          if [[ -n "$DISPATCH_REF" ]]; then
+            PLUGIN_WHEEL=("$RUNNER_TEMP"/plugin-dist/*.whl)
+            test "${#PLUGIN_WHEEL[@]}" -eq 1
+            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" "${PLUGIN_WHEEL[0]}"
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            "$PYTHON" -m pip install --upgrade --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite>=1.1.0,<2'
+          else
+            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite==1.1.0'
+          fi
+          "$PYTHON" -m pip check
+          echo "ATST_DIST_WHEEL=${ATST_WHEEL[0]}" >> "$GITHUB_ENV"
 
-      - name: Run paired installed-wheel consumer suite
+      - name: Run installed-wheel external consumer suite
         run: |
           cd "$RUNNER_TEMP"
-          "$RUNNER_TEMP/venv-vendored/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --atst-root "$GITHUB_WORKSPACE" --backend vendored --report "$RUNNER_TEMP/vendored.json"
           "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --atst-root "$GITHUB_WORKSPACE" --backend external --report "$RUNNER_TEMP/external.json"
-          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --compare "$RUNNER_TEMP/vendored.json" "$RUNNER_TEMP/external.json"
+          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --verify-report "$RUNNER_TEMP/external.json"
 
       - name: Preserve consumer reports and test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: abacuslite-consumer-parity
+          name: abacuslite-external-consumer
           path: |
             ${{ runner.temp }}/*external*.json
-            ${{ runner.temp }}/*vendored*.json
             ${{ runner.temp }}/*external*.log
-            ${{ runner.temp }}/*vendored*.log
             ${{ runner.temp }}/*external*.xml
-            ${{ runner.temp }}/*vendored*.xml
+            ${{ runner.temp }}/plugin-install.json
 
   documentation-governance:
     name: documentation governance

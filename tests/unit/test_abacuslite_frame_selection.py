@@ -405,26 +405,20 @@ def test_latestio_md_dump_cell_is_physical_and_periodic(tmp_path):
     assert frames[-1].cell.volume == pytest.approx(45.17906195, abs=1e-5)
 
 
-def test_latestio_md_eig_occ_single_consumption(tmp_path, monkeypatch):
-    """P5 eig_occ.txt 一次性消费：latestio read_abacus_out 读取后 unlink；
-    重复读取前须重建 eig_occ.txt（未重建 → FileNotFoundError；重建后恢复完整读取）。"""
+def test_latestio_md_eig_occ_remains_available_for_repeated_reads(tmp_path, monkeypatch):
+    """The installed reader preserves raw eig_occ data across repeated reads."""
     from atst_tools.external.ASE_interface.abacuslite import core as abacus_core
 
     monkeypatch.setattr(abacus_core, "__LEGACYIO__", False)
     directory = _md_fixture_latest(tmp_path)
     eig_occ = directory / "OUT.ABACUS" / "eig_occ.txt"
-    gold_eig_occ = (TESTFILES / "multiframe_md_latest" / "eig_occ.txt").read_text(encoding="utf-8")
+    gold_eig_occ = eig_occ.read_bytes()
 
     results = _template(calc="md", atomorder=[0, 1]).read_results(directory)
-    assert not eig_occ.exists()  # 读取后已 unlink（一次性消费语义）
-
-    # 未重建 → 第二次读取失败（eig_occ.txt 缺失）
-    with pytest.raises(FileNotFoundError):
-        _template(calc="md", atomorder=[0, 1]).read_results(directory)
-
-    # 重建 eig_occ.txt 后可再次完整读取
-    eig_occ.write_text(gold_eig_occ, encoding="utf-8")
+    assert eig_occ.read_bytes() == gold_eig_occ
     results2 = _template(calc="md", atomorder=[0, 1]).read_results(directory)
+    assert eig_occ.read_bytes() == gold_eig_occ
+    assert np.allclose(results["forces"], MD_LATEST_FORCES, atol=1e-12)
     assert np.allclose(results2["forces"], MD_LATEST_FORCES, atol=1e-12)
 
 

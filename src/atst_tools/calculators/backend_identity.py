@@ -2,19 +2,12 @@
 
 from __future__ import annotations
 
-import hashlib
-import re
 from importlib import metadata
 from pathlib import Path
 from typing import Any, Mapping
 
 from atst_tools.calculators.abacuslite_backend import Abacus, BACKEND_SOURCE
 from atst_tools.calculators.dp import DP_BACKEND_BY_KIND, dp_model_kind, dp_section
-
-
-_VENDORED_ROOT = Path(__file__).resolve().parents[1] / "external" / "ASE_interface"
-_SNAPSHOT_DOCUMENT = "atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md"
-_PATCHES_DOCUMENT = "atst_tools/external/ASE_interface/PATCHES.md"
 
 
 def _package_version(distribution: str) -> str:
@@ -29,26 +22,6 @@ def _calculator_type(calculator: Any) -> str:
     """Return the fully qualified type of an existing calculator object."""
     cls = type(calculator)
     return f"{cls.__module__}.{cls.__qualname__}"
-
-
-def _vendored_provenance() -> dict[str, str] | str:
-    """Read the packaged snapshot marker and small patch ledger."""
-    snapshot_path = _VENDORED_ROOT / "ABACUSLITE_SNAPSHOT.md"
-    patches_path = _VENDORED_ROOT / "PATCHES.md"
-    try:
-        snapshot_text = snapshot_path.read_text(encoding="utf-8")
-        patches = patches_path.read_bytes()
-    except OSError:
-        return "unknown"
-    match = re.search(r"当前基线：上游\s+`([0-9a-f]{40})`", snapshot_text)
-    if match is None:
-        return "unknown"
-    return {
-        "upstream_sha": match.group(1),
-        "snapshot_document": _SNAPSHOT_DOCUMENT,
-        "patches_document": _PATCHES_DOCUMENT,
-        "patches_sha256": hashlib.sha256(patches).hexdigest(),
-    }
 
 
 def _model_facts(model: Any, head: Any) -> dict[str, Any] | str:
@@ -118,7 +91,7 @@ def calculator_backend_identity(
             "source": source,
             "calculator_type": type_name,
             "backend_version": _package_version("abacuslite") if source == "external" else "unknown",
-            "snapshot": _vendored_provenance() if source == "vendored" else "unknown",
+            "snapshot": "unknown",
             "model": "unknown",
         }
 

@@ -1,4 +1,8 @@
-# abacuslite vendored 快照基线
+# abacuslite 旧 vendored 快照基线（冻结审计）
+
+> 2026-10-18：独立包 1.1.0 发布后，本仓运行时已 external-only。以下仅记录退役
+> 快照的历史来源与补丁，不再驱动 CI drift checker 或新的同步流程。
+
 
 - 快照引入：2026-05-10（atst-tools `881a926`）
 - drift-check CI 引入：2026-07-06（`7a04854`）钉扎 `762919f6`（= #7588 PR head）
@@ -17,6 +21,6 @@
   `1e-5 Å`，无相对项；经本仓帧选择回归与容差两侧用例确认后更新 AST 身份登记。
   见 `PATCHES.md` 的兼容边界；补丁尚未上游化，钉扎基线 SHA 不变。
 
-## 同步流程
+## 历史同步流程
 
-阶段拉取（发布 patch / 支持新 ABACUS / 上游新加固）后：更新本文件基线 SHA + 差异摘要；CI `ABACUS_DEVELOP_REF` 从本文件解析（单一事实源）。
+旧流程曾用本文件基线 SHA 驱动 drift CI。现已退役；新的实现变更在独立 abacuslite 仓维护。

@@ -6,7 +6,6 @@ import builtins
 import shutil
 import subprocess
 import sys
-from importlib.util import find_spec
 from pathlib import Path
 
 import numpy as np
@@ -27,8 +26,6 @@ def _reject_vendored_imports(monkeypatch):
 
 def test_external_consumers_do_not_import_vendored_backend(tmp_path):
     """Guard the first consumer import, independent of pytest collection order."""
-    if find_spec("abacuslite") is None:
-        pytest.skip("This case runs in the installed external-package lane")
     script = """
 import runpy
 import sys
@@ -87,8 +84,7 @@ def _exercise_external_consumers(tmp_path):
 def test_missing_internal_external_module_never_uses_vendored(monkeypatch):
     from atst_tools.calculators import abacuslite_backend
 
-    if abacuslite_backend.BACKEND_SOURCE != "external":
-        pytest.skip("This case runs in the installed external-package lane")
+    assert abacuslite_backend.BACKEND_SOURCE == "external"
     original_import = builtins.__import__
 
     def broken_generalio(name, *args, **kwargs):
@@ -107,8 +103,7 @@ def test_external_frame_selection_fermi_order_and_native_md(monkeypatch, tmp_pat
     """Use real parser fixtures through installed calculator and MD consumers."""
     from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
 
-    if BACKEND_SOURCE != "external":
-        pytest.skip("This case runs in the installed external-package lane")
+    assert BACKEND_SOURCE == "external"
     from atst_tools.workflows.md import AbacusNativeMDRunner
 
     fixtures = (
@@ -161,16 +156,45 @@ def test_external_frame_selection_fermi_order_and_native_md(monkeypatch, tmp_pat
     assert summary["max_force_eV_per_ang"] > 0
 
 
-def test_absent_package_uses_vendored_backend():
-    """Run in the ordinary offline test job without the optional plugin."""
-    from atst_tools.calculators import abacuslite_backend
+def test_missing_plugin_fails_closed_before_a_vendored_import():
+    """A missing required package cannot revive the historical snapshot."""
+    script = """
+import builtins
+from importlib import util
+original_find_spec = util.find_spec
+original_import = builtins.__import__
+def missing_plugin(name, *args, **kwargs):
+    if name == 'abacuslite':
+        return None
+    return original_find_spec(name, *args, **kwargs)
+def reject_vendored(name, *args, **kwargs):
+    if name.startswith('atst_tools.external.ASE_interface.abacuslite'):
+        raise AssertionError('legacy implementation imported')
+    return original_import(name, *args, **kwargs)
+util.find_spec = missing_plugin
+builtins.__import__ = reject_vendored
+from atst_tools.calculators import abacuslite_backend
+abacuslite_backend._load_abacuslite_backend()
+"""
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
+    assert result.returncode != 0
+    assert "abacuslite is required" in result.stderr
+    assert "legacy implementation imported" not in result.stderr
 
-    if find_spec("abacuslite") is not None:
-        pytest.skip("This case runs in the separate no-plugin environment")
-    assert abacuslite_backend.BACKEND_SOURCE == "vendored"
-    assert abacuslite_backend.import_generalio().__name__.startswith(
-        "atst_tools.external.ASE_interface.abacuslite."
+
+def test_legacy_import_paths_forward_to_the_installed_modules():
+    """External callers retain imports without a second parser or calculator."""
+    import abacuslite.core as core
+    from abacuslite.io import generalio, latestio, legacyio
+    from abacuslite.utils import ksampling
+    from atst_tools.external.ASE_interface.abacuslite import Abacus
+    from atst_tools.external.ASE_interface.abacuslite import core as old_core
+    from atst_tools.external.ASE_interface.abacuslite.io import (
+        generalio as old_generalio, latestio as old_latestio, legacyio as old_legacyio,
     )
-    assert abacuslite_backend.import_legacyio().__name__.startswith(
-        "atst_tools.external.ASE_interface.abacuslite."
+    from atst_tools.external.ASE_interface.abacuslite.utils import ksampling as old_ksampling
+
+    assert Abacus is core.Abacus
+    assert (old_core, old_generalio, old_latestio, old_legacyio, old_ksampling) == (
+        core, generalio, latestio, legacyio, ksampling,
     )

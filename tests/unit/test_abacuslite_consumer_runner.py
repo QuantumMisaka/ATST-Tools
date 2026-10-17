@@ -1,7 +1,8 @@
-"""Contract checks for the installed ATST abacuslite parity runner."""
+"""Contract checks for the external-only installed-wheel consumer runner."""
 
 from __future__ import annotations
 
+from copy import deepcopy
 import importlib.util
 from pathlib import Path
 
@@ -9,6 +10,13 @@ import pytest
 
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/run_abacuslite_consumer.py"
+REQUIRED_CASES = (
+    "tests.unit.test_backend_routing::test_external_consumers_do_not_import_vendored_backend",
+    "tests.unit.test_backend_routing::test_external_frame_selection_fermi_order_and_native_md",
+    "tests.unit.test_backend_routing::test_missing_plugin_fails_closed_before_a_vendored_import",
+    "tests.unit.test_backend_routing::test_legacy_import_paths_forward_to_the_installed_modules",
+    "tests.unit.test_installed_child_provenance::test_child_import_uses_selected_source_and_rejects_installed_shadow",
+)
 
 
 def _runner():
@@ -19,59 +27,68 @@ def _runner():
     return module
 
 
-def _report(backend: str) -> dict:
+def _report() -> dict:
+    site = "/venv/lib/python3.12/site-packages"
+    atst = f"{site}/atst_tools/__init__.py"
+    plugin = f"{site}/abacuslite/__init__.py"
+    cases = {case: {"outcome": "passed"} for case in REQUIRED_CASES}
     return {
-        "schema": "atst-abacuslite-consumer-v1",
-        "backend": backend,
+        "schema": "atst-abacuslite-consumer-v2",
+        "backend": "external",
         "packages": {
-            "atst": {"version": "2.2.9"}, "python": "3.12.0",
+            "atst": {"version": "2.2.9", "path": atst},
+            "abacuslite": {"version": "1.1.0", "path": plugin,
+                            "files_sha256": "c" * 64, "wheel_sha256": None},
+            "python": "3.12.0", "site_packages": site,
             "atst_files_sha256": "a" * 64, "atst_wheel_sha256": "b" * 64,
             "distributions": {"atst-tools": "2.2.9", "ase": "3.28.0"},
         },
+        "pytest_cwd": "/checkout",
+        "pytest_exit_code": 0,
+        "pytest_attestation": {
+            phase: {"atst": atst, "abacuslite": plugin, "backend": "external"}
+            for phase in ("start", "finish")
+        },
         "tests": {
-            "collected": 5,
-            "passed": 4,
-            "skipped": 1,
-            "failed": 0,
-            "errors": 0,
-            "skip_reasons": {"optional MPI launcher unavailable": 1},
-            "testcases": {
-                "suite::test_a": {"outcome": "passed"},
-                "suite::test_b": {"outcome": "passed"},
-                "suite::test_c": {"outcome": "passed"},
-                "suite::test_d": {"outcome": "passed"},
-                "suite::test_e": {"outcome": "skipped", "reason": "optional MPI launcher unavailable"},
-            },
+            "collected": len(cases), "passed": len(cases), "skipped": 0,
+            "failed": 0, "errors": 0, "skip_reasons": {}, "testcases": cases,
         },
         "facts": {
-            "scf": {"energy_eV": -10.0, "forces_eV_per_ang": [[0.5, 0.0, 0.0]]},
-            "md": {"frames": 2, "cell_angstrom": [[3.0, 0.0, 0.0]]},
+            "scf": {"energy_eV": -2898.0, "efermi_eV": -2.04,
+                    "forces_eV_per_ang": [[-0.5, -0.01, 0], [0, 0, 0], [0.5, 0.01, 0]]},
+            "md": {"frames": 2, "last_energy_eV": -1940.6311063727,
+                   "last_forces_eV_per_ang": [
+                       [0.1191299488, 0.2678988387, 1.5033416041],
+                       [-0.1191299488, -0.2678988387, -1.5033416041]],
+                   "cell_angstrom": [[5.34197 * 0.529177, 0, 0], [0, 1, 0], [0, 0, 1]],
+                   "pbc": [True, True, True], "symbols": ["As", "Ga"]},
         },
     }
 
 
-def test_runner_compares_same_collection_and_numeric_facts():
-    runner = _runner()
-    assert runner.compare_reports(_report("vendored"), _report("external")) == {}
+def test_runner_accepts_complete_external_report():
+    _runner().verify_report(_report())
 
 
 @pytest.mark.parametrize("mutation", [
-    lambda report: report["facts"]["scf"].update(energy_eV=-9.99),
-    lambda report: report["tests"].update(collected=4),
+    lambda report: report.update(backend="vendored"),
+    lambda report: report["facts"]["scf"].update(energy_eV=-2897.0),
+    lambda report: report["tests"].update(collected=0, passed=0),
     lambda report: report["tests"].update(failed=1),
-    lambda report: report["tests"]["skip_reasons"].update({"unexpected skip": 1}),
-    lambda report: report["packages"].update(atst_files_sha256="different"),
-    lambda report: report["packages"].update(distributions={"ase": "3.29.0"}),
-    lambda report: report["tests"]["testcases"].update({"suite::test_d": {"outcome": "skipped", "reason": "unexpected"}}),
-    lambda report: report["tests"].update(collected=0, passed=0, skipped=0),
+    lambda report: report["tests"]["testcases"].pop(REQUIRED_CASES[0]),
+    lambda report: report["tests"]["testcases"][REQUIRED_CASES[0]].update(outcome="skipped"),
+    lambda report: report["packages"]["abacuslite"].update(path="/checkout/src/abacuslite/__init__.py"),
+    lambda report: report["packages"]["abacuslite"].update(files_sha256="missing"),
+    lambda report: report["packages"].update(site_packages=""),
+    lambda report: report.update(pytest_cwd=""),
+    lambda report: report["pytest_attestation"]["finish"].update(backend="vendored"),
+    lambda report: report.update(pytest_exit_code=1),
 ])
-def test_runner_rejects_parity_mutations(mutation):
-    runner = _runner()
-    vendored = _report("vendored")
-    external = _report("external")
-    mutation(external)
-    with pytest.raises(ValueError):
-        runner.compare_reports(vendored, external)
+def test_runner_rejects_external_report_mutations(mutation):
+    report = deepcopy(_report())
+    mutation(report)
+    with pytest.raises((ValueError, RuntimeError)):
+        _runner().verify_report(report)
 
 
 def test_runner_rejects_source_shadow(tmp_path):
@@ -85,16 +102,8 @@ def test_runner_rejects_source_shadow(tmp_path):
     assert runner.ensure_installed_origin(installed, site, checkout) == installed.resolve()
 
 
-def test_runner_rejects_report_without_expected_backend():
-    runner = _runner()
-    report = _report("vendored")
-    report["backend"] = "external"
-    with pytest.raises(ValueError, match="vendored"):
-        runner.compare_reports(report, _report("external"))
-
-
-def test_external_consumer_guard_rejects_vendored_import_mutation(tmp_path):
-    """A consumer regression that imports the snapshot must fail before use."""
+def test_external_consumer_guard_rejects_legacy_runtime_import_mutation(tmp_path):
+    """A production regression that imports the old path must fail before use."""
     runner = _runner()
     module = tmp_path / "tests/unit/test_backend_routing.py"
     module.parent.mkdir(parents=True)
@@ -103,6 +112,5 @@ def test_external_consumer_guard_rejects_vendored_import_mutation(tmp_path):
         "    from atst_tools.external.ASE_interface.abacuslite.io import generalio\n",
         encoding="utf-8",
     )
-    with pytest.raises(RuntimeError, match="Vendored backend import") as error:
+    with pytest.raises(RuntimeError, match="Vendored backend import"):
         runner._guard_runtime_consumers(tmp_path)
-    print(str(error.value))

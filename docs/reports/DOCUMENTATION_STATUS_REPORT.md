@@ -1,7 +1,7 @@
 # 文档治理状态报告
 
 **版本**: 2.2.9
-**日期**: 2026-10-17
+**日期**: 2026-10-18
 **状态**: 2.2.9 已发布（PyPI clean-install 已验证）
 **责任人**: ATST-Tools maintainers
 
@@ -10,6 +10,29 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-18（W3b external-only 源码候选，待主仓集成）：Ruling：已发布
+  `abacuslite==1.1.0` 后，本仓声明 `abacuslite>=1.1.0,<2` 为运行时依赖，
+  ABACUS 计算器与文件解析仅从独立包导入；缺包与包内部导入损坏均失败。
+  旧 `atst_tools.external.ASE_interface.abacuslite` 顶层、`core`、三种 I/O 和
+  `utils.ksampling` 模块名只转发到同一安装模块，以保留 Paimon 的直接
+  `generalio` 导入和 monkeypatch/类身份。无 live vendored fallback、快照
+  drift CI 或双环境比较；旧 `ABACUSLITE_SNAPSHOT.md`/`PATCHES.md` 与
+  2026-10-17 的配对报告是冻结审计证据。冻结 ATST wheel SHA256 为
+  `bffbc2d3ada4f3ee7cfb9ba6f1b7e36bf6ca98171dac9a61854ed7c02bb59059`，
+  当时外部候选 wheel 为
+  `4715299fe25b4ff583b577a4024d45eb2f338cd2aa2bb1d3c2db5066588abac9`；
+  最后两版 ASE 3.28/3.29 的配对 1428 项结果及 SAI `1827672` 实算仍按下文原样
+  保留，不再声称当前运行时的 vendored parity。新的单环境 runner 使用
+  `atst-abacuslite-consumer-v2` 报告、已安装来源/子进程 guard、完整离线 case
+  身份与原始 SCF/MD 常量；正常 PR/push 锁 PyPI 1.1.0，schedule 追踪兼容范围，
+  workflow_dispatch 可协调指定 ref。冻结 wheel 在 Python 3.10/ASE 3.28 与
+  Python 3.12/ASE 3.29 的安装态各收集 1403 项、1370 通过、33 项按环境条件跳过，
+  两份报告均通过来源和事实校验；独立缺包环境的计算器与旧路径均明确报错。
+  原快照 checker 的 24 项及补丁白名单的
+  3 项测试随 live 快照维护退役，旧 CI 静态断言 4 项替换为 external-only 的 2 项；
+  其余 calculator/parser 行为回归继续经旧路径转发测试独立包。独立包 1.1.0
+  写入 STRU 的受约束速度以原子单位保留，而旧快照清零；对应测试现核实际转换，
+  不将差异掩盖为等价。此变更仅作本地候选验收，不宣称新的真实引擎或科学收敛结果。
 - 2026-10-17（2.2.9 上的双环境离线等价门禁候选）：从主线 `1081b9d` 合并至
   集成分支 `a56732c`；仅文档状态、功能矩阵、配置参考三处冲突，保留 2.2.9 当前
   契约与独立包集成事实，生产源码无冲突。独立包候选更新至本地提交

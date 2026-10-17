@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run the same installed-wheel ATST consumer suite for either abacuslite backend.
+"""Run ATST's installed-wheel suite against its required external abacuslite.
 
-The caller installs wheels in separate environments, pins their source commits,
-and invokes this script from outside both checkouts. No engine or network is used.
+The caller installs both wheels and invokes this script from outside their
+checkouts. The suite uses curated raw fixtures; no engine or network is used.
 """
 
 from __future__ import annotations
@@ -25,10 +25,13 @@ import tempfile
 import xml.etree.ElementTree as ET
 
 
-SCHEMA = "atst-abacuslite-consumer-v1"
-_BACKEND_SKIP_FRAGMENTS = (
-    "external-package lane",
-    "no-plugin environment",
+SCHEMA = "atst-abacuslite-consumer-v2"
+_REQUIRED_CASES = (
+    "tests.unit.test_backend_routing::test_external_consumers_do_not_import_vendored_backend",
+    "tests.unit.test_backend_routing::test_external_frame_selection_fermi_order_and_native_md",
+    "tests.unit.test_backend_routing::test_missing_plugin_fails_closed_before_a_vendored_import",
+    "tests.unit.test_backend_routing::test_legacy_import_paths_forward_to_the_installed_modules",
+    "tests.unit.test_installed_child_provenance::test_child_import_uses_selected_source_and_rejects_installed_shadow",
 )
 
 
@@ -40,13 +43,6 @@ def ensure_installed_origin(path: str | Path, site_packages: Path, checkout: Pat
     if resolved.is_relative_to(checkout) or not resolved.is_relative_to(site_packages):
         raise RuntimeError(f"Expected installed site-packages import, got {resolved}")
     return resolved
-
-
-def _non_backend_skips(reasons: dict[str, int]) -> dict[str, int]:
-    return {
-        reason: count for reason, count in reasons.items()
-        if not any(fragment in reason for fragment in _BACKEND_SKIP_FRAGMENTS)
-    }
 
 
 def _compare_values(left, right, name: str) -> None:
@@ -71,50 +67,72 @@ def _compare_values(left, right, name: str) -> None:
         raise ValueError(f"Different fact at {name}: {left!r} != {right!r}")
 
 
-def compare_reports(vendored: dict, external: dict) -> dict:
-    """Reject mismatched collection, unexpected skips, or fixture facts."""
-    for expected, report in (("vendored", vendored), ("external", external)):
-        if report.get("schema") != SCHEMA or report.get("backend") != expected:
-            raise ValueError(f"Expected {expected} {SCHEMA} report")
-        tests = report.get("tests", {})
-        if tests.get("collected", 0) <= 0:
-            raise ValueError(f"{expected} collected no tests")
-        packages = report.get("packages", {})
-        if not packages.get("python") or not packages.get("distributions"):
-            raise ValueError(f"{expected} lacks installed dependency provenance")
-        for name in ("atst_files_sha256", "atst_wheel_sha256"):
-            if len(packages.get(name) or "") != 64:
-                raise ValueError(f"{expected} lacks {name} provenance")
-        if tests.get("failed") or tests.get("errors"):
-            raise ValueError(f"{expected} offline suite failed")
-        if tests.get("passed", 0) + tests.get("skipped", 0) != tests.get("collected"):
-            raise ValueError(f"{expected} test collection is incomplete")
-    if vendored["packages"]["atst"]["version"] != external["packages"]["atst"]["version"]:
-        raise ValueError("ATST wheel versions differ across backends")
-    for name in ("python", "atst_files_sha256", "atst_wheel_sha256", "distributions"):
-        if vendored["packages"].get(name) != external["packages"].get(name):
-            raise ValueError(f"Installed {name} differs across backends")
-    if vendored["tests"]["collected"] != external["tests"]["collected"]:
-        raise ValueError("ATST test collection differs across backends")
-    vendored_cases = vendored["tests"].get("testcases", {})
-    external_cases = external["tests"].get("testcases", {})
-    if not vendored_cases or vendored_cases.keys() != external_cases.keys():
-        raise ValueError("ATST test case identities differ across backends")
-    for node, left in vendored_cases.items():
-        right = external_cases[node]
-        if left == right:
-            continue
-        if any(case.get("outcome") == "skipped" and
-               any(fragment in case.get("reason", "") for fragment in _BACKEND_SKIP_FRAGMENTS)
-               for case in (left, right)):
-            continue
-        raise ValueError(f"ATST test outcome differs for {node}: {left} != {right}")
-    if _non_backend_skips(vendored["tests"]["skip_reasons"]) != _non_backend_skips(
-        external["tests"]["skip_reasons"]
-    ):
-        raise ValueError("Non-backend ATST skip reasons differ across backends")
-    _compare_values(vendored["facts"], external["facts"], "facts")
-    return {}
+def verify_report(report: dict) -> None:
+    """Fail closed on incomplete external-suite evidence and source provenance."""
+    if report.get("schema") != SCHEMA or report.get("backend") != "external":
+        raise ValueError(f"Expected external {SCHEMA} report")
+    packages = report.get("packages", {})
+    plugin = packages.get("abacuslite") or {}
+    if not report.get("pytest_cwd") or not packages.get("site_packages"):
+        raise ValueError("Missing pytest checkout or site-packages provenance")
+    root = Path(report["pytest_cwd"])
+    site = Path(packages["site_packages"])
+    if not root.is_absolute() or not site.is_absolute() or site == Path("/"):
+        raise ValueError("Invalid pytest checkout or site-packages provenance")
+    for name, item in (("ATST", packages.get("atst") or {}),
+                       ("abacuslite", plugin)):
+        if not item.get("version") or not item.get("path"):
+            raise ValueError(f"Missing {name} installed distribution provenance")
+        ensure_installed_origin(item["path"], site, root)
+    if not packages.get("python") or not packages.get("distributions"):
+        raise ValueError("Missing Python or installed dependency provenance")
+    for name in ("atst_files_sha256", "atst_wheel_sha256"):
+        if len(packages.get(name) or "") != 64:
+            raise ValueError(f"Missing {name} provenance")
+    if len(plugin.get("files_sha256") or "") != 64:
+        raise ValueError("Missing abacuslite installed-file provenance")
+    plugin_wheel = plugin.get("wheel_sha256")
+    if plugin_wheel is not None and len(plugin_wheel) != 64:
+        raise ValueError("Malformed abacuslite wheel provenance")
+    attest = report.get("pytest_attestation") or {}
+    for phase in ("start", "finish"):
+        phase_record = attest.get(phase) or {}
+        if (phase_record.get("backend") != "external"
+                or phase_record.get("atst") != packages["atst"]["path"]
+                or phase_record.get("abacuslite") != plugin["path"]):
+            raise ValueError(f"Missing or inconsistent pytest {phase} wheel attestation")
+    tests = report.get("tests") or {}
+    collected = tests.get("collected", 0)
+    cases = tests.get("testcases") or {}
+    if (collected <= 0 or len(cases) != collected
+            or tests.get("passed", 0) + tests.get("skipped", 0) != collected
+            or tests.get("failed") or tests.get("errors")
+            or report.get("pytest_exit_code") != 0):
+        raise ValueError("External offline suite is missing, incomplete or failed")
+    if sum(tests.get("skip_reasons", {}).values()) != tests.get("skipped"):
+        raise ValueError("External offline skip reasons are incomplete")
+    if any("no-plugin environment" in reason or "external-package lane" in reason
+           for reason in tests.get("skip_reasons", {})):
+        raise ValueError("External backend tests were unexpectedly skipped")
+    for case in _REQUIRED_CASES:
+        if cases.get(case) != {"outcome": "passed"}:
+            raise ValueError(f"Required external consumer case did not pass: {case}")
+    facts = report.get("facts") or {}
+    expected = {
+        "scf": {"energy_eV": -2898.0, "efermi_eV": -2.04,
+                "forces_eV_per_ang": [[-0.5, -0.01, 0], [0, 0, 0], [0.5, 0.01, 0]]},
+        "md": {"frames": 2, "last_energy_eV": -1940.6311063727,
+               "last_forces_eV_per_ang": [[0.1191299488, 0.2678988387, 1.5033416041],
+                                             [-0.1191299488, -0.2678988387, -1.5033416041]],
+               "pbc": [True, True, True], "symbols": ["As", "Ga"]},
+    }
+    for section, values in expected.items():
+        for key, value in values.items():
+            _compare_values(facts.get(section, {}).get(key), value, f"facts.{section}.{key}")
+    if len(facts.get("md", {}).get("cell_angstrom", [])) != 3:
+        raise ValueError("MD cell shape is incomplete")
+    _compare_values(facts["md"]["cell_angstrom"][0][0], 5.34197 * 0.529177,
+                    "facts.md.cell_angstrom[0][0]")
 
 
 def _installed_file_digest(distribution: metadata.Distribution, prefix: str) -> str:
@@ -145,6 +163,8 @@ def _installed_wheel_digest(distribution: metadata.Distribution) -> str | None:
 
 
 def _provenance(root: Path, backend: str) -> dict:
+    if backend != "external":
+        raise RuntimeError("ATST requires the external abacuslite backend")
     if Path.cwd().resolve().is_relative_to(root):
         raise RuntimeError("Run installed consumer checks from outside the ATST checkout")
     site_packages = Path(sysconfig.get_paths()["purelib"]).resolve()
@@ -154,31 +174,23 @@ def _provenance(root: Path, backend: str) -> dict:
     atst_path = ensure_installed_origin(atst_tools.__file__, site_packages, root)
     if BACKEND_SOURCE != backend:
         raise RuntimeError(f"Expected {backend} backend, got {BACKEND_SOURCE}")
-    plugin = None
-    if backend == "external":
-        if find_spec("abacuslite") is None:
-            raise RuntimeError("External backend requested without installed abacuslite")
-        import abacuslite
+    if find_spec("abacuslite") is None:
+        raise RuntimeError("ATST requires installed abacuslite")
+    import abacuslite
 
-        plugin = {
-            "version": metadata.version("abacuslite"),
-            "path": str(ensure_installed_origin(abacuslite.__file__, site_packages, root)),
-            "files_sha256": _installed_file_digest(metadata.distribution("abacuslite"),
-                                                   "abacuslite/"),
-            "wheel_sha256": _installed_wheel_digest(metadata.distribution("abacuslite")),
-        }
-        if import_generalio().__name__ != "abacuslite.io.generalio":
-            raise RuntimeError("External generalio was shadowed by the vendored snapshot")
-    elif find_spec("abacuslite") is not None:
-        raise RuntimeError("Vendored backend requires an environment without abacuslite")
-    elif not import_generalio().__name__.startswith("atst_tools.external.ASE_interface.abacuslite"):
-        raise RuntimeError("Vendored generalio did not originate from ATST")
+    plugin = {
+        "version": metadata.version("abacuslite"),
+        "path": str(ensure_installed_origin(abacuslite.__file__, site_packages, root)),
+        "files_sha256": _installed_file_digest(metadata.distribution("abacuslite"),
+                                               "abacuslite/"),
+        "wheel_sha256": _installed_wheel_digest(metadata.distribution("abacuslite")),
+    }
+    if import_generalio().__name__ != "abacuslite.io.generalio":
+        raise RuntimeError("External generalio was shadowed by a legacy path")
     atst_dist = metadata.distribution("atst-tools")
     atst_wheel_sha256 = _installed_wheel_digest(atst_dist)
     if len(atst_wheel_sha256 or "") != 64:
         raise RuntimeError("ATST must be installed from a hashed wheel archive")
-    if plugin is not None and len(plugin["wheel_sha256"] or "") != 64:
-        raise RuntimeError("abacuslite must be installed from a hashed wheel archive")
     distributions = {
         dist.metadata["Name"].lower().replace("_", "-"): dist.version
         for dist in metadata.distributions()
@@ -231,16 +243,13 @@ def _attest(phase):
         raise RuntimeError('pytest imported ATST outside site-packages: ' + str(package))
     if BACKEND_SOURCE != expected:
         raise RuntimeError(f'pytest backend {BACKEND_SOURCE} != {expected}')
-    if expected == 'external':
-        import abacuslite
-        plugin = Path(abacuslite.__file__).resolve()
-        if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
-            raise RuntimeError('pytest imported plugin outside site-packages: ' + str(plugin))
-    else:
-        plugin = None
+    import abacuslite
+    plugin = Path(abacuslite.__file__).resolve()
+    if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
+        raise RuntimeError('pytest imported plugin outside site-packages: ' + str(plugin))
     path = Path(os.environ['ATST_RUNNER_ATTEST'])
     record = json.loads(path.read_text()) if path.exists() else {}
-    record[phase] = {'atst': str(package), 'abacuslite': str(plugin) if plugin else None,
+    record[phase] = {'atst': str(package), 'abacuslite': str(plugin),
                      'backend': BACKEND_SOURCE}
     path.write_text(json.dumps(record, sort_keys=True))
 
@@ -267,13 +276,12 @@ if os.environ.get('ATST_TEST_INSTALLED_WHEEL') == '1':
         raise SystemExit('ATST installed package is missing')
     if not package.is_relative_to(site) or package.is_relative_to(root):
         raise SystemExit('ATST source shadow: ' + str(package))
-    if os.environ['ATST_RUNNER_BACKEND'] == 'external':
-        plugin_spec = find_spec('abacuslite')
-        plugin = Path(plugin_spec.origin).resolve() if plugin_spec else None
-        if plugin is None:
-            raise SystemExit('abacuslite installed package is missing')
-        if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
-            raise SystemExit('abacuslite source shadow: ' + str(plugin))
+    plugin_spec = find_spec('abacuslite')
+    plugin = Path(plugin_spec.origin).resolve() if plugin_spec else None
+    if plugin is None:
+        raise SystemExit('abacuslite installed package is missing')
+    if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
+        raise SystemExit('abacuslite source shadow: ' + str(plugin))
 """
 
 
@@ -402,8 +410,7 @@ def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
     report_path = report_path.resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)
     packages = _provenance(root, backend)
-    if backend == "external":
-        _guard_runtime_consumers(root)
+    _guard_runtime_consumers(root)
     facts = _fixture_facts(root)
     xml_path = report_path.with_suffix(".pytest.xml")
     log_path = report_path.with_suffix(".pytest.log")
@@ -438,6 +445,7 @@ def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
         "pytest_log": str(log_path),
         "pytest_xml": str(xml_path),
         "pytest_attestation": attest,
+        "pytest_exit_code": completed.returncode,
         "pytest_cwd": str(root),
         "pytest_command": command,
     }
@@ -445,24 +453,21 @@ def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
                            encoding="utf-8")
     if completed.returncode or tests["failed"] or tests["errors"]:
         raise RuntimeError(f"ATST installed consumer suite failed; see {log_path}")
+    verify_report(report)
     return report
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--atst-root", type=Path)
-    parser.add_argument("--backend", choices=("vendored", "external"))
+    parser.add_argument("--backend", choices=("external",))
     parser.add_argument("--report", type=Path)
-    parser.add_argument("--compare", nargs=2, metavar=("VENDORED_JSON", "EXTERNAL_JSON"),
-                        type=Path)
+    parser.add_argument("--verify-report", type=Path)
     args = parser.parse_args(argv)
-    if args.compare:
-        with args.compare[0].open(encoding="utf-8") as stream:
-            vendored = json.load(stream)
-        with args.compare[1].open(encoding="utf-8") as stream:
-            external = json.load(stream)
-        compare_reports(vendored, external)
-        print("ATST vendored/external consumer parity passed")
+    if args.verify_report:
+        with args.verify_report.open(encoding="utf-8") as stream:
+            verify_report(json.load(stream))
+        print("ATST external consumer report verified")
         return 0
     if not all((args.atst_root, args.backend, args.report)):
         parser.error("--atst-root, --backend and --report are required together")

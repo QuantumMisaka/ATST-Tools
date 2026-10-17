@@ -1,4 +1,4 @@
-"""Inspect independently built distribution artifacts for vendored notices."""
+"""Inspect built artifacts for PyDMF licensing and frozen ABACUS audit records."""
 
 from __future__ import annotations
 
@@ -12,11 +12,18 @@ import pytest
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[2] / "src" / "atst_tools" / "external"
-VENDORED_FILES = (
+AUDIT_FILES = (
     "pydmf/LICENSE",
     "pydmf/UPSTREAM.md",
     "ASE_interface/ABACUSLITE_SNAPSHOT.md",
     "ASE_interface/PATCHES.md",
+)
+FORWARDING_MODULES = (
+    "abacuslite/core.py",
+    "abacuslite/io/generalio.py",
+    "abacuslite/io/latestio.py",
+    "abacuslite/io/legacyio.py",
+    "abacuslite/utils/ksampling.py",
 )
 
 
@@ -25,7 +32,7 @@ VENDORED_FILES = (
     ("env_var", "archive_type"),
     [("ATST_DIST_SDIST", "sdist"), ("ATST_DIST_WHEEL", "wheel")],
 )
-def test_distributions_preserve_vendored_license_and_provenance(
+def test_distributions_preserve_pydmf_license_and_abacus_audit(
     env_var, archive_type
 ):
     """Published code archives carry the actual license and source records."""
@@ -38,22 +45,29 @@ def test_distributions_preserve_vendored_license_and_provenance(
         with tarfile.open(artifact, "r:gz") as archive:
             members = {member.name: member for member in archive.getmembers()}
             prefix = archive.getnames()[0].split("/", 1)[0] + "/src/atst_tools/"
-            for relative in VENDORED_FILES:
+            for relative in AUDIT_FILES:
                 source = SOURCE_ROOT / relative
                 name = prefix + "external/" + relative
                 assert name in members
                 assert archive.extractfile(members[name]).read() == source.read_bytes()
             assert prefix + "external/pydmf/dmf/dmf.py" in members
+            for relative in FORWARDING_MODULES:
+                name = prefix + "external/ASE_interface/" + relative
+                forwarded = archive.extractfile(members[name]).read().decode("utf-8")
+                assert len(forwarded) < 512 and "import_module(\"abacuslite." in forwarded
     else:
         with zipfile.ZipFile(artifact) as archive:
             members = set(archive.namelist())
             prefix = "atst_tools/external/"
-            for relative in VENDORED_FILES:
+            for relative in AUDIT_FILES:
                 source = SOURCE_ROOT / relative
                 name = prefix + relative
                 assert name in members
                 assert archive.read(name) == source.read_bytes()
             assert prefix + "pydmf/dmf/dmf.py" in members
+            for relative in FORWARDING_MODULES:
+                forwarded = archive.read(prefix + "ASE_interface/" + relative).decode("utf-8")
+                assert len(forwarded) < 512 and "import_module(\"abacuslite." in forwarded
             metadata_name = next(
                 name for name in members if name.endswith(".dist-info/METADATA")
             )
