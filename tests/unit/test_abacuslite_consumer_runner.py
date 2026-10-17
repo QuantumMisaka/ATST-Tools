@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from copy import deepcopy
 import importlib.util
+import json
 from pathlib import Path
+import sys
+import sysconfig
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -82,6 +86,44 @@ def test_runner_clears_inherited_pytest_selection(monkeypatch, tmp_path):
         assert key not in environment
     assert environment["ATST_TEST_INSTALLED_WHEEL"] == "1"
     assert environment["ATST_RUNNER_ROOT"] == str(tmp_path / "checkout")
+
+
+def test_pytest_attestation_starts_fresh_when_report_path_is_reused(monkeypatch, tmp_path):
+    runner = _runner()
+    site = Path(sysconfig.get_paths()["purelib"])
+    atst = ModuleType("atst_tools")
+    atst.__file__ = str(site / "atst_tools/__init__.py")
+    atst.__path__ = []
+    calculators = ModuleType("atst_tools.calculators")
+    calculators.__path__ = []
+    backend = ModuleType("atst_tools.calculators.abacuslite_backend")
+    backend.BACKEND_SOURCE = "external"
+    abacuslite = ModuleType("abacuslite")
+    abacuslite.__file__ = str(site / "abacuslite/__init__.py")
+    for name, module in (("atst_tools", atst),
+                         ("atst_tools.calculators", calculators),
+                         ("atst_tools.calculators.abacuslite_backend", backend),
+                         ("abacuslite", abacuslite)):
+        monkeypatch.setitem(sys.modules, name, module)
+    attestation = tmp_path / "consumer.pytest.attest.json"
+    monkeypatch.setenv("ATST_RUNNER_ROOT", str(tmp_path / "checkout"))
+    monkeypatch.setenv("ATST_RUNNER_BACKEND", "external")
+    monkeypatch.setenv("ATST_RUNNER_ATTEST", str(attestation))
+    hooks = {}
+    exec(runner._PYTEST_PROVENANCE_PLUGIN, hooks)
+
+    hooks["pytest_sessionstart"](None)
+    hooks["pytest_deselected"]([SimpleNamespace(nodeid="tests/test_sample.py::test_omitted")])
+    hooks["pytest_sessionfinish"](None, 0)
+    assert json.loads(attestation.read_text())["deselected"] == [
+        "tests/test_sample.py::test_omitted"
+    ]
+
+    hooks["pytest_sessionstart"](None)
+    hooks["pytest_sessionfinish"](None, 0)
+    second = json.loads(attestation.read_text())
+    assert set(second) == {"start", "finish", "deselected"}
+    assert second["deselected"] == []
 
 
 @pytest.mark.parametrize("mutation", [

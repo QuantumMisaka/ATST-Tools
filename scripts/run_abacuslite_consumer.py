@@ -252,7 +252,10 @@ def _attest(phase):
     if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
         raise RuntimeError('pytest imported plugin outside site-packages: ' + str(plugin))
     path = Path(os.environ['ATST_RUNNER_ATTEST'])
-    record = json.loads(path.read_text()) if path.exists() else {}
+    if phase == 'start':
+        record = {'deselected': []}
+    else:
+        record = json.loads(path.read_text()) if path.exists() else {}
     record.setdefault('deselected', [])
     record[phase] = {'atst': str(package), 'abacuslite': str(plugin),
                      'backend': BACKEND_SOURCE}
