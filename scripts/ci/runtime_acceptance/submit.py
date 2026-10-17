@@ -17,6 +17,7 @@ REQUIRED_ASSETS = (
     "h2.stru", "pt.stru", "h.upf", "h.orb", "pt.upf", "pt.orb",
     "h2_chain.traj", "h2_mode.npy",
 )
+HARNESS_FILES = ("acceptance.py", "run.sh", "submit.py", "audit.py", "README.md")
 
 
 def sha256(path: Path) -> str:
@@ -85,7 +86,7 @@ def main() -> None:
         "sella": {"wheel": str(sella), "sha256": sha256(sella)},
         "assets": {name: {"source": str(path), "sha256": sha256(path)}
                    for name, path in asset_files.items()},
-        "harness": {name: sha256(HERE / name) for name in ("acceptance.py", "run.sh", "submit.py")},
+        "harness": {name: sha256(HERE / name) for name in HARNESS_FILES},
         "scope": "real-engine interface and output acceptance; no scientific convergence claim",
     }
     identity_file = output / "source-identity.json"
@@ -105,10 +106,11 @@ def main() -> None:
     kit = output / "runtime-payload.tar"
     with tarfile.open(kit, "w") as archive:
         for path, name in ((HERE / "run.sh", "run.sh"),
-                           (HERE / "acceptance.py", "harness/acceptance.py"),
                            (identity_file, "source-identity.json"),
                            (pin_file, "pins.sh"), (engine, "abacus_basic_gpu")):
             archive.add(path, arcname=name)
+        for name in HARNESS_FILES:
+            archive.add(HERE / name, arcname="harness/" + name)
         for name, path in asset_files.items():
             archive.add(path, arcname="harness/assets/" + name)
         for path in wheels.values():

@@ -395,6 +395,40 @@ def case_root(case):
     return CASES / ("md_ase" if case in ("md_initial", "md_restart") else case)
 
 
+def snapshot_md_initial(workdir, raw_log):
+    """Freeze initial MD output before the restart reuses its work directory."""
+    snapshot = workdir / "md_initial_snapshot"
+    snapshot.mkdir(exist_ok=False)
+    source_paths = {
+        "raw_log": raw_log,
+        "trajectory": workdir / "md.traj",
+        "summary": workdir / "md_summary.json",
+        "final_structure": workdir / "md_final.traj",
+        "input": raw_log.parent.parent / "INPUT",
+        "structure": raw_log.parent.parent / "STRU",
+    }
+    recorded = {}
+    for role, source in source_paths.items():
+        source = Path(source).resolve(strict=True)
+        target = snapshot / role / source.name
+        target.parent.mkdir(parents=True, exist_ok=False)
+        original_sha = sha256(source)
+        shutil.copy2(source, target)
+        assert sha256(target) == original_sha, f"MD initial snapshot changed: {role}"
+        recorded[role] = {"path": str(target.relative_to(HERE)), "sha256": original_sha}
+    return recorded
+
+
+def verify_md_initial_snapshot(prior):
+    recorded = prior["checks"]["initial_snapshot"]
+    for role in ("raw_log", "trajectory", "summary", "final_structure", "input", "structure"):
+        entry = recorded[role]
+        path = HERE / entry["path"]
+        assert path.is_file() and sha256(path) == entry["sha256"], f"MD initial snapshot lost: {role}"
+    assert recorded["raw_log"]["path"] == prior["checks"]["raw_log"]
+    return recorded
+
+
 def mpi_world(case):
     if case != "neb_parallel":
         return None, True
@@ -412,6 +446,8 @@ def run_case(case):
     workdir.mkdir(parents=True, exist_ok=True)
     if case == "md_restart" and not (workdir / "evidence_initial.json").is_file():
         raise RuntimeError("run md_initial before md_restart")
+    if case == "md_restart":
+        verify_md_initial_snapshot(json.loads((workdir / "evidence_initial.json").read_text()))
     target = None
     if case == "cp":
         baseline = json.loads((case_root("cp_baseline") / "evidence.json").read_text())
@@ -475,10 +511,16 @@ def run_case(case):
                         checks["restart_boundary_max_delta_angstrom"] = float(
                             np.max(np.abs(frames[0].positions - previous_last)))
                         assert np.max(np.abs(frames[-1].positions - previous_last)) > 0, "MD restart made no geometrical progress"
-                    checks["raw_log"] = str(newest_raw_log(workdir).relative_to(HERE))
-                    literal = independent_raw_facts(newest_raw_log(workdir), 2)
+                    raw_log = newest_raw_log(workdir)
+                    literal = independent_raw_facts(raw_log, 2)
                     assert abs(literal["energy_ev"] - float(checks["summary"]["final_energy_eV"])) < 1e-5
                     checks["literal_raw_last"] = literal
+                    if case == "md_initial":
+                        checks["initial_snapshot"] = snapshot_md_initial(workdir, raw_log)
+                        checks["raw_log"] = checks["initial_snapshot"]["raw_log"]["path"]
+                    else:
+                        checks["raw_log"] = str(raw_log.relative_to(HERE))
+                    checks["raw_log_sha256"] = sha256(HERE / checks["raw_log"])
                 elif case == "md_native":
                     summary = json.loads(Path("md_native_summary.json").read_text())
                     assert summary["driver"] == "abacus_native" and summary["returncode"] == 0

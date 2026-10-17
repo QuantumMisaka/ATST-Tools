@@ -33,8 +33,13 @@ Bulky charge-density restart files and potential cubes are excluded from the
 streamed archive. Failures and timeouts are recorded in `stages.tsv` and propagate to
 the SSH process exit status. The `exit-code.txt` member records the node exit.
 `audit.py OUTPUT_DIR` checks archive integrity, source/wheel identity, every
-required stage, and every case's evidence. Inspect `audit.json` together with
-the raw archive before making any acceptance claim.
+required stage, and every case's evidence. The initial ASE MD raw log, trajectory,
+summary, final structure, INPUT, and STRU are copied to immutable snapshot paths
+before restart reuses the live directory. The audit compares their retained
+hashes and the initial raw energy with the initial evidence, and checks the
+retained restart log separately. All five source files in this directory are
+hashed into the payload identity and retained in the result archive. Inspect
+`audit.json` together with the raw archive before making any acceptance claim.
 
 The case set is Relax, ASE MD initial/restart, native MD, serial and parallel
 NEB, constant-potential baseline/point, vibration, LTS reader Relax, Sella TS,
