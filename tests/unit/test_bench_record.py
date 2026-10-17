@@ -66,8 +66,15 @@ def test_record_captures_provenance_inputs_results_and_operator_slots(
 
     assert payload["schema"] == record.RECORD_SCHEMA
     record_time = payload["atst"]["record_time"]
-    assert len(record_time["head"]) == 40
-    assert record_time["dirty"] in (True, False)
+    if record_time["source_root"] is None:
+        # Installed wheels have no checkout revision; do not attribute the
+        # test checkout's Git HEAD to the installed production package.
+        assert record_time["head"] is None
+        assert record_time["branch"] is None
+        assert record_time["dirty"] is None
+    else:
+        assert len(record_time["head"]) == 40
+        assert record_time["dirty"] in (True, False)
     assert payload["atst"]["run_time"] == []
     assert payload["atst"]["run_time_consistent"] is None
     assert payload["environment"]["interpreter"]

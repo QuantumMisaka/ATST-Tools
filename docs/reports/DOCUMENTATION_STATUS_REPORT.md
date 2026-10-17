@@ -10,6 +10,25 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
 
 ## 1. 核心结论
 
+- 2026-10-17（2.2.9 上的双环境离线等价门禁候选）：从主线 `1081b9d` 合并至
+  集成分支 `a56732c`；仅文档状态、功能矩阵、配置参考三处冲突，保留 2.2.9 当前
+  契约与独立包集成事实，生产源码无冲突。独立包候选更新至本地提交
+  `06f97b1bda59f3d29e93dd5c7a4bf598808b89b8`，其默认 SCF frame 容差与
+  2.2.9 vendored 的 `1e-5 Å` 对齐。`scripts/run_abacuslite_consumer.py` 用两套
+  Python 3.12 隔离环境安装同一 ATST 2.2.9 wheel（SHA256
+  `bffbc2d3ada4f3ee7cfb9ba6f1b7e36bf6ca98171dac9a61854ed7c02bb59059`）；
+  external 另装候选插件 wheel（SHA256
+  `4715299fe25b4ff583b577a4024d45eb2f338cd2aa2bb1d3c2db5066588abac9`）。
+  checkout 外的入口核查实际消费者首次导入无 vendored 路径，并对原始 SCF/MD
+  fixture 的能量、力、Fermi、cell、PBC 做独立常量核对。完整离线 `tests` 因
+  文档/example 相对路径从仓根运行，但 pytest 起止均确认导入已安装 wheel；两边
+  同收集 1426，vendored 1388 passed / 38 skipped，external 1390 passed /
+  36 skipped（差异为显式 backend 环境测试），node identity、非后端 skip 与
+  事实对照通过。最初 checkout 外全套运行的 22 项路径失败及 wheel 无 Git HEAD
+  的一项测试前提问题已据证修正；生产源码未为测试改动。guard 的 vendored
+  导入 mutation 被拒绝。新 PR CI 使用精确候选 pin；手动 ref 与定时 main 跟踪
+  可观察后续漂移。该 SHA 尚未推送，远程 job 在发布该提交前不可 fetch；
+  未声称本次离线门禁覆盖真实 ABACUS 工作流、远程 CI 或独立包发行。
 - 2026-10-17（独立 abacuslite 本地集成验收通过）：最终运行代码为
   ATST `53d6b7c50c17cb536ea464ec0335ee1e69c206cd` + abacuslite
   `dc020430bfa8c76edfc275b0f1eab2f12cc29d4d`；ABACUS 最新 develop

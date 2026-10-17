@@ -78,6 +78,23 @@ def test_general_ci_covers_main_and_documentation_governance():
     assert "id-token: write" not in workflow
 
 
+def test_abacuslite_candidate_ci_runs_paired_full_installed_consumer_suite():
+    workflow = GENERAL_TESTS_WORKFLOW.read_text(encoding="utf-8")
+    job = _job_block(workflow, "external-abacuslite-candidate")
+
+    assert "abacuslite_ref:" in workflow
+    assert "schedule:" in workflow
+    assert "06f97b1bda59f3d29e93dd5c7a4bf598808b89b8" in job
+    assert "python -m build --wheel" in job
+    assert "venv-vendored" in job and "venv-external" in job
+    assert job.count('run_abacuslite_consumer.py" --atst-root') == 2
+    assert "--backend vendored" in job
+    assert "--backend external" in job
+    assert 'run_abacuslite_consumer.py" --compare' in job
+    assert "--report" in job
+    assert "git -C abacuslite-candidate rev-parse HEAD" in job
+
+
 def test_release_workflow_separates_resolution_preflight_and_publish():
     """Release publication must consume a verified preflight artifact."""
     workflow = PUBLISH_WORKFLOW.read_text(encoding="utf-8")

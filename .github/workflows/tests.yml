@@ -5,6 +5,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      abacuslite_ref:
+        description: "abacuslite commit, tag, or branch for coordinated candidate validation"
+        required: false
+        type: string
+  schedule:
+    - cron: "17 3 * * 1"
 
 permissions:
   contents: read
@@ -53,20 +60,33 @@ jobs:
           python -m pytest tests -q
 
   external-abacuslite-candidate:
-    name: installed external abacuslite candidate
+    name: paired installed abacuslite consumer parity
     runs-on: ubuntu-latest
     env:
-      ABACUSLITE_REF: dc020430bfa8c76edfc275b0f1eab2f12cc29d4d
+      ABACUSLITE_PIN: 06f97b1bda59f3d29e93dd5c7a4bf598808b89b8
+      DISPATCH_REF: ${{ inputs.abacuslite_ref }}
 
     steps:
       - name: Checkout ATST-Tools
         uses: actions/checkout@v4
 
+      - name: Resolve abacuslite candidate ref
+        id: candidate
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            ref=main
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && -n "$DISPATCH_REF" ]]; then
+            ref="$DISPATCH_REF"
+          else
+            ref="$ABACUSLITE_PIN"
+          fi
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+
       - name: Checkout reviewed abacuslite candidate
         uses: actions/checkout@v4
         with:
           repository: QuantumMisaka/abacuslite
-          ref: ${{ env.ABACUSLITE_REF }}
+          ref: ${{ steps.candidate.outputs.ref }}
           path: abacuslite-candidate
 
       - name: Set up Python
@@ -74,27 +94,54 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build and install both wheels
+      - name: Build both wheels
         run: |
           python -m pip install --upgrade pip build
           python -m build --wheel --outdir "$RUNNER_TEMP/plugin-dist" abacuslite-candidate
           python -m build --wheel --outdir "$RUNNER_TEMP/atst-dist" .
-          python -m pip install "$RUNNER_TEMP"/plugin-dist/*.whl "$RUNNER_TEMP"/atst-dist/*.whl 'pytest>=8.4,<10'
-          python -m pip check
-          test "$(git -C abacuslite-candidate rev-parse HEAD)" = "$ABACUSLITE_REF"
+          git -C abacuslite-candidate rev-parse HEAD
+          sha256sum "$RUNNER_TEMP"/plugin-dist/*.whl "$RUNNER_TEMP"/atst-dist/*.whl
+          if [[ "$GITHUB_EVENT_NAME" != "schedule" && "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]]; then
+            test "$(git -C abacuslite-candidate rev-parse HEAD)" = "$ABACUSLITE_PIN"
+          fi
 
-      - name: Verify installed import provenance and consumer paths
+      - name: Install identical ATST wheels in isolated environments
+        run: |
+          ATST_WHEEL=("$RUNNER_TEMP"/atst-dist/*.whl)
+          PLUGIN_WHEEL=("$RUNNER_TEMP"/plugin-dist/*.whl)
+          test "${#ATST_WHEEL[@]}" -eq 1
+          test "${#PLUGIN_WHEEL[@]}" -eq 1
+          python -m venv "$RUNNER_TEMP/venv-vendored"
+          python -m venv "$RUNNER_TEMP/venv-external"
+          for lane in vendored external; do
+            PYTHON="$RUNNER_TEMP/venv-$lane/bin/python"
+            "$PYTHON" -m pip install --upgrade pip
+            "$PYTHON" -m pip install "${ATST_WHEEL[0]}[test]" 'ase==3.28.0'
+            if [[ "$lane" == external ]]; then
+              "$PYTHON" -m pip install "${PLUGIN_WHEEL[0]}"
+            fi
+            "$PYTHON" -m pip check
+          done
+
+      - name: Run paired installed-wheel consumer suite
         run: |
           cd "$RUNNER_TEMP"
-          python -c 'import importlib.metadata as m; from pathlib import Path; import abacuslite, atst_tools; from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE, import_generalio; root = Path(__import__("os").environ["GITHUB_WORKSPACE"]).resolve(); paths = (Path(abacuslite.__file__).resolve(), Path(atst_tools.__file__).resolve()); print("abacuslite", m.version("abacuslite"), paths[0]); print("atst-tools", m.version("atst-tools"), paths[1]); assert BACKEND_SOURCE == "external"; assert all(not path.is_relative_to(root) for path in paths); assert import_generalio().__name__ == "abacuslite.io.generalio"'
-          python -m pytest \
-            "$GITHUB_WORKSPACE/tests/unit/test_backend_routing.py" \
-            "$GITHUB_WORKSPACE/tests/unit/test_abacus_io.py" \
-            "$GITHUB_WORKSPACE/tests/unit/test_reverse_config.py" \
-            "$GITHUB_WORKSPACE/tests/unit/test_gate_compensation.py" \
-            "$GITHUB_WORKSPACE/tests/unit/test_md_workflow.py" \
-            "$GITHUB_WORKSPACE/tests/unit/test_factory.py" \
-            -q
+          "$RUNNER_TEMP/venv-vendored/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --atst-root "$GITHUB_WORKSPACE" --backend vendored --report "$RUNNER_TEMP/vendored.json"
+          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --atst-root "$GITHUB_WORKSPACE" --backend external --report "$RUNNER_TEMP/external.json"
+          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --compare "$RUNNER_TEMP/vendored.json" "$RUNNER_TEMP/external.json"
+
+      - name: Preserve consumer reports and test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abacuslite-consumer-parity
+          path: |
+            ${{ runner.temp }}/*external*.json
+            ${{ runner.temp }}/*vendored*.json
+            ${{ runner.temp }}/*external*.log
+            ${{ runner.temp }}/*vendored*.log
+            ${{ runner.temp }}/*external*.xml
+            ${{ runner.temp }}/*vendored*.xml
 
   documentation-governance:
     name: documentation governance

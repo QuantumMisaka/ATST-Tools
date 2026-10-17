@@ -1,7 +1,7 @@
 # 文档系统交接与维护
 
-**版本**: 2026-10-16
-**日期**: 2026-10-16
+**版本**: 2026-10-17
+**日期**: 2026-10-17
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
@@ -118,9 +118,15 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
   上游 `xtest.sh`，因为 ATST vendored copy 使用包内相对导入，直接脚本模式会
   绕过包上下文。
 - 独立 `abacuslite` 候选路径在 `.github/workflows/tests.yml` 的
-  `external-abacuslite-candidate` job 中从固定提交构建 wheel；在仓库外执行
-  ATST wheel 消费者测试并核对 `BACKEND_SOURCE` 和两个导入路径。更新候选提交时
-  同步记录插件 wheel 与 ATST wheel 的版本和验证结果。普通 unit job 无插件，
+  `external-abacuslite-candidate` job 中从固定提交构建 wheel；PR/push 使用精确
+  候选 SHA，手动触发可指定协调 ref，每周定时跟踪独立包 main。两套隔离 venv
+  安装同一个 ATST wheel，只有 external 安装插件 wheel，均调用
+  `scripts/run_abacuslite_consumer.py`。入口在 checkout 外先核安装位置、后端来源、
+  真实消费者首次导入前的禁 vendored guard 与原始 SCF/MD fixture 数值；完整离线
+  `tests` 因文档/example 相对路径从仓根运行，pytest 进程起止均核 wheel 来源。
+  报告记录 wheel/安装文件指纹、依赖版本、测试用例身份及跳过原因，两份报告对照。
+  显式 vendored 快照维护测试在两套环境照常运行；它们不算 external 运行时来源证据。
+  更新候选提交时同步记录插件 wheel 与 ATST wheel 的版本和验证结果。普通 unit job 无插件，
   验证仅顶层包缺失时的 vendored 回退；插件内部导入失败必须向调用者传播。
   无混用检查须在全新子进程的首次 ATST 导入之前安装 guard，防止模块顶层绑定
   绕过检查；恢复旧 `utils.io` 的 vendored import 应使该检查失败。
