@@ -3,9 +3,9 @@
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
-当前 2.2.8 版本已发布（详见
-[release notes](../releases/RELEASE_NOTES_2.2.8.md)）；官方无缓存 clean-install
-复核已通过；包升级不会自动更新既有部署环境。当前开发中的未发布改动不属于该发行包。
+当前 2.2.9 版本处于发布候选阶段（详见
+[release notes](../releases/RELEASE_NOTES_2.2.9.md)）；发布后另行核验官方无缓存安装。
+包升级不会自动更新既有部署环境。
 项目把原 main branch 的脚本集合整理为可安装 Python package，
 统一通过 `atst` 命令和 YAML 配置运行 NEB、AutoNEB、Dimer、Sella、CCQN、
 D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 候选路径任务。
@@ -101,7 +101,7 @@ ATST-Tools 只安装 Python 工作流层。真实计算还需要后端运行时�
 首次使用请先取得与安装版本对应的示例；已经在仓库中的用户无需重复克隆：
 
 ```bash
-git clone --branch v2.2.8 https://github.com/QuantumMisaka/atst-tools.git
+git clone --branch main https://github.com/QuantumMisaka/atst-tools.git
 cd atst-tools
 atst --version
 atst run --list-types
@@ -261,7 +261,7 @@ fail-closed 并给出诊断，不会用较早的合法帧掩盖损坏输出。�
 `write_input` 的自定义 `stru_file`，检查会读取同一文件名；未调用 `write_input` 时
 仍使用默认 `STRU`。
 
-以下匹配容差、固定晶胞准备与缓存失效行为属于**未发布开发树**，不属于 PyPI 2.2.8。
+以下匹配容差、固定晶胞准备与缓存失效行为自 **2.2.9** 提供，不属于 PyPI 2.2.8。
 
 本仓 vendored 匹配器默认按 `1e-5 Å、rtol=0` 比较晶胞分量和周期等价的 Cartesian
 坐标残差；旧默认 `1e-4 Å` 能接受的较大误差现在可能被拒绝。这是几何匹配容差，

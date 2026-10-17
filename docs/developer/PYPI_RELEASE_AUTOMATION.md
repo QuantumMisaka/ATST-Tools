@@ -33,6 +33,9 @@ The release workflow lives at `.github/workflows/publish-pypi.yml`.
   clean-wheel API checks in that order. The publisher receives only the checked
   distribution artifact.
 
+The current candidate is `v2.2.9`; its publication is tracked in
+[release notes](../releases/RELEASE_NOTES_2.2.9.md).
+
 ## Local Readiness Gate
 
 For a candidate commit with its deliberate local `v<version>` tag already

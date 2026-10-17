@@ -19,8 +19,8 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference tracks the current 2.2.8 release. The published package's
-official PyPI no-cache clean-install, CLI/API, and dependency checks passed.
+This reference tracks the current 2.2.9 release candidate. Publication and
+official PyPI no-cache installation checks are pending.
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -46,10 +46,8 @@ responsibility.
 
 ## Stable imports
 
-The published 2.2.8 package has ten stable root imports. The current unreleased
-development tree adds the explicit read-only `validate_ts` entry point below;
-its inclusion documents the candidate and does not mean it is in the published
-package.
+Version 2.2.9 adds the explicit read-only `validate_ts` entry point to the
+ten stable root imports available in 2.2.8.
 
 ```python
 from atst_tools.api import (
@@ -367,7 +365,7 @@ Workflow-level semantics of the records:
   executed iteration's scope and never claims whole-band convergence.
 - IRC writes one record per executed direction (`forward`, `reverse`, or both),
   each with its own convergence signal and per-direction step count.
-- **Unreleased development tree (not PyPI 2.2.8):** a standalone Dimer run
+- **Since 2.2.9:** a standalone Dimer run
   records the optimizer's returned convergence signal
   and observed step count in its manifest. D2S records the same facts for its
   Dimer single-ended stage. A missing optimizer signal remains `null`; execution
@@ -412,8 +410,7 @@ Backend delegation has four invariants:
 3. ATST does not re-export individual backend I/O functions. It remains the
    workflow, schema, artifact, and orchestration layer.
 4. Released 2.2.8 metadata records the selected `backend_source` for
-   configuration-driven calculations. The unreleased development tree is
-   adding a top-level manifest `backend_identity` object. Its fields are
+   configuration-driven calculations. Version 2.2.9 adds a top-level manifest `backend_identity` object. Its fields are
    `calculator` (`abacus`, `dp`, or `supplied`), `identity_basis`
    (`configuration` or `calculator_instance`), `source` (`external`,
    `vendored`, `deepmd`, `caller`, or `unknown`), `calculator_type`,
@@ -454,7 +451,7 @@ summary = validate_ts(
 )
 ```
 
-This additive entry point is not part of the published 2.2.8 package.
+This additive entry point is introduced in 2.2.9; it is absent from 2.2.8.
 
 ## Errors and support boundary
 

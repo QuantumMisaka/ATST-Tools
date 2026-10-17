@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.2.8
+**Version**: 2.2.9
 **Last Updated**: 2026-10-16
-**Status**: Published 2.2.8 reference; explicitly marked development additions are unreleased
+**Status**: 2.2.9 release candidate reference
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -80,8 +80,7 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 **Type**: `neb`
 
 The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
-described below belong to the **unreleased development tree**, not the published
-PyPI 2.2.8 package.
+described below are included in 2.2.9, and are absent from PyPI 2.2.8.
 
 Fixed-cell input preparation compares the complete cell matrix in Angstrom
 with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
@@ -150,7 +149,7 @@ The nested NEB `make.method` value accepts `IDPP` (default) or `linear`. `IDPP` 
 
 Without `ts_guess`, the generated band contains `n_images + 2` images. With a
 TS guess, the two segments contain `n_images` interpolated images in total,
-plus the TS guess and both endpoints (`n_images + 3`). The unreleased restart
+plus the TS guess and both endpoints (`n_images + 3`). The 2.2.9 restart
 fix (2026-10-16) uses the same band width; it preserves existing generated
 paths and rejects incomplete bands. Keep the original `make` configuration
 when resuming its trajectory. For example, `n_images: 3` with a TS guess
@@ -284,7 +283,7 @@ ATST-Tools vendors PyDMF under `atst_tools.external.pydmf`, but runtime still
 requires `cyipopt` and IPOPT in the active environment.
 
 Both endpoints must contain the same number of atoms in the same element
-order. The unreleased correspondence check (2026-10-16) rejects mismatches
+order. The 2.2.9 correspondence check (2026-10-16) rejects mismatches
 before constructing the DMF optimizer; it does not reorder the final structure
 automatically. Prepare the intended atom mapping before running DMF.
 

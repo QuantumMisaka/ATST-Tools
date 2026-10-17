@@ -1,11 +1,12 @@
 # ATST-Tools Feature Status Matrix
 
-**Version**: 2.2.8
-**Last Updated**: 2026-10-16
-**Status**: Published (PyPI clean-install verified)
+**Version**: 2.2.9
+**Last Updated**: 2026-10-17
+**Status**: 2.2.9 release candidate; 2.2.8 published
 **Owner**: ATST-Tools maintainers
 
-Local main supplement (2026-10-15, unreleased): the published capability
+The 2.2.9 candidate includes the following changes, absent from 2.2.8.
+Historical local acceptance (2026-10-15): the published capability
 rows below do not certify every boundary input. The current main branch
 contains fixed-cell/MIC/IDPP repairs, Relax input fallback and distribution notice
 fixes, synchronized API progress failures, Dimer termination facts and explicit
@@ -19,7 +20,7 @@ backend/GPU run or platform acceptance is claimed.
 
 The nine issues found in the independent review of `5ad5de5` (one P1 and eight
 P2) are repaired and fast-forwarded into local `main` as `9e5f3b8`
-(unreleased), from `fix/review-nine-findings-20261016`: segmented NEB restart, IRC default output
+(included in the 2.2.9 candidate), from `fix/review-nine-findings-20261016`: segmented NEB restart, IRC default output
 and frozen results, DMF endpoint element order, manifest path bases, bench
 directory/resource/case-ID boundaries, and constant-potential facts-v1 compatibility.
 The final source passes 1347 default tests (32 skipped), 27 opt-in local MPI
@@ -71,7 +72,7 @@ for fields, artifacts, and failure semantics.
 | Feature | Status | Description | Notes |
 | :--- | :--- | :--- | :--- |
 | **Relax** | ✅ Supported | Geometry Optimization | Uses ASE optimizers. |
-| **Constant-potential** | 🧪 Development candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It ships as a development candidate in the 2.2.7 line; the public Paimon chain remains pending. The unreleased CP-01 repair restores the legacy `profile_status` label on facts-v1 output and tests actual 2.2.8 readers; transition facts without the label require validated republishing for old consumers. |
+| **Constant-potential** | 🧪 Development candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It ships as a development candidate in the 2.2.7 line; the public Paimon chain remains pending. The 2.2.9 CP-01 repair restores the legacy `profile_status` label on facts-v1 output and tests actual 2.2.8 readers; transition facts without the label require validated republishing for old consumers. |
 | **Vibration** | ✅ Supported | Frequency Analysis and TS validation | Finite difference method with JSON results, TS validation, and artifact manifest support. |
 | **NEB** | ✅ Supported | Nudged Elastic Band | CI-NEB, two-stage NEB, endpoint single-point repair, optional endpoint relaxation, native ASE selector, artifact manifest, ABACUS STRU inputs for `atst neb make`, and MPI image-level parallelism are supported. |
 | **AutoNEB** | ✅ Supported | Automated NEB | Adaptive image handling, native ASE selector, endpoint single-point repair, and MPI image-level parallelism are supported. |
@@ -81,8 +82,8 @@ for fields, artifacts, and failure semantics.
 | **D2S** | ✅ Supported | Double-Ended to Single | `atst run` dispatches endpoint optimization, rough DyNEB, then Dimer, Sella, or CCQN refinement. Experimental `rough_method: dmf` can replace rough DyNEB but is not a supported production default. |
 | **IRC** | ✅ Supported | Intrinsic Reaction Coordinate | Sella backend and descent backend are supported, with controlled boundary diagnostics and artifact manifests. |
 | **MD** | ✅ Supported | Molecular Dynamics | Supports ASE-driven MD with ABACUS/DP calculators and ABACUS-native MD input/run/output orchestration. |
-| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | Base behavior published in 2.2.5. Unreleased vendored default uses `1e-5 Å`, `rtol=0` for cell components and periodic Cartesian residuals; former `1e-5`–`1e-4 Å` matches may now be rejected. Selects the latest matching frame and rejects malformed candidates. Native `relax`/`md`/`MD_dump` retain last-frame semantics; external abacuslite is not patched. |
-| **Fixed-cell input and NEB runtime preparation** | ✅ Implemented (unreleased) | Input fidelity and common periodic runtime boundaries | `1e-5 Å`, `rtol=0`; preserve input rounding, warn/override larger cell or PBC differences on copies. NEB/AutoNEB/DyNEB adapts only necessary periodic runtime rows, invalidates changed-boundary endpoint caches, and records actual boundaries in trajectory and manifest. ASE source unchanged. Local controlled-calculator evidence; no new GPU evidence. |
+| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | Base behavior published in 2.2.5. The 2.2.9 vendored default uses `1e-5 Å`, `rtol=0` for cell components and periodic Cartesian residuals; former `1e-5`–`1e-4 Å` matches may now be rejected. Selects the latest matching frame and rejects malformed candidates. Native `relax`/`md`/`MD_dump` retain last-frame semantics; external abacuslite is not patched. |
+| **Fixed-cell input and NEB runtime preparation** | ✅ Implemented (2.2.9 candidate) | Input fidelity and common periodic runtime boundaries | `1e-5 Å`, `rtol=0`; preserve input rounding, warn/override larger cell or PBC differences on copies. NEB/AutoNEB/DyNEB adapts only necessary periodic runtime rows, invalidates changed-boundary endpoint caches, and records actual boundaries in trajectory and manifest. ASE source unchanged. Local controlled-calculator evidence; no new GPU evidence. |
 | **DMF** | 🧪 Experimental | Direct MaxFlux TS candidate/path optimizer | Standalone `calculation.type: dmf` and D2S `rough_method: dmf` are available for candidate generation. Outputs are TS candidates, not validated TS results. PBC support is limited to explicit `cartesian_unwrapped` experimental mode. Requires `cyipopt`/IPOPT at runtime. |
 | **Artifact Manifests** | ✅ Supported | Workflow output registry | Implemented for NEB, D2S, CCQN, Vibration, IRC, MD, AutoNEB, Sella, Relax, and experimental DMF. |
 | **Convergence Stage Records** | ✅ Supported | Optimizer-owned convergence facts in manifest stages | Every optimize workflow records a strict tri-state `converged` (`true`/`false`/`null`) plus stage identity (`role`, `criterion`, IRC `direction`, AutoNEB `subset`, thresholds, stage-local steps). `null` is unknown and never inferred from trajectories or raw force maxima; advisories are diagnostic only and never change completion or exit codes. Documented in `docs/user/PYTHON_API_REFERENCE.md`; contract fixtures in `docs/reports/data/convergence_fixtures_20260917/`. New in 2.2.6; additive stage fields. |

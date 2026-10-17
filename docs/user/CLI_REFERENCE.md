@@ -232,7 +232,7 @@ It supports the same thermochemistry configuration as `calculation.type: vibrati
 
 `atst vibration summary` checks existing vibration cache files and any available vibration result JSON without running new displacements. `atst d2s summary` reads a D2S YAML file and summarizes available endpoint, rough NEB, single-ended, and optional vibration stage outputs.
 
-In the unreleased development tree, `atst vibration validate` is an explicit
+Since 2.2.9, `atst vibration validate` is an explicit
 read-only screen of an existing vibration JSON result. It does not launch
 calculators or vibration calculations. Optional
 `--structure` accepts a JSON facts document or ASE-readable structure; an ASE

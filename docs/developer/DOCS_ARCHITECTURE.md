@@ -111,7 +111,7 @@ docs/
 - YAML 参数总表：[YAML_INPUT_VARIABLES.md](../user/YAML_INPUT_VARIABLES.md)
 - 功能矩阵：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)
 - 文档治理账本：[DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)
-- 发布说明：[RELEASE_NOTES_2.2.8.md](../releases/RELEASE_NOTES_2.2.8.md)，记录当前
-  已发布 2.2.8 的 tag/CI/PyPI 与 clean-install 证据；后续未发布开发不改写该记录。
+- 发布说明：[RELEASE_NOTES_2.2.9.md](../releases/RELEASE_NOTES_2.2.9.md)，记录当前
+  2.2.9 候选的验收与发布进展；历史发行证据保留在对应版本说明中。
   此前已发布的 [2.2.5 release notes](../releases/RELEASE_NOTES_2.2.5.md) 与
   [2.2.4 release notes](../releases/RELEASE_NOTES_2.2.4.md) 保留为历史发布记录。
