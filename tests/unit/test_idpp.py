@@ -210,7 +210,9 @@ def test_segmented_preprocessing_keeps_one_input_cell_reference(tmp_path, method
         idpp.generate(method, 2, str(paths[0]), str(paths[1]),
                       str(tmp_path / "path.traj"), format=None,
                       ts_file=str(paths[2]), no_align=True)
-    assert not caught
+    # Upstream NumPy/ASE deprecations do not indicate a cell mismatch.
+    assert not [warning for warning in caught
+                if not issubclass(warning.category, DeprecationWarning)]
     output = read(tmp_path / "path.traj", ":")
     np.testing.assert_array_equal(output[-1].cell.array, endpoints[1].cell.array)
 

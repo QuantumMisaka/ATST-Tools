@@ -4,7 +4,7 @@
 **Date**: 2026-10-17
 **Status**: Release candidate (publication pending)
 **Branch**: `main`
-**Tag**: `v2.2.9` (pending)
+**Tag**: `v2.2.9` -> `ec75edf`
 
 ## Summary
 
@@ -49,6 +49,11 @@ The 2026-10-17 candidate passed the full default suite (1347 passed,
 Twine checks, documentation governance and clean-wheel public API verification.
 Independent review confirmed the repair evidence matches the current source
 (the package-version change is the only changed build input).
+GitHub release preflight `38994894225` passed; PyPI upload is awaiting its
+protected environment approval. The Python 3.12 matrix exposed an overly broad
+IDPP test warning assertion under NumPy 2.5. A post-tag test-only correction
+excludes upstream deprecation warnings while retaining scientific warnings;
+the full IDPP file passes in Python 3.12. Production source is unchanged.
 Publication and official PyPI installation checks remain pending.
 
 See [repair acceptance](../reports/MAIN_REVIEW_FIXES_2026-10-16.md) and
