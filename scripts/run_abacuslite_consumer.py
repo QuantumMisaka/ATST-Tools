@@ -95,6 +95,8 @@ def verify_report(report: dict) -> None:
     if plugin_wheel is not None and len(plugin_wheel) != 64:
         raise ValueError("Malformed abacuslite wheel provenance")
     attest = report.get("pytest_attestation") or {}
+    if attest.get("deselected") != []:
+        raise ValueError("External offline suite deselected tests")
     for phase in ("start", "finish"):
         phase_record = attest.get(phase) or {}
         if (phase_record.get("backend") != "external"
@@ -102,6 +104,8 @@ def verify_report(report: dict) -> None:
                 or phase_record.get("abacuslite") != plugin["path"]):
             raise ValueError(f"Missing or inconsistent pytest {phase} wheel attestation")
     tests = report.get("tests") or {}
+    if tests.get("deselected") != 0:
+        raise ValueError("External offline suite deselected tests")
     collected = tests.get("collected", 0)
     cases = tests.get("testcases") or {}
     if (collected <= 0 or len(cases) != collected
@@ -249,8 +253,15 @@ def _attest(phase):
         raise RuntimeError('pytest imported plugin outside site-packages: ' + str(plugin))
     path = Path(os.environ['ATST_RUNNER_ATTEST'])
     record = json.loads(path.read_text()) if path.exists() else {}
+    record.setdefault('deselected', [])
     record[phase] = {'atst': str(package), 'abacuslite': str(plugin),
                      'backend': BACKEND_SOURCE}
+    path.write_text(json.dumps(record, sort_keys=True))
+
+def pytest_deselected(items):
+    path = Path(os.environ['ATST_RUNNER_ATTEST'])
+    record = json.loads(path.read_text()) if path.exists() else {}
+    record.setdefault('deselected', []).extend(item.nodeid for item in items)
     path.write_text(json.dumps(record, sort_keys=True))
 
 def pytest_sessionstart(session):
@@ -402,6 +413,18 @@ def _pytest_result(xml_path: Path) -> dict:
     }
 
 
+def _pytest_environment(root: Path, backend: str, attest_path: Path,
+                        plugin_dir: str) -> dict[str, str]:
+    """Keep runner provenance while removing inherited pytest selection controls."""
+    env = {**os.environ, "PYTHONPATH": plugin_dir,
+           "ATST_TEST_INSTALLED_WHEEL": "1",
+           "ATST_RUNNER_ROOT": str(root), "ATST_RUNNER_BACKEND": backend,
+           "ATST_RUNNER_ATTEST": str(attest_path)}
+    for key in ("PYTEST_ADDOPTS", "PYTEST_PLUGINS", "PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
+        env.pop(key, None)
+    return env
+
+
 def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
     """Run installed-wheel provenance, guarded consumers, fixtures and tests."""
     root = root.resolve()
@@ -423,19 +446,17 @@ def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
             _PYTEST_PROVENANCE_PLUGIN, encoding="utf-8")
         Path(plugin_dir, "sitecustomize.py").write_text(
             _CHILD_PROVENANCE_GUARD, encoding="utf-8")
-        env = {**os.environ, "PYTHONPATH": plugin_dir,
-               "ATST_TEST_INSTALLED_WHEEL": "1",
-               "ATST_RUNNER_ROOT": str(root), "ATST_RUNNER_BACKEND": backend,
-               "ATST_RUNNER_ATTEST": str(attest_path)}
+        env = _pytest_environment(root, backend, attest_path, plugin_dir)
         with log_path.open("w", encoding="utf-8") as log:
             # Some governance/example tests intentionally read repository-relative assets.
             # The temporary pytest plugin checks wheel provenance at startup and finish.
             completed = subprocess.run(command, cwd=root, env=env, stdout=log,
                                        stderr=subprocess.STDOUT, timeout=600)
     attest = json.loads(attest_path.read_text(encoding="utf-8")) if attest_path.exists() else {}
-    if set(attest) != {"start", "finish"}:
+    if set(attest) != {"start", "finish", "deselected"}:
         raise RuntimeError(f"pytest wheel provenance attestation missing; see {log_path}")
     tests = _pytest_result(xml_path)
+    tests["deselected"] = len(attest["deselected"])
     report = {
         "schema": SCHEMA,
         "backend": backend,

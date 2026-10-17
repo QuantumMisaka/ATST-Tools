@@ -48,10 +48,11 @@ def _report() -> dict:
         "pytest_attestation": {
             phase: {"atst": atst, "abacuslite": plugin, "backend": "external"}
             for phase in ("start", "finish")
-        },
+        } | {"deselected": []},
         "tests": {
             "collected": len(cases), "passed": len(cases), "skipped": 0,
-            "failed": 0, "errors": 0, "skip_reasons": {}, "testcases": cases,
+            "failed": 0, "errors": 0, "deselected": 0,
+            "skip_reasons": {}, "testcases": cases,
         },
         "facts": {
             "scf": {"energy_eV": -2898.0, "efermi_eV": -2.04,
@@ -70,6 +71,19 @@ def test_runner_accepts_complete_external_report():
     _runner().verify_report(_report())
 
 
+def test_runner_clears_inherited_pytest_selection(monkeypatch, tmp_path):
+    monkeypatch.setenv("PYTEST_ADDOPTS", "-k test_only_one_case")
+    monkeypatch.setenv("PYTEST_PLUGINS", "selective_plugin")
+    monkeypatch.setenv("PYTEST_DISABLE_PLUGIN_AUTOLOAD", "1")
+    environment = _runner()._pytest_environment(
+        tmp_path / "checkout", "external", tmp_path / "attest.json", str(tmp_path / "plugin")
+    )
+    for key in ("PYTEST_ADDOPTS", "PYTEST_PLUGINS", "PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
+        assert key not in environment
+    assert environment["ATST_TEST_INSTALLED_WHEEL"] == "1"
+    assert environment["ATST_RUNNER_ROOT"] == str(tmp_path / "checkout")
+
+
 @pytest.mark.parametrize("mutation", [
     lambda report: report.update(backend="vendored"),
     lambda report: report["facts"]["scf"].update(energy_eV=-2897.0),
@@ -83,6 +97,9 @@ def test_runner_accepts_complete_external_report():
     lambda report: report.update(pytest_cwd=""),
     lambda report: report["pytest_attestation"]["finish"].update(backend="vendored"),
     lambda report: report.update(pytest_exit_code=1),
+    lambda report: report["tests"].update(deselected=1),
+    lambda report: report["pytest_attestation"].update(deselected=["tests/unit/test_omitted.py::test_omitted"]),
+    lambda report: report["tests"].pop("deselected"),
 ])
 def test_runner_rejects_external_report_mutations(mutation):
     report = deepcopy(_report())
