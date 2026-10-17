@@ -2,7 +2,7 @@
 
 **版本**: 2026-09-20（2026-09-21 迁入 atst-tools 规范源；2026-09-22 状态口径对齐）
 **日期**: 2026-09-20
-**状态**: 执行中（P0–P5 已完成，P6 进行中；未闭合项见下方「剩余项（2026-09-22）」）
+**状态**: 活跃（P0–P5 与 ATST 交付完成；仅 P6 平台部分及注明的条件项开放，2026-10-16 复核）
 **责任人**: ATST-Tools maintainers
 
 > **迁移记录（2026-09-21）**：本计划已由发起方 ABACUS 文档目录迁入 atst-tools 规范源并在文档账本登记；设计源为 [GPU 节点调优设计](../specs/2026-09-20-atst-gpu-node-tuning-design.md)，P0 接口冻结为 [runtime 接口冻结设计](../specs/2026-09-21-atst-runtime-interface-design.md)。原位置只保留交接说明，不得独立演进。
@@ -14,11 +14,11 @@
 **Verification:** CPU 行为/子进程测试 → site-compatible MPI 测试 → 经授权的 GPU 数值/性能基准 → 后续平台 E2E。
 Status: in_progress (P0-P5 complete, P6 in progress; the remaining items are listed below)
 
-**剩余项（2026-09-22 状态口径对齐）**：P0–P5 已完成——P5 压力/收益矩阵无剩余行（host/SIF 成对见 `docs/reports/ATST_RUNTIME_SAI_V100_VALIDATION_2026-09-21.md` §5j，8 图×8 卡见 §5h）；P6 进行中。以下为计划内**仍不成立**的项，状态只有 `open` 或 `condition-blocked`，不得读作完成：
+**剩余项（2026-09-22 状态口径对齐）**：P0–P5 已完成——P5 压力/收益矩阵无剩余行（host/SIF 成对见 `docs/reports/ATST_RUNTIME_SAI_V100_VALIDATION_2026-09-21.md` §5j，8 图×8 卡见 §5h）；P6 进行中。下列记录同时保留已收口事实与仍开放项，以各项最新状态为准：
 
 - P2「计量端点与生命周期」的只读模型共享与重启回归、以及 P2「宿主 sampler」的 MPS 归属**已在 2026-09-22 现场收口**（SAI 作业 1444802）：模型目录摘要前后不变且 `dp.calculator_reused=1`、`ATST_ATTEMPT` 的缓存与证据归属一致、同 workdir 重跑末帧能量等价（Δ=1.6e-05 eV）；MPS 事实证明节点启用 MPS 且计算进程归因不可用（记 `unavailable` + reason，不填 0），见 [P2 收口报告](../../reports/ATST_P2_CLOSEOUT_2026-09-22.md)。两行随之下调为已勾选。
 - `not-planned` — P2「线程预算」的 DP TF 后端维度：**不做特意支持**，算法层兼容（线程预算与制品 kind 判定对 TF 同样生效），不安排 TF 制品验证（2026-09-22 维护者裁定；背景见 [本地验证报告 §10](../../reports/ATST_RUNTIME_LOCAL_GPU_VALIDATION_2026-09-21.md)）。
-- `open`（部分完成）— P6 交付与平台接入：文档面与 2.2.7 发布已完成，父仓 gitlink 已由父仓提交 `52d157dcc` 推进，平台侧 runtime 透传（P6 Task 6）已由父仓 `25df6ab17` 落地；独立终审与共享 image 的参数/runner 迁移仍未完成，见下文「P6」段。
+- `open`（部分完成）— P6 交付与平台接入：文档面与 2.2.7 发布已完成，父仓 gitlink 已由父仓提交 `52d157dcc` 推进，平台侧 runtime 透传（P6 Task 6）已由父仓 `25df6ab17` 落地；独立终审已完成。2026-10-16 接手后按维护者裁决保留默认入口，优先核验单 image 内 MPI 多卡；共享 image 平台扩展转为 deferred，见下文「P6」段。
 - ~~`open` — 站点 `mpiexec` + runtime 重绑定~~ **2026-09-22 现场复验收口**：修复（`0668d61`）后 `mpiexec --oversubscribe -n 8` + `binding: round_robin` 连续 3 次通过（作业 1451595/96/97，三节点，14.5–19.0 s，`bound=true`、`counters_mpi.world_size=8`），旧挂起现象不可复现；证据切片 `docs/reports/data/ATST_MPI_REBIND_REPEAT_20260922/`。是否属站点/上游已知行为不再作为阻断项：本仓侧根因已修（第三轮复核 P1-2，`0668d61`），修复后 `mpiexec -n 4 + round_robin` 复验通过（1434302），但该现象仍要求站点/上游确认，见 SAI 报告 §6 第 4 项与 §8。
 - `condition-blocked` — DP 通道的容器对照：站点 SIF 是 ABACUS toolbox 交付，deepmd 不在其范围，见 SAI 报告 §5j。
 - `condition-blocked` — FT²DP 单头 EMA 制品：本机无文件、站点钉版路径不可读，见[审阅地图 §4](../../reports/ATST_GPU_TUNING_BRANCH_REVIEW_MAP_2026-09-21.md) 第 6 项。
@@ -27,6 +27,18 @@ Status: in_progress (P0-P5 complete, P6 in progress; the remaining items are lis
 
 **实施 owner：** atst-tools 维护者已接手 P0–P5 与 P6 的 atst 交付部分（2026-09-21 迁移完成，规范源为本仓）；ABACUS/MLIP-Agent 开发者仅承接后续平台适配。不要求在 ABACUS Toolbox 内实施通用 runtime；实施基线为 `origin/main` `2cf5b7e6`（SPEC §11 R1）。
 **测试环境依据：** 显式使用 `$sai-user-guide`（§2–§5、§7–§8、性能调优 reference；涉及 SIF 时 §11）；双后端与 FT²DP fixture 规则见 SPEC §7.3，恒电势协调见 §7A。
+
+## 2026-10-16 收口核对
+
+本计划保留为本仓唯一活跃实施计划：核对当时 P6 的平台参数、resAlloc/prepare/runner
+迁移，以及 owner guide、交接测试、本地 E2E/平台验收尚无完整交付证据，也没有
+迁入另一规范计划的记录。ABACUS/MLIP-Agent owner 承接平台工作，ATST 维护者保留
+生产者接口支持；不重新打开已完成 P0–P5。DP 容器对照和 FT²DP 单头 EMA 保留
+condition-blocked，TF 专项保持 not-planned。常规发版与父仓依赖同步按各自流程执行。
+
+随后维护者授权接手，并选择保留默认行为、探索单 image 内 MPI 多卡。
+本次取证与后续任务见 P6 分解及 [接手报告](../../reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md)；
+上述“未收口”事实保留，但共享 image 不再是本轮优先开发目标。
 
 ## 组件与边界
 
@@ -185,12 +197,62 @@ harness 语义：case 默认在配置文件所在目录运行（ATST 相对路�
 依赖：P5；平台部分独立排期/授权。
 
 - [x] 更新 atst `CONFIG_REFERENCE.md`、schema 生成参数表、用户指南、examples、FEATURE_STATUS_MATRIX 与文档账本；发布说明区分 CPU/mock、MPI、GPU、SIF 验证范围（2026-09-21/22 已随 2.2.7 发布完成，范围声明见 `docs/releases/RELEASE_NOTES_2.2.7.md` 的 Validation Matrix）。
-- [ ] 相称独立终审，按 atst 版本规则发布；父仓依赖同步与 gitlink 更新独立执行（发布已完成：2.2.7 于 2026-09-21 上线 PyPI/GitHub Release；父仓 gitlink 已由父仓提交 `52d157dcc` 推进到 `af9c8fa`；**独立终审与发布已完成**（2026-09-22：整分支独立终审给 approve with required changes，findings 已修；2.2.8 已上 PyPI 并 clean-install 复核）；父仓 gitlink 待升到 v2.2.8）。
-- [ ] 平台先消费单任务绑定/运行证据，再单独设计共享 image 的参数、resAlloc/prepare/runner 迁移；不重释现有 `n_gpu`（平台侧消费已落地：父仓 `25df6ab17` 让恒电势与过渡态 `prepare` 暴露 `runtime` 段；共享 image 的参数/runner 迁移仍 open）。
+- [x] 相称独立终审，按 atst 版本规则发布；父仓依赖同步与 gitlink 更新独立执行（发布已完成：2.2.7 于 2026-09-21 上线 PyPI/GitHub Release；父仓 gitlink 已由父仓提交 `52d157dcc` 推进到 `af9c8fa`；**独立终审与发布已完成**（2026-09-22：整分支独立终审给 approve with required changes，findings 已修；2.2.8 已上 PyPI 并 clean-install 复核）；2026-10-15 只读核实父仓 index gitlink 已为 `45d8c78`（包含 v2.2.8）；不据此宣称平台部署完成）。
+- [ ] 平台先消费单任务绑定/运行证据，再完成默认入口与单 image 内 MPI 的资源交接；不重释现有 `n_gpu`（透传已由父仓 `25df6ab17` 落地；2026-10-16 维护者要求以默认行为为主，原共享 image 平台扩展转为 deferred）。
 - [x] 核对恒电势 Task 3.2 共用 `toolkits/atst_runner.py` 抽取进展（2026-09-22 核对：`toolbox/ABACUS/toolkits/atst_runner.py` 已存在，引入提交 `375ef7c6b`；平台 GPU 适配复用该入口），平台 GPU 适配复用届时的 owner 入口；不另造 runner。
 - [ ] 更新对应 owner guide 与交接测试，经本地 E2E、授权的平台发布验证后再宣称平台支持；只有新增依赖确需镜像变化时才插入非活动 SIF 候选。
 
 验收：standalone、SIF、本地 E2E、平台验证分别标注；可关闭 opt-in 回到旧入口。缺性能证据不修改生产默认。
+
+### 2026-10-16 接手分解
+
+来源：维护者本轮对话裁决；设计补充见 SPEC §1。接手基线为父仓 `45f36bd`、
+ATST `767b0cd`，父仓 index 仍 pin `45d8c78`；完整身份与取证边界见接手报告 §2。
+ATST 维护者在本计划维护规范与生产者支持；ABACUS 改动进入父仓隔离分支，MLIP
+资源 adapter 不与 ABACUS 公共参数混写。
+
+- [x] **P6.1：默认入口与内部 MPI 现状核验。** 沿 prepare → resAlloc → YAML →
+  runner → calculator 追踪；58 项相关离线测试通过。复现串行 image 配置的内层
+  ranks 与 run 分配未对齐、prepare mapping 被带入下一任务两项缺口。
+  证据见接手报告 §2–§4；这是代码/模拟边界检查，不是 ABACUS 真实多卡验收。
+- [x] **P6.2：完善既有串行 image 的内部多卡交接。** 2026-10-16 已在父仓隔离分支实现，尚未合入或发布。依赖 P6.1。
+  修复落点为父仓 `abacus_transition.py`、`toolkits/transition_atst.py`，复用
+  `toolkits/atst_runner.py`、`utils/env_setting.py`。先以真实失败回归覆盖
+  `parallel=False` + 4-rank command + run 省略/少报 GPU，以及跨任务 mapping 变化；
+  检查必须早于 check-input 和正式进程。`resAlloc` 仍只读 args/class metadata；
+  不改变现有参数默认值和 image-parallel 的单 rank calculator 限制。
+  已采用有限标准语法：直接 `mpirun`/`mpiexec` 的 ranks、map-by、bind-to 与 SAI
+  prtemca；未知直接 MPI 语法拒绝，不透明站点 wrapper 保持调用方契约。
+  原 YAML 不变，当前 mapping 写入同目录 normalized 执行副本；binding 冲突拒绝。
+  聚焦回归 182 passed，独立复审通过；完整门禁与构建身份由父仓交接报告记录。
+  纯 prepare 的资源成本优化另列候选，不随修复擅自改变其 hook。
+- [ ] **P6.3：内层多卡的可审阅验收包。** 依赖 P6.2。本地 owner guide、参数说明和
+  1/4 卡固定输入及请求已准备；真实 Slurm/SIF/本地 E2E 与平台验收尚未执行。更新父仓 runtime owner guide、
+  Agent 参数说明和交接测试，制作同一结构/solver/精度的 1 卡与 4 卡对照，记录环境、
+  ranks、GPU 身份、线程、E/F、收敛、延迟和卡时。先通过本地离线门禁与构建，
+  再按明确授权执行 Slurm/SIF/本地 E2E；平台发布与验收独立留证。
+- [ ] **P6.4：高阶多 image × 每图多卡可行性。** 与 P6.2 的局部修复可独立研究。
+  接手报告 §5 已给出非外层 MPI coordinator + 独立 GPU 组 worker 的候选，尚未实施。
+  先用模拟 calculator 检查图像身份、互斥资源、结果顺序、失败/取消/超时和残留进程，
+  再在获授权 allocation 中验证 launcher；通过后才确认公共入口与 worker 架构。
+  不直接解除 nested MPI guard，不借运行时改写全局环境实现并发分组，
+  不以乘大外层 ranks 的方式绕过一 rank 一 image 校验。
+- [ ] **P6.5：默认路径回归与 owner 收口。** TS guess 计数已局部修复并回归：
+  `n_images=3` 加 TS guess 按 4 张内部图、6 帧处理；其余现场闭环继续开放。检查实际内部图数与
+  父仓推导一致、AutoNEB active window、端点/重启及 runtime evidence 归属；
+  汇总 standalone、SIF、本地 E2E、平台各自证据。MLIP 接入与 DP 制品条件项继续
+  保留 owner，不以 ABACUS 局部通过代替整个 P6 完成。
+
+Ruling：复用现有规范与计划，不新增并列 PLAN；以用户最新选择调整 P6 优先级。
+已明确授权的是接手、核验与本地推进；高阶混合并行当前仅授权探索。新增公共入口或
+更换执行架构先交回维护者确认；真实计算、依赖同步及平台发布按 owner 的已有授权
+边界执行。P6.1/P6.2 的本地工作已完成，P6 保持开放。
+
+实施身份：父仓隔离分支 `fix/abacus/atst-gpu-p6-20261016`，提交 `419196f7d`，
+基线 `18b341f2f`，
+ATST gitlink 保持 `45d8c78`，未将独立 main 的未发布修复混入。实施与验收记录在父仓
+`toolbox/ABACUS/docs/reports/2026-10-16-atst-p6-inner-mpi-handoff.md`；ATST 本仓不复制
+父仓 owner 规则。隔离分支交付不等同于平台接入完成，本计划不归档。
 
 ## 环境与验收命令
 
@@ -234,3 +296,22 @@ atst 开发者应在独立仓执行其验收：AGENTS 的 image MPI 维护基线
 2026-09-22（状态口径对齐，仅状态文本）：按仓库内证据把本计划的状态文本对齐到实际——头部状态改为「P0–P5 已完成，P6 进行中」并新增「剩余项」清单；P5 的 host/SIF 成对行（SAI 报告 §5j、作业 1438496）与 NEB 图数×卡数映射行（§5h、作业 1438379）勾选并补证据指针；P2 的「ABACUS 按实际 command 验证 launcher」行以 `tests/unit/test_factory.py` 的 ABACUS 工厂用例收口（依据账本 2026-09-21「P2 收口片」条目）；P2 的 DP TF 维度行保持未勾选并显式标注条件阻塞。未改动代码、测试、SAI 报告正文与 P6/恒电势检查点段。
 
 2026-09-22（P2 现场收口与 record 通道）：按维护者授权在 SAI 4V100 执行作业 1444802/1444708——只读模型共享（模型目录摘要不变、共享实例计数）、`ATST_ATTEMPT` 缓存/证据归属、同 workdir 重启等价、MPS 现场事实与 record 双通道夹具全部断言通过；代码侧修 `launch.build_child_environment` 未发布 `ATST_ATTEMPT` 的归属缺口、`bench.record` 增通道夹具，新增 9 项单测。计划 P2 两行勾选，P6 文档行勾选并标注其余子项。证据与报告见 `docs/reports/ATST_P2_CLOSEOUT_2026-09-22.md`。
+
+
+## 2026-10-17 收口执行
+
+用户授权收口真实单图多卡验证、默认路径回归与平台交接，并完成推送、
+下一版本发布和父仓依赖同步。复用现有 P6.3 的 Cy-Pt 1/4 卡输入与预算；
+不更换活动 SIF，不将 P6.4 探索或 MLIP/DP 条件项记为已交付。
+
+- [ ] P6.3 同输入 1/4 卡真实验证及产物比较。
+- [x] ATST 2.2.9 本地门禁、独立终审、推送和 PyPI 干净安装。
+- [ ] 父仓合入 P6 修复及新 ATST gitlink，完成集成回归与包检查。
+- [ ] 平台发布与对应 Agent/Flow 验收，回写各层实际证据。
+
+Ruling：本次用户指令覆盖上述真实验证、同步、推送和发布；历史输入包中的
+“待授权”描述保留为历史事实。高阶混合并行仍按已批准的探索边界处理。
+
+2026-10-17 实际收口检查点：独立发布完成，父仓集成分支已推送并通过本地门禁。
+真实入口在 SIF 依赖与 Lustre 原子发布处失败，GPU invocation=0；dev 仅部分验收、
+Flow registry HTTP 500、prod 未发布。详见 [接手报告 §8](../../reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md#8-2026-10-17-发布与真实入口验收)。

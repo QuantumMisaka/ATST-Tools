@@ -41,7 +41,8 @@ prints supported workflow types. `--show-template` accepts
 `--calculator {abacus,dp}` to choose the template backend. `--log-level`
 accepts `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
 
-`constant_potential` is an unreleased ABACUS-only development candidate. The
+`constant_potential` is an ABACUS-only development candidate included in 2.2.8;
+package inclusion is not a production or platform acceptance claim. The
 template is a schema skeleton: fill the strict boundary fields and the prepared
 ABACUS gate/dipole parameters before running it. See the
 [configuration reference](CONFIG_REFERENCE.md) for target units, workflow
@@ -221,6 +222,8 @@ atst relax summary relax.traj --tail 5
 atst vibration post config.yaml
 atst vibration post config.yaml --write-modes
 atst vibration summary config.yaml
+atst vibration validate vibration_results.json
+atst vibration validate vibration_results.json --structure frozen_ts.traj --output ts_validation.json
 atst d2s summary config.yaml --format json --output d2s_summary.json
 ```
 
@@ -228,6 +231,19 @@ This command rebuilds vibration summary and thermochemistry JSON from existing A
 It supports the same thermochemistry configuration as `calculation.type: vibration`, including harmonic corrections and ideal-gas corrections for small molecules.
 
 `atst vibration summary` checks existing vibration cache files and any available vibration result JSON without running new displacements. `atst d2s summary` reads a D2S YAML file and summarizes available endpoint, rough NEB, single-ended, and optional vibration stage outputs.
+
+Since 2.2.9, `atst vibration validate` is an explicit
+read-only screen of an existing vibration JSON result. It does not launch
+calculators or vibration calculations. Optional
+`--structure` accepts a JSON facts document or ASE-readable structure; an ASE
+structure contributes force evidence only when it carries frozen
+`SinglePointCalculator` forces. `--fmax-threshold` defaults to `0.05` eV/Å and
+`--imaginary-cutoff-cm1` to `50` cm⁻¹. The summary is printed to stdout unless
+`--output` names a JSON file. Missing scope or force evidence is reported as
+`unknown`; this screen does not establish IRC connectivity. The legacy `status`
+field keeps its pass/fail imaginary-frequency-count meaning; use
+`requested_checks_status`, `scope`, and `stationarity` to assess evidence for
+the requested checks.
 
 ## Workflow CLI Boundary
 

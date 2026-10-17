@@ -1,7 +1,7 @@
 # 文档系统交接与维护
 
-**版本**: 2026-09-04
-**日期**: 2026-09-04
+**版本**: 2026-10-16
+**日期**: 2026-10-16
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
@@ -14,6 +14,8 @@ release 变更，都先从对应小节确认需要同步的文档。
   [USER_GUIDE_CN.md](../user/USER_GUIDE_CN.md)。
 - 参数入口：[CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md) 和
   [YAML_INPUT_VARIABLES.md](../user/YAML_INPUT_VARIABLES.md)。
+- 源码入口：[源码导览](../../src/atst_tools/README.md)，用于理解模块目标、主要内容、
+  调用关系与修改位置；新增目录或调整职责时同步更新。
 - 开发入口：[YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md)、
   [DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md)、
   [EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 和
@@ -21,8 +23,51 @@ release 变更，都先从对应小节确认需要同步的文档。
 - 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md) 和
   [DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)。
 
+## 1.1 新 checkout 与 CPU 开发准备
+
+从 GitHub checkout 开发时，先创建 Python 3.10+ 环境，再以 editable 模式安装
+项目及测试依赖。下面命令不需要 ABACUS、GPU、SAI 或 `mpi4py`，适合跑普通
+CPU-only unit tests：
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[test]"
+python -c "import atst_tools; print(atst_tools.__file__)"
+python -m pytest tests/unit -q
+```
+
+`atst_tools.__file__` 应指向当前 checkout 的 `src/atst_tools`。此环境仅能证明
+不需计算后端的普通测试；ABACUS/DP、image-level MPI 和站点运行时验证另按
+[EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 的证据边界执行。
+不要把未执行的站点或计算验证写成通过。
+
+CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；服务层在
+确定调用方的 MPI world 后调度执行 helper，CLI 层负责参数、模板与输出。独立
+`validate_ts`/`atst vibration validate` 只读已有结果，不是 workflow 的自动后处理。
+
+## 1.2 已交付计划的外部交接
+
+2026-10-16 将两份本仓已完成实施计划归档；以下交接仍开放，归档不代表外部验收完成。
+
+| 交接 | 责任方与关闭条件 | 本仓承接 |
+| --- | --- | --- |
+| abacuslite 上游同步 | 维护者按既有延后决定另行安排 PR；上游合入后才更新基线和归一化。 | `PATCHES.md`、`ABACUSLITE_SNAPSHOT.md` 与本页 backend checklist。 |
+| abacuslite 后续 SIF/harness | 父仓 ABACUS owner 负责交付与其验收；历史直接 SAI 力读取检验已通过，不替代后续平台交付。 | 后端快照和版本说明；不在本仓重开已完成实现。 |
+| convergence 消费 | Paimon owner 完成 fixture 映射与联合验收；父仓 companion plan 为 `toolbox/ABACUS/docs/superpowers/plans/2026-09-17-matesbench-toolbox-hardening-plan.md`。 | [API 阶段事实](../user/PYTHON_API_REFERENCE.md)、`docs/reports/data/convergence_fixtures_20260917/`；真实运行时和 curated 产物更新须有相应证据。 |
+| GPU P6 平台迁移 | ABACUS/MLIP-Agent owner 完成共享 image 参数/runner、guide、交接测试与 E2E/平台验收。 | [唯一活跃计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md)，保留 DP 容器/FT²DP 条件项。 |
+
+当前设计来源继续保留；是否归档取决于其决策是否已被长期参考吸收，不以代码已交付
+为唯一依据。逐项处置见 [本地集成与收口](../reports/MAIN_REVIEW_FIXES_2026-10-16.md#6-本地合入与在途收口2026-10-16)。
+
 ## 2. 新增或修改 workflow
 
+- 接入 `utils/config_schema.py` 的判别联合与类型表，更新 CLI 模板和
+  `api/services.py` 的调度；按能力核对返回结构适配、合成产物、profiles/plots。
+  新工作流应自己产出阶段事实和 manifest，不依靠 API 从轨迹推断收敛。
+- 明确输入/重启身份、冻结结果和产物路径契约；复合工作流由外层拥有顶层 manifest，
+  子任务交回阶段事实。同步验证 CLI 与 API 的科学执行一致性，保留各自既有输出契约。
 - 更新 `README.md` 的支持列表和 quick start 说明。
 - 更新 `docs/user/USER_GUIDE_CN.md`、`CLI_REFERENCE.md`、`CONFIG_REFERENCE.md`。
 - 添加或更新 `examples/<case>/config*.yaml` 和 `examples/README.md`。
@@ -30,6 +75,11 @@ release 变更，都先从对应小节确认需要同步的文档。
 - 添加或更新 workflow 测试、example 测试和必要验证报告。
 - 运行期消息（print/warning/logging/异常）统一英文；改动收敛或诊断文案时同步更新
   锁定语义 token 的测试。
+- 固定晶胞准备复用 `utils/geometry.py`：输入容差 `1e-5 Å、rtol=0`，容差内保真；
+  NEB 所需适配只改内部运行副本的必要周期向量。必须在端点校验/计算前完成，
+  cell/PBC 变化后丢弃旧 SPC、端点标记和恒电势事实。调用层传已有 world 协调 root
+  warning 和已有失败同步，不在几何原语创建 communicator；长期说明见
+  [CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb)。
 
 ## 3. 新增或修改 YAML 字段
 
@@ -109,8 +159,8 @@ release 变更，都先从对应小节确认需要同步的文档。
   `python -m twine check --strict dist/*`。
 - 对包含稳定 Python API 的 release，运行
   `python scripts/verify_wheel_api.py`；它在临时目录构建 wheel、在临时 venv
-  non-network clean-install，并验证六个稳定 root imports 和 H2/Au 的 EMT
-  public API example path 和 installed API runner JSON handoff，不在工作树保留 build artifact。若 release 环境已
+  安装 wheel（默认会从配置的包索引解析依赖），并验证公共 root imports、H2/Au 的受控
+  public API example、installed API runner JSON handoff 和显式验证 CLI/API 一致性，不在工作树保留 build artifact。若 release 环境已
   准备 `mpi4py` 和 `mpiexec`，额外运行
   `python scripts/verify_wheel_api.py --mpi-smoke`；该 two-rank smoke 限时，
   验证 image-parallel NEB/AutoNEB 的 rank-0 endpoint failure 以及 rank-local
@@ -148,9 +198,20 @@ release 变更，都先从对应小节确认需要同步的文档。
 （文件或目录）→ `abacus_inputs=`，label 集合写入 `--note`，ABACUS 通道不再记成 DP 模型哈希。
 清单模板：`examples/runtime_batch_cases.example.json`。清单字段：`case_id`、`config`、
 `slots`、`threads`、`timeout_s`、`workdir`、`launcher`、`ranks`、`env`；**每个 case 必须有
-自己的目录**（未给 `workdir` 时按配置目录，同目录会被拒绝，避免证据互相覆盖）。
+自己的目录**（未给 `workdir` 时按配置目录）。2026-10-16 未发布修复以解析后的
+实际路径判重，包括显式/默认目录和符号链接别名；case_id 必须是安全的单路径段，
+允许内部空格，进度协议须完整传递 ID。env 可传普通自定义值，受管设备、线程、缓存
+和绑定事实由批次控制；YAML/runtime、显式 omp 和 runner 参数不能突破该预算或
+改写 coordinator 管理的输入/输出位置。相对 config 在加载清单时按批次启动 cwd
+解析一次，预检与两种 worker 使用同一绝对路径，避免 chdir 后读到同名异文件。
+具体证据及兼容说明见 [九项问题整改验收](../reports/MAIN_REVIEW_FIXES_2026-10-16.md)。
 
-产物（新运行）：`<out>/case_report.json`（每 case）、`batch_summary.json`（批次）、
+线程记账为 `case.threads × ranks`；`ranks` 优先使用 case 显式声明，否则尝试从
+launcher 的 rank 参数识别，未识别时为 1。任意 calculator command 启动的后端
+子进程数不由 bench 自动审计；使用嵌套 ABACUS MPI 时需显式计入其资源需求。
+这是调度预算，不是操作系统层的 CPU 硬隔离。
+
+产物（新运行）：`<out>/<case_id>/case_report.json`（每 case）、`batch_summary.json`（批次）、
 `worker.out` / `worker.err`（每 case 报告目录内）；用例配置带 `runtime.telemetry` 时另有
 `runtime_evidence.json`；批量侧 `bench_record.json`。
 

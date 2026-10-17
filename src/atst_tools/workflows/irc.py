@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 import traceback
 from typing import Any, Dict
 
 import numpy as np
+from ase.calculators.singlepoint import SinglePointCalculator
 from ase.io import read, write
 from ase.io.trajectory import Trajectory
 from ase.optimize import FIRE
@@ -21,6 +23,7 @@ from atst_tools.utils.convergence import (
     emit_unconverged_advisory,
 )
 from atst_tools.utils.io import read_structure
+from atst_tools.utils.geometry import copy_with_cached_results
 from atst_tools.utils.restart_helpers import get_last_frame
 
 
@@ -76,8 +79,8 @@ class IRCWorkflow:
         calc_config = self.calc_config
         self.init_structure = calc_config["init_structure"]
         self.traj_file = calc_config["trajectory"]
-        self.normalized_traj_file = calc_config.get(
-            "normalized_trajectory", f"norm_{Path(self.traj_file).name}"
+        self.normalized_traj_file = calc_config.get("normalized_trajectory") or (
+            f"norm_{Path(self.traj_file).name}"
         )
         self.direction = calc_config["direction"]
         self.restart = calc_config["restart"]
@@ -264,6 +267,42 @@ class IRCWorkflow:
             raise ValueError("mode_vector must have non-zero norm")
         return mode / norm
 
+    @staticmethod
+    def _freeze_descent_frame(branch, branch_traj: str):
+        """Snapshot an endpoint's cached energy and forces without backend calls.
+
+        Args:
+            branch: Relaxed branch still carrying its live calculator.
+            branch_traj: FIRE trajectory containing the evaluated endpoint.
+
+        Returns:
+            An independent endpoint with frozen results when both properties
+            are cached, or a geometry-only copy when neither source has them.
+        """
+        frame = copy_with_cached_results(branch)
+        calculator = branch.calc
+        if calculator is not None and not calculator.check_state(branch):
+            results = getattr(calculator, "results", {})
+            if "energy" in results and "forces" in results:
+                frame.calc = SinglePointCalculator(
+                    frame,
+                    energy=deepcopy(results["energy"]),
+                    forces=deepcopy(results["forces"]),
+                )
+                return frame
+        if Path(branch_traj).is_file():
+            recorded = read(branch_traj, index=-1)
+            if (
+                np.array_equal(recorded.numbers, branch.numbers)
+                and np.array_equal(recorded.positions, branch.positions)
+                and np.array_equal(recorded.cell.array, branch.cell.array)
+                and np.array_equal(recorded.pbc, branch.pbc)
+                and isinstance(recorded.calc, SinglePointCalculator)
+                and {"energy", "forces"} <= recorded.calc.results.keys()
+            ):
+                return copy_with_cached_results(recorded)
+        return frame
+
     def _run_descent(self):
         """Run the FIRE descent backend from the displaced TS along a mode.
 
@@ -303,7 +342,7 @@ class IRCWorkflow:
             )
             emit_unconverged_advisory(record, workflow="irc")
             stages.append(record)
-            frames.append(branch.copy())
+            frames.append(self._freeze_descent_frame(branch, branch_traj))
         write(self.traj_file, frames, format="traj")
         if self.direction == "both" and self.normalized_traj_file:
             write(self.normalized_traj_file, list(reversed(frames[:1])) + frames[1:], format="traj")

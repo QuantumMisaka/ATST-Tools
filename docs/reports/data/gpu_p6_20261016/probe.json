@@ -1,0 +1,57 @@
+{
+  "scope": "offline stubs; no MPI, GPU, ABACUS, scheduler, or platform execution",
+  "parent_head": "45f36bd14bc28c2dd2c6602d0bcde8175563295a",
+  "atst_head": "767b0cd98244353660a6528147140d9f53b7086a",
+  "source_sha256": {
+    "abacus_transition.py": "a9bf215f48a2d17d8a702dd25ba3ceba2fef898cfa54ff0bc384b5e9a4c6758f",
+    "toolkits/transition_atst.py": "440a72f11d7a2f9e463f5f59776aa26b9759747992e4b28fee0e595416b5bf03",
+    "utils/env_setting.py": "bbf07622797d5dfd5c35ffa3716aabbee55ea63a6f69fa6b1d3f42192378bc76"
+  },
+  "python": "/home/james/apps/miniforge3/envs/abacus-env/bin/python",
+  "allocation": {
+    "prepare_gpu4_intent": {
+      "CPU": 16,
+      "MEM_PER_CPU": 4000,
+      "GPU": 4,
+      "PARTITION": "gpu"
+    },
+    "run_explicit_gpu4": {
+      "CPU": 16,
+      "GPU": 4,
+      "MEM_PER_CPU": 4000,
+      "PARTITION": "gpu"
+    },
+    "run_omitted_gpu": {
+      "CPU": 4,
+      "MEM_PER_CPU": 4000,
+      "GPU": 1,
+      "PARTITION": "gpu"
+    }
+  },
+  "prepare_gpu4_on_gpu1": {
+    "rejected": true,
+    "error": "multi-GPU SAI mapping contract failed: n_gpu=4 does not match routed GPU total=1"
+  },
+  "calculator_on_gpu4": {
+    "command": "mpirun -np 4 --map-by ppr:4:node:pe=4 abacus",
+    "mpi": 1,
+    "omp": 4
+  },
+  "nested_mpi": {
+    "rejected": true,
+    "error": "ATST image-level MPI requires calculator.abacus.command='abacus' and mpi=1; nested MPI is not supported."
+  },
+  "run_gpu4_command_without_gpu_arg": {
+    "adapter_status_with_stub_runner": "success",
+    "formal_runner_reached": true,
+    "saved_command": "mpirun -np 4 --map-by ppr:4:node:pe=4 abacus",
+    "allocated_gpus": 1,
+    "outer_image_parallel": false
+  },
+  "run_gpu4_with_changed_mapping": {
+    "adapter_status_with_stub_runner": "success",
+    "mapping_refresh_calls": [],
+    "current_map_opt": "ppr:2:package:pe=4",
+    "saved_command": "mpirun -np 4 --map-by ppr:4:node:pe=4 abacus"
+  }
+}

@@ -19,8 +19,8 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference tracks the current 2.2.8 release. The published package's
-official PyPI no-cache clean-install, CLI/API, and dependency checks passed.
+This reference tracks the current 2.2.9 release. Publication and official
+PyPI no-cache installation checks passed.
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -46,7 +46,8 @@ responsibility.
 
 ## Stable imports
 
-These ten names are stable root imports in the current source tree:
+Version 2.2.9 adds the explicit read-only `validate_ts` entry point to the
+ten stable root imports available in 2.2.8.
 
 ```python
 from atst_tools.api import (
@@ -65,7 +66,8 @@ from atst_tools.api import (
 
 Workflow, calculator, MEP, and vendored implementation packages are not stable
 integration surfaces. Do not couple an application to their constructors or
-helper functions; use the names above instead.
+helper functions; use the names above instead. In the current development tree,
+`validate_ts` is also lazily available from `atst_tools.api`.
 
 ### `build_config_from_abacus_dir(abacus_run_dir, *, workflow="neb", init_structure=None, final_structure=None, n_images=5, gate_dirs=None)`
 
@@ -125,7 +127,7 @@ print(config["calculation"]["type"])
 Runs a validated YAML path or equivalent mapping and returns a
 `WorkflowResult`. It supports every current `calculation.type`: the released
 NEB, AutoNEB, Dimer, Sella, CCQN, D2S, Relax, Vibration, IRC, MD, and
-experimental DMF workflows, plus the unreleased ABACUS-only
+experimental DMF workflows, plus the ABACUS-only
 `constant_potential` development candidate.
 `RunOptions` exposes the CLI-equivalent controls:
 
@@ -144,7 +146,9 @@ experimental DMF workflows, plus the unreleased ABACUS-only
   `energy_eV`, `step`, and `ts` fields); the same event mapping is forwarded
   to `progress_callback` when supplied, so Python consumers never parse
   stdout. The CLI `--progress` flag and this option share the same driver
-  emission.
+  emission. In image-parallel workflows, a stream or callback failure on one
+  rank is synchronized so every rank exits with an API workflow failure
+  instead of leaving peers blocked in a later collective.
 - `profiles` (2.2.1) adds an opt-in per-image (NEB/AutoNEB) or per-step
   (Sella/CCQN) energy and force summary to the result envelope. `plots`
   (2.2.1) renders the workflow energy plot PNG and records its relative path
@@ -165,8 +169,8 @@ schema as the CLI; it does not add a new stable root import. It is currently
 limited to fixed-geometry serial evaluations/scans and fixed-cell
 `compensated_gate` `relax`/`neb` calls. The legacy `reference_fcp` boundary is
 reference-only and cannot be used for those optimization workflows. This
-development candidate ships with the 2.2.8 line and has no Paimon/public
-tool-chain acceptance claim.
+development candidate is included in the published 2.2.8 package, but its
+presence does not imply production or Paimon/public tool-chain acceptance.
 
 ### Process runner for external hosts
 
@@ -204,9 +208,9 @@ and `1` means an unexpected runner failure.
 
 For externally launched image-parallel NEB or AutoNEB, every rank runs the same
 command, but only root rank publishes or replaces the JSON file. The runner
-never starts Slurm, `mpirun`, `srun`, or nested calculator MPI: the scheduler,
-launcher, resource allocation, and rank topology remain the caller's
-responsibility.
+never starts Slurm or an outer `mpirun`/`srun` launch: scheduler, launcher, resource
+allocation, and rank topology remain the caller's responsibility. A configured
+calculator command may launch ABACUS MPI inside each workflow process.
 
 ### `run_ccqn(atoms, calculator, options=CCQNOptions())`
 
@@ -281,6 +285,20 @@ manifest, while a valid manifest written by that run is preserved. The CLI
 adapter deliberately does not synthesize or replace manifests for legacy
 workflows that did not write them themselves.
 
+Unreleased path fix (2026-10-16): artifact paths remain relative to the run
+workdir. When the manifest is stored elsewhere, including an absolute output
+location, it records an optional top-level `path_base`: the relative path from
+the manifest directory to that workdir. Manifest consumers resolve relative
+artifact paths against `manifest.parent / path_base`; absolute artifact paths
+are unchanged. Root-directory manifests omit the redundant `.` base. API
+enrichment preserves the base, and the JSON envelope continues to provide its
+absolute `workdir` and `artifact_manifest` without changing artifact strings.
+Manifests without `path_base` keep the legacy manifest-directory interpretation.
+An old nested manifest whose paths actually referred to a different workdir
+must be given the correct base explicitly; consumers do not search for a
+similarly named existing file. Older consumers must support `path_base` before
+reading the new nested layout; the default root layout is unchanged.
+
 `plots` is a tuple of rendered energy-plot PNG paths and `profiles` a tuple of
 per-image (NEB/AutoNEB) or per-step (Sella/CCQN) energy/force summaries; both
 are populated only when the corresponding `RunOptions` flag was set. In the
@@ -347,10 +365,11 @@ Workflow-level semantics of the records:
   executed iteration's scope and never claims whole-band convergence.
 - IRC writes one record per executed direction (`forward`, `reverse`, or both),
   each with its own convergence signal and per-direction step count.
-- A standalone Dimer run writes no workflow manifest (Dimer exposes no
-  optimizer termination signal); an API run of it receives the synthesized
-  `converged: null` stage described below. Inside D2S, the Dimer single-ended
-  step records `converged: null` as a constituent stage.
+- **Since 2.2.9:** a standalone Dimer run
+  records the optimizer's returned convergence signal
+  and observed step count in its manifest. D2S records the same facts for its
+  Dimer single-ended stage. A missing optimizer signal remains `null`; execution
+  completion alone never implies convergence.
 
 When an API run completes without a runner-written manifest, ATST synthesizes a
 completion manifest whose single stage is the workflow name with
@@ -373,10 +392,12 @@ deliberately distinct from the legacy CLI adapter, whose `atst run --dry-run
 --check-input config.yaml` continues to resolve relative preflight inputs from
 the YAML file's parent.
 
-The API never launches Slurm, `mpirun`, `srun`, or nested calculator MPI. Start
-the outer MPI calculation yourself, then have every rank call the same API with the
-same configuration. NEB requires one rank per interior image and AutoNEB one
-rank per simultaneous image; existing serial fallback behavior is preserved.
+The API never allocates resources or starts Slurm, `mpirun`, or `srun`. Start
+the outer Python MPI launch yourself, then have every rank call the same API with
+the same configuration. A calculator command configured in YAML may launch its
+own ABACUS MPI subprocess; ATST does not start the outer image-parallel Python
+launch. NEB requires one rank per interior image and AutoNEB one rank per
+simultaneous image; existing serial fallback behavior is preserved.
 
 Backend delegation has four invariants:
 
@@ -388,13 +409,55 @@ Backend delegation has four invariants:
    pseudopotentials, orbitals, working directory, MPI settings, or I/O.
 3. ATST does not re-export individual backend I/O functions. It remains the
    workflow, schema, artifact, and orchestration layer.
-4. Metadata records `backend_source` as `external` or `vendored` for
-   configuration-driven ABACUS results, `deepmd` for configuration-driven DP
-   results, and `provided` only for calculator injection.
+4. Released 2.2.8 metadata records the selected `backend_source` for
+   configuration-driven calculations. Version 2.2.9 adds a top-level manifest `backend_identity` object. Its fields are
+   `calculator` (`abacus`, `dp`, or `supplied`), `identity_basis`
+   (`configuration` or `calculator_instance`), `source` (`external`,
+   `vendored`, `deepmd`, `caller`, or `unknown`), `calculator_type`,
+   `backend_version`, `snapshot`, and `model`. A vendored snapshot can include
+   `upstream_sha`, `snapshot_document`, `patches_document`, and
+   `patches_sha256`; DP model facts can include absolute `path`, suffix-derived
+   `kind`, `backend` (`pt`, `tf`, or `unknown`), configured/attached `head`,
+   and `size_bytes`. Missing facts remain `unknown`. The `configuration` basis
+   records resolved selection, not observed evaluation; the instance basis
+   records the supplied calculator type. Model identity does not reload
+   DeepPot or hash a large model file.
+
+### `validate_ts(vibration_results, *, structure=None, fmax_threshold=0.05, imaginary_cutoff_cm1=50.0, output=None)`
+
+The current development tree exposes `validate_ts` as a lazy root import from
+`atst_tools.api`. It screens stored vibration results and optional frozen
+structure facts. It never calls a live calculator or starts new force or
+vibration calculations. An ASE structure path supplies force evidence only
+when it contains frozen `SinglePointCalculator` forces; otherwise stationarity
+may remain `unknown`. Missing scope or force evidence also remains `unknown`.
+The result is a scoped screen and cannot prove IRC connectivity. Explicit
+vibration selections that include fixed atoms remain valid;
+`scope.fixed_indices_in_selection` records that overlap and the stationarity
+check stays `unknown` because the constraint scopes differ.
+
+The legacy `status` field retains the existing pass/fail imaginary-frequency
+count screen. Consumers that need to know whether requested checks had enough
+evidence should inspect `requested_checks_status`, `scope`, and `stationarity`.
+
+```python
+from atst_tools.api import validate_ts
+
+summary = validate_ts(
+    "vibration_results.json",
+    structure="frozen_ts.traj",
+    fmax_threshold=0.05,
+    imaginary_cutoff_cm1=50.0,
+)
+```
+
+This additive entry point is introduced in 2.2.9; it is absent from 2.2.8.
 
 ## Errors and support boundary
 
-Workflow execution and validation API failures derive from `ATSTAPIError`.
+Workflow execution and configuration-validation failures derive from `ATSTAPIError`.
+The read-only `validate_ts` helper raises `TypeError` or `ValueError` for invalid
+facts and propagates file I/O errors; it does not execute a workflow.
 The configuration-building helper above retains its documented filesystem and
 input exceptions. The companion model component
 defines `ConfigValidationError` for schema/path problems,

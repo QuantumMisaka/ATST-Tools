@@ -79,7 +79,7 @@ def test_the_progress_format_is_the_documented_literal():
 
 def test_progress_parsing_round_trips_and_rejects_foreign_lines():
     line = batch_worker.format_progress_line("case a", "error", 2.5)
-    assert batch_worker.parse_progress_line(line) == ("case", "error", 2.5)
+    assert batch_worker.parse_progress_line(line) == ("case a", "error", 2.5)
     assert batch_worker.parse_progress_line("relax: 12 steps") is None
     assert batch_worker.parse_progress_line("[batch_worker] case=only") is None
     assert (

@@ -1,0 +1,26 @@
+HEAD: 5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e
+
+CP cross-version:
+schema: atst-constant-potential-facts-v1
+current reader: None
+v2.2.8 reader: constant-potential facts are missing required fields: profile_status
+current restart: 10.000000000000002
+v2.2.8 restart: ConstantPotentialError constant-potential restart checkpoint is stale or malformed: constant-potential facts are missing required fields: profile_status
+v2.2.8 allow_recompute: None
+legacy-field payload/current reader: None
+legacy-field payload/v2.2.8 reader: None
+
+Nested manifest path:
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 16:11:09       -0.977893        1.588095
+FIRE:    1 16:11:09       -0.993231        0.269279
+Warning: NEB finished without satisfying its optimizer convergence criteria
+(workflow=neb, stage=neb, threshold_fmax=0.05 eV/Angstrom, nsteps=1, max_steps=1).
+Execution completion does not imply optimizer convergence.
+workflow status: complete
+manifest artifact: ({'role': 'trajectory', 'path': 'neb.traj'},)
+actual trajectory exists: True
+summary status: {'n_artifacts': 1, 'n_missing': 1, 'complete': False}
+summary artifacts: [{'role': 'trajectory', 'path': 'neb.traj', 'resolved_path': 'reports/neb.traj', 'exists': False}]

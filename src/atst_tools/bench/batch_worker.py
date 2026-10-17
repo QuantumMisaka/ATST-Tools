@@ -67,6 +67,18 @@ SETUP_FAILURE_EXIT = 2
 _LOG_LEVEL_ENV = "ATST_LOG_LEVEL"
 
 
+def validate_case_id(case_id: str) -> None:
+    """Require one safe report-directory component, including readable spaces."""
+    if (
+        not case_id
+        or case_id in {".", ".."}
+        or "/" in case_id
+        or "\\" in case_id
+        or any(ord(char) < 32 or ord(char) == 127 for char in case_id)
+    ):
+        raise ValueError(f"case_id {case_id!r} must be a safe directory name")
+
+
 @dataclass(frozen=True)
 class Job:
     """One row of the shared job list (absolute ``config`` and ``workdir``)."""
@@ -90,6 +102,7 @@ class Job:
             if not value:
                 raise ValueError(f"job {index}: '{key}' must be a non-empty string")
             fields[key] = value
+        validate_case_id(fields["case_id"])
         return cls(**fields)
 
 
@@ -129,15 +142,15 @@ def parse_progress_line(line: str) -> tuple[str, str, float] | None:
     text = line.strip()
     if not text.startswith(PROGRESS_PREFIX):
         return None
-    fields: dict[str, str] = {}
-    for token in text[len(PROGRESS_PREFIX) :].split():
-        key, separator, value = token.partition("=")
-        if separator and key and value:
-            fields[key] = value
-    case_id = fields.get("case", "")
-    status = fields.get("status", "")
-    raw_wall = fields.get("wall_s")
-    if not case_id or not status or raw_wall is None:
+    head, separator, raw_wall = text.rpartition(" wall_s=")
+    if not separator:
+        return None
+    case_field, separator, status = head.rpartition(" status=")
+    prefix = f"{PROGRESS_PREFIX} case="
+    if not separator or not case_field.startswith(prefix) or not status or " " in status:
+        return None
+    case_id = case_field[len(prefix) :]
+    if not case_id:
         return None
     try:
         wall_s = float(raw_wall)

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-15",
+  "integrated_commit": "3163c066882f0396b2d36333c3dec5515a9d7950",
+  "post_merge_test_exit_code": 0,
+  "passed": 1284,
+  "skipped": 32,
+  "archive": "/home/james/scratch/atst-tools-closeout-20261015-153534",
+  "remote_branches_deleted": {
+    "abacus-demo-hardening": "fd7c8daa66d87ffc3a2bae17a10496f579c554a6",
+    "abacuslite-upstream-issue-fixes": "7f16fe236916b46bceb217d297c942035ef15a9e",
+    "dev/gpu-tuning-closeout-20260922": "6a7bf94c581005372e02835f2cfeba2fea03d89f",
+    "feat/atst-prepare-and-trajectory-stress": "fd214baba5df77a5e5babd292a645dfdc1cd6261",
+    "feat/dmf": "7fa9bb783d25e4b0e0bab832869a6ab2ffa18251",
+    "feat/neb-parallel": "e42649c2f830ed52ac63963f594c060be58bde8b",
+    "feature/gpu-node-tuning": "f03b3e62f087dcdc1ec348f29b0da81e82739232",
+    "fix/autoneb-ci-endpoint": "93eb0a67cc4b48af25cec8564190640c7b2e0db7",
+    "fix/issue-31-neb-stru-mobility": "dea1f4b3b0728a721810495361eda495176ee0ee",
+    "fix/review-findings-20260921": "0f5fb5127f278e493c41558de5a93a0cd5ffbc2c",
+    "refactor/unify-structure": "ecb3161dd918aac246f9f7de2901b5cb919f9ced"
+  },
+  "main_pushed": false,
+  "parent_committed": false
+}

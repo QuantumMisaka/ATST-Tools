@@ -264,7 +264,7 @@ def test_non_cp_relax_restart_keeps_legacy_factory_arguments(monkeypatch, tmp_pa
 @pytest.mark.parametrize("parallel,rank,expected", [(False, 0, [11.25, 12.75]), (True, 0, [11.25]), (True, 1, [12.75])])
 def test_neb_restart_warm_starts_each_image_from_its_own_facts(monkeypatch, tmp_path, parallel, rank, expected):
     """NEB restart never shares one image's electronic state with another."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
     from helpers import FakeWorld
 
     config = _config(tmp_path)
@@ -273,12 +273,14 @@ def test_neb_restart_warm_starts_each_image_from_its_own_facts(monkeypatch, tmp_
     _publish_checkpoint(chain[1], config, nelec=11.25)
     _publish_checkpoint(chain[2], config, nelec=12.75)
     captured: list[dict[str, object]] = []
+    runtime_images = []
 
     world = FakeWorld(size=2 if parallel else 1, rank=rank)
 
     class FakeNEB:
         def __init__(self, images, **kwargs):
             self.images = images
+            runtime_images.extend(images)
 
     class FakeOptimizer:
         nsteps = 0
@@ -319,15 +321,16 @@ def test_neb_restart_warm_starts_each_image_from_its_own_facts(monkeypatch, tmp_
     if parallel:
         assert len(captured) == 1
         assert Path(captured[0]["directory"]).name == f"image_{rank + 1:03d}"
-        assert chain[rank + 1].calc is not None
-        assert chain[2 - rank].calc is None
+        assert runtime_images[rank + 1].calc is not None
+        assert runtime_images[2 - rank].calc is None
+        assert all(image.calc is None for image in chain)
 
 
 def test_neb_restart_rejects_changed_electronic_identity_before_calculation(
     monkeypatch, tmp_path
 ):
     """A stale CP image is rejected instead of silently using a fresh guess."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     stored_config = _config(tmp_path, zgate=0.7)
     run_config = _config(tmp_path, zgate=0.8)

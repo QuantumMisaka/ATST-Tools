@@ -1,0 +1,155 @@
+FF.F.                                                                    [100%]
+=================================== FAILURES ===================================
+_____________ test_ts_guess_restart_restores_complete_last_band[1] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x734bab24b010>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1507/test_ts_guess_restart_restores0')
+bands = 1
+
+    @pytest.mark.parametrize("bands", [1, 5])
+    def test_ts_guess_restart_restores_complete_last_band(monkeypatch, tmp_path, bands):
+        config, generated = _run_neb_with_generated_chain(
+            monkeypatch, tmp_path, ts_guess=True
+        )
+        assert len(generated) == 6
+        recorded = read("neb.traj", index=":")
+        assert len(recorded) == 6
+        if bands > 1:
+            write("neb.traj", recorded * bands)
+        config["restart"] = True
+    
+>       restarted = execution.run_neb({}, "abacus", config)
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_neb_restart_contract.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/execution.py:320: in run_neb
+    raise initial_chain_error
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/execution.py:307: in run_neb
+    init_chain = get_last_neb_band(traj_file, n_images)
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/utils/restart_helpers.py:39: in get_last_neb_band
+    return select_last_neb_chain(images, expected_n_images, strict=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+images = [Atoms(symbols='H', pbc=False, calculator=SinglePointCalculator(...)), Atoms(symbols='H', pbc=False, calculator=Single...bc=False, calculator=SinglePointCalculator(...)), Atoms(symbols='H', pbc=False, calculator=SinglePointCalculator(...))]
+expected_n_images = 5, strict = True
+
+    def select_last_neb_chain(images: Sequence, expected_n_images: int, strict: bool = True):
+        """Return the last NEB band with a known total band size.
+    
+        Args:
+            images: Full trajectory frames.
+            expected_n_images: Total images per NEB band, including endpoints.
+            strict: Require the trajectory length to be an exact multiple of the band
+                size. Restart paths should keep this enabled.
+    
+        Returns:
+            list: Last selected NEB band.
+    
+        Raises:
+            ValueError: If the band size is invalid or a complete band cannot be
+                selected.
+        """
+        if expected_n_images <= 0:
+            raise ValueError("expected_n_images must be positive")
+        if len(images) < expected_n_images:
+            raise ValueError(
+                f"NEB trajectory contains {len(images)} frame(s), fewer than expected "
+                f"band size {expected_n_images}."
+            )
+        if strict and len(images) % expected_n_images != 0:
+>           raise ValueError(
+                f"NEB trajectory contains {len(images)} frame(s), not a whole number "
+                f"of bands with {expected_n_images} images."
+            )
+E           ValueError: NEB trajectory contains 6 frame(s), not a whole number of bands with 5 images.
+
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/utils/restart_helpers.py:66: ValueError
+----------------------------- Captured stdout call -----------------------------
+Reading files: start.traj and end.traj
+Skipping atom index alignment.
+Generating path, number of images: 3
+Optimizing path using linear method
+Using TS guess for segmented interpolation: ts.traj
+Writing path: init_neb_chain.traj, Number of images: 6
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 11:28:08        3.210000        0.000000
+_____________ test_ts_guess_restart_restores_complete_last_band[5] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x734bab27b400>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1507/test_ts_guess_restart_restores1')
+bands = 5
+
+    @pytest.mark.parametrize("bands", [1, 5])
+    def test_ts_guess_restart_restores_complete_last_band(monkeypatch, tmp_path, bands):
+        config, generated = _run_neb_with_generated_chain(
+            monkeypatch, tmp_path, ts_guess=True
+        )
+        assert len(generated) == 6
+        recorded = read("neb.traj", index=":")
+        assert len(recorded) == 6
+        if bands > 1:
+            write("neb.traj", recorded * bands)
+        config["restart"] = True
+    
+        restarted = execution.run_neb({}, "abacus", config)
+    
+>       assert len(restarted) == 6
+E       AssertionError: assert 5 == 6
+E        +  where 5 = len([Atoms(symbols='H', pbc=False, calculator=SinglePointCalculator(...)), Atoms(symbols='H', pbc=False, calculator=EMT(.....oms(symbols='H', pbc=False, calculator=EMT(...)), Atoms(symbols='H', pbc=False, calculator=SinglePointCalculator(...))])
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_neb_restart_contract.py:57: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Reading files: start.traj and end.traj
+Skipping atom index alignment.
+Generating path, number of images: 3
+Optimizing path using linear method
+Using TS guess for segmented interpolation: ts.traj
+Writing path: init_neb_chain.traj, Number of images: 6
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 11:28:08        3.210000        0.000000
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 11:28:08        3.210000        0.000000
+_______________ test_ts_guess_restart_rejects_incomplete_band[5] _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x734bab223940>
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1507/test_ts_guess_restart_rejects_0')
+frame_count = 5
+
+    @pytest.mark.parametrize("frame_count", [5, 29])
+    def test_ts_guess_restart_rejects_incomplete_band(
+        monkeypatch, tmp_path, frame_count
+    ):
+        config, _ = _run_neb_with_generated_chain(monkeypatch, tmp_path, ts_guess=True)
+        recorded = read("neb.traj", index=":")
+        write("neb.traj", (recorded * 5)[:frame_count])
+        config["restart"] = True
+    
+>       with pytest.raises(ValueError, match="(fewer than expected|whole number of bands)"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_neb_restart_contract.py:93: Failed
+----------------------------- Captured stdout call -----------------------------
+Reading files: start.traj and end.traj
+Skipping atom index alignment.
+Generating path, number of images: 3
+Optimizing path using linear method
+Using TS guess for segmented interpolation: ts.traj
+Writing path: init_neb_chain.traj, Number of images: 6
+Warning: NEB initial endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 11:28:08        3.210000        0.000000
+Warning: NEB final endpoint has missing, placeholder, or untrusted (unmarked) energy/force results; running an endpoint single-point calculation.
+      Step     Time          Energy          fmax
+FIRE:    0 11:28:08        3.210000        0.000000
+=========================== short test summary info ============================
+FAILED tests/unit/test_neb_restart_contract.py::test_ts_guess_restart_restores_complete_last_band[1]
+FAILED tests/unit/test_neb_restart_contract.py::test_ts_guess_restart_restores_complete_last_band[5]
+FAILED tests/unit/test_neb_restart_contract.py::test_ts_guess_restart_rejects_incomplete_band[5]
+3 failed, 2 passed in 4.33s
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_neb_restart_contract.py -q -o addopts=-ra` failed. (See above for error)

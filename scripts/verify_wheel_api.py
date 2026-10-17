@@ -17,7 +17,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_IMPORT = (
     "from atst_tools.api import "
-    "CCQNOptions, RunOptions, WorkflowResult, run_ccqn, run_workflow, validate_config"
+    "CCQNOptions, RunOptions, WorkflowResult, run_ccqn, run_workflow, validate_config, validate_ts"
 )
 H2_AU_API_EXAMPLE = ROOT / "examples" / "12_ccqn_H2-Au"
 MPI_SMOKE_TIMEOUT_SECONDS = 60
@@ -190,6 +190,27 @@ def _run_installed_cli_dry_run(executable: Path, temporary_root: Path) -> None:
     )
     if "WorkflowResult(" in completed.stdout or "WorkflowResult(" in completed.stderr:
         raise RuntimeError("installed atst CLI printed a WorkflowResult representation")
+
+
+def _run_installed_ts_validation(python: Path, executable: Path, temporary_root: Path) -> None:
+    """Compare installed CLI and Python screening without a calculator."""
+    vibration = temporary_root / "stored-vibration.json"
+    vibration.write_text(json.dumps({
+        "imaginary_frequencies": [120.0], "n_atoms": 1, "indices": [0],
+    }), encoding="utf-8")
+    cli = _run(
+        [str(executable), "vibration", "validate", str(vibration)],
+        cwd=temporary_root,
+    )
+    api = _run(
+        [str(python), "-c",
+         "import json, sys; from atst_tools.api import validate_ts; "
+         "print(json.dumps(validate_ts(sys.argv[1])))", str(vibration)],
+        cwd=temporary_root,
+    )
+    cli_result, api_result = json.loads(cli.stdout), json.loads(api.stdout)
+    if cli_result != api_result or api_result["requested_checks_status"] != "unknown":
+        raise RuntimeError("Installed CLI/API validation facts differ or overstate evidence")
 
 
 def _run_installed_api_runner_dry_run(python: Path, temporary_root: Path) -> None:
@@ -459,6 +480,7 @@ def main(argv: list[str] | None = None) -> int:
         _run([str(python), "-c", import_check], cwd=temporary_root)
         _run_installed_cli_dry_run(venv / "bin" / "atst", temporary_root)
         _run_installed_api_runner_dry_run(python, temporary_root)
+        _run_installed_ts_validation(python, venv / "bin" / "atst", temporary_root)
         _run_h2_au_api_example(python, temporary_root)
         if args.mpi_smoke:
             _run(

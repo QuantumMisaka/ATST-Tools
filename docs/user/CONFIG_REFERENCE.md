@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.2.8
+**Version**: 2.2.9
 **Last Updated**: 2026-10-17
-**Status**: Release candidate 2.2.8 reference; the CP candidate is documented separately
+**Status**: Published 2.2.9 reference
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -79,6 +79,34 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 ### 2.2 Nudged Elastic Band (NEB)
 **Type**: `neb`
 
+The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
+described below are included in 2.2.9, and are absent from PyPI 2.2.8.
+
+Fixed-cell input preparation compares the complete cell matrix in Angstrom
+with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
+defines the reference; restart uses the restored band. Cell differences
+within tolerance remain unchanged in preprocessing outputs. Larger differences
+or different parsed PBC flags emit an English warning and adopt the reference
+cell/PBC on private copies, without scaling Cartesian positions. This also
+applies to path generation, atom alignment, and CCQN product preparation.
+
+Before NEB, AutoNEB, or D2S rough DyNEB endpoint preparation, private runtime
+images adopt common periodic vectors only when needed to satisfy ASE's native
+`1e-8` check. Nonperiodic rows within the input tolerance are retained. Changed
+cell/PBC metadata invalidates cached endpoint results: `auto`/`always` computes
+new results, while `never` fails if no valid results remain. The trajectory
+contains the actual runtime cell; `metadata.fixed_cell` in the artifact manifest
+records the reference and adjustments, also retained in image
+`info.atst_cell_preparation`. Original input files and caller images are preserved.
+This is fixed-cell preparation, not variable-cell NEB or an ASE source patch;
+no additional YAML tolerance field is introduced.
+
+The vendored abacuslite SCF frame matcher also defaults to `1e-5` Angstrom for
+cell components and periodic Cartesian residuals, with no relative term. The
+former `1e-4` default accepted mismatches in the `1e-5`–`1e-4` interval that are
+now rejected. This change does not set SCF/fmax convergence thresholds and
+does not alter an independently installed external abacuslite package.
+
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `init_chain` | string | One of `init_chain` / `make` | Path to the initial chain file (e.g., `init_neb_chain.traj`). |
@@ -118,6 +146,14 @@ calculation:
 ```
 
 The nested NEB `make.method` value accepts `IDPP` (default) or `linear`. `IDPP` starts from the aligned linear interpolation and then runs the in-repository `Fast_IDPPSolver`; `linear` writes the aligned linear interpolation directly. `init_structure`, `final_structure`, and `ts_guess` may be ABACUS `STRU` / `.stru` files. Their mobility flags are preserved as ASE constraints in the generated chain and in ABACUS image input writing, including full `m 0 0 0` fixed atoms and partial Cartesian mobility such as `m 1 0 1`. `sort_tol` / pymatgen autosort is intentionally dropped.
+
+Without `ts_guess`, the generated band contains `n_images + 2` images. With a
+TS guess, the two segments contain `n_images` interpolated images in total,
+plus the TS guess and both endpoints (`n_images + 3`). The 2.2.9 restart
+fix (2026-10-16) uses the same band width; it preserves existing generated
+paths and rejects incomplete bands. Keep the original `make` configuration
+when resuming its trajectory. For example, `n_images: 3` with a TS guess
+produces and restores six images per band.
 
 ASE NEB/DyNEB does not optimize endpoint images, but tangent and barrier analysis use endpoint energies. If a chain was made from pure structures, `atst neb make` writes placeholder endpoint results. `atst run` repairs these by default with endpoint single-point calculations before constructing NEB:
 
@@ -251,6 +287,11 @@ transition state.
 ATST-Tools vendors PyDMF under `atst_tools.external.pydmf`, but runtime still
 requires `cyipopt` and IPOPT in the active environment.
 
+Both endpoints must contain the same number of atoms in the same element
+order. The 2.2.9 correspondence check (2026-10-16) rejects mismatches
+before constructing the DMF optimizer; it does not reorder the final structure
+automatically. Prepare the intended atom mapping before running DMF.
+
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `init_file` | string | **Required** | Initial endpoint structure. |
@@ -309,6 +350,12 @@ calculator:
 | `dimer_separation` | float | `0.01` | Dimer finite-difference separation. |
 | `max_num_rot` | int | `3` | Maximum dimer rotations per step. |
 | `directory` | string | `dimer_run` | Calculator working directory. |
+
+The development version records the Dimer optimizer return value as
+`converged` and its observed `nsteps` as `actual_steps` in the artifact
+manifest. These facts describe optimizer termination; they do not establish
+that the structure is a validated transition state. See the explicit
+read-only screen in the [CLI reference](CLI_REFERENCE.md#vibration-tools).
 
 ### 2.5 Sella (Saddle Point Finder)
 **Type**: `sella`
@@ -572,7 +619,7 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `init_structure` | string | **Required** | TS structure used as the IRC starting point. |
 | `trajectory` | string | `irc_log.traj` | IRC trajectory. Restart appends from the last frame. |
 | `artifact_manifest` | string | `atst_artifacts.json` | Workflow artifact manifest JSON output. |
-| `normalized_trajectory` | string | `norm_<trajectory>` | Output for normalized forward/reverse trajectory when `direction: both`. |
+| `normalized_trajectory` | string/null | `norm_<trajectory filename>` | Output for normalized forward/reverse trajectory when `direction: both`; omitted/null selects the default in the workdir. |
 | `direction` | string | `both` | `both`, `forward`, or `reverse`. |
 | `mode_vector` | string/null | `None` | Required NumPy mode vector for `backend: descent`. |
 | `descent_delta` | float | `0.1` | Initial displacement along the normalized mode vector for descent backend. |
@@ -585,12 +632,19 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `keep_going` | bool | `false` | Forwarded to `sella.IRC`. |
 | `directory` | string | `irc_run` | Calculator working directory. |
 
+Unreleased fixes (2026-10-16): the combined Sella run accepts an omitted or
+null `normalized_trajectory` and preserves an explicit filename. Descent IRC
+keeps valid frozen energy and force results on its returned endpoints and in
+the main and normalized trajectories, matching the direction-specific files.
+Saving these results does not request another backend evaluation.
+
 ---
 
 ### 2.11 Constant-Potential Evaluation (development candidate)
 **Type**: `constant_potential`
 
-`constant_potential` is an unreleased ABACUS-only development candidate. It
+`constant_potential` is an ABACUS-only development candidate included in 2.2.8;
+package inclusion is not a production or platform acceptance claim. It
 evaluates one fixed structure at one target or scans an ordered list of targets
 serially. The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
@@ -793,6 +847,17 @@ moving an unchanged asset file is allowed because content hashes, not paths,
 define the physical identity. Reference-fcp facts remain reference-only and
 must not be used to claim optimization energy/force consistency.
 
+Unreleased facts-v1 compatibility fix (2026-10-16): new persisted facts again
+include the historical `profile_status` field required by the 2.2.8 reader.
+Its values remain `reference_only_unvalidated` for `reference_fcp` and
+`compensated_gate_pending_scientific_acceptance` for `compensated_gate`; these
+are compatibility labels, not scientific validation results. The current
+reader accepts both older frames containing this field and transitional
+unreleased frames that omitted it. The old 2.2.8 reader still cannot consume
+those transitional frames directly; use the current reader and validated
+republication when such a frame needs to be handed back to it. Geometry,
+Hamiltonian identity and residual validation remain required.
+
 ### 3.2 Deep Potential (DP)
 **Name**: `dp`
 
@@ -899,7 +964,7 @@ calculator:
     share_calculator: true
 ```
 
-For the unreleased constant-potential candidate, keep the gate/dipole settings
+For the constant-potential development candidate, keep the gate/dipole settings
 in the ABACUS block and declare the CP boundary separately. This is a schema
 shape example; derive the target chemical potential and geometry-specific gate
 positions for the actual input:

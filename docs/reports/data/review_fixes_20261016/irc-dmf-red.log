@@ -1,0 +1,293 @@
+FF.FFF.                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_sella_both_writes_normalized_trajectory_for_default_null_and_custom[omitted] _
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1511/test_sella_both_writes_normali0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c56494ea980>
+normalized_setting = 'omitted'
+
+    @pytest.mark.parametrize("normalized_setting", ["omitted", None, "custom-normalized.traj"])
+    def test_sella_both_writes_normalized_trajectory_for_default_null_and_custom(
+        tmp_path, monkeypatch, normalized_setting
+    ):
+        """Both completed directions yield a usable normalized artifact path."""
+        import sella
+    
+        class CompletedIRC:
+            def __init__(self, atoms, trajectory, **kwargs):
+                self.atoms = atoms
+                self.trajectory = trajectory
+                self.nsteps = 0
+    
+            def run(self, fmax, steps, direction):
+                self.atoms.set_positions([[0.2 if direction == "forward" else -0.2, 0, 0]])
+                self.atoms.get_potential_energy()
+                self.atoms.get_forces()
+                self.trajectory.write(self.atoms)
+                self.nsteps += 1
+                return True
+    
+        monkeypatch.chdir(tmp_path)
+        write("start.traj", Atoms("H", positions=[[0, 0, 0]]))
+        monkeypatch.setattr(sella, "IRC", CompletedIRC)
+        monkeypatch.setattr(
+            irc.CalculatorFactory, "get_calculator", lambda *args, **kwargs: CountingHarmonic()
+        )
+        calculation = {"type": "irc", "init_structure": "start.traj", "trajectory": "irc.traj"}
+        if normalized_setting != "omitted":
+            calculation["normalized_trajectory"] = normalized_setting
+    
+        workflow = irc.IRCWorkflow({}, "dp", calculation)
+>       workflow.run()
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_irc_result_contract.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/irc.py:246: in run
+    self._normalize_trajectory()
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/irc.py:121: in _normalize_trajectory
+    write(self.normalized_traj_file, normalized, format="traj")
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:679: in write
+    return _write(filename, fd, format, io, images,
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/parallel.py:269: in new_func
+    return func(*args, **kwargs)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:712: in _write
+    fd = open_with_compression(filename, mode)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:571: in open_with_compression
+    _root, compression = get_compression(filename)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:528: in get_compression
+    root, compression = os.path.splitext(filename)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+p = None
+
+    def splitext(p):
+>       p = os.fspath(p)
+E       TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/posixpath.py:118: TypeError
+_ test_sella_both_writes_normalized_trajectory_for_default_null_and_custom[None] _
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1511/test_sella_both_writes_normali1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c5627777e80>
+normalized_setting = None
+
+    @pytest.mark.parametrize("normalized_setting", ["omitted", None, "custom-normalized.traj"])
+    def test_sella_both_writes_normalized_trajectory_for_default_null_and_custom(
+        tmp_path, monkeypatch, normalized_setting
+    ):
+        """Both completed directions yield a usable normalized artifact path."""
+        import sella
+    
+        class CompletedIRC:
+            def __init__(self, atoms, trajectory, **kwargs):
+                self.atoms = atoms
+                self.trajectory = trajectory
+                self.nsteps = 0
+    
+            def run(self, fmax, steps, direction):
+                self.atoms.set_positions([[0.2 if direction == "forward" else -0.2, 0, 0]])
+                self.atoms.get_potential_energy()
+                self.atoms.get_forces()
+                self.trajectory.write(self.atoms)
+                self.nsteps += 1
+                return True
+    
+        monkeypatch.chdir(tmp_path)
+        write("start.traj", Atoms("H", positions=[[0, 0, 0]]))
+        monkeypatch.setattr(sella, "IRC", CompletedIRC)
+        monkeypatch.setattr(
+            irc.CalculatorFactory, "get_calculator", lambda *args, **kwargs: CountingHarmonic()
+        )
+        calculation = {"type": "irc", "init_structure": "start.traj", "trajectory": "irc.traj"}
+        if normalized_setting != "omitted":
+            calculation["normalized_trajectory"] = normalized_setting
+    
+        workflow = irc.IRCWorkflow({}, "dp", calculation)
+>       workflow.run()
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_irc_result_contract.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/irc.py:246: in run
+    self._normalize_trajectory()
+/home/james/.codex/worktrees/5738/atst-tools/src/atst_tools/workflows/irc.py:121: in _normalize_trajectory
+    write(self.normalized_traj_file, normalized, format="traj")
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:679: in write
+    return _write(filename, fd, format, io, images,
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/parallel.py:269: in new_func
+    return func(*args, **kwargs)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:712: in _write
+    fd = open_with_compression(filename, mode)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:571: in open_with_compression
+    _root, compression = get_compression(filename)
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/site-packages/ase/io/formats.py:528: in get_compression
+    root, compression = os.path.splitext(filename)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+p = None
+
+    def splitext(p):
+>       p = os.fspath(p)
+E       TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+/home/james/apps/miniforge3/envs/atst-dev/lib/python3.10/posixpath.py:118: TypeError
+______ test_descent_preserves_cached_results_without_save_time_evaluation ______
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1511/test_descent_preserves_cached_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c56278352d0>
+
+    def test_descent_preserves_cached_results_without_save_time_evaluation(tmp_path, monkeypatch):
+        """Every written endpoint has its own frozen energy and forces."""
+        monkeypatch.chdir(tmp_path)
+        write("start.traj", Atoms("H", positions=[[0, 0, 0]]))
+        np.save("mode.npy", np.array([[1.0, 0.0, 0.0]]))
+        calculators = []
+    
+        def make_calculator(*args, **kwargs):
+            calculator = CountingHarmonic()
+            calculators.append(calculator)
+            return calculator
+    
+        monkeypatch.setattr(irc.CalculatorFactory, "get_calculator", make_calculator)
+        original_write = irc.write
+        save_counts = []
+    
+        def observing_write(*args, **kwargs):
+            before = sum(calculator.calls for calculator in calculators)
+            result = original_write(*args, **kwargs)
+            save_counts.append((before, sum(calculator.calls for calculator in calculators)))
+            return result
+    
+        monkeypatch.setattr(irc, "write", observing_write)
+        workflow = irc.IRCWorkflow(
+            {}, "dp", {"type": "irc", "backend": "descent", "init_structure": "start.traj",
+                        "mode_vector": "mode.npy", "trajectory": "irc.traj",
+                        "normalized_trajectory": "custom-normalized.traj", "direction": "both",
+                        "descent_delta": 0.2, "max_steps": 1, "fmax": 0.01},
+        )
+        returned = workflow.run()
+    
+        assert len(calculators) == 2
+        assert len(save_counts) == 2 and all(before == after for before, after in save_counts)
+        main = read("irc.traj", index=":")
+        normalized = read("custom-normalized.traj", index=":")
+        assert len(returned) == len(main) == len(normalized) == 2
+        for index, direction in enumerate(("forward", "reverse")):
+            branch = read(f"irc_{direction}.traj", index=-1)
+            for frame in (returned[index], main[index], normalized[index], branch):
+>               assert isinstance(frame.calc, SinglePointCalculator)
+E               AssertionError: assert False
+E                +  where False = isinstance(None, SinglePointCalculator)
+E                +    where None = Atoms(symbols='H', pbc=False).calc
+
+/home/james/.codex/worktrees/5738/atst-tools/tests/unit/test_irc_result_contract.py:114: AssertionError
+----------------------------- Captured stdout call -----------------------------
+      Step     Time          Energy          fmax
+FIRE:    0 11:29:57        0.040000        0.400000
+FIRE:    1 11:29:57        0.038416        0.392000
+Warning: IRC finished without satisfying its optimizer convergence criteria
+(workflow=irc, stage=descent_irc, threshold_fmax=0.01 eV/Angstrom, nsteps=1, max_steps=1, direction=forward).
+Execution completion does not imply optimizer convergence.
+      Step     Time          Energy          fmax
+FIRE:    0 11:29:57        0.040000        0.400000
+FIRE:    1 11:29:57        0.038416        0.392000
+Warning: IRC finished without satisfying its optimizer convergence criteria
+(workflow=irc, stage=descent_irc, threshold_fmax=0.01 eV/Angstrom, nsteps=1, max_steps=1, direction=reverse).
+Execution completion does not imply optimizer convergence.
+_ test_dmf_rejects_mismatched_endpoints_before_optimizer_load[HO-OH-ordered chemical symbols] _
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1511/test_dmf_rejects_mismatched_en0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c56276b99f0>
+initial = 'HO', final = 'OH', message = 'ordered chemical symbols'
+
+    @pytest.mark.parametrize(
+        ("initial", "final", "message"),
+        [
+            ("HO", "OH", "ordered chemical symbols"),
+            ("HO", "HOH", "same number of atoms"),
+        ],
+    )
+    def test_dmf_rejects_mismatched_endpoints_before_optimizer_load(
+        tmp_path, monkeypatch, initial, final, message
+    ):
+        """Reject correspondence errors before constructing an optimization path."""
+        init_path = tmp_path / "initial.traj"
+        final_path = tmp_path / "final.traj"
+        write(init_path, Atoms(initial))
+        write(final_path, Atoms(final))
+        workflow = DMFWorkflow(
+            {}, "dp", {"type": "dmf", "init_file": str(init_path), "final_file": str(final_path)}
+        )
+        optimizer_loads = []
+        monkeypatch.setattr(workflow, "_load_pydmf", lambda: optimizer_loads.append(True))
+    
+        with pytest.raises(ValueError, match=message):
+>           workflow.run()
+
+tests/unit/test_dmf_endpoint_contract.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atst_tools.workflows.dmf.DMFWorkflow object at 0x7c56276b9420>
+
+    def run(self) -> dict[str, Any]:
+        """Execute DMF and write path, candidate, summary, and manifest artifacts."""
+        init_atoms = read_structure(self.calc_config["init_file"])
+        final_atoms = read_structure(self.calc_config["final_file"])
+        self._validate_pbc(init_atoms, final_atoms)
+    
+>       DirectMaxFlux, interpolate_fbenm = self._load_pydmf()
+E       TypeError: cannot unpack non-iterable NoneType object
+
+src/atst_tools/workflows/dmf.py:167: TypeError
+_ test_dmf_rejects_mismatched_endpoints_before_optimizer_load[HO-HOH-same number of atoms] _
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1511/test_dmf_rejects_mismatched_en1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c5627774790>
+initial = 'HO', final = 'HOH', message = 'same number of atoms'
+
+    @pytest.mark.parametrize(
+        ("initial", "final", "message"),
+        [
+            ("HO", "OH", "ordered chemical symbols"),
+            ("HO", "HOH", "same number of atoms"),
+        ],
+    )
+    def test_dmf_rejects_mismatched_endpoints_before_optimizer_load(
+        tmp_path, monkeypatch, initial, final, message
+    ):
+        """Reject correspondence errors before constructing an optimization path."""
+        init_path = tmp_path / "initial.traj"
+        final_path = tmp_path / "final.traj"
+        write(init_path, Atoms(initial))
+        write(final_path, Atoms(final))
+        workflow = DMFWorkflow(
+            {}, "dp", {"type": "dmf", "init_file": str(init_path), "final_file": str(final_path)}
+        )
+        optimizer_loads = []
+        monkeypatch.setattr(workflow, "_load_pydmf", lambda: optimizer_loads.append(True))
+    
+        with pytest.raises(ValueError, match=message):
+>           workflow.run()
+
+tests/unit/test_dmf_endpoint_contract.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atst_tools.workflows.dmf.DMFWorkflow object at 0x7c56277753c0>
+
+    def run(self) -> dict[str, Any]:
+        """Execute DMF and write path, candidate, summary, and manifest artifacts."""
+        init_atoms = read_structure(self.calc_config["init_file"])
+        final_atoms = read_structure(self.calc_config["final_file"])
+        self._validate_pbc(init_atoms, final_atoms)
+    
+>       DirectMaxFlux, interpolate_fbenm = self._load_pydmf()
+E       TypeError: cannot unpack non-iterable NoneType object
+
+src/atst_tools/workflows/dmf.py:167: TypeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_irc_result_contract.py::test_sella_both_writes_normalized_trajectory_for_default_null_and_custom[omitted]
+FAILED tests/unit/test_irc_result_contract.py::test_sella_both_writes_normalized_trajectory_for_default_null_and_custom[None]
+FAILED tests/unit/test_irc_result_contract.py::test_descent_preserves_cached_results_without_save_time_evaluation
+FAILED tests/unit/test_dmf_endpoint_contract.py::test_dmf_rejects_mismatched_endpoints_before_optimizer_load[HO-OH-ordered chemical symbols]
+FAILED tests/unit/test_dmf_endpoint_contract.py::test_dmf_rejects_mismatched_endpoints_before_optimizer_load[HO-HOH-same number of atoms]
+5 failed, 2 passed in 2.33s
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_irc_result_contract.py tests/unit/test_dmf_endpoint_contract.py -q -o addopts=-ra` failed. (See above for error)

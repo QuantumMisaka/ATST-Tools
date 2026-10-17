@@ -2,18 +2,29 @@
 
 **版本**: 2026-09-20（2026-09-21 迁入 atst-tools 规范源）
 **日期**: 2026-09-20
-**状态**: 设计（P0 接口收敛中；未实施、未形成性能结论）
+**状态**: 当前设计规范；P0–P5 与 ATST 交付已完成，P6 平台部分仍开放（2026-10-16 核对）
 **责任人**: ATST-Tools maintainers
 
 > **迁移记录（2026-09-21）**：本设计已由发起方 ABACUS 文档目录迁入 atst-tools 规范源；对应执行计划见 [开发与验证计划](../plans/2026-09-20-atst-gpu-node-tuning-plan.md)，P0 接口冻结见 [runtime 接口冻结设计](2026-09-21-atst-runtime-interface-design.md)。原位置只保留交接说明，不得独立演进。文中引用的 ABACUS Toolbox 文档（`docs/guides/`、`docs/reports/`、`container/`）位于发起方仓库，本仓以文本路径引用，不复制副本。
 
+当前实现与验收状态见 [活跃计划](../plans/2026-09-20-atst-gpu-node-tuning-plan.md)
+和 [SAI 验证报告](../../reports/ATST_RUNTIME_SAI_V100_VALIDATION_2026-09-21.md)。
+下文基线、原稿待取证描述及设计过程保留历史时点；不得将其读作当前尚未实施。
+
 **目标：** 在既有科学工作流和数值精度下，提高 DP 与 ABACUS 单节点任务吞吐，提供可复现的设备绑定、运行证据与外层编排接口。
 **来源：** 维护者提出的 FT²DP 实测观察；本轮要求“综合所有相关信息，并系统性明确相关开发和工程化优化如何进行”。
-**执行拆分：** [开发与验证计划草案](../plans/2026-09-20-atst-gpu-node-tuning-plan.md)。计划依赖设计确认，不表示代码、真实计算或发布已获授权。
+**执行拆分：** [开发与验证计划](../plans/2026-09-20-atst-gpu-node-tuning-plan.md) 维护已完成证据与 P6 开放范围；后续平台操作按其 owner 和授权边界执行。
 
 ## 1. 结论与范围
 
 用户已确认先完成 atst 独立运行器，再接入平台。首期交付设备绑定、隔离进程入口、可组合的运行证据，以及独立批任务与 MPI 图像并行两类基准。ABACUS Toolbox 当前的一图一卡契约在平台接入阶段单独迁移，不能直接把 `n_gpu` 改成“可任意共享的卡数”。
+
+**2026-10-16 P6 接手裁决**：维护者选择“以默认行为为主”，优先探索单 image
+内部 ABACUS MPI 多卡，不选择本轮提出的共享 GPU 新入口。保留默认资源、`parallel`
+默认值和已启用 image 并行时的一图一卡契约。平台多图共享少卡扩展转为 deferred；
+先核验既有 `parallel=False` 的 image 串行、内部 MPI 多卡路径，混合 image/内部 MPI
+仅进入可行性探索，不据此解除 §5.3 的 nested MPI 限制。事实、复现和候选方案见
+[P6 接手报告](../../reports/ATST_GPU_P6_TAKEOVER_2026-10-16.md)，后续验收以现行计划为准。
 
 区分三个优化目标：
 
@@ -221,7 +232,7 @@ DP fixture 建议两层：atst 已有 `examples/dp_model_manifest.json` 的通�
 | 平台概念 | atst 消费 | 接入安排 |
 | --- | --- | --- |
 | `GPU` / `resAlloc` | 已分配设备集合及 worker 可见性 | 保持平台权威，分开记录请求/实际 |
-| ABACUS `n_gpu` | 普通任务逻辑 GPU；当前 image 模式为图数/rank 数 | 首期不重释，共享模式后续迁移 |
+| ABACUS `n_gpu` | 普通任务逻辑 GPU；当前 image 模式为图数/rank 数 | 保持语义；P6 优先核验单 image 内 MPI，多图共享扩展 deferred |
 | MLIP `n_gpu/n_cpu` | 平台管理字段 | adapter 消费 runtime facts |
 | CPU / 内存 | 线程预算与观测 | 不从 `mem_per_cpu` 推导显存 |
 | `PARTITION` / QOS | 无 core 映射 | 仅平台/SAI adapter |

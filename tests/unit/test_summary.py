@@ -432,6 +432,7 @@ def test_artifact_manifest_summary_reports_existing_and_missing_files(tmp_path):
             {"role": "validation", "path": "missing.json"},
         ],
         stages=[{"name": "ccqn", "status": "complete"}],
+        artifact_root=tmp_path,
     )
 
     summary = summarize_artifact_manifest(tmp_path / "atst_artifacts.json")

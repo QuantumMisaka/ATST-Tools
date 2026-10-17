@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-15",
+  "scope": "documentation and first-use routes",
+  "source": "fix/ase-ts-dual-interface-20261013 dirty worktree",
+  "documentation_tests": {
+    "passed": 35,
+    "exit_code": 0
+  },
+  "governance_exit_code": 0,
+  "diff_check_exit_code": 0,
+  "conflict_marker_matches": 0,
+  "onboarding": {
+    "development_commands": 7,
+    "published_wheel_commands": 7,
+    "exit_codes": "all zero",
+    "backend_calculations": 0,
+    "artifacts": [
+      "five-frame initial chain",
+      "restart trajectory"
+    ]
+  },
+  "published_wheel_inspection": "published-inspection.json"
+}

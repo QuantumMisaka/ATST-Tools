@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-15",
+  "head": "5ad5de582313f853ae3d713df2fa5a6f2bd9cd5e",
+  "scope": "Current implementation review; report/evidence-only changes, production source unchanged",
+  "python": "3.10.19",
+  "ase": "3.28.0",
+  "commands": [
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python -m pytest tests -o addopts=-ra -q",
+      "exit_code": 0,
+      "passed": 1284,
+      "skipped": 32,
+      "warnings": 3,
+      "log": "default-tests.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" ATST_RUN_MPI_TESTS=1 conda run --no-capture-output -n atst-dev python -m pytest tests/integration -o addopts=-ra -q",
+      "exit_code": 0,
+      "passed": 27,
+      "log": "mpi-tests.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python docs/reports/data/main_history_20261015/confirmation/science_findings.py",
+      "exit_code": 0,
+      "meaning": "Expected existing defects reproduced, not repaired",
+      "log": "science-findings.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python docs/reports/data/main_history_20261015/confirmation/contract_findings.py",
+      "exit_code": 0,
+      "meaning": "Expected existing defects reproduced, not repaired",
+      "log": "contract-findings.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python docs/reports/data/main_history_20261015/confirmation/runtime_findings.py",
+      "exit_code": 0,
+      "meaning": "Expected existing defects reproduced, not repaired",
+      "log": "runtime-findings.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run -n atst-dev python scripts/check_docs_governance.py",
+      "exit_code": 0,
+      "log": "governance.log"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src\" conda run --no-capture-output -n atst-dev python -m pytest tests/unit/test_docs_governance.py -o addopts=-ra -q",
+      "exit_code": 0,
+      "passed": 26,
+      "log": "docs-tests.log"
+    },
+    {
+      "command": "git diff --check -- README.md docs examples/README.md AGENTS.md",
+      "exit_code": 0
+    }
+  ],
+  "conflict_scan": {
+    "required_broad_scan": "Only pytest log heading matches; inspected as false positives",
+    "exact_marker_scan_matches": 0
+  },
+  "findings": {
+    "P1": [
+      "SCI-01"
+    ],
+    "P2": [
+      "SCI-02",
+      "SCI-03",
+      "SCI-04",
+      "IO-01",
+      "BENCH-01",
+      "BENCH-02",
+      "BENCH-03",
+      "CP-01"
+    ],
+    "fixed_in_this_review": []
+  },
+  "not_run": [
+    "ABACUS/DeepMD GPU scientific jobs",
+    "real Sella IRC integration",
+    "IPOPT solve",
+    "remote CI matrix",
+    "new distribution build or publication",
+    "P6 platform acceptance"
+  ],
+  "independent_final_review": "No material report/evidence errors found; nine findings, release boundaries, fixture limits and distribution comparison accepted. Ignore-rule observation resolved with scoped evidence exceptions.",
+  "evidence_files_visible_to_git": 13
+}

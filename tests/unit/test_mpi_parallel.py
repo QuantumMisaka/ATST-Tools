@@ -17,7 +17,7 @@ from helpers import DummyCalc, FakeReducingWorld, FakeWorld, FalseyFakeWorld
 def test_falsey_supplied_worlds_preserve_identity(monkeypatch, tmp_path):
     """All public world selectors must retain a valid falsey communicator."""
     from atst_tools.mep import autoneb
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     supplied_world = FalseyFakeWorld()
     monkeypatch.setattr(main, "get_ase_world", lambda: pytest.fail("looked up a new world"))
@@ -332,7 +332,7 @@ def test_autoneb_runner_synchronizes_engine_construction(monkeypatch, tmp_path, 
 
 
 def test_run_neb_parallel_requires_rank_count_equal_interior_images(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3), _atoms(0.4)]
 
@@ -350,7 +350,7 @@ def test_run_neb_parallel_requires_rank_count_equal_interior_images(monkeypatch,
 
 
 def test_run_neb_parallel_make_generates_chain_only_on_rank_zero(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3), _atoms(0.4)]
     fake_world = FakeWorld(size=3, rank=1)
@@ -403,7 +403,7 @@ def test_run_neb_parallel_make_generates_chain_only_on_rank_zero(monkeypatch, tm
 
 
 def test_run_neb_parallel_uses_image_index_directory(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3), _atoms(0.4)]
     for image in chain[1:-1]:
@@ -446,7 +446,7 @@ def test_run_neb_parallel_uses_image_index_directory(monkeypatch, tmp_path):
 
 
 def test_run_neb_parallel_logs_world_size(monkeypatch, tmp_path, caplog):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
 
@@ -482,7 +482,7 @@ def test_run_neb_parallel_logs_world_size(monkeypatch, tmp_path, caplog):
 
 def test_run_neb_passes_supplied_world_to_constructed_engine(monkeypatch, tmp_path):
     """The caller-provided communicator must reach the NEB implementation."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
     supplied_world = FakeWorld(size=1, rank=0)
@@ -543,7 +543,7 @@ def test_run_neb_manifest_stage_names_follow_the_rank_topology(
     monkeypatch, tmp_path, parallel, world_size, expected_stage_names
 ):
     """The persisted NEB stage records are identical on every image-parallel rank."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
 
@@ -619,7 +619,7 @@ def test_autoneb_parallel_requires_world_size_equal_n_simul(monkeypatch):
 
 def test_run_neb_synchronizes_rank_local_initial_chain_read_failure(monkeypatch):
     """An input read failure must preempt the later image-parallel collectives."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
 
@@ -984,7 +984,7 @@ def test_autoneb_serial_attach_uses_active_autoneb_indices(monkeypatch):
 
 
 def test_run_neb_parallel_endpoint_preparation_only_on_rank_zero(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
     calls = []
@@ -1019,7 +1019,7 @@ def test_run_neb_parallel_endpoint_preparation_only_on_rank_zero(monkeypatch, tm
 
 
 def test_run_neb_parallel_endpoint_sync_reads_without_ase_parallel(monkeypatch, tmp_path):
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2)]
     read_kwargs = []
@@ -1053,7 +1053,7 @@ def test_run_neb_parallel_endpoint_sync_reads_without_ase_parallel(monkeypatch, 
 
 def test_run_neb_synchronizes_each_pre_collective_construction_stage(monkeypatch, tmp_path):
     """Calculator, NEB, and optimizer setup must each finish before the next."""
-    from atst_tools.scripts import main
+    from atst_tools.workflows import execution as main
 
     chain = [_atoms(float(index)) for index in range(4)]
     contexts = []
@@ -1090,6 +1090,7 @@ def test_run_neb_synchronizes_each_pre_collective_construction_stage(monkeypatch
     )
 
     assert contexts == [
+        "NEB cell preparation",
         "NEB calculator setup",
         "NEB engine construction",
         "NEB optimizer construction",

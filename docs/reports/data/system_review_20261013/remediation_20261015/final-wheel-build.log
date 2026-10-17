@@ -1,0 +1,417 @@
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77.0
+* Getting build dependencies for wheel...
+running egg_info
+writing src/atst_tools.egg-info/PKG-INFO
+writing dependency_links to src/atst_tools.egg-info/dependency_links.txt
+writing entry points to src/atst_tools.egg-info/entry_points.txt
+writing requirements to src/atst_tools.egg-info/requires.txt
+writing top-level names to src/atst_tools.egg-info/top_level.txt
+reading manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+adding license file 'COPYING'
+writing manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/atst_tools
+copying src/atst_tools/__init__.py -> build/lib/atst_tools
+creating build/lib/atst_tools/api
+copying src/atst_tools/api/validation.py -> build/lib/atst_tools/api
+copying src/atst_tools/api/models.py -> build/lib/atst_tools/api
+copying src/atst_tools/api/runner.py -> build/lib/atst_tools/api
+copying src/atst_tools/api/__init__.py -> build/lib/atst_tools/api
+copying src/atst_tools/api/services.py -> build/lib/atst_tools/api
+creating build/lib/atst_tools/utils
+copying src/atst_tools/utils/reverse_config.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/convergence.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/thermochemistry.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/io.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/artifacts.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/banner.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/config_schema.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/mpi.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/config_docs.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/summary.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/geometry.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/dmf_validation.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/abacus_io.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/sella_event_summary.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/reactive_modes.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/sella_events.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/ts_validation.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/config.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/electrochemistry.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/md_post.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/plot.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/__init__.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/gate_compensation.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/neb_endpoints.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/post.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/idpp.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/restart_helpers.py -> build/lib/atst_tools/utils
+copying src/atst_tools/utils/analysis.py -> build/lib/atst_tools/utils
+creating build/lib/atst_tools/mep
+copying src/atst_tools/mep/neb.py -> build/lib/atst_tools/mep
+copying src/atst_tools/mep/dimer.py -> build/lib/atst_tools/mep
+copying src/atst_tools/mep/__init__.py -> build/lib/atst_tools/mep
+copying src/atst_tools/mep/autoneb.py -> build/lib/atst_tools/mep
+copying src/atst_tools/mep/ccqn.py -> build/lib/atst_tools/mep
+copying src/atst_tools/mep/sella.py -> build/lib/atst_tools/mep
+creating build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/constant_potential.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/abacuslite_backend.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/base.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/dp.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/__init__.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/backend_identity.py -> build/lib/atst_tools/calculators
+copying src/atst_tools/calculators/factory.py -> build/lib/atst_tools/calculators
+creating build/lib/atst_tools/scripts
+copying src/atst_tools/scripts/cli.py -> build/lib/atst_tools/scripts
+copying src/atst_tools/scripts/__init__.py -> build/lib/atst_tools/scripts
+copying src/atst_tools/scripts/main.py -> build/lib/atst_tools/scripts
+copying src/atst_tools/scripts/cli_impl.py -> build/lib/atst_tools/scripts
+creating build/lib/atst_tools/bench
+copying src/atst_tools/bench/batch_worker.py -> build/lib/atst_tools/bench
+copying src/atst_tools/bench/sweep.py -> build/lib/atst_tools/bench
+copying src/atst_tools/bench/batch_runner.py -> build/lib/atst_tools/bench
+copying src/atst_tools/bench/__init__.py -> build/lib/atst_tools/bench
+copying src/atst_tools/bench/record.py -> build/lib/atst_tools/bench
+creating build/lib/atst_tools/external
+copying src/atst_tools/external/__init__.py -> build/lib/atst_tools/external
+creating build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/constant_potential.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/d2s.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/dmf.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/irc.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/__init__.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/vibration.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/relax.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/execution.py -> build/lib/atst_tools/workflows
+copying src/atst_tools/workflows/md.py -> build/lib/atst_tools/workflows
+creating build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/cli_dispatch.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/counters.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/__init__.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/errors.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/evidence.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/devices.py -> build/lib/atst_tools/runtime
+copying src/atst_tools/runtime/launch.py -> build/lib/atst_tools/runtime
+creating build/lib/atst_tools/external/ASE_interface
+copying src/atst_tools/external/ASE_interface/__init__.py -> build/lib/atst_tools/external/ASE_interface
+creating build/lib/atst_tools/external/pydmf
+copying src/atst_tools/external/pydmf/__init__.py -> build/lib/atst_tools/external/pydmf
+creating build/lib/atst_tools/external/ASE_interface/abacuslite
+copying src/atst_tools/external/ASE_interface/abacuslite/__init__.py -> build/lib/atst_tools/external/ASE_interface/abacuslite
+copying src/atst_tools/external/ASE_interface/abacuslite/core.py -> build/lib/atst_tools/external/ASE_interface/abacuslite
+creating build/lib/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/band.py -> build/lib/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/relax.py -> build/lib/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/scf.py -> build/lib/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/md.py -> build/lib/atst_tools/external/ASE_interface/tests
+copying src/atst_tools/external/ASE_interface/tests/magnetic.py -> build/lib/atst_tools/external/ASE_interface/tests
+creating build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/neb.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/constraintmd.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/metadynamics.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/dos.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/soc.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/cellrelax.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/bandstructure.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/relax.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/scf.py -> build/lib/atst_tools/external/ASE_interface/examples
+copying src/atst_tools/external/ASE_interface/examples/md.py -> build/lib/atst_tools/external/ASE_interface/examples
+creating build/lib/atst_tools/external/ASE_interface/abacuslite/utils
+copying src/atst_tools/external/ASE_interface/abacuslite/utils/ksampling.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/utils
+copying src/atst_tools/external/ASE_interface/abacuslite/utils/__init__.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/utils
+creating build/lib/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/latestio.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/legacyio.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/generalio.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/io
+copying src/atst_tools/external/ASE_interface/abacuslite/io/__init__.py -> build/lib/atst_tools/external/ASE_interface/abacuslite/io
+creating build/lib/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/dmf.py -> build/lib/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/fbenm.py -> build/lib/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/__init__.py -> build/lib/atst_tools/external/pydmf/dmf
+copying src/atst_tools/external/pydmf/dmf/interpolate.py -> build/lib/atst_tools/external/pydmf/dmf
+creating build/lib/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/dmf.py -> build/lib/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/fbenm.py -> build/lib/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/__init__.py -> build/lib/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/interpolate.py -> build/lib/atst_tools/external/pydmf/dmf/torch
+copying src/atst_tools/external/pydmf/dmf/torch/_torch_config.py -> build/lib/atst_tools/external/pydmf/dmf/torch
+running egg_info
+writing src/atst_tools.egg-info/PKG-INFO
+writing dependency_links to src/atst_tools.egg-info/dependency_links.txt
+writing entry points to src/atst_tools.egg-info/entry_points.txt
+writing requirements to src/atst_tools.egg-info/requires.txt
+writing top-level names to src/atst_tools.egg-info/top_level.txt
+reading manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+adding license file 'COPYING'
+writing manifest file 'src/atst_tools.egg-info/SOURCES.txt'
+copying src/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md -> build/lib/atst_tools/external/ASE_interface
+copying src/atst_tools/external/ASE_interface/PATCHES.md -> build/lib/atst_tools/external/ASE_interface
+copying src/atst_tools/external/pydmf/LICENSE -> build/lib/atst_tools/external/pydmf
+copying src/atst_tools/external/pydmf/UPSTREAM.md -> build/lib/atst_tools/external/pydmf
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/atst_tools
+creating build/bdist.linux-x86_64/wheel/atst_tools/api
+copying build/lib/atst_tools/api/validation.py -> build/bdist.linux-x86_64/wheel/./atst_tools/api
+copying build/lib/atst_tools/api/models.py -> build/bdist.linux-x86_64/wheel/./atst_tools/api
+copying build/lib/atst_tools/api/runner.py -> build/bdist.linux-x86_64/wheel/./atst_tools/api
+copying build/lib/atst_tools/api/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/api
+copying build/lib/atst_tools/api/services.py -> build/bdist.linux-x86_64/wheel/./atst_tools/api
+creating build/bdist.linux-x86_64/wheel/atst_tools/utils
+copying build/lib/atst_tools/utils/reverse_config.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/convergence.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/thermochemistry.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/io.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/artifacts.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/banner.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/config_schema.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/mpi.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/config_docs.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/summary.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/geometry.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/dmf_validation.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/abacus_io.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/sella_event_summary.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/reactive_modes.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/sella_events.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/ts_validation.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/config.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/electrochemistry.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/md_post.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/plot.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/gate_compensation.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/neb_endpoints.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/post.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/idpp.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/restart_helpers.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+copying build/lib/atst_tools/utils/analysis.py -> build/bdist.linux-x86_64/wheel/./atst_tools/utils
+creating build/bdist.linux-x86_64/wheel/atst_tools/mep
+copying build/lib/atst_tools/mep/neb.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+copying build/lib/atst_tools/mep/dimer.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+copying build/lib/atst_tools/mep/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+copying build/lib/atst_tools/mep/autoneb.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+copying build/lib/atst_tools/mep/ccqn.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+copying build/lib/atst_tools/mep/sella.py -> build/bdist.linux-x86_64/wheel/./atst_tools/mep
+creating build/bdist.linux-x86_64/wheel/atst_tools/calculators
+copying build/lib/atst_tools/calculators/constant_potential.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/abacuslite_backend.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/base.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/dp.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/backend_identity.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+copying build/lib/atst_tools/calculators/factory.py -> build/bdist.linux-x86_64/wheel/./atst_tools/calculators
+creating build/bdist.linux-x86_64/wheel/atst_tools/scripts
+copying build/lib/atst_tools/scripts/cli.py -> build/bdist.linux-x86_64/wheel/./atst_tools/scripts
+copying build/lib/atst_tools/scripts/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/scripts
+copying build/lib/atst_tools/scripts/main.py -> build/bdist.linux-x86_64/wheel/./atst_tools/scripts
+copying build/lib/atst_tools/scripts/cli_impl.py -> build/bdist.linux-x86_64/wheel/./atst_tools/scripts
+creating build/bdist.linux-x86_64/wheel/atst_tools/bench
+copying build/lib/atst_tools/bench/batch_worker.py -> build/bdist.linux-x86_64/wheel/./atst_tools/bench
+copying build/lib/atst_tools/bench/sweep.py -> build/bdist.linux-x86_64/wheel/./atst_tools/bench
+copying build/lib/atst_tools/bench/batch_runner.py -> build/bdist.linux-x86_64/wheel/./atst_tools/bench
+copying build/lib/atst_tools/bench/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/bench
+copying build/lib/atst_tools/bench/record.py -> build/bdist.linux-x86_64/wheel/./atst_tools/bench
+copying build/lib/atst_tools/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools
+creating build/bdist.linux-x86_64/wheel/atst_tools/external
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface
+copying build/lib/atst_tools/external/ASE_interface/PATCHES.md -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface/abacuslite
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface/abacuslite/utils
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/utils/ksampling.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/utils
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/utils/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/utils
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface/abacuslite/io
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/io/latestio.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/io
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/io/legacyio.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/io
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/io/generalio.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/io
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/io/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite/io
+copying build/lib/atst_tools/external/ASE_interface/abacuslite/core.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/abacuslite
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface/tests
+copying build/lib/atst_tools/external/ASE_interface/tests/band.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/tests
+copying build/lib/atst_tools/external/ASE_interface/tests/relax.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/tests
+copying build/lib/atst_tools/external/ASE_interface/tests/scf.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/tests
+copying build/lib/atst_tools/external/ASE_interface/tests/md.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/tests
+copying build/lib/atst_tools/external/ASE_interface/tests/magnetic.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/tests
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/neb.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/constraintmd.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/metadynamics.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/dos.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/soc.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/cellrelax.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/bandstructure.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/relax.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/scf.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/examples/md.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface/examples
+copying build/lib/atst_tools/external/ASE_interface/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface
+copying build/lib/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md -> build/bdist.linux-x86_64/wheel/./atst_tools/external/ASE_interface
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/pydmf
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/pydmf/dmf
+copying build/lib/atst_tools/external/pydmf/dmf/dmf.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf
+copying build/lib/atst_tools/external/pydmf/dmf/fbenm.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf
+copying build/lib/atst_tools/external/pydmf/dmf/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf
+copying build/lib/atst_tools/external/pydmf/dmf/interpolate.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf
+creating build/bdist.linux-x86_64/wheel/atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/dmf/torch/dmf.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/dmf/torch/fbenm.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/dmf/torch/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/dmf/torch/interpolate.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/dmf/torch/_torch_config.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf/dmf/torch
+copying build/lib/atst_tools/external/pydmf/LICENSE -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf
+copying build/lib/atst_tools/external/pydmf/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf
+copying build/lib/atst_tools/external/pydmf/UPSTREAM.md -> build/bdist.linux-x86_64/wheel/./atst_tools/external/pydmf
+copying build/lib/atst_tools/external/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/external
+creating build/bdist.linux-x86_64/wheel/atst_tools/workflows
+copying build/lib/atst_tools/workflows/constant_potential.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/d2s.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/dmf.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/irc.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/vibration.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/relax.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/execution.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+copying build/lib/atst_tools/workflows/md.py -> build/bdist.linux-x86_64/wheel/./atst_tools/workflows
+creating build/bdist.linux-x86_64/wheel/atst_tools/runtime
+copying build/lib/atst_tools/runtime/cli_dispatch.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/counters.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/__init__.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/errors.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/evidence.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/devices.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+copying build/lib/atst_tools/runtime/launch.py -> build/bdist.linux-x86_64/wheel/./atst_tools/runtime
+running install_egg_info
+Copying src/atst_tools.egg-info to build/bdist.linux-x86_64/wheel/./atst_tools-2.2.8-py3.10.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/atst_tools-2.2.8.dist-info/WHEEL
+creating '/tmp/atst-remediation-20261015/final-dist/.tmp-44s18dad/atst_tools-2.2.8-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'atst_tools/__init__.py'
+adding 'atst_tools/api/__init__.py'
+adding 'atst_tools/api/models.py'
+adding 'atst_tools/api/runner.py'
+adding 'atst_tools/api/services.py'
+adding 'atst_tools/api/validation.py'
+adding 'atst_tools/bench/__init__.py'
+adding 'atst_tools/bench/batch_runner.py'
+adding 'atst_tools/bench/batch_worker.py'
+adding 'atst_tools/bench/record.py'
+adding 'atst_tools/bench/sweep.py'
+adding 'atst_tools/calculators/__init__.py'
+adding 'atst_tools/calculators/abacuslite_backend.py'
+adding 'atst_tools/calculators/backend_identity.py'
+adding 'atst_tools/calculators/base.py'
+adding 'atst_tools/calculators/constant_potential.py'
+adding 'atst_tools/calculators/dp.py'
+adding 'atst_tools/calculators/factory.py'
+adding 'atst_tools/external/__init__.py'
+adding 'atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md'
+adding 'atst_tools/external/ASE_interface/PATCHES.md'
+adding 'atst_tools/external/ASE_interface/__init__.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/__init__.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/core.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/io/__init__.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/io/generalio.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/io/latestio.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/io/legacyio.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/utils/__init__.py'
+adding 'atst_tools/external/ASE_interface/abacuslite/utils/ksampling.py'
+adding 'atst_tools/external/ASE_interface/examples/bandstructure.py'
+adding 'atst_tools/external/ASE_interface/examples/cellrelax.py'
+adding 'atst_tools/external/ASE_interface/examples/constraintmd.py'
+adding 'atst_tools/external/ASE_interface/examples/dos.py'
+adding 'atst_tools/external/ASE_interface/examples/md.py'
+adding 'atst_tools/external/ASE_interface/examples/metadynamics.py'
+adding 'atst_tools/external/ASE_interface/examples/neb.py'
+adding 'atst_tools/external/ASE_interface/examples/relax.py'
+adding 'atst_tools/external/ASE_interface/examples/scf.py'
+adding 'atst_tools/external/ASE_interface/examples/soc.py'
+adding 'atst_tools/external/ASE_interface/tests/band.py'
+adding 'atst_tools/external/ASE_interface/tests/magnetic.py'
+adding 'atst_tools/external/ASE_interface/tests/md.py'
+adding 'atst_tools/external/ASE_interface/tests/relax.py'
+adding 'atst_tools/external/ASE_interface/tests/scf.py'
+adding 'atst_tools/external/pydmf/LICENSE'
+adding 'atst_tools/external/pydmf/UPSTREAM.md'
+adding 'atst_tools/external/pydmf/__init__.py'
+adding 'atst_tools/external/pydmf/dmf/__init__.py'
+adding 'atst_tools/external/pydmf/dmf/dmf.py'
+adding 'atst_tools/external/pydmf/dmf/fbenm.py'
+adding 'atst_tools/external/pydmf/dmf/interpolate.py'
+adding 'atst_tools/external/pydmf/dmf/torch/__init__.py'
+adding 'atst_tools/external/pydmf/dmf/torch/_torch_config.py'
+adding 'atst_tools/external/pydmf/dmf/torch/dmf.py'
+adding 'atst_tools/external/pydmf/dmf/torch/fbenm.py'
+adding 'atst_tools/external/pydmf/dmf/torch/interpolate.py'
+adding 'atst_tools/mep/__init__.py'
+adding 'atst_tools/mep/autoneb.py'
+adding 'atst_tools/mep/ccqn.py'
+adding 'atst_tools/mep/dimer.py'
+adding 'atst_tools/mep/neb.py'
+adding 'atst_tools/mep/sella.py'
+adding 'atst_tools/runtime/__init__.py'
+adding 'atst_tools/runtime/cli_dispatch.py'
+adding 'atst_tools/runtime/counters.py'
+adding 'atst_tools/runtime/devices.py'
+adding 'atst_tools/runtime/errors.py'
+adding 'atst_tools/runtime/evidence.py'
+adding 'atst_tools/runtime/launch.py'
+adding 'atst_tools/scripts/__init__.py'
+adding 'atst_tools/scripts/cli.py'
+adding 'atst_tools/scripts/cli_impl.py'
+adding 'atst_tools/scripts/main.py'
+adding 'atst_tools/utils/__init__.py'
+adding 'atst_tools/utils/abacus_io.py'
+adding 'atst_tools/utils/analysis.py'
+adding 'atst_tools/utils/artifacts.py'
+adding 'atst_tools/utils/banner.py'
+adding 'atst_tools/utils/config.py'
+adding 'atst_tools/utils/config_docs.py'
+adding 'atst_tools/utils/config_schema.py'
+adding 'atst_tools/utils/convergence.py'
+adding 'atst_tools/utils/dmf_validation.py'
+adding 'atst_tools/utils/electrochemistry.py'
+adding 'atst_tools/utils/gate_compensation.py'
+adding 'atst_tools/utils/geometry.py'
+adding 'atst_tools/utils/idpp.py'
+adding 'atst_tools/utils/io.py'
+adding 'atst_tools/utils/md_post.py'
+adding 'atst_tools/utils/mpi.py'
+adding 'atst_tools/utils/neb_endpoints.py'
+adding 'atst_tools/utils/plot.py'
+adding 'atst_tools/utils/post.py'
+adding 'atst_tools/utils/reactive_modes.py'
+adding 'atst_tools/utils/restart_helpers.py'
+adding 'atst_tools/utils/reverse_config.py'
+adding 'atst_tools/utils/sella_event_summary.py'
+adding 'atst_tools/utils/sella_events.py'
+adding 'atst_tools/utils/summary.py'
+adding 'atst_tools/utils/thermochemistry.py'
+adding 'atst_tools/utils/ts_validation.py'
+adding 'atst_tools/workflows/__init__.py'
+adding 'atst_tools/workflows/constant_potential.py'
+adding 'atst_tools/workflows/d2s.py'
+adding 'atst_tools/workflows/dmf.py'
+adding 'atst_tools/workflows/execution.py'
+adding 'atst_tools/workflows/irc.py'
+adding 'atst_tools/workflows/md.py'
+adding 'atst_tools/workflows/relax.py'
+adding 'atst_tools/workflows/vibration.py'
+adding 'atst_tools-2.2.8.dist-info/licenses/COPYING'
+adding 'atst_tools-2.2.8.dist-info/licenses/LICENSE'
+adding 'atst_tools-2.2.8.dist-info/METADATA'
+adding 'atst_tools-2.2.8.dist-info/WHEEL'
+adding 'atst_tools-2.2.8.dist-info/entry_points.txt'
+adding 'atst_tools-2.2.8.dist-info/top_level.txt'
+adding 'atst_tools-2.2.8.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built atst_tools-2.2.8-py3-none-any.whl

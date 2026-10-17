@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-15",
+  "base_commit": "45d8c78de8a605c127cd4c36742d0c9525a0a6b6",
+  "branch": "fix/ase-ts-dual-interface-20261013",
+  "status": "local_unreleased",
+  "python": "3.10.19",
+  "ase": "3.28.0",
+  "module_root": "/home/james/.codex/worktrees/3fbf/atst-tools/src",
+  "full_tests": {
+    "passed": 1284,
+    "skipped": 32,
+    "exit_code": 0
+  },
+  "real_mpi": {
+    "passed": 27,
+    "groups": [
+      4,
+      17,
+      6
+    ],
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "vendored_unittest": {
+    "ran": 28,
+    "skipped": 2,
+    "exit_code": 0
+  },
+  "snapshot_drift_exit_code": 0,
+  "distribution_tests": {
+    "passed": 2,
+    "exit_code": 0
+  },
+  "sdist_wheel_twine_clean_install_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "artifacts": [
+    {
+      "name": "atst_tools-2.2.8-py3-none-any.whl",
+      "bytes": 413286,
+      "sha256": "cb366b6b29bd233c841753337c0327789050eba5398f3b12bf76a0fbab6c2c3d"
+    },
+    {
+      "name": "atst_tools-2.2.8.tar.gz",
+      "bytes": 364172,
+      "sha256": "e6cfeea83fb9144ae1981abca6ccbd0b57950d067ec42f5b9d1fa189305a833b"
+    }
+  ],
+  "independent_review": "Two final P2 findings repaired and re-reviewed; code review passed. Earlier four TS input/scope/entry findings closed.",
+  "not_run": [
+    "real ABACUS/DP GPU scientific calculations",
+    "remote Python/ASE CI matrix",
+    "package publication",
+    "platform deployment/acceptance"
+  ],
+  "logs": [
+    "full-tests-final.log",
+    "task5-progress-mpi.log",
+    "task5-failure-mpi-candidate.log",
+    "remaining-mpi.log",
+    "vendored-package.log",
+    "snapshot-drift.log",
+    "final-sdist-build.log",
+    "final-wheel-build.log",
+    "final-distribution.log",
+    "final-twine.log",
+    "final-clean-wheel.log",
+    "task5-dimer-import-red.log",
+    "task5-dimer-import-green-final.log",
+    "ts_constraint_overlap_red.log",
+    "ts_constraint_overlap_green.log",
+    "docs-tests-final.log",
+    "docs-final.log",
+    "docs-tests-closeout.log"
+  ],
+  "documentation": {
+    "governance_exit_code": 0,
+    "tests_passed": 35,
+    "tests_exit_code": 0,
+    "diff_check_exit_code": 0,
+    "conflict_markers": 0
+  },
+  "documentation_review": "Release/development boundary labels and stale ledger description corrected after independent document review; final governance and 35 documentation tests passed."
+}

@@ -230,16 +230,16 @@ def test_interpolate_path_status_reports_solver_budget_and_outcome():
     interpolate_path(atoms, product, 7, method="IDPP", quiet=True, path_status=idpp_status)
     interpolate_path(atoms, product, 7, method="linear", path_status=linear_status)
 
-    # Fixed 2000-iteration budget: these geometries exhaust it, so x_mid is the
-    # centre frame of a truncated path. The state stays observable.
+    # Cartesian initialization keeps this zero-cell molecule's path meaningful;
+    # it converges within the unchanged solver budget.
     assert idpp_status["method"] == "IDPP"
-    assert idpp_status["status"] == "Failed"
-    assert idpp_status["iterations"] == 2000
+    assert idpp_status["status"] == "Converged"
+    assert 0 < idpp_status["iterations"] < 2000
     assert idpp_status["maxiter"] == 2000
     assert isinstance(idpp_status["final_S_IDPP"], float)
     assert idpp_status["final_S_IDPP"] > 0.0
     assert isinstance(idpp_status["max_force"], float)
-    assert idpp_status["max_force"] >= 0.0
+    assert 0 <= idpp_status["max_force"] < 1e-3
     assert linear_status == {
         "method": "linear",
         "status": None,
@@ -788,14 +788,12 @@ def test_midpoint_diagnostics_records_idpp_path_status(tmp_path, capsys):
     data = json.loads(diagnostics.read_text(encoding="utf-8"))
     first_step = data["steps"][0]
     assert first_step["mode"] == "uphill"
-    assert first_step["idpp_path_status"] == "Failed"
-    assert first_step["idpp_iterations"] == 2000
+    assert first_step["idpp_path_status"] == "Converged"
+    assert 0 < first_step["idpp_iterations"] < 2000
     assert isinstance(first_step["idpp_final_S_IDPP"], float)
     assert isinstance(first_step["idpp_max_force"], float)
     advisory = capsys.readouterr().out
-    assert advisory.count("Warning: CCQN finished") == 1
-    assert "stage=ccqn_interp_path" in advisory
-    assert "nsteps=2000" in advisory
+    assert "stage=ccqn_interp_path" not in advisory
 
 
 def test_unconverged_path_advisory_is_emitted_once_and_only_for_failures(monkeypatch, capsys):

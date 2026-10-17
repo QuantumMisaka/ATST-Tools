@@ -8,6 +8,13 @@ from ase.mep.dimer import norm, normalize
 from typing import List, Union
 
 from atst_tools.calculators.factory import CalculatorFactory
+from atst_tools.utils.artifacts import write_artifact_manifest
+from atst_tools.utils.convergence import (
+    StageRecord,
+    as_finite_float,
+    as_step_count,
+    emit_unconverged_advisory,
+)
 
 
 class MinModeTranslate(_ASEMinModeTranslate):
@@ -99,6 +106,7 @@ class AbacusDimer:
         self.displacement_vector = displacement_vector
         self.dimer_separation = dimer_separation
         self.max_num_rot = max_num_rot
+        self.last_stage_record: StageRecord | None = None
         
     def set_calculator(self):
         """
@@ -237,8 +245,28 @@ class AbacusDimer:
         dimer_relax.attach(write_current_atoms)
         try:
             if max_steps is None:
-                dimer_relax.run(fmax=fmax)
+                converged_signal = dimer_relax.run(fmax=fmax)
             else:
-                dimer_relax.run(fmax=fmax, steps=max_steps)
+                converged_signal = dimer_relax.run(fmax=fmax, steps=max_steps)
         finally:
             traj.close()
+        record = StageRecord(
+            name="dimer",
+            role="final",
+            criterion="dimer",
+            converged=converged_signal,
+            fmax=as_finite_float(fmax),
+            fmax_unit="eV/Angstrom",
+            steps=as_step_count(max_steps),
+            actual_steps=as_step_count(getattr(dimer_relax, "nsteps", None)),
+        )
+        self.last_stage_record = record
+        emit_unconverged_advisory(record, workflow="dimer")
+        manifest_path = self.calc_config.get("artifact_manifest", "atst_artifacts.json")
+        if manifest_path is not None:
+            write_artifact_manifest(
+                manifest_path,
+                workflow="dimer",
+                artifacts=[{"role": "trajectory", "path": self.traj_file}],
+                stages=[record.to_manifest()],
+            )

@@ -1,0 +1,107 @@
+PACKAGE_SOURCE: /tmp/atst-doc-onboarding-20261015/published-extracted
+COMMAND: atst --version 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial 
+EXIT: 0 
+ atst 2.2.8
+ 
+COMMAND: atst run --list-types 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial 
+EXIT: 0 
+ constant_potential
+neb
+autoneb
+dimer
+sella
+ccqn
+d2s
+relax
+vibration
+irc
+md
+dmf
+ 
+COMMAND: atst config validate examples/06_relax_H2-Au/config.yaml --print-normalized 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial 
+EXIT: 0 
+ calculation:
+  type: relax
+  init_structure: inputs/init.stru
+  fmax: 0.05
+  max_steps: 1
+  optimizer: QuasiNewton
+  trajectory: relax.traj
+  logfile: relax.log
+  restart: false
+  directory: relax_run
+calculator:
+  name: abacus
+  abacus:
+    command: abacus
+    mpi: 4
+    omp: 1
+    directory: relax_run
+    kpts:
+    - 3
+    - 1
+    - 3
+    parameters:
+      calculation: scf
+      ecutwfc: 100
+      basis_type: lcao
+      ks_solver: cusolver
+      vdw_method: d3_bj
+      nspin: 2
+      symmetry: 1
+      scf_thr: 1e-07
+      scf_nmax: 300
+      smearing_method: mp
+      smearing_sigma: 0.002
+      mixing_type: broyden
+      mixing_ndim: 20
+      cal_force: 1
+      cal_stress: 0
+      out_stru: 1
+      out_chg: -1
+      efield_flag: 1
+      dip_cor_flag: 1
+      efield_dir: 1
+      pseudo_dir: ../data
+      orbital_dir: ../data
+      pseudopotentials:
+        H: H_ONCV_PBE-1.0.upf
+        Au: Au_ONCV_PBE-1.0.upf
+      basissets:
+        H: H_gga_6au_100Ry_2s1p.orb
+        Au: Au_gga_7au_100Ry_4s2p2d1f.orb
+ 
+COMMAND: atst run --dry-run examples/06_relax_H2-Au/config.yaml 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial 
+EXIT: 0 
+  Configuration is valid: calculation.type=relax, calculator.name=abacus
+
+COMMAND: atst neb make inputs/init.xyz inputs/final.xyz 3 -o first_chain.traj --method linear 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial/examples/09_lightweight_cli 
+EXIT: 0 
+ Reading files: inputs/init.xyz and inputs/final.xyz
+Checking atom index consistency (Hungarian Algorithm)...
+  [Alignment] Atom indices alignment done. MSD: 0.0676 Å²
+Generating path, number of images: 3
+Optimizing path using linear method
+Writing path: first_chain.traj, Number of images: 5
+ 
+COMMAND: atst neb summary inputs/neb_result.extxyz --n-max 1 --tail 5 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial/examples/09_lightweight_cli 
+EXIT: 0 
+ NEB trajectory summary
+n_frames=3 n_images=3 complete_steps=1 remainder_frames=0
+step max_force_image max_force_eV_per_A energy_eV rel_energy_eV barrier_eV delta_e_eV
+   0               1           0.000000     0.400000     0.400000   0.400000   0.100000
+ 
+COMMAND: atst relax post inputs/relax_result.extxyz --output-format traj --output restart.traj 
+CWD: /tmp/atst-doc-onboarding-20261015/tutorial/examples/09_lightweight_cli 
+EXIT: 0 
+ Energy: -1.1000000000 eV
+Max force: 0.0010000000 eV/Ang
+Wrote restart.traj
+ 
+ONBOARDING_OK: 7 commands; 5-frame chain and restart artifact; no backend calculation

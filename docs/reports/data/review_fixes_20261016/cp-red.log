@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/5738/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 4 items
+
+tests/unit/test_cp_facts_compatibility.py F.F.                           [100%]
+
+=================================== FAILURES ===================================
+___ test_current_frame_is_readable_by_v228_and_restart_uses_evaluated_count ____
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1512/test_current_frame_is_readable0')
+
+    def test_current_frame_is_readable_by_v228_and_restart_uses_evaluated_count(tmp_path):
+        atoms, calculator = _completed_frame(tmp_path)
+        trajectory = tmp_path / "checkpoint.traj"
+        write(trajectory, atoms)
+        restored = read(trajectory)
+        expected = calculator.constant_potential_identity
+    
+        old_payload = legacy.read_constant_potential_facts(restored)
+>       assert old_payload is not None
+E       assert None is not None
+
+tests/unit/test_cp_facts_compatibility.py:66: AssertionError
+__________ test_both_readers_reject_stale_geometry_and_identity[v228] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-james/pytest-1512/test_both_readers_reject_stale0')
+reader = <module 'cp_v228_reader_fixture' from '/home/james/.codex/worktrees/5738/atst-tools/tests/unit/cp_v228_reader_fixture.py'>
+
+    @pytest.mark.parametrize("reader", [legacy, current], ids=["v228", "current"])
+    def test_both_readers_reject_stale_geometry_and_identity(tmp_path, reader):
+        atoms, calculator = _completed_frame(tmp_path)
+        expected = calculator.constant_potential_identity
+>       assert reader.read_constant_potential_facts(atoms) is not None
+E       AssertionError: assert None is not None
+E        +  where None = <function read_constant_potential_facts at 0x7ab0de567490>(Atoms(symbols='H', pbc=True, cell=[10.0, 10.0, 10.0], calculator=ConstantPotentialCalculator(...)))
+E        +    where <function read_constant_potential_facts at 0x7ab0de567490> = <module 'cp_v228_reader_fixture' from '/home/james/.codex/worktrees/5738/atst-tools/tests/unit/cp_v228_reader_fixture.py'>.read_constant_potential_facts
+
+tests/unit/test_cp_facts_compatibility.py:99: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_cp_facts_compatibility.py::test_current_frame_is_readable_by_v228_and_restart_uses_evaluated_count
+FAILED tests/unit/test_cp_facts_compatibility.py::test_both_readers_reject_stale_geometry_and_identity[v228]
+========================= 2 failed, 2 passed in 0.42s ==========================
+ERROR conda.cli.main_run:execute(148): `conda run python -m pytest tests/unit/test_cp_facts_compatibility.py -o addopts=-ra` failed. (See above for error)

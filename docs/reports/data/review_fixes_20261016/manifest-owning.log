@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.19, pytest-9.0.2, pluggy-1.5.0
+rootdir: /home/james/.codex/worktrees/5738/atst-tools
+configfile: pyproject.toml
+plugins: typeguard-4.5.1
+collected 116 items
+
+tests/unit/test_manifest_path_contract.py .....                          [  4%]
+tests/unit/test_summary.py ................                              [ 18%]
+tests/unit/test_api.py ................................................. [ 60%]
+..........................                                               [ 82%]
+tests/unit/test_runtime_evidence.py ....................                 [100%]
+
+============================= 116 passed in 4.27s ==============================

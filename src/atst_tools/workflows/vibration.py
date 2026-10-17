@@ -10,7 +10,7 @@ from atst_tools.utils.config_schema import apply_calculation_defaults
 from atst_tools.utils.io import read_structure
 from atst_tools.utils.restart_helpers import clean_cache_files
 from atst_tools.utils.thermochemistry import compute_vibration_thermochemistry
-from atst_tools.utils.ts_validation import build_ts_validation_summary
+from atst_tools.utils.ts_validation import build_ts_validation_summary, frozen_structure_fact
 from atst_tools.utils.artifacts import write_artifact_manifest
 from atst_tools.utils.convergence import StageRecord
 
@@ -85,6 +85,10 @@ class VibrationWorkflow:
             print(f"Error reading structure: {e}")
             raise
 
+        # Capture only input-geometry facts before the live vibration
+        # calculator is attached and starts visiting displaced structures.
+        frozen_fact = frozen_structure_fact(atoms)
+
         # 2. Setup Calculator
         directory = self.calc_config['directory']
         if 'abacus' in self.config:
@@ -130,11 +134,15 @@ class VibrationWorkflow:
             print(f"Helmholtz Free Energy (F): {thermo.get('helmholtz_free_energy', 0.0):.6f} eV")
 
         # Save results to JSON for easy parsing
+        resolved_indices = getattr(vib, "indices", self.indices)
         results = {
             'frequencies': frequencies.real.tolist(),
             'imaginary_frequencies': frequencies.imag.tolist(),
             'zpe': zpe,
-            'indices': self.indices,
+            'indices': None if resolved_indices is None else [int(index) for index in resolved_indices],
+            'n_atoms': frozen_fact['n_atoms'],
+            'fixed_indices': frozen_fact['fixed_indices'],
+            'geometry': frozen_fact['geometry'],
             'thermo': thermo,
         }
         with open(self.results_file, 'w', encoding="utf-8") as f:
@@ -142,6 +150,7 @@ class VibrationWorkflow:
         validation = build_ts_validation_summary(
             results,
             source=self.results_file,
+            structure=frozen_fact,
         )
         with open(self.validation_file, "w", encoding="utf-8") as f:
             json.dump(validation, f, indent=4)

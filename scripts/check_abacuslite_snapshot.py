@@ -349,7 +349,7 @@ _FRAME_PATCH_AST_SHA256: dict[str, str] = {
     "_frame_coordinate_is_direct": "3214c02c24bc8e900bb0a3a15a63cb998bb682807d55a3cbdaa8b56b55b5545b",
     "_validate_raw_scf_trajectory": "d132b9ed702a50eb496cfce910d6e624d69d2f56c7a3c8df88a6d8d6ed823cb3",
     "_normalize_scf_frame": "c905355fac152fde59e29a526acb03fe83750f92c9928dae8894cf209d482153",
-    "_select_scf_frame_for_structure": "323658e049187dc24457c23b9427f66f9d4dcb330fd10c3e19d569afd131864f",
+    "_select_scf_frame_for_structure": "aa69896c87c1efc1026d6a858d194ab878811c78e3a7fb90ece4478c284e343a",
     "AbacusTemplate.__init__": "41ac3effaf36d311c1044495dcd81912f2f32b3b3bd246e8db4fbcf9a5e749e1",
     "AbacusTemplate.write_input": "e753df35247641fa68ed8886d317ef6af26a5c405de382bdbe0122f30fcdb838",
     "AbacusTemplate.read_results": "cf83d601b9e0faa05252b12ce7ca4a202ee628bb29802f0262144a8a371fc555",

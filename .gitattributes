@@ -1,0 +1,4 @@
+# Preserve raw validation logs, including diagnostic whitespace.
+docs/reports/data/system_review_20261013/**/*.log -whitespace
+docs/reports/data/architecture_review_20261016/*.log -whitespace
+docs/reports/data/review_fixes_20261016/*.log -whitespace

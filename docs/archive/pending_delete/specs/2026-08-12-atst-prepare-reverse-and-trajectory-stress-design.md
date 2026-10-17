@@ -1,5 +1,7 @@
 # atst-tools 侧设计记录：`atst prepare` 反向生成 + 轨迹应力保留
 
+> 2026-10-16 归档（待删除复核）：已随 2.2.3 交付；当前 CLI/API/配置语义和 stress 保留由长期参考、2.2.3 release notes 及行为测试承接。保留原跨仓决策作为历史记录。
+
 **日期**: 2026-08-12
 **状态**: 已实施（2026-08-12，feature branch feat/atst-prepare-and-trajectory-stress，2.2.3）
 **权威规格**: ABACUS toolbox

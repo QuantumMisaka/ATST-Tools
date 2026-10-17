@@ -40,6 +40,16 @@ Before deleting any file from this directory:
 
 ## Current Contents
 
+- `plans/2026-08-04-abacuslite-force-read-and-cross-repo-plan.md`: 本仓 Tasks 1–8 已交付；历史力读取决定性 SAI 检验通过，后续 SIF/harness 责任仍在父仓，上游 PR 继续按维护者决定延后。日常规则由 HANDOVER、PATCHES.md 与 ABACUSLITE_SNAPSHOT.md 承接。
+- `plans/2026-09-17-workflow-convergence-handoff-plan.md`: 本仓 A0–A6 已随 2.2.6 交付；契约由 PYTHON_API_REFERENCE、convergence fixtures 与发布说明承接。Paimon 联合消费与真实运行时验收仍由相应 owner 完成，旧示例产物不视为已刷新。
+- `specs/2026-08-12-atst-prepare-reverse-and-trajectory-stress-design.md`: 已随 2.2.3 交付；当前 CLI/API/配置语义和 stress 保留由长期参考、2.2.3 release notes 及行为测试承接。保留原跨仓决策作为历史记录。
+- `specs/2026-09-04-user-distribution-and-mpi-installation-design.html`: 已随 2.2.4 交付并登记发布验收；渠道与安装边界由 README、USER_GUIDE_CN、DOCS_ARCHITECTURE、发布说明和测试承接。
+- `specs/2026-08-04-abacuslite-cross-repo-and-force-read-design-review.md`: 审查结论已吸收到仍活跃的 abacuslite 设计及维护文档；历史诊断保留，不作为当前待实施计划。
+
+- `plans/2026-10-16-review-findings-remediation.md`: nine review findings repaired and locally accepted; maintained references and MAIN_REVIEW_FIXES_2026-10-16 retain behavior, migration and evidence. Isolated worktree retained, no merge or release.
+
+- `plans/2026-10-13-ase-ts-dual-interface-remediation.md`: local remediation and acceptance completed on 2026-10-15; conclusions and evidence retained in the system review and maintained references. No release or platform acceptance is implied.
+
 - `plans/2026-07-02-abacuslite-backend-upstream-issue-fixes.md`: implemented
   vendored abacuslite fixes; upstream synchronization is tracked by
   `PATCHES.md`, the snapshot baseline, and the cross-repo plan.

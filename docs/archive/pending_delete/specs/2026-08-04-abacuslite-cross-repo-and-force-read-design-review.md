@@ -1,5 +1,7 @@
 # Spec 审查：vendored abacuslite 跨仓维护与力读取一致性设计
 
+> 2026-10-16 归档（待删除复核）：审查结论已吸收到仍活跃的 abacuslite 设计及维护文档；历史诊断保留，不作为当前待实施计划。
+
 - **Status:** Review（对 `2026-08-04-abacuslite-cross-repo-and-force-read-design.html` 的逐条核对结论 + 规划补强）
 - **Reviewer:** ATST-Tools 开发 Agent
 - **Date:** 2026-08-04

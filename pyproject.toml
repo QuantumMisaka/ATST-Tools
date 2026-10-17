@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atst-tools"
-version = "2.2.8"
+version = "2.2.9"
 description = "Advanced ASE Transition State Tools for ABACUS and Deep-Potential"
 readme = "README.md"
 license = "LGPL-3.0-or-later"
@@ -34,6 +34,10 @@ dev = [
 
 [project.scripts]
 atst = "atst_tools.scripts.cli:main"
+
+[tool.setuptools.package-data]
+"atst_tools.external.pydmf" = ["LICENSE", "UPSTREAM.md"]
+"atst_tools.external.ASE_interface" = ["ABACUSLITE_SNAPSHOT.md", "PATCHES.md"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

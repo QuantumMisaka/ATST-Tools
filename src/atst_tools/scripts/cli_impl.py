@@ -707,6 +707,29 @@ def _add_vibration_parser(subparsers):
     _add_summary_output_options(summary)
     summary.set_defaults(func=_vibration_summary_command)
 
+    validate = vib_subparsers.add_parser(
+        "validate",
+        help="Screen stored vibration results for transition-state evidence",
+        description=(
+            "Screen existing vibration results and optional frozen structure facts. "
+            "This command does not run a calculator or new vibration analysis."
+        ),
+        epilog=dedent(
+            """\
+            Examples:
+              atst vibration validate vibration_results.json
+              atst vibration validate vibration_results.json --structure ts.traj --output ts_validation.json
+            """
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    validate.add_argument("results", help="Existing vibration results JSON file")
+    validate.add_argument("--structure", help="Frozen structure JSON or ASE structure with stored forces")
+    validate.add_argument("--fmax-threshold", type=float, default=0.05, help="Stationarity threshold in eV/Angstrom")
+    validate.add_argument("--imaginary-cutoff-cm1", type=float, default=50.0, help="Significant imaginary-mode cutoff in cm^-1")
+    validate.add_argument("--output", help="Optional validation summary JSON path")
+    validate.set_defaults(func=_vibration_validate_command)
+
 
 def _vibration_post_command(args):
     config = ConfigLoader.load(args.config)
@@ -750,6 +773,20 @@ def _vibration_post_command(args):
 
 def _vibration_summary_command(args):
     return _run_summary_command(args, lambda: summarize_vibration_config(args.config))
+
+
+def _vibration_validate_command(args):
+    """Print an explicit screening summary from existing files."""
+    from atst_tools.api import validate_ts
+
+    summary = validate_ts(
+        args.results,
+        structure=args.structure,
+        fmax_threshold=args.fmax_threshold,
+        imaginary_cutoff_cm1=args.imaginary_cutoff_cm1,
+        output=args.output,
+    )
+    print(json.dumps(summary, indent=2))
 
 
 def _add_single_ended_summary_parser(subparsers, name):
