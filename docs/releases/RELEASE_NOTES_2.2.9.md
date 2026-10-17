@@ -23,7 +23,7 @@ explicit stored-result TS validation and Dimer termination facts are retained.
 
 ## Compatibility
 
-Package version: `2.2.9`.
+- Package version: `2.2.9`.
 
 Existing CLI/YAML/public API entry points remain available. New facts and
 manifest metadata are additive; malformed or ambiguous inputs now fail earlier.
