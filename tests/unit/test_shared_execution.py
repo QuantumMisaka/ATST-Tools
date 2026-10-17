@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -14,7 +13,7 @@ from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.io import read, write
 
-from helpers import FakeWorld
+from helpers import FakeWorld, child_test_environment
 
 
 def _write_relax_fixture(directory: Path) -> Path:
@@ -111,7 +110,7 @@ assert 'atst_tools.scripts.main' not in sys.modules
     completed = subprocess.run(
         [sys.executable, "-c", script],
         cwd=tmp_path,
-        env={**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "src")},
+        env=child_test_environment(Path(__file__).resolve().parents[2] / "src"),
         capture_output=True,
         text=True,
         check=False,

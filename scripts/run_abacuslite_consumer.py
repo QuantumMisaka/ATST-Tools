@@ -252,6 +252,31 @@ def pytest_sessionfinish(session, exitstatus):
 """
 
 
+_CHILD_PROVENANCE_GUARD = """\
+from importlib.util import find_spec
+import os
+from pathlib import Path
+import sysconfig
+
+if os.environ.get('ATST_TEST_INSTALLED_WHEEL') == '1':
+    site = Path(sysconfig.get_paths()['purelib']).resolve()
+    root = Path(os.environ['ATST_RUNNER_ROOT']).resolve()
+    package_spec = find_spec('atst_tools')
+    package = Path(package_spec.origin).resolve() if package_spec else None
+    if package is None:
+        raise SystemExit('ATST installed package is missing')
+    if not package.is_relative_to(site) or package.is_relative_to(root):
+        raise SystemExit('ATST source shadow: ' + str(package))
+    if os.environ['ATST_RUNNER_BACKEND'] == 'external':
+        plugin_spec = find_spec('abacuslite')
+        plugin = Path(plugin_spec.origin).resolve() if plugin_spec else None
+        if plugin is None:
+            raise SystemExit('abacuslite installed package is missing')
+        if not plugin.is_relative_to(site) or plugin.is_relative_to(root):
+            raise SystemExit('abacuslite source shadow: ' + str(plugin))
+"""
+
+
 def _guard_runtime_consumers(root: Path) -> None:
     """Reject a vendored import before the first ATST runtime consumer import."""
     with tempfile.TemporaryDirectory(prefix="atst-consumer-guard-") as scratch:
@@ -389,7 +414,10 @@ def run_consumer(root: Path, backend: str, report_path: Path) -> dict:
     with tempfile.TemporaryDirectory(prefix="atst-pytest-attest-") as plugin_dir:
         Path(plugin_dir, "atst_installed_guard.py").write_text(
             _PYTEST_PROVENANCE_PLUGIN, encoding="utf-8")
+        Path(plugin_dir, "sitecustomize.py").write_text(
+            _CHILD_PROVENANCE_GUARD, encoding="utf-8")
         env = {**os.environ, "PYTHONPATH": plugin_dir,
+               "ATST_TEST_INSTALLED_WHEEL": "1",
                "ATST_RUNNER_ROOT": str(root), "ATST_RUNNER_BACKEND": backend,
                "ATST_RUNNER_ATTEST": str(attest_path)}
         with log_path.open("w", encoding="utf-8") as log:

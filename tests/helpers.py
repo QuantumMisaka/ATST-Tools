@@ -2,10 +2,30 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import numpy as np
 from ase import Atoms
 from ase.calculators.calculator import Calculator, all_changes
 from ase.calculators.singlepoint import SinglePointCalculator
+
+
+INSTALLED_WHEEL_TEST_ENV = "ATST_TEST_INSTALLED_WHEEL"
+
+
+def child_test_environment(source_root: Path, *, base=None) -> dict[str, str]:
+    """Use the source tree normally, or retain wheel-test subprocess guards."""
+    environment = dict(os.environ if base is None else base)
+    source_root = source_root.resolve()
+    if environment.get(INSTALLED_WHEEL_TEST_ENV) == "1":
+        paths = [Path(item).resolve() for item in environment.get("PYTHONPATH", "").split(os.pathsep)
+                 if item]
+        if source_root in paths:
+            raise AssertionError("installed-wheel child environment contains source path")
+    else:
+        environment["PYTHONPATH"] = str(source_root)
+    return environment
 
 
 def make_atoms(symbols: str = "H", energy: float = 0.0, positions=None) -> Atoms:
