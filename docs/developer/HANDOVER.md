@@ -124,6 +124,9 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
   `scripts/run_abacuslite_consumer.py`。入口在 checkout 外先核安装位置、后端来源、
   真实消费者首次导入前的禁 vendored guard 与原始 SCF/MD fixture 数值；完整离线
   `tests` 因文档/example 相对路径从仓根运行，pytest 进程起止均核 wheel 来源。
+  安装态测试通过 `ATST_TEST_INSTALLED_WHEEL=1` 与共享子进程环境 helper 保留安装来源；
+  惰性 `sitecustomize` guard 用 `find_spec` 拒绝源码遮蔽，不预加载 NumPy/ASE。
+  新增 Python 子进程测试必须复用该 helper，并保持安装态与源码态都可运行。
   报告记录 wheel/安装文件指纹、依赖版本、测试用例身份及跳过原因，两份报告对照。
   显式 vendored 快照维护测试在两套环境照常运行；它们不算 external 运行时来源证据。
   更新候选提交时同步记录插件 wheel 与 ATST wheel 的版本和验证结果。普通 unit job 无插件，

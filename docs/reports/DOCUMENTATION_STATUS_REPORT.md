@@ -21,15 +21,35 @@ L1-L4 分级、归档判据和本轮待删除复核结果。
   `4715299fe25b4ff583b577a4024d45eb2f338cd2aa2bb1d3c2db5066588abac9`）。
   checkout 外的入口核查实际消费者首次导入无 vendored 路径，并对原始 SCF/MD
   fixture 的能量、力、Fermi、cell、PBC 做独立常量核对。完整离线 `tests` 因
-  文档/example 相对路径从仓根运行，但 pytest 起止均确认导入已安装 wheel；两边
-  同收集 1426，vendored 1388 passed / 38 skipped，external 1390 passed /
-  36 skipped（差异为显式 backend 环境测试），node identity、非后端 skip 与
+  文档/example 相对路径从仓根运行，但 pytest 起止均确认导入已安装 wheel；
+  `87caeedb` 还通过共享子进程环境 helper 和惰性 `find_spec` guard，避免测试子进程
+  的 `PYTHONPATH` 回到源码。实际子进程安装路径检查通过，故意注入源码路径则失败；
+  guard 不预加载 NumPy/ASE。ASE 3.28.0 和 3.29.0 两组最终对照各同收集 1428，
+  vendored 1390 passed / 38 skipped，external 1392 passed / 36 skipped
+  （差异为显式 backend 环境测试），node identity、非后端 skip、依赖集合与
   事实对照通过。最初 checkout 外全套运行的 22 项路径失败及 wheel 无 Git HEAD
   的一项测试前提问题已据证修正；生产源码未为测试改动。guard 的 vendored
   导入 mutation 被拒绝。新 PR CI 使用精确候选 pin；手动 ref 与定时 main 跟踪
   可观察后续漂移。该 SHA 尚未推送，远程 job 在发布该提交前不可 fetch；
-  未声称本次离线门禁覆盖真实 ABACUS 工作流、远程 CI 或独立包发行。
-- 2026-10-17（独立 abacuslite 本地集成验收通过）：最终运行代码为
+  离线门禁不替代下列独立真实运行证据。两仓候选 CI 均针对各自当前 wheel 检查上下游；
+  插件候选 CI 已通过实际失败验证修复 `pytest | tee` 的退出码掩盖问题。
+  远程 CI 尚未执行，main 分支尚未配置这些必需检查，独立包未发行。
+- 2026-10-17（2.2.9 双环境真实运行验收通过）：同一 ATST wheel 与上述独立包 wheel
+  在 SAI 作业 `1827672` 的两个 Python 3.10 环境中通过各 10 项算例；作业状态
+  `COMPLETED 0:0`，20 个阶段及外层进程均返回 0。算例覆盖 Relax、ASE MD 初跑/续跑、
+  原生 MD、串行/双 rank NEB、Pt 固定电子数基准/恒电势交接、有限差分振动与单独的
+  LTS 3.10.1 兼容运行。主引擎为 ABACUS develop `4b92455ca` / v3.11.0-beta10；
+  LTS 使用独立记录的二进制。所有已比较跨环境数值在保存精度下相同；额外 154 项
+  工件审计检查保留的 MD/NEB 全轨迹、原始 MD 输出、7 份振动力缓存及 Hessian，
+  并确认 external reader 重读 11 份输出后原始文件哈希不变。
+  混用 legacy/latest 实例与高层非破坏读取的独立探针在 vendored 失败、external 通过。
+  最终代码/证据独立复核通过。报告位于维护者本地
+  `~/scratch/abacuslite-atst229-paired-runtime/attempt3-corrected-gpu/REPORT.md`；
+  成功工件包 SHA256 为
+  `930b4f7a94f9372345dba4b31ea725211f0048ba584abdea0fea635998e70e40`。
+  这是有界接口与数据交接验收：单步 Relax/NEB 不声称科学收敛，H2 振动含两个虚频，
+  Dimer/Sella TS/CCQN/IRC 本轮仅有离线契约覆盖。候选仍仅在本地，未提 PR 或切换生产依赖。
+- 2026-10-17（此前 2.2.8 独立 abacuslite 本地集成验收）：当时运行代码为
   ATST `53d6b7c50c17cb536ea464ec0335ee1e69c206cd` + abacuslite
   `dc020430bfa8c76edfc275b0f1eab2f12cc29d4d`；ABACUS 最新 develop
   `4b92455cab1b1a51e8534b7eb869798ae1241b1b` 单独构建 GPU 二进制，
