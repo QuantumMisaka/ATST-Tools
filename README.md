@@ -29,16 +29,16 @@ matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
 
 ## At A Glance
 
-| Area | Current 2.2.9 status (release candidate) |
+| Area | Current 2.2.9 status (published; PyPI clean-install verified) |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.2.9`, release candidate for tag `v2.2.9`; see the canonical [release notes](docs/releases/RELEASE_NOTES_2.2.9.md) for source and artifact evidence. |
+| Release | `2.2.9`, published from tag `v2.2.9`; see the canonical [release notes](docs/releases/RELEASE_NOTES_2.2.9.md) for source and artifact evidence. |
 
-The 2.2.9 candidate adds the explicit read-only command
+Version 2.2.9 adds the explicit read-only command
 `atst vibration validate` and the matching `validate_ts` API; neither is in the
 published 2.2.8 package.
 
@@ -147,7 +147,7 @@ After installing the package, obtain the examples separately if you do not
 already have a checkout. Use the tag matching your installed version:
 
 ```bash
-git clone --branch main https://github.com/QuantumMisaka/atst-tools.git
+git clone --branch v2.2.9 https://github.com/QuantumMisaka/atst-tools.git
 cd atst-tools
 atst config validate examples/06_relax_H2-Au/config.yaml --print-normalized
 atst run --dry-run examples/06_relax_H2-Au/config.yaml

@@ -2,7 +2,7 @@
 
 **Version**: 2.2.9
 **Date**: 2026-10-17
-**Status**: Release candidate (publication pending)
+**Status**: Published (official PyPI clean-install verified)
 **Branch**: `main`
 **Tag**: `v2.2.9` -> `ec75edf`
 
@@ -49,12 +49,20 @@ The 2026-10-17 candidate passed the full default suite (1347 passed,
 Twine checks, documentation governance and clean-wheel public API verification.
 Independent review confirmed the repair evidence matches the current source
 (the package-version change is the only changed build input).
-GitHub release preflight `38994894225` passed; PyPI upload is awaiting its
-protected environment approval. The Python 3.12 matrix exposed an overly broad
+GitHub publish run `38994894225` completed successfully. The Python 3.12 matrix exposed an overly broad
 IDPP test warning assertion under NumPy 2.5. A post-tag test-only correction
 excludes upstream deprecation warnings while retaining scientific warnings;
 the full IDPP file passes in Python 3.12. Production source is unchanged.
-Publication and official PyPI installation checks remain pending.
+Official PyPI no-cache wheel download and clean-environment API/CLI/runner
+verification passed. Post-tag Tests `38995247103` and abacuslite
+`38995247138` passed. The tag remains immutable at `ec75edf`.
+
+## Published artifacts
+
+- Wheel: `atst_tools-2.2.9-py3-none-any.whl`, 415854 bytes, SHA-256
+  `a62c8d346206226650ad4ced1a165e9a0a141b5ad4a5066e119c35d463d96a15`.
+- Sdist: `atst_tools-2.2.9.tar.gz`, 366100 bytes, SHA-256
+  `63c6829b733e0563c26d01e0674afef91922a28d2027110fe02b0679c580e20c`.
 
 See [repair acceptance](../reports/MAIN_REVIEW_FIXES_2026-10-16.md) and
 [scientific-contract review](../reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md).

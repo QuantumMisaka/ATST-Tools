@@ -14,8 +14,7 @@ documentation set.
 | New contributor | [Developer setup](developer/HANDOVER.md#11-新-checkout-与-cpu-开发准备), then [source architecture](../src/atst_tools/README.md). |
 | Project maintainer exploring implementation | [Source architecture](../src/atst_tools/README.md) for package responsibilities, execution relationships, and the purpose of runtime and bench. |
 
-The current release candidate is 2.2.9; publication is pending. The latest
-published package remains 2.2.8 until the release checks complete.
+The current published release is 2.2.9; official PyPI clean-install checks passed.
 Package versions do not establish scientific convergence or platform acceptance.
 
 ## User Path
@@ -86,7 +85,7 @@ start with the [source architecture guide](../src/atst_tools/README.md).
    pending-delete status.
 3. [2.2.9 release notes](releases/RELEASE_NOTES_2.2.9.md) for the current
    version-level delivery scope and recorded tag, CI, and PyPI evidence;
-   publication and official no-cache installation verification are pending.
+   publication and official no-cache installation verification passed.
    The previously published [2.2.5 release notes](releases/RELEASE_NOTES_2.2.5.md)
    and [2.2.4 release notes](releases/RELEASE_NOTES_2.2.4.md) remain available
    for historical publication evidence.
