@@ -10,6 +10,11 @@ ABACUS ASE backend. The vendored snapshot is retired as a runtime fallback;
 historical imports forward to the installed package. The latest published
 package remains 2.2.9.
 
+Current distribution acceptance and development-branch disposition are tracked
+in the [2.3.0 integration closeout](ABACUSLITE_230_CLOSEOUT_2026-10-19.md).
+The old rc1 integration worktree is a retained historical candidate; its
+scientific changes are absorbed and it is not a pending main-branch merge.
+
 Release 2.2.9 includes the following changes, absent from 2.2.8.
 Historical local acceptance (2026-10-15): the published capability
 rows below do not certify every boundary input. The current main branch

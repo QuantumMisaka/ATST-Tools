@@ -46,6 +46,16 @@ suite. Remote GitHub tests and the publication gate are recorded separately
 after merge. Publication, tag creation and PyPI upload are not implied by this
 source release note.
 
+The [integration closeout record](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.md)
+tracks the current distribution, installed-consumer and real-engine acceptance,
+the published plugin baseline, and remaining delivery work.
+
+The final runtime candidate at `49c8626` passes installed-distribution acceptance
+(1386 passed, 33 environment-gated skips) and SAI job 1848462 (18 stages,
+13 real-engine cases, including parallel NEB and LTS 3.10.1). These bounded
+execution checks do not establish scientific convergence. Exact wheel hashes
+and retained evidence locations are recorded in the closeout report above.
+
 ## Related documents
 
 - [ABACUSLite wrapper guide](../user/ABACUSLITE_WRAPPER_GUIDE.md)
