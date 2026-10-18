@@ -30,8 +30,7 @@ minimal run. Use the paths below for details.
 - [Developer handover](developer/HANDOVER.md)
 - [Example validation operations](developer/EXAMPLE_VALIDATION_OPERATIONS.md)
 - [YAML input governance](developer/YAML_INPUT_GOVERNANCE.md)
-- [Documentation standards](developer/DOCUMENTATION_STANDARDS.md)
-- [Documentation architecture](developer/DOCS_ARCHITECTURE.md)
+- [Documentation guide](developer/DOCUMENTATION.md)
 - [Governance and release gates](developer/GOVERNANCE_AND_RELEASE_GATES.md)
 - [PyPI release automation](developer/PYPI_RELEASE_AUTOMATION.md)
 - [Maintained atst-cli skill](skills/atst-cli/SKILL.md)
@@ -43,8 +42,6 @@ minimal run. Use the paths below for details.
 - [2.2.9 release notes](releases/RELEASE_NOTES_2.2.9.md): current release.
 - Historical notes: [2.2.5](releases/RELEASE_NOTES_2.2.5.md),
   [2.2.4](releases/RELEASE_NOTES_2.2.4.md).
-- [Documentation governance report](reports/DOCUMENTATION_STATUS_REPORT.md):
-  report ledger and archive state.
 
 Validation reports under `reports/` are evidence, not a required reading path.
 Start from the feature matrix and follow the relevant report only when needed.

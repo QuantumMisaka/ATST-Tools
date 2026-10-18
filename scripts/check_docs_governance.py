@@ -1,4 +1,4 @@
-"""Check ATST-Tools documentation governance invariants."""
+"""Check ATST-Tools documentation invariants."""
 
 from __future__ import annotations
 
@@ -16,22 +16,19 @@ ACTIVE_MARKDOWN_ROOTS = (
     Path("AGENTS.md"),
     Path("docs"),
 )
+REQUIRED_ENTRY_DOCUMENTS = (
+    Path("README.md"),
+    Path("docs/index.md"),
+    Path("docs/developer/DOCUMENTATION.md"),
+    Path("src/atst_tools/README.md"),
+    Path("examples/README.md"),
+)
 CONFLICT_MARKER = re.compile(r"^(<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
-REPORT_LINK = re.compile(r"`(docs/reports/[^`]+?)`")
-PENDING_LINK = re.compile(r"`(docs/archive/pending_delete/[^`]+?)`")
-PLAN_LINK = re.compile(r"`(docs/(?:superpowers|developer)/plans/[^`]+?)`")
-PLAN_ROOTS = (Path("docs/superpowers/plans"), Path("docs/developer/plans"))
-METADATA_ALIASES = {
-    "version": ("**Version**", "**Version:**", "**版本**", "**版本:**"),
-    "date": ("**Date**", "**Date:**", "**日期**", "**日期:**", "**Last Updated**", "Date:", "日期："),
-    "status": ("**Status**", "**Status:**", "**状态**", "**状态:**"),
-    "owner": ("**Owner**", "**Owner:**", "**责任人**", "**责任人:**"),
-}
 
 
 def active_markdown_files(root: Path) -> list[Path]:
-    """Return active Markdown files that participate in governance checks."""
+    """Return active Markdown files that participate in link checks."""
     files: list[Path] = []
     for entry in ACTIVE_MARKDOWN_ROOTS:
         path = root / entry
@@ -44,16 +41,6 @@ def active_markdown_files(root: Path) -> list[Path]:
                     continue
                 files.append(markdown)
     return sorted(set(files))
-
-
-def report_files(root: Path) -> set[Path]:
-    """Return active Markdown and HTML report files."""
-    reports_dir = root / "docs" / "reports"
-    return {
-        path
-        for path in reports_dir.iterdir()
-        if path.is_file() and path.suffix in {".md", ".html"}
-    }
 
 
 def _strip_anchor(target: str) -> str:
@@ -95,91 +82,13 @@ def check_markdown_links(root: Path) -> list[str]:
     return issues
 
 
-def check_report_ledger(root: Path) -> list[str]:
-    """Check that active reports are recorded in the documentation status ledger."""
-    ledger = root / "docs" / "reports" / "DOCUMENTATION_STATUS_REPORT.md"
-    ledger_text = ledger.read_text(encoding="utf-8")
-    active_ledger_text = ledger_text.split("### L4:", 1)[0]
-    mentioned = {
-        root / link
-        for link in REPORT_LINK.findall(active_ledger_text)
-        if Path(link).suffix in {".md", ".html"}
-    }
-    expected = report_files(root) - {ledger}
-
-    issues: list[str] = []
-    for path in sorted(expected - mentioned):
-        issues.append(f"active report is missing from documentation ledger: {path.relative_to(root)}")
-    for path in sorted(mentioned - expected - {ledger}):
-        if not path.exists():
-            issues.append(f"documentation ledger references missing active report: {path.relative_to(root)}")
-    return issues
-
-
-def plan_files(root: Path) -> set[Path]:
-    """Return active spec/plan Markdown files that must be registered."""
-    files: set[Path] = set()
-    for entry in PLAN_ROOTS:
-        directory = root / entry
-        if not directory.is_dir():
-            continue
-        for path in directory.rglob("*"):
-            if path.is_file() and path.suffix in {".md", ".html"}:
-                files.add(path)
-    return files
-
-
-def check_plan_ledger(root: Path) -> list[str]:
-    """Check that active plans are registered in the documentation status ledger."""
-    ledger = root / "docs" / "reports" / "DOCUMENTATION_STATUS_REPORT.md"
-    ledger_text = ledger.read_text(encoding="utf-8")
-    active_ledger_text = ledger_text.split("### L4:", 1)[0]
-    mentioned = {root / link for link in PLAN_LINK.findall(active_ledger_text)}
-    expected = plan_files(root)
-
-    issues: list[str] = []
-    for path in sorted(expected - mentioned):
-        issues.append(f"active plan is missing from documentation ledger: {path.relative_to(root)}")
-    for path in sorted(mentioned - expected):
-        if not path.exists():
-            issues.append(
-                f"documentation ledger references missing active plan: {path.relative_to(root)}"
-            )
-    return issues
-
-
-def check_report_metadata(root: Path) -> list[str]:
-    """Check active Markdown reports for required governance metadata."""
-    issues: list[str] = []
-    for path in sorted((root / "docs" / "reports").glob("*.md")):
-        head = path.read_text(encoding="utf-8")[:1000]
-        missing = [
-            field
-            for field, aliases in METADATA_ALIASES.items()
-            if not any(alias in head for alias in aliases)
-        ]
-        if missing:
-            issues.append(f"{path.relative_to(root)} missing metadata: {', '.join(missing)}")
-    return issues
-
-
-def check_pending_delete_inventory(root: Path) -> list[str]:
-    """Check pending-delete files are recorded in both pending README and ledger."""
-    pending_root = root / "docs" / "archive" / "pending_delete"
-    pending_readme = pending_root / "README.md"
-    ledger = root / "docs" / "reports" / "DOCUMENTATION_STATUS_REPORT.md"
-    pending_text = pending_readme.read_text(encoding="utf-8")
-    ledger_text = ledger.read_text(encoding="utf-8")
-    ledger_mentions = {root / link for link in PENDING_LINK.findall(ledger_text)}
-
-    issues: list[str] = []
-    for path in sorted(p for p in pending_root.rglob("*") if p.is_file() and p != pending_readme):
-        relative_to_pending = path.relative_to(pending_root).as_posix()
-        if relative_to_pending not in pending_text:
-            issues.append(f"pending-delete README omits {path.relative_to(root)}")
-        if path not in ledger_mentions:
-            issues.append(f"documentation ledger omits pending-delete file {path.relative_to(root)}")
-    return issues
+def check_entry_documents(root: Path) -> list[str]:
+    """Require the stable navigation entry points to exist."""
+    return [
+        f"required entry document is missing: {path.as_posix()}"
+        for path in REQUIRED_ENTRY_DOCUMENTS
+        if not (root / path).is_file()
+    ]
 
 
 def check_html_reports(root: Path) -> list[str]:
@@ -201,10 +110,7 @@ def check_repository(root: Path) -> list[str]:
     issues: list[str] = []
     issues.extend(check_conflict_markers(root))
     issues.extend(check_markdown_links(root))
-    issues.extend(check_report_ledger(root))
-    issues.extend(check_plan_ledger(root))
-    issues.extend(check_report_metadata(root))
-    issues.extend(check_pending_delete_inventory(root))
+    issues.extend(check_entry_documents(root))
     issues.extend(check_html_reports(root))
     return issues
 

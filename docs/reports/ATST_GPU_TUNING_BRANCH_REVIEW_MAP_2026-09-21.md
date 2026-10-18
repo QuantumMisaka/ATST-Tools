@@ -17,7 +17,7 @@
 | 变更规模 | 52 文件，+9080 / −950（`git diff --stat 2cf5b7e..HEAD`） |
 | 规范源 | [SPEC](../superpowers/specs/2026-09-20-atst-gpu-node-tuning-design.md)（§11 Ruling）、[接口冻结](../superpowers/specs/2026-09-21-atst-runtime-interface-design.md)（rev.5）、[计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md) |
 | 主要证据 | [P0 复核](../superpowers/specs/2026-09-21-atst-gpu-node-tuning-p0-review.md)；[本地 GPU 验证报告](ATST_RUNTIME_LOCAL_GPU_VALIDATION_2026-09-21.md) §4–§16 |
-| 账本 | [DOCUMENTATION_STATUS_REPORT.md](DOCUMENTATION_STATUS_REPORT.md)（每次变更登记） |
+| 文档入口 | [DOCUMENTATION.md](../developer/DOCUMENTATION.md) |
 
 门禁现状（2026-09-21 对 `1a62a72` 复测）：`tests/unit` **1101 passed / 2 documented skips**
 （共 1099 项收集）；`ATST_RUN_MPI_TESTS=1 tests/integration` **23 passed**（真实 MPI）；
