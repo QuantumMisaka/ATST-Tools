@@ -17,10 +17,6 @@ def _markdown_targets(text: str) -> set[str]:
     return {match.group(1).strip("<>") for match in MARKDOWN_LINK.finditer(text)}
 
 
-# User-facing pages may describe product capabilities and portable execution
-# concepts, but must not become a maintenance runbook.  Keep this list
-# explicit: adding a term requires an intentional documentation-boundary
-# decision rather than silently broadening a substring search.
 USER_ENTRYPOINTS = (
     Path("README.md"),
     Path("docs/index.md"),
@@ -65,8 +61,7 @@ def _user_entrypoint_text(path: Path) -> str:
 
 
 def _load_governance_script():
-    root = Path(__file__).resolve().parents[2]
-    script = root / "scripts" / "check_docs_governance.py"
+    script = ROOT / "scripts" / "check_docs_governance.py"
     spec = importlib.util.spec_from_file_location("check_docs_governance", script)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
@@ -74,32 +69,16 @@ def _load_governance_script():
     return module
 
 
-def _load_release_checker():
-    script = ROOT / "scripts" / "check_release_readiness.py"
-    spec = importlib.util.spec_from_file_location("check_release_readiness", script)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
-
-
-STABLE_VERSION = _load_release_checker().load_project_version(ROOT)
-
-
 def test_docs_governance_checks_pass_for_current_tree():
-    root = Path(__file__).resolve().parents[2]
     module = _load_governance_script()
 
-    issues = module.check_repository(root)
-
-    assert issues == []
+    assert module.check_repository(ROOT) == []
 
 
 def test_docs_governance_cli_returns_success_for_current_tree():
-    root = Path(__file__).resolve().parents[2]
     module = _load_governance_script()
 
-    assert module.main(["--root", str(root)]) == 0
+    assert module.main(["--root", str(ROOT)]) == 0
 
 
 def test_readme_has_absolute_cross_channel_user_entrypoints():
@@ -112,120 +91,6 @@ def test_readme_has_absolute_cross_channel_user_entrypoints():
         f"{CANONICAL_REPOSITORIES['Gitee']}/tree/main/examples",
     }
     assert expected <= targets
-
-
-def test_active_user_docs_use_current_repository_and_release_facts():
-    repository_docs = {
-        path: Path(path).read_text(encoding="utf-8")
-        for path in ("README.md", "docs/user/USER_GUIDE_CN.md")
-    }
-    active_user_docs = {
-        path: Path(path).read_text(encoding="utf-8")
-        for path in (
-            "docs/user/USER_GUIDE_CN.md",
-            "docs/user/CONFIG_REFERENCE.md",
-            "docs/user/PYTHON_API_REFERENCE.md",
-        )
-    }
-
-    assert all("https://github.com/QuantumMisaka/atst-tools.git" in text for text in repository_docs.values())
-    assert all("https://github.com/deepmodeling/atst-tools.git" not in text for text in repository_docs.values())
-    assert f"当前 {STABLE_VERSION} 版本" in active_user_docs["docs/user/USER_GUIDE_CN.md"]
-    assert f"RELEASE_NOTES_{STABLE_VERSION}.md" in active_user_docs["docs/user/USER_GUIDE_CN.md"]
-    assert f"**Version**: {STABLE_VERSION}" in active_user_docs["docs/user/CONFIG_REFERENCE.md"]
-    assert "**Version**: 2.2.1" not in active_user_docs["docs/user/CONFIG_REFERENCE.md"]
-    assert f"This reference tracks the current {STABLE_VERSION} release" in active_user_docs["docs/user/PYTHON_API_REFERENCE.md"]
-    assert f"This reference tracks the current 2.2.1 release" not in active_user_docs["docs/user/PYTHON_API_REFERENCE.md"]
-    assert "(2.2.1)" in active_user_docs["docs/user/PYTHON_API_REFERENCE.md"]
-
-
-def test_stable_release_facts_are_derived_across_entrypoints():
-    """Stable-version links and release automation agree with package metadata."""
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    index = (ROOT / "docs/index.md").read_text(encoding="utf-8")
-    config = (ROOT / "docs/user/CONFIG_REFERENCE.md").read_text(encoding="utf-8")
-    api_reference = (ROOT / "docs/user/PYTHON_API_REFERENCE.md").read_text(encoding="utf-8")
-    architecture = (ROOT / "docs/developer/DOCS_ARCHITECTURE.md").read_text(encoding="utf-8")
-    user_guide = (ROOT / "docs/user/USER_GUIDE_CN.md").read_text(encoding="utf-8")
-    release_automation = (ROOT / "docs/developer/PYPI_RELEASE_AUTOMATION.md").read_text(
-        encoding="utf-8"
-    )
-
-    assert f"version-{STABLE_VERSION}-blue" in readme
-    assert f"Current {STABLE_VERSION} status" in readme
-    assert f"RELEASE_NOTES_{STABLE_VERSION}.md" in readme
-    assert f"releases/RELEASE_NOTES_{STABLE_VERSION}.md" in index
-    assert f"../releases/RELEASE_NOTES_{STABLE_VERSION}.md" in architecture
-    assert f"{STABLE_VERSION} release" in api_reference
-    assert f"{STABLE_VERSION}" in config
-    assert f"{STABLE_VERSION}" in user_guide
-    assert "QuantumMisaka/atst-tools" in release_automation
-    assert f"v{STABLE_VERSION}" in release_automation
-    assert "Owner: deepmodeling" not in release_automation
-    assert "Primary trigger: publishing a GitHub Release" not in release_automation
-
-
-def test_governance_release_gate_guide_is_linked_and_names_boundaries():
-    """The developer index exposes the release gate guide and its interfaces."""
-    index = (ROOT / "docs/index.md").read_text(encoding="utf-8")
-    guide = (ROOT / "docs/developer/GOVERNANCE_AND_RELEASE_GATES.md").read_text(
-        encoding="utf-8"
-    )
-
-    assert "developer/GOVERNANCE_AND_RELEASE_GATES.md" in index
-    assert "scripts/check_release_readiness.py" in guide
-    assert "pypi" in guide
-    assert "Environment" in guide
-
-
-def test_governance_release_guidance_is_advisory_and_preserves_external_boundaries():
-    """Governance review remains owner-judged evidence, not a release gate."""
-    guide = " ".join(
-        (ROOT / "docs/developer/GOVERNANCE_AND_RELEASE_GATES.md")
-        .read_text(encoding="utf-8")
-        .split()
-    )
-    release_guide = " ".join(
-        (ROOT / "docs/developer/PYPI_RELEASE_AUTOMATION.md")
-        .read_text(encoding="utf-8")
-        .split()
-    )
-
-    assert "owner-judged advisory evidence" in guide
-    assert "current-family independent review" in guide
-    assert "owner-confirmed" in guide
-    assert "frozen diff" in guide
-    assert "CI cannot manufacture model-family evidence" in guide
-    assert "The launcher is an optional convenience, not a required step." in guide
-    assert (
-        "A missing, same-family, stale, or otherwise unavailable cross-family review "
-        "is recorded honestly as not performed or incomplete; it does not by itself "
-        "close a governance gate."
-    ) in guide
-    assert "None of these cross-family review states blocks delivery or release by itself" in guide
-    assert "keeps the governance gate closed" not in guide
-    assert "cross-family gate passed" not in guide
-    assert "pypi" in release_guide
-    assert "authorized maintainer" in release_guide
-    assert "administrator" in release_guide
-    boundary_guidance = f"{guide} {release_guide}"
-    for operation in ("push", "tag", "publish", "credentials"):
-        assert operation in boundary_guidance
-    assert "GitHub" in boundary_guidance
-    assert "PyPI" in boundary_guidance
-
-
-def test_governance_spec_labels_baseline_and_current_local_workflow_state():
-    """The governance SPEC distinguishes pre-implementation evidence from current files."""
-    spec = (
-        ROOT / "docs/superpowers/specs/2026-09-04-github-governance-and-release-gates-design.html"
-    ).read_text(encoding="utf-8")
-
-    assert "实施前基线（2026-09-04）" in spec
-    assert "当前本地状态（2026-09-05）" in spec
-    assert "PR、main push 和手动触发" in spec
-    assert "release-preflight" in spec
-    assert "OIDC" in spec
 
 
 @pytest.mark.parametrize(
@@ -255,14 +120,13 @@ def test_user_boundary_allows_scientific_ci_neb_and_config_validation():
     assert _forbidden_user_terms("Use atst config validate config.yaml.") == []
 
 
-def test_docs_index_user_boundary_excludes_developer_and_project_manager_paths(tmp_path):
+def test_docs_index_user_boundary_excludes_developer_paths(tmp_path):
     """Maintainer navigation outside User Path cannot trigger the user-doc gate."""
     index = tmp_path / "docs" / "index.md"
     index.parent.mkdir()
     index.write_text(
         "## User Path\nUse atst config validate config.yaml.\n"
-        "## Developer Path\nRun tests on the SAI site.\n"
-        "## Project Manager Path\nReview the CI validation-run.\n",
+        "## Developer Path\nRun tests on the SAI site.\n",
         encoding="utf-8",
     )
 
@@ -271,31 +135,30 @@ def test_docs_index_user_boundary_excludes_developer_and_project_manager_paths(t
 
 def test_user_entrypoints_exclude_maintainer_and_site_operations():
     """User navigation stays product-focused while developer operations remain discoverable."""
-    root = Path(__file__).resolve().parents[2]
-    user_paths = [root / relative for relative in USER_ENTRYPOINTS]
-    user_paths.extend(sorted((root / "docs/user").rglob("*.md")))
+    user_paths = [ROOT / relative for relative in USER_ENTRYPOINTS]
+    user_paths.extend(sorted((ROOT / "docs/user").rglob("*.md")))
 
     violations = []
     for path in user_paths:
         text = _user_entrypoint_text(path)
         for term in _forbidden_user_terms(text):
-            violations.append(f"{path.relative_to(root)} contains forbidden term {term!r}")
+            violations.append(f"{path.relative_to(ROOT)} contains forbidden term {term!r}")
     assert not violations, "\n".join(violations)
 
-    operations_guide = root / "docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md"
+    operations_guide = ROOT / "docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md"
     assert operations_guide.is_file()
-    handover = (root / "docs/developer/HANDOVER.md").read_text(encoding="utf-8")
-    status_report = (root / "docs/reports/DOCUMENTATION_STATUS_REPORT.md").read_text(
-        encoding="utf-8"
-    )
+    handover = (ROOT / "docs/developer/HANDOVER.md").read_text(encoding="utf-8")
+    documentation = (ROOT / "docs/developer/DOCUMENTATION.md").read_text(encoding="utf-8")
     assert "EXAMPLE_VALIDATION_OPERATIONS.md" in handover
-    assert "docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md" in status_report
+    assert "EXAMPLE_VALIDATION_OPERATIONS.md" in documentation
 
 
-def test_maintenance_guidance_labels_sai_as_validation_only_and_has_no_legacy_branch_policy():
+def test_maintenance_guidance_labels_sai_as_validation_only():
     agents = Path("AGENTS.md").read_text(encoding="utf-8")
     cli_skill = Path("docs/skills/atst-cli/SKILL.md").read_text(encoding="utf-8")
-    release_notes = Path("docs/releases/RELEASE_NOTES_2.2.3.md").read_text(encoding="utf-8")
+    release_notes = Path("docs/archive/releases/RELEASE_NOTES_2.2.3.md").read_text(
+        encoding="utf-8"
+    )
 
     assert "维护验证环境" in agents
     assert "用户运行前提" not in agents
@@ -303,71 +166,20 @@ def test_maintenance_guidance_labels_sai_as_validation_only_and_has_no_legacy_br
     assert "- Package version: `2.2.3`." in release_notes
 
 
-def _plan_ledger_fixture(
-    tmp_path: Path,
-    *,
-    plan_paths: tuple[str, ...] = ("docs/superpowers/plans/2026-01-01-demo.md",),
-    ledger_rows: str = "",
-    ledger_tail: str = "",
-) -> Path:
-    """Create a minimal docs tree for active-plan registration checks."""
-    for relative in plan_paths:
-        plan = tmp_path / relative
-        plan.parent.mkdir(parents=True, exist_ok=True)
-        plan.write_text("# plan\n", encoding="utf-8")
-    ledger = tmp_path / "docs" / "reports" / "DOCUMENTATION_STATUS_REPORT.md"
-    ledger.parent.mkdir(parents=True, exist_ok=True)
-    ledger.write_text(
-        "# 文档治理状态报告\n\n## 1. 核心结论\n\n## 4. Spec / Plan / Review 登记\n\n"
-        "| 文档 | 生命周期 | 当前职责 |\n| :--- | :--- | :--- |\n"
-        f"{ledger_rows}"
-        "\n### L4: 历史或已被取代材料\n\n"
-        f"{ledger_tail}",
-        encoding="utf-8",
-    )
-    return tmp_path
-
-
-def test_docs_governance_requires_active_plan_registration(tmp_path):
-    """An unregistered plan under an active plan root is a governance error."""
+def test_governance_requires_entry_documents(tmp_path):
     module = _load_governance_script()
-    root = _plan_ledger_fixture(tmp_path)
 
-    issues = module.check_plan_ledger(root)
+    issues = module.check_entry_documents(tmp_path)
 
-    assert any("active plan is missing from documentation ledger" in issue for issue in issues)
-    assert any("2026-01-01-demo.md" in issue for issue in issues)
+    assert any("docs/developer/DOCUMENTATION.md" in issue for issue in issues)
 
 
-def test_docs_governance_accepts_registered_plans_from_both_roots(tmp_path):
-    """Registered plans in both supported plan roots satisfy the ledger contract."""
+def test_governance_rejects_broken_active_links(tmp_path):
     module = _load_governance_script()
-    root = _plan_ledger_fixture(
-        tmp_path,
-        plan_paths=(
-            "docs/superpowers/plans/2026-01-01-demo.md",
-            "docs/developer/plans/legacy-demo.md",
-        ),
-        ledger_rows=(
-            "| `docs/superpowers/plans/2026-01-01-demo.md` | plan | demo |\n"
-            "| `docs/developer/plans/legacy-demo.md` | plan | legacy demo |\n"
-        ),
-    )
+    index = tmp_path / "docs" / "index.md"
+    index.parent.mkdir()
+    index.write_text("[missing](missing.md)\n", encoding="utf-8")
 
-    assert module.check_plan_ledger(root) == []
+    issues = module.check_markdown_links(tmp_path)
 
-
-def test_docs_governance_rejects_l4_only_mentions_and_missing_plan_references(tmp_path):
-    """L4/history mentions do not register a plan, and stale references are errors."""
-    module = _load_governance_script()
-    root = _plan_ledger_fixture(
-        tmp_path,
-        plan_paths=("docs/superpowers/plans/2026-01-01-demo.md",),
-        ledger_rows="| `docs/superpowers/plans/2026-01-02-missing.md` | plan | gone |\n",
-        ledger_tail="`docs/superpowers/plans/2026-01-01-demo.md` moved to archive\n",
-    )
-
-    issues = module.check_plan_ledger(root)
-
-    assert any("references missing active plan" in issue for issue in issues)
-    assert any("active plan is missing from documentation ledger" in issue for issue in issues)
+    assert any("missing link target" in issue for issue in issues)

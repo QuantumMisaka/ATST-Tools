@@ -138,7 +138,7 @@ flowchart TD
 [HANDOVER](../../docs/developer/HANDOVER.md)，配置治理见
 [YAML_INPUT_GOVERNANCE](../../docs/developer/YAML_INPUT_GOVERNANCE.md)，验证操作见
 [EXAMPLE_VALIDATION_OPERATIONS](../../docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md)。
-文档目录和事实来源见 [DOCS_ARCHITECTURE](../../docs/developer/DOCS_ARCHITECTURE.md)。
+文档目录和事实来源见 [DOCUMENTATION](../../docs/developer/DOCUMENTATION.md)。
 新增目录、改变模块职责或主要调用关系时同步本页；版本状态和逐次验证结果继续维护在
 功能矩阵、release notes 和报告中。
 

@@ -17,17 +17,20 @@ release 变更，都先从对应小节确认需要同步的文档。
 - 源码入口：[源码导览](../../src/atst_tools/README.md)，用于理解模块目标、主要内容、
   调用关系与修改位置；新增目录或调整职责时同步更新。
 - 开发入口：[YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md)、
-  [DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md)、
+  [DOCUMENTATION.md](DOCUMENTATION.md)、
   [EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 和
   [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md)。
-- 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md) 和
-  [DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md)。
+- 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)。
 
 ## 1.1 新 checkout 与 CPU 开发准备
 
 从 GitHub checkout 开发时，先创建 Python 3.10+ 环境，再以 editable 模式安装
 项目及测试依赖。下面命令不需要 ABACUS、GPU、SAI 或 `mpi4py`，适合跑普通
 CPU-only unit tests：
+
+若当前环境已从其他 checkout 安装了 `atst_tools`，在 worktree 中运行测试前使用
+`PYTHONPATH=src` 或 `pip install -e .`，并确认 `atst_tools.__file__` 指向当前
+worktree。
 
 ```bash
 python -m venv .venv
@@ -101,7 +104,7 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 - 保持 `atst_tools.api.__all__` 的既有稳定 root imports；runner 不得成为新的
   root import 或改变 `atst` CLI 行为。
 - 更新 `docs/user/PYTHON_API_REFERENCE.md`、README、中文用户指南、release notes
-  和功能状态账本，说明 JSON schema、退出码、manifest 权威性与 MPI 责任边界。
+  和功能矩阵，说明 JSON schema、退出码、manifest 权威性与 MPI 责任边界。
 - 对 `python -m atst_tools.api.runner` 运行 API/document、clean-wheel 和实际 MPI
   门禁；runner 只能消费 API，绝不启动 Slurm、`mpirun` 或 `srun`。
 
@@ -230,14 +233,11 @@ launcher 的 rank 参数识别，未识别时为 1。任意 calculator command �
 
 ## 8. 新增 report 或移动旧 report
 
-- 判断 report 级别：L1 状态入口、L2 当前证据、L3 当前主题审查、L4 历史材料。
-- 更新 `docs/reports/DOCUMENTATION_STATUS_REPORT.md`。
+- 新增 report 时写清日期、环境和证据范围。
 - 只有当 report 是核心入口或当前重点证据时，才从 `docs/index.md` 链接。
-- 被取代的 report 先吸收结论，再移到 `docs/archive/` 或
-  `docs/archive/pending_delete/`。
-- 新增 spec/plan 放入 `docs/superpowers/specs/` 或 `docs/superpowers/plans/`，
-  并在 `DOCUMENTATION_STATUS_REPORT.md` 登记；计划完成后先吸收结论，再移入
-  `docs/archive/pending_delete/plans/` 复核。
+- 被取代的 report 先吸收结论，再移到 `docs/archive/reports/`。
+- 新增 spec/plan 放入 `docs/superpowers/specs/` 或 `docs/superpowers/plans/`；
+  完成后吸收结论并移入 `docs/archive/`。
 
 ## 9. 准备 release
 
@@ -253,8 +253,7 @@ launcher 的 rank 参数识别，未识别时为 1。任意 calculator command �
   不是仓库文件修改的副作用。
 - 若 release 包含示例或 curated-output 变更，按
   `docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md` 复核运行证据与溯源。
-- 更新 `FEATURE_STATUS_MATRIX.md` 和 `DOCUMENTATION_STATUS_REPORT.md`。
-- 复核 `docs/archive/pending_delete/README.md`，确认是否最终删除待删除文件。
+- 更新 `FEATURE_STATUS_MATRIX.md`。
 - 运行文档链接、格式和相关测试。
 
 ## 10. 最小检查

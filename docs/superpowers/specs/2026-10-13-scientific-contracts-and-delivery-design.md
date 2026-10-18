@@ -18,7 +18,7 @@
 
 依据：[系统审查](../../reports/ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md)、
 [证据摘要](../../reports/data/system_review_20261013/evidence.json)、
-[FastIDPP 历史科学路径比对](../../reports/FAST_IDPP_ALGORITHM_COMPARISON_AND_FIX_2026-05-25.md)、
+[FastIDPP 历史科学路径比对](../../archive/reports/FAST_IDPP_ALGORITHM_COMPARISON_AND_FIX_2026-05-25.md)、
 [公共 API 契约](../../user/PYTHON_API_REFERENCE.md)、
 [现有 runtime 设计](2026-09-21-atst-runtime-interface-design.md)。代码基线为
 `45d8c78de8a605c127cd4c36742d0c9525a0a6b6`，版本 `2.2.8`；新增审查材料与本设计

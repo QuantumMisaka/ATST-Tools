@@ -361,8 +361,7 @@ Developer governance starts from these maintained entry points:
 - [Documentation index](docs/index.md)
 - [Handover checklist](docs/developer/HANDOVER.md)
 - [YAML input governance](docs/developer/YAML_INPUT_GOVERNANCE.md)
-- [Documentation standards](docs/developer/DOCUMENTATION_STANDARDS.md)
-- [Documentation architecture](docs/developer/DOCS_ARCHITECTURE.md)
+- [Documentation guide](docs/developer/DOCUMENTATION.md)
 - [ABACUS wrapper guide](docs/user/ABACUSLITE_WRAPPER_GUIDE.md)
 - [Maintained atst-cli skill](docs/skills/atst-cli/SKILL.md)
 - [Release readiness gate](docs/developer/PYPI_RELEASE_AUTOMATION.md#local-readiness-gate)
@@ -370,10 +369,9 @@ Developer governance starts from these maintained entry points:
 Project status and validation entry points:
 
 - [Feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md)
-- [Documentation governance report](docs/reports/DOCUMENTATION_STATUS_REPORT.md)
-- [DP validation report](docs/reports/DP_VALIDATION_2.0.0.md)
-- [Issue #25 AutoNEB fmax fix report](docs/reports/ISSUE_25_AUTONEB_FMAX_FIX_REPORT_2026-05-22.md)
-- [MPI image-level NEB parallel summary](docs/reports/MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md)
+- [2.2.9 release notes](docs/releases/RELEASE_NOTES_2.2.9.md)
+- Historical validation reports are indexed in
+  [the archive](docs/archive/README.md).
 
 ## Version Governance
 

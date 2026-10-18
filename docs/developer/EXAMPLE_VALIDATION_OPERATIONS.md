@@ -51,7 +51,7 @@ their recorded step limits.
 
 Use the normal unit and example checks appropriate to the changed surface.
 The authoritative P0/P1 execution evidence is
-[P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md](../reports/P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md).
+[P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md](../archive/reports/P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md).
 
 ## SAI and site-specific execution
 
@@ -74,7 +74,7 @@ ABACUS subprocess count per image; keep it at `1` for an initial parallel
 check unless the allocation is sized for nested MPI. Place the outer launch in
 the site's submission script, or use the launcher that provides an `mpi4py`
 world. Design constraints and validation evidence are in
-[MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md](../reports/MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md).
+[MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md](../archive/reports/MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md).
 
 The dedicated Cy-Pt image-parallel historical submission patterns were:
 
@@ -144,24 +144,22 @@ ignored directory, then deliberately curate any accepted replacement.
 
 Relevant active evidence reports are:
 
-- [EXAMPLES_MAIN_BRANCH_COMPARISON_LTS3101_2026-05-19.md](../reports/EXAMPLES_MAIN_BRANCH_COMPARISON_LTS3101_2026-05-19.md)
-- [DPA3_DP_EXAMPLES_VALIDATION_2026-05-28.md](../reports/DPA3_DP_EXAMPLES_VALIDATION_2026-05-28.md)
-- [NEB_IMAGE_PARALLEL_E2E_VALIDATION_2026-05-29.md](../reports/NEB_IMAGE_PARALLEL_E2E_VALIDATION_2026-05-29.md)
-- [TWO_STAGE_NEB_LTS3101_VALIDATION_2026-06-04.md](../reports/TWO_STAGE_NEB_LTS3101_VALIDATION_2026-06-04.md)
-- [DMF_P3_VALIDATION_STAGING_2026-06-18.md](../reports/DMF_P3_VALIDATION_STAGING_2026-06-18.md),
-  [DMF_P3_RUNTIME_VALIDATION_2026-06-18.md](../reports/DMF_P3_RUNTIME_VALIDATION_2026-06-18.md), and
-  [DMF_P4_D2S_ABACUS_COMPARISON_2026-06-18.md](../reports/DMF_P4_D2S_ABACUS_COMPARISON_2026-06-18.md)
+- [EXAMPLES_MAIN_BRANCH_COMPARISON_LTS3101_2026-05-19.md](../archive/reports/EXAMPLES_MAIN_BRANCH_COMPARISON_LTS3101_2026-05-19.md)
+- [DPA3_DP_EXAMPLES_VALIDATION_2026-05-28.md](../archive/reports/DPA3_DP_EXAMPLES_VALIDATION_2026-05-28.md)
+- [NEB_IMAGE_PARALLEL_E2E_VALIDATION_2026-05-29.md](../archive/reports/NEB_IMAGE_PARALLEL_E2E_VALIDATION_2026-05-29.md)
+- [TWO_STAGE_NEB_LTS3101_VALIDATION_2026-06-04.md](../archive/reports/TWO_STAGE_NEB_LTS3101_VALIDATION_2026-06-04.md)
+- [DMF_P3_VALIDATION_STAGING_2026-06-18.md](../archive/reports/DMF_P3_VALIDATION_STAGING_2026-06-18.md),
+  [DMF_P3_RUNTIME_VALIDATION_2026-06-18.md](../archive/reports/DMF_P3_RUNTIME_VALIDATION_2026-06-18.md), and
+  [DMF_P4_D2S_ABACUS_COMPARISON_2026-06-18.md](../archive/reports/DMF_P4_D2S_ABACUS_COMPARISON_2026-06-18.md)
 
 ## Evidence reports and lifecycle
 
 Treat the records in this guide as site-specific historical evidence. When an
 example, curated output, or execution boundary changes, update the affected
 reference data, write or revise the appropriate evidence report, and update
-the active ledger in
-[DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md).
-Classify the report and follow archival rules in
-[DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md); do not replace a
-current conclusion by silently editing an old historical report.
+the feature matrix when the supported status changes. Follow archival rules in
+[DOCUMENTATION.md](DOCUMENTATION.md); do not replace a current conclusion by
+silently editing an old historical report.
 
 For the complete example and release checklist, return to
 [HANDOVER.md](HANDOVER.md). Keep site commands in this guide or evidence
