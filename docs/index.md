@@ -40,8 +40,8 @@ minimal run. Use the paths below for details.
 - [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md): the current
   supported/partial/experimental boundary.
 - [2.2.9 release notes](releases/RELEASE_NOTES_2.2.9.md): current release.
-- Historical notes: [2.2.5](releases/RELEASE_NOTES_2.2.5.md),
-  [2.2.4](releases/RELEASE_NOTES_2.2.4.md).
+- Historical notes: [2.2.5](archive/releases/RELEASE_NOTES_2.2.5.md),
+  [2.2.4](archive/releases/RELEASE_NOTES_2.2.4.md).
 
 Validation reports under `reports/` are evidence, not a required reading path.
 Start from the feature matrix and follow the relevant report only when needed.
