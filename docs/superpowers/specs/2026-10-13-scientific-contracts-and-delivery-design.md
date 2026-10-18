@@ -5,6 +5,10 @@
 **状态**: 已确认；本地整改验收完成，未发布（见 §10）
 **责任人**: ATST-Tools maintainers
 
+> 2026-10-19 后续变更：2.3.0 已将独立安装的 abacuslite 设为唯一 ABACUS ASE
+> backend，本文中 vendored fallback 相关描述仅保留为设计历史；当前契约见
+> [ABACUSLite wrapper guide](../../user/ABACUSLITE_WRAPPER_GUIDE.md)。
+
 ## 1. 目标、依据与实施边界
 
 用户在局部实施后进一步明确项目目的：基于 ASE 调用 ABACUS/DP 开展过渡态计算，

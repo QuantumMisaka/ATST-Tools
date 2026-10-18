@@ -6,9 +6,9 @@ ATST-Tools uses the independently installed `abacuslite>=1.1.0,<2` package
 for every ABACUS calculator and file reader/writer. Missing or broken imports
 fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
 forward to the same installed implementation for existing callers, including
-Paimon; they do not select a separate backend. This describes the current
-source integration candidate. The published ATST-Tools 2.2.9 predates the
-required-dependency cutover.
+Paimon; they do not select a separate backend. This is the 2.3.0 source
+behavior; the latest published package, 2.2.9, predates the required-dependency
+cutover.
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow
@@ -51,9 +51,9 @@ external runtime validation has not been performed.
 ## Historical Snapshot Evidence
 
 The former vendored implementation was compared against the independent
-package before this cutover. Its frozen baseline, patch ledger and paired
-consumer/engine evidence remain recorded in the developer status report;
-they are audit history, not a live fallback or a current parser contract.
+package before this cutover. Its frozen baseline and patch ledger remain in
+`ABACUSLITE_SNAPSHOT.md` and `PATCHES.md`; they are audit history, not a live
+fallback or a current parser contract.
 ABACUS parser and calculator changes now belong in the independent
 `QuantumMisaka/abacuslite` repository. The old import paths are thin
 forwarders, and the ATST consumer suite verifies their object identity.

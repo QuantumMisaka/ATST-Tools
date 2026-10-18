@@ -19,8 +19,8 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference tracks the current 2.2.9 release. Publication and official
-PyPI no-cache installation checks passed.
+This reference tracks the 2.3.0 source candidate. The latest published package
+remains 2.2.9 and passed the official PyPI no-cache installation checks.
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -401,9 +401,9 @@ simultaneous image; existing serial fallback behavior is preserved.
 
 Backend delegation has four invariants:
 
-1. Configuration-driven ABACUS runs preserve external-abacuslite-first
-   resolution, followed by the vendored fallback only when the external package
-   is unavailable.
+1. Configuration-driven ABACUS runs always use the installed `abacuslite`
+   package; a missing or broken installation fails instead of selecting a
+   bundled fallback.
 2. `run_ccqn()` attaches the provided ASE calculator to a private atoms copy;
    it never rebuilds or reconfigures the calculator profile, command,
    pseudopotentials, orbitals, working directory, MPI settings, or I/O.

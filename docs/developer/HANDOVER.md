@@ -115,7 +115,7 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 - 更新 `docs/user/USER_GUIDE_CN.md` 的运行时依赖和环境边界。
 - 更新 feature/status reports 和 calculator factory tests。
 - 若 backend 涉及 ABACUS/DP 环境，补充验证报告或在现有报告中记录边界。
-- 本源码候选声明 `abacuslite>=1.1.0,<2` 为运行时依赖，ABACUS 只使用
+- 2.3.0 声明 `abacuslite>=1.1.0,<2` 为运行时依赖，ABACUS 只使用
   独立安装的包。缺包或包内部导入损坏应失败，不回退。旧
   `atst_tools.external.ASE_interface.abacuslite` 顶层、`core`、
   `io.generalio`/`latestio`/`legacyio` 和 `utils.ksampling` 模块路径为薄转发层；
@@ -132,9 +132,9 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
   相对路径从仓根运行；`ATST_TEST_INSTALLED_WHEEL=1` 与共享子进程环境 helper
   保留安装来源，惰性 `sitecustomize` 防源码遮蔽。新增 Python 子进程测试复用
   该 helper。显式旧路径转发测试允许兼容导入，但不将其算成第二套实现。
-- `ABACUSLITE_SNAPSHOT.md` 与 `PATCHES.md` 保留冻结历史，配对验收 wheel hash、
-  原始日志和 2026-10-17 结果由状态报告记录。旧 drift checker、vendored 实现
-  CI 和快照 mutation 测试已退役；新的 parser 修复由独立 abacuslite 仓测试。
+- `ABACUSLITE_SNAPSHOT.md` 与 `PATCHES.md` 保留冻结历史；配对验收的 wheel
+  hash、原始日志和 2026-10-17 结果保留在 Git 历史。旧 drift checker、vendored
+  实现 CI 和快照 mutation 测试已退役；新的 parser 修复由独立 abacuslite 仓测试。
 - 维护 `abacuslite` property-derived keywords 时，显式用户输入与自动派生值需按
   ABACUS 开关语义比较，例如 `True`、`1`、`"1"` 等价；但 `False`/`0` 与请求
   `forces` 或 `stress` 自动需要的 `"1"` 仍应作为冲突报错。

@@ -20,12 +20,7 @@ The release workflow lives at `.github/workflows/publish-pypi.yml`.
   branches, commits, and refs are not accepted.
 - Release guard: the workflow requires the tag to match
   `pyproject.toml` `[project].version`, resolves it under `refs/tags/`, and
-  checks after checkout that it points to `HEAD`. The current repository state
-  records the published `2.2.8` release at tag `v2.2.8`; its source revision,
-  CI runs, and PyPI artifact are recorded in the canonical release notes. The
-  official no-cache clean-install, CLI/API, and dependency verification passed. The previously
-  published `2.2.5` and `2.2.4` tags and PyPI artifacts remain historical
-  publication evidence.
+  checks after checkout that it points to `HEAD`.
 - Publishing job: uses the GitHub environment named `pypi` and requests
   `id-token: write` only for the PyPI upload job.
 - Before publishing, `release-preflight` checks out the resolved ref and runs
@@ -33,8 +28,10 @@ The release workflow lives at `.github/workflows/publish-pypi.yml`.
   clean-wheel API checks in that order. The publisher receives only the checked
   distribution artifact.
 
-The current published tag is `v2.2.9`; its publication evidence is tracked in
-[release notes](../releases/RELEASE_NOTES_2.2.9.md).
+The latest published tag is `v2.2.9`; its publication evidence is tracked in
+[release notes](../releases/RELEASE_NOTES_2.2.9.md). The `main` source is
+2.3.0 and has no release tag yet; see the
+[2.3.0 release notes](../releases/RELEASE_NOTES_2.3.0.md).
 
 ## Local Readiness Gate
 
