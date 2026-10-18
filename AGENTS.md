@@ -11,7 +11,8 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 - Unit Test覆盖度足够且粒度合适，Example中需要覆盖项目各方面功能并作为用户快速上手入口。
 - 核心代码库各个函数需要具有精练且完整的，Google Style的docstring。
 - 程序性输出（stdout/stderr、warning、logging、异常消息、CLI help/错误）统一英文；文档保持现有语言，新增或修改的注释与 docstring 使用英文。
-- 项目一段开发任务结束后，需要基于项目文档治理机制，在docs/的合适位置完成更新。
+- 项目一段开发任务结束后，在 `docs/` 的合适位置完成更新；维护规则见
+  `docs/developer/DOCUMENTATION.md`。
 
 ### 仓库设计
 - 优化 user interface，使用 CLI + YAML inputs 进行工作流交互，并在examples/目录下留下示例交互模式。
@@ -23,8 +24,8 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 - minor（2.x.0）：保留给阶段性/重大功能发布——新增独立功能点，或仓库渐进开发一段时间后的整体发布。
 - patch（2.2.x）：承担小功能加入与新增优化，以及 bug 修复。
 - 版本号在 `pyproject.toml` 单一版本源维护；发版时同步新增
-  `docs/releases/RELEASE_NOTES_<版本>.md`，并更新文档账本
-  （`docs/reports/DOCUMENTATION_STATUS_REPORT.md`、`FEATURE_STATUS_MATRIX.md`）。
+  `docs/releases/RELEASE_NOTES_<版本>.md`，并更新功能矩阵
+  `docs/reports/FEATURE_STATUS_MATRIX.md`。
 - 每个发布须在 release notes 中说明向后兼容性；仅纯增量（不破坏既有
   YAML/CLI/API 契约）的功能与修复可进入当前 minor 或 patch 序列。
 
@@ -56,7 +57,7 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 
 ### 文档治理入口
 
-开发任务结束前必须按文档治理机制更新对应入口。先判断本次变更影响的是用户路径、开发者路径还是项目管理路径，再同步长期文档和状态账本。
+开发任务结束前必须按文档治理机制更新对应入口。先判断本次变更影响的是用户路径、开发者路径还是项目管理路径，再同步长期文档、功能矩阵和发布说明。
 
 #### 用户入口
 - `README.md`：项目目标、支持 workflow、快速开始、参数入口和状态入口。
@@ -68,14 +69,11 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 
 #### 开发者入口
 - `docs/developer/HANDOVER.md`：维护者日常 checklist，新增 workflow、YAML 字段、CLI、backend、example、report、release 时先查这里。
-- `docs/developer/DOCUMENTATION_STANDARDS.md`：文档元数据、生命周期、reports L1-L4 分级、归档和待删除规则。
-- `docs/developer/DOCS_ARCHITECTURE.md`：目录职责、目标读者和文档生命周期类型。
+- `docs/developer/DOCUMENTATION.md`：文档入口、目录职责、归档规则和检查命令。
 - `docs/developer/YAML_INPUT_GOVERNANCE.md`：YAML schema、生成参数文档和测试治理。
-- `docs/reports/DOCUMENTATION_STATUS_REPORT.md`：活跃文档和 reports 的治理账本。
 - `docs/reports/FEATURE_STATUS_MATRIX.md`：当前功能支持状态。
 - `docs/superpowers/specs/`、`docs/superpowers/plans/`：设计 spec 与待执行计划；
-  新增计划须在 `DOCUMENTATION_STATUS_REPORT.md` 登记，完成后吸收结论并移入
-  `docs/archive/pending_delete/` 复核。
+  完成后吸收结论并移入 `docs/archive/`。
 
 #### 变更后检查
 - 文档-only 变更至少运行：
@@ -83,7 +81,8 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
   git diff --check -- README.md docs examples/README.md AGENTS.md
   rg -n "^<<<<<<<|^=======|^>>>>>>>" README.md docs examples/README.md AGENTS.md
   ```
-- 运行 `conda run -n atst-dev python scripts/check_docs_governance.py`（账本、链接、
-  metadata、pending-delete 与计划登记检查）。
+- 运行 `conda run -n atst-dev python scripts/check_docs_governance.py`
+  （冲突标记、相对链接、入口文件与 HTML 基础解析）。
 - 修改 YAML schema 时，重新生成 `docs/user/YAML_INPUT_VARIABLES.md`，并运行 `tests/unit/test_config.py`。
-- 新增或移动 report 时，同步更新 `docs/reports/DOCUMENTATION_STATUS_REPORT.md`；被取代材料先进入 `docs/archive/pending_delete/` 复核，不直接删除。
+- 新增 report 时写清日期与证据；被取代的材料移入 `docs/archive/reports/`，
+  状态变化同步到 `FEATURE_STATUS_MATRIX.md`。

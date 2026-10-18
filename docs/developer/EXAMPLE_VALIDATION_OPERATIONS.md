@@ -157,11 +157,9 @@ Relevant active evidence reports are:
 Treat the records in this guide as site-specific historical evidence. When an
 example, curated output, or execution boundary changes, update the affected
 reference data, write or revise the appropriate evidence report, and update
-the active ledger in
-[DOCUMENTATION_STATUS_REPORT.md](../reports/DOCUMENTATION_STATUS_REPORT.md).
-Classify the report and follow archival rules in
-[DOCUMENTATION_STANDARDS.md](DOCUMENTATION_STANDARDS.md); do not replace a
-current conclusion by silently editing an old historical report.
+the feature matrix when the supported status changes. Follow archival rules in
+[DOCUMENTATION.md](DOCUMENTATION.md); do not replace a current conclusion by
+silently editing an old historical report.
 
 For the complete example and release checklist, return to
 [HANDOVER.md](HANDOVER.md). Keep site commands in this guide or evidence
