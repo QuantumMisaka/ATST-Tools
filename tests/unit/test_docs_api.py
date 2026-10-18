@@ -44,7 +44,7 @@ def test_api_reference_states_execution_and_backend_boundaries():
     for phrase in (
         "current working directory",
         "root rank",
-        "external-abacuslite-first",
+        "always use the installed `abacuslite`",
         "provided ASE calculator",
         "experimental",
         "Deprecation",

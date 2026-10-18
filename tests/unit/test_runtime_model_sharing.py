@@ -32,6 +32,7 @@ from ase.calculators.calculator import Calculator
 from atst_tools.calculators import factory as calculator_factory
 from atst_tools.runtime import devices as runtime_devices
 from atst_tools.runtime import launch as runtime_launch
+from helpers import child_test_environment
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -264,8 +265,7 @@ def _worker_environment(
     workdir: Path, attempt: int, model_file: Path
 ) -> dict[str, str]:
     """Return the frozen isolated-worker environment of one attempt."""
-    base = dict(os.environ)
-    base["PYTHONPATH"] = str(REPO_ROOT / "src")
+    base = child_test_environment(REPO_ROOT / "src")
     base["ATST_MODEL_UNDER_TEST"] = str(model_file)
     base.pop(runtime_launch.ATTEMPT_ENV, None)
     resolution = runtime_devices.resolve_devices(

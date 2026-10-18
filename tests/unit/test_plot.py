@@ -8,7 +8,6 @@ same implementation.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -19,7 +18,7 @@ import pytest
 import atst_tools.utils.plot as plot
 from ase import Atoms
 from ase.io import Trajectory
-from helpers import make_atoms
+from helpers import child_test_environment, make_atoms
 
 ROOT = Path(__file__).resolve().parents[2]
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -310,7 +309,7 @@ def test_python_dash_m_plot_entrypoint_writes_png(tmp_path):
     chain_path = tmp_path / "chain.traj"
     _write_trajectory(chain_path, [0.0, 1.0, 2.0, 1.0])
     output = tmp_path / "module.png"
-    environment = dict(os.environ, PYTHONPATH=str(ROOT / "src"))
+    environment = child_test_environment(ROOT / "src")
 
     completed = subprocess.run(
         [

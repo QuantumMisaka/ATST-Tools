@@ -12,20 +12,14 @@ from atst_tools.utils.artifacts import (
 )
 
 
-def test_configured_abacus_records_resolved_source_and_vendored_provenance():
+def test_configured_abacus_records_external_source_and_version():
     identity = calculator_backend_identity({"calculator": {"name": "abacus"}})
 
     assert identity["calculator"] == "abacus"
     assert identity["identity_basis"] == "configuration"
-    assert identity["source"] in {"external", "vendored"}
+    assert identity["source"] == "external"
     assert identity["backend_version"] != ""
-    if identity["source"] == "vendored":
-        snapshot = identity["snapshot"]
-        assert len(snapshot["upstream_sha"]) == 40
-        assert snapshot["patches_document"].endswith("PATCHES.md")
-        assert len(snapshot["patches_sha256"]) == 64
-    else:
-        assert identity["snapshot"] == "unknown"
+    assert identity["snapshot"] == "unknown"
 
 
 def test_configured_dp_uses_model_and_head_facts_without_loading_model(tmp_path, monkeypatch):

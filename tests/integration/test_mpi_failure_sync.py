@@ -11,6 +11,7 @@ import subprocess
 import sys
 
 import pytest
+from helpers import child_test_environment
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -61,8 +62,7 @@ def test_two_rank_runner_publishes_one_root_result_document(tmp_path: Path) -> N
         "    parameters: {}\n",
         encoding="utf-8",
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     completed = _run_mpi(
         [
             launcher,
@@ -108,8 +108,7 @@ def test_root_endpoint_failure_releases_every_image_parallel_rank(
         "from ase import Atoms; from ase.io import write; "
         "write('chain.traj', [Atoms('H', positions=[[float(i), 0, 0]]) for i in range(4)])"
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     subprocess.run(
         [sys.executable, "-c", setup],
         cwd=tmp_path,
@@ -174,8 +173,7 @@ def test_rank_local_endpoint_sync_read_error_releases_every_rank(
     if not Path(launcher).is_file():
         pytest.skip("mpiexec is unavailable")
 
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     sync_file = (
         ".atst_neb_endpoint_synced.traj"
         if workflow == "neb"
@@ -253,8 +251,7 @@ def test_rank_local_initial_chain_read_error_releases_every_rank(
         "from ase import Atoms; from ase.io import write; "
         "write('chain.traj', [Atoms('H', positions=[[float(i), 0, 0]]) for i in range(4)])"
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     subprocess.run(
         [sys.executable, "-c", setup],
         cwd=tmp_path,
@@ -318,8 +315,7 @@ def test_rank_local_manifest_inspection_error_releases_every_rank(tmp_path: Path
     if not Path(launcher).is_file():
         pytest.skip("mpiexec is unavailable")
 
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     smoke = """
 from mpi4py import MPI
 from atst_tools.api import RunOptions, run_workflow
@@ -362,8 +358,7 @@ def test_rank_local_config_load_failure_releases_every_rank(tmp_path: Path) -> N
     if not Path(launcher).is_file():
         pytest.skip("mpiexec is unavailable")
 
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     smoke = """
 from mpi4py import MPI
 from atst_tools.api import RunOptions, run_workflow
@@ -412,8 +407,7 @@ def test_rank_local_preflight_failure_releases_every_rank(tmp_path: Path) -> Non
     if not Path(launcher).is_file():
         pytest.skip("mpiexec is unavailable")
 
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     smoke = """
 from mpi4py import MPI
 from atst_tools.api import RunOptions, run_workflow
@@ -471,8 +465,7 @@ def test_root_calculator_setup_failure_releases_every_image_parallel_rank(
         "chain = [Atoms('H', positions=[[float(i), 0, 0]]) for i in range(4)]; "
         "write('chain.traj', chain)"
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     subprocess.run(
         [sys.executable, "-c", setup],
         cwd=tmp_path,
@@ -563,8 +556,7 @@ def test_rank_local_optimizer_construction_failure_releases_every_rank(
         "from ase import Atoms; from ase.io import write; "
         "write('chain.traj', [Atoms('H', positions=[[float(i), 0, 0]]) for i in range(4)])"
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     subprocess.run(
         [sys.executable, "-c", setup],
         cwd=tmp_path,
@@ -640,8 +632,7 @@ def test_autoneb_inner_neb_construction_failure_releases_every_rank(
     if not Path(launcher).is_file():
         pytest.skip("mpiexec is unavailable")
 
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     smoke = f"""
 from contextlib import ExitStack
 from mpi4py import MPI
@@ -730,8 +721,7 @@ def test_autoneb_engine_construction_failure_releases_every_rank(
         "from ase import Atoms; from ase.io import write; "
         "write('chain.traj', [Atoms('H', positions=[[float(i), 0, 0]]) for i in range(4)])"
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     subprocess.run(
         [sys.executable, "-c", setup],
         cwd=tmp_path,

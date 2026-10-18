@@ -16,7 +16,7 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 
 ### 仓库设计
 - 优化 user interface，使用 CLI + YAML inputs 进行工作流交互，并在examples/目录下留下示例交互模式。
-- 对于 ABACUS 的 ASE interface，ATST-Tools 以 abacuslite 为 ASE calculator backend（迁移已完成）：优先导入环境中独立安装的 abacuslite，不可用时回退到 vendored 快照。ATST-Tools 的基本定位是 abacuslite CLI wrapper，通过 abacuslite 完成 ABACUS 相关设置，并配合 ASE 开展计算任务；尽可能不重写 ASE 的已有实现，做到 ASE-native。
+- 对于 ABACUS 的 ASE interface，ATST-Tools 以独立安装的 abacuslite 为唯一 ASE calculator backend。ATST-Tools 的基本定位是 abacuslite CLI wrapper，通过 abacuslite 完成 ABACUS 相关设置，并配合 ASE 开展计算任务；尽可能不重写 ASE 的已有实现，做到 ASE-native。
 - temp_repos 不同步到 git 仓库，其中放置开发时可参考代码仓库（不保证存在于任意 checkout；依赖它的快照 drift-check 需先准备对应上游树）。
 
 ### 版本号语义
@@ -36,16 +36,12 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 - 开展调用ABACUS和DeePMD-kit的测试需要将任务通过slurm脚本交到4V100节点上，使用GPU节点计算。对于ABACUS，你需要在INPUT中设置ks_solver cusolver (在默认的basis lcao下)。
 
 ### 基本边界
-- abacuslite 是项目的 ABACUS-ASE backend，运行时默认走 vendored 快照
-  （若环境安装了独立 abacuslite 包则优先导入，external 为预留通道，尚无稳定发布）。vendored 快照在
-  `src/atst_tools/external/ASE_interface`（对照上游
-  `abacus-develop/interfaces/ASE_interface`；本地开发时通常置于
-  `temp_repos/abacus-develop`，以 `ABACUSLITE_SNAPSHOT.md` 记录的基线 SHA 为准）。维护模式为
-  **本仓为主 + 定期上游同步**：修复先在 vendored 落地并登记
-  `src/atst_tools/external/ASE_interface/PATCHES.md`，再向上游同步；基线 SHA
-  记录于 `src/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md`（CI
-  `ABACUS_DEVELOP_REF` 的单一事实源），上游更新按该基线定期拉取。长期目标：
-  abacuslite 可独立安装后改为直接依赖，退位 vendored。
+- abacuslite 是项目的 ABACUS-ASE backend，`pyproject.toml` 声明
+  `abacuslite>=1.1.0,<2`。独立包由 `QuantumMisaka/abacuslite` 维护；缺包或已安装包
+  损坏均应失败，不回退到旧实现。`src/atst_tools/external/ASE_interface/abacuslite`
+  仅保留薄转发模块供 Paimon 等既有调用方使用，计算器和 parser 类对象仍来自
+  独立包。原 vendored 基线、补丁登记和双环境验收记录是历史审计证据，
+  `ABACUSLITE_SNAPSHOT.md`/`PATCHES.md` 不再驱动在线 drift CI 或运行时选择。
 - ase-abacus 是 legacy ABACUS-ASE backend 参考基线，位于 temp_repos/ase-abacus
   （若本地存在）；main 分支运行时不再使用，仅作功能对照，不能参与项目开发。
 - temp_repo下存放有本项目的可参考代码库，该目录下内容不进入git仓库。

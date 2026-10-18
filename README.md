@@ -1,6 +1,6 @@
 # ATST-Tools
 
-[![Version](https://img.shields.io/badge/version-2.2.9-blue)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)](pyproject.toml)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-LGPL--v3-blue)](#license)
 
@@ -29,18 +29,18 @@ matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
 
 ## At A Glance
 
-| Area | Current 2.2.9 status (published; PyPI clean-install verified) |
+| Area | Current 2.3.0 status (source candidate; not yet published) |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.2.9`, published from tag `v2.2.9`; see the canonical [release notes](docs/releases/RELEASE_NOTES_2.2.9.md) for source and artifact evidence. |
+| Release | `2.3.0` source candidate; the latest published package remains `2.2.9`. See the [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md). |
 
-Version 2.2.9 adds the explicit read-only command
-`atst vibration validate` and the matching `validate_ts` API; neither is in the
-published 2.2.8 package.
+Version 2.3.0 makes the independently maintained `abacuslite` package the
+single ABACUS ASE backend. The previous vendored snapshot is no longer a
+runtime fallback.
 
 ## What You Can Run
 
@@ -96,7 +96,9 @@ it installs the current published release.
 
 ATST-Tools requires Python 3.10 or newer. Sella-backed workflows install
 `sella>=2.5` with the default package because Sella is a first-class workflow
-backend.
+backend. From 2.3.0, `abacuslite>=1.1.0,<2` is a required runtime dependency.
+The latest published package, 2.2.9, predates this dependency change; install
+2.3.0 from source or `main` until it is published.
 
 安装 profile：
 
@@ -147,7 +149,7 @@ After installing the package, obtain the examples separately if you do not
 already have a checkout. Use the tag matching your installed version:
 
 ```bash
-git clone --branch v2.2.9 https://github.com/QuantumMisaka/atst-tools.git
+git clone --branch main https://github.com/QuantumMisaka/atst-tools.git
 cd atst-tools
 atst config validate examples/06_relax_H2-Au/config.yaml --print-normalized
 atst run --dry-run examples/06_relax_H2-Au/config.yaml
@@ -263,9 +265,12 @@ for hand-written guidance.
 
 ### ABACUS
 
-ABACUS is integrated through `abacuslite`. ATST-Tools first tries an installed
-`abacuslite` package and then falls back to the vendored snapshot under
-`src/atst_tools/external/ASE_interface/abacuslite`.
+ABACUS is integrated through the independently installed `abacuslite` package.
+In this source candidate it is a required dependency; missing or broken imports
+fail visibly. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
+configuration, native MD and gate compensation use that one package. Historical
+imports under `atst_tools.external.ASE_interface.abacuslite` remain as forwarding
+paths for existing consumers and do not contain a second implementation.
 
 Typical example files use:
 
@@ -364,7 +369,7 @@ Developer governance starts from these maintained entry points:
 Project status and validation entry points:
 
 - [Feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md)
-- [2.2.9 release notes](docs/releases/RELEASE_NOTES_2.2.9.md)
+- [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md)
 - Historical validation reports are indexed in
   [the archive](docs/archive/README.md).
 

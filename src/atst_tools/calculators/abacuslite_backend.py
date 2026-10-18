@@ -4,42 +4,63 @@ from __future__ import annotations
 
 import re
 import shlex
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Literal
 
 from ase.calculators.genericfileio import read_stdout
 
 
-BackendSource = Literal["external", "vendored"]
+BackendSource = Literal["external"]
 
 
 def _load_abacuslite_backend():
-    try:
-        from abacuslite import Abacus, AbacusProfile
+    if find_spec("abacuslite") is None:
+        raise ModuleNotFoundError(
+            "abacuslite is required by ATST-Tools; install abacuslite>=1.1.0,<2",
+            name="abacuslite",
+        )
+    from abacuslite import Abacus, AbacusProfile
 
-        return Abacus, AbacusProfile, "external"
-    except ModuleNotFoundError as exc:
-        if exc.name != "abacuslite":
-            raise
-        from atst_tools.external.ASE_interface.abacuslite import Abacus, AbacusProfile
-
-        return Abacus, AbacusProfile, "vendored"
+    return Abacus, AbacusProfile, "external"
 
 
 Abacus, AbacusProfile, BACKEND_SOURCE = _load_abacuslite_backend()
 
 
-def _command_executable(command: str) -> str:
-    """Return the executable from a possibly launcher- or env-wrapped command."""
-    parts = shlex.split(command)
-    if not parts:
-        return "abacus"
-    if Path(parts[0]).name in {"mpirun", "mpiexec", "srun"}:
-        return parts[-1]
-    if parts[0] == "env":
-        index = 1
+def import_generalio():
+    """Return general I/O from the installed calculator backend."""
+    from abacuslite.io import generalio
+    return generalio
+
+
+def import_latestio():
+    """Return current-output readers from the installed backend."""
+    from abacuslite.io import latestio
+    return latestio
+
+
+def import_legacyio():
+    """Return legacy-output readers from the installed backend."""
+    from abacuslite.io import legacyio
+    return legacyio
+
+
+def import_ksampling():
+    """Return K-point conversion helpers from the installed backend."""
+    from abacuslite.utils import ksampling
+    return ksampling
+
+
+def _skip_env_prefix(parts: list[str], index: int) -> int:
+    """Skip explicit env wrappers without changing the calculation command."""
+    while index < len(parts) and Path(parts[index]).name == "env":
+        index += 1
         while index < len(parts):
-            if parts[index] == "-u":
+            if parts[index] == "--":
+                index += 1
+                break
+            if parts[index] in {"-u", "--unset"}:
                 index += 2
                 continue
             if parts[index].startswith("-"):
@@ -48,9 +69,21 @@ def _command_executable(command: str) -> str:
             if "=" in parts[index]:
                 index += 1
                 continue
-            return parts[index]
+            break
+    return index
+
+
+def _command_executable(command: str) -> str:
+    """Find a bare command's executable or retain legacy MPI-last behavior."""
+    parts = shlex.split(command)
+    if not parts:
         return "abacus"
-    return parts[0]
+    index = _skip_env_prefix(parts, 0)
+    if index >= len(parts):
+        return "abacus"
+    if Path(parts[index]).name in {"mpirun", "mpiexec", "srun"}:
+        return parts[-1]
+    return parts[index]
 
 
 def _default_version_command(command: str) -> list[str]:

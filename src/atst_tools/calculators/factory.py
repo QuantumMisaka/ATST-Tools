@@ -12,7 +12,9 @@ from typing import Any, Dict
 
 from ase.calculators.calculator import Calculator
 
-from atst_tools.calculators.abacuslite_backend import Abacus, ATSTAbacusProfile, BACKEND_SOURCE
+from atst_tools.calculators.abacuslite_backend import (
+    Abacus, ATSTAbacusProfile, BACKEND_SOURCE, _default_version_command,
+)
 from atst_tools.calculators.constant_potential import (
     ConstantPotentialCalculator,
     fixed_hamiltonian_identity_for_config,
@@ -178,8 +180,11 @@ class AbacusFactory:
         mpi = int(mpi if mpi is not None else abacus_config.get("mpi", 1))
         omp = _effective_omp(abacus_config, omp)
         directory = directory or abacus_config.get("directory", ".")
-        command = _build_abacus_command(abacus_config.get("command", "abacus"), mpi)
+        raw_command = abacus_config.get("command", "abacus")
+        command = _build_abacus_command(raw_command, mpi)
         version_command = abacus_config.get("version_command")
+        if version_command is None and "{mpi}" not in raw_command and command != raw_command:
+            version_command = shlex.join(_default_version_command(raw_command))
 
         profile = ATSTAbacusProfile(
             command=command,

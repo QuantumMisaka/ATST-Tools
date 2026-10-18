@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from helpers import child_test_environment
 
 ROOT = Path(__file__).resolve().parents[2]
 MPI_TIMEOUT_SECONDS = 30
@@ -49,8 +50,7 @@ def _run_mpi(command: list[str], *, cwd: Path, environment: dict[str, str]):
 
 
 def _environment() -> dict[str, str]:
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     return environment
 
 

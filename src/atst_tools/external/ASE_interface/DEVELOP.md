@@ -1,3 +1,9 @@
+# Historical upstream interface notes
+
+This file describes the retired vendored source layout. The current ATST
+package ships only forwarding modules; implementation maintenance belongs in
+`QuantumMisaka/abacuslite`.
+
 # Developer Guide
 
 Abacuslite has the following file structure:

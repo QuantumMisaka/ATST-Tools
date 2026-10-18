@@ -26,7 +26,7 @@ ATST-Tools 围绕 ASE 组织过渡态及相关科学计算，以 abacuslite 和 
 | [`runtime/`](runtime/) | 让一次运行获得明确的设备、线程与进程环境，并留下实际运行证据。包含设备解析、worker 启动、绑定校验、采样和调用计数。 | [`cli_dispatch.py`](runtime/cli_dispatch.py)、[`launch.py`](runtime/launch.py)、[`evidence.py`](runtime/evidence.py)。 |
 | [`bench/`](bench/) | 为维护者组织有限批次的性能实验：运行一组案例、扫描并发配置、重复测量和保存测量来源。普通单次科学计算无需经过它。 | [`batch_runner.py`](bench/batch_runner.py)、[`sweep.py`](bench/sweep.py)、[`record.py`](bench/record.py)；用途见 §3。 |
 | [`utils/`](utils/) | 保存跨工作流复用的配置、结构与几何处理、MPI 协调、产物和收敛事实、后处理与绘图工具。 | 配置从 [`config_schema.py`](utils/config_schema.py) / [`config.py`](utils/config.py) 开始；结果从 [`artifacts.py`](utils/artifacts.py) / [`convergence.py`](utils/convergence.py) 开始。 |
-| [`external/`](external/) | 保存有明确来源与维护记录的第三方代码快照：abacuslite ASE interface 和 PyDMF。 | [ABACUS 快照基线](external/ASE_interface/ABACUSLITE_SNAPSHOT.md)、[补丁记录](external/ASE_interface/PATCHES.md)、[PyDMF 来源](external/pydmf/UPSTREAM.md)。 |
+| [`external/`](external/) | abacuslite 的历史导入转发路径与审计记录，以及有来源记录的 PyDMF 快照。 | [ABACUS 历史基线](external/ASE_interface/ABACUSLITE_SNAPSHOT.md)、[补丁记录](external/ASE_interface/PATCHES.md)、[PyDMF 来源](external/pydmf/UPSTREAM.md)。 |
 
 包根的 [`__init__.py`](__init__.py) 主要提供版本查询；版本源是仓库根
 [`pyproject.toml`](../../pyproject.toml)。对外集成优先使用 `atst_tools.api` 的公开导出，
@@ -71,9 +71,9 @@ flowchart TD
   当前一些 `mep` 类也管理轨迹、calculator 和阶段事实，不能将现状理解为严格的纯算法层。
 - **`api` 与 `scripts`**：API 管理程序调用契约，CLI 管理命令行表达；科学执行应由
   共享层承担。API 不依赖 CLI 模块来运行计算。
-- **`calculators` 与 `external`**：前者承担本项目的装配和适配，后者保留第三方实现。
-  ABACUS 优先使用独立安装的 abacuslite，仅该包缺失时回退到 vendored 快照；
-  DP 使用 DeePMD-kit 的 ASE calculator。上游快照修改需登记来源和补丁。
+- **`calculators` 与 `external`**：前者承担本项目的装配和适配，后者保留历史
+  abacuslite 导入转发路径和 PyDMF 快照。ABACUS 只使用独立安装的 abacuslite；
+  DP 使用 DeePMD-kit 的 ASE calculator。
 - **`runtime` 的启动时机**：设备和线程环境需要在科学库初始化前生效，因此轻入口及
   `api` 导出采用延迟加载。嵌入式 API 在调用方现有进程中运行，不会自动创建隔离 worker；
   进程隔离由 CLI/runner 的资源启动路径负责。采样和计数服务于观测，不决定科学收敛。
@@ -126,7 +126,7 @@ flowchart TD
 | --- | --- |
 | 新增或修改科学工作流 | [`utils/config_schema.py`](utils/config_schema.py) → 对应 `workflows/` / `mep/` → [`api/services.py`](api/services.py) 的调度和结果交接；共享执行 helper 放 `workflows/execution.py`；同步配置模板、用户说明、案例及对应验证。 |
 | 调整 NEB/TS 搜索过程 | 对应 `mep/` 实现及调用它的工作流；几何、端点和重启行为分别查 `utils/geometry.py`、`neb_endpoints.py`、`restart_helpers.py`。 |
-| 接入或调整计算后端 | `calculators/factory.py` 及后端适配文件；同步 backend identity。涉及 vendored 代码时遵循快照基线和补丁记录。 |
+| 接入或调整计算后端 | `calculators/factory.py` 及后端适配文件；同步 backend identity。abacuslite 实现归独立仓，旧导入路径只做兼容转发。 |
 | 新增 YAML 字段或 CLI 命令 | YAML 从 schema 与 [`config_docs.py`](utils/config_docs.py) 开始；CLI 从 `scripts/cli_impl.py` 的子命令路由开始，`atst run` 相关适配在 `scripts/main.py`。保留轻量 bootstrap 的导入边界。 |
 | 修改结果/收敛交接 | `utils/artifacts.py`、`convergence.py` 与对应生产者；检查 `api/models.py`、`services.py`、[`utils/summary.py`](utils/summary.py) 及外部消费者的路径和协议语义。 |
 | 调整资源分配或性能实验 | 单次设备/线程/启动看 `runtime/`；批次预算、共享 worker、扫描与测量记录看 `bench/`；科学步骤继续由已有工作流实现。 |

@@ -51,6 +51,12 @@ _SCF_FAILURE_MARKER = re.compile(
     r"scf\s+(?:did\s+not|not)\s+converge",
     re.IGNORECASE,
 )
+_CURRENT_SCF_SUCCESS_MARKER = re.compile(
+    r"^[ \t]*#SCF IS CONVERGED#[ \t]*$", re.IGNORECASE | re.MULTILINE
+)
+_CURRENT_SCF_FAILURE_MARKER = re.compile(
+    r"^[ \t]*!!SCF IS NOT CONVERGED!![ \t]*$", re.IGNORECASE | re.MULTILINE
+)
 
 CP_FACTS_INFO_KEY = "atst_constant_potential_facts"
 CP_IDENTITY_INFO_KEY = "atst_constant_potential_identity"
@@ -783,9 +789,11 @@ def _backend_scf_converged(calculator: Any, results: Mapping[str, Any]) -> bool 
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if _SCF_FAILURE_MARKER.search(text):
+        # A running log can contain multiple SCF steps.  Keep the existing
+        # conservative rule: any explicit failure overrides a success.
+        if _SCF_FAILURE_MARKER.search(text) or _CURRENT_SCF_FAILURE_MARKER.search(text):
             return False
-        if _SCF_SUCCESS_MARKER.search(text):
+        if _SCF_SUCCESS_MARKER.search(text) or _CURRENT_SCF_SUCCESS_MARKER.search(text):
             return True
     return None
 

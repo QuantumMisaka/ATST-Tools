@@ -5,6 +5,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      abacuslite_ref:
+        description: "Optional abacuslite commit, tag, or branch for coordinated validation"
+        required: false
+        type: string
+  schedule:
+    - cron: "17 3 * * 1"
 
 permissions:
   contents: read
@@ -51,6 +58,78 @@ jobs:
       - name: Run unit tests
         run: |
           python -m pytest tests -q
+
+  installed-abacuslite-consumer:
+    name: installed external abacuslite consumer
+    runs-on: ubuntu-latest
+    env:
+      DISPATCH_REF: ${{ inputs.abacuslite_ref }}
+
+    steps:
+      - name: Checkout ATST-Tools
+        uses: actions/checkout@v4
+
+      - name: Checkout optional coordinated abacuslite ref
+        if: github.event_name == 'workflow_dispatch' && inputs.abacuslite_ref != ''
+        uses: actions/checkout@v4
+        with:
+          repository: QuantumMisaka/abacuslite
+          ref: ${{ inputs.abacuslite_ref }}
+          path: abacuslite-candidate
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build ATST wheel and optional coordinated plugin wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --outdir "$RUNNER_TEMP/atst-dist" .
+          git rev-parse HEAD
+          sha256sum "$RUNNER_TEMP"/atst-dist/*.whl
+          if [[ -n "$DISPATCH_REF" ]]; then
+            python -m build --wheel --outdir "$RUNNER_TEMP/plugin-dist" abacuslite-candidate
+            git -C abacuslite-candidate rev-parse HEAD
+            sha256sum "$RUNNER_TEMP"/plugin-dist/*.whl
+          fi
+
+      - name: Install ATST and required abacuslite in an isolated environment
+        run: |
+          ATST_WHEEL=("$RUNNER_TEMP"/atst-dist/*.whl)
+          test "${#ATST_WHEEL[@]}" -eq 1
+          python -m venv "$RUNNER_TEMP/venv-external"
+          PYTHON="$RUNNER_TEMP/venv-external/bin/python"
+          "$PYTHON" -m pip install --upgrade pip
+          "$PYTHON" -m pip install "${ATST_WHEEL[0]}[test]" 'ase==3.28.0'
+          if [[ -n "$DISPATCH_REF" ]]; then
+            PLUGIN_WHEEL=("$RUNNER_TEMP"/plugin-dist/*.whl)
+            test "${#PLUGIN_WHEEL[@]}" -eq 1
+            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" "${PLUGIN_WHEEL[0]}"
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            "$PYTHON" -m pip install --upgrade --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite>=1.1.0,<2'
+          else
+            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite==1.1.0'
+          fi
+          "$PYTHON" -m pip check
+          echo "ATST_DIST_WHEEL=${ATST_WHEEL[0]}" >> "$GITHUB_ENV"
+
+      - name: Run installed-wheel external consumer suite
+        run: |
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --atst-root "$GITHUB_WORKSPACE" --backend external --report "$RUNNER_TEMP/external.json"
+          "$RUNNER_TEMP/venv-external/bin/python" "$GITHUB_WORKSPACE/scripts/run_abacuslite_consumer.py" --verify-report "$RUNNER_TEMP/external.json"
+
+      - name: Preserve consumer reports and test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abacuslite-external-consumer
+          path: |
+            ${{ runner.temp }}/*external*.json
+            ${{ runner.temp }}/*external*.log
+            ${{ runner.temp }}/*external*.xml
+            ${{ runner.temp }}/plugin-install.json
 
   documentation-governance:
     name: documentation governance

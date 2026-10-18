@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 import pytest
+from helpers import child_test_environment
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -78,8 +79,7 @@ else:
 assert MPI.COMM_WORLD.allreduce(outcome) == (0 if mode == 'success' else 2)
 print('PROGRESS_MPI_OK', mode, rank, flush=True)
 """
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(ROOT / "src")
+    environment = child_test_environment(ROOT / "src")
     environment["ATST_PROGRESS_TEST_MODE"] = mode
     process = subprocess.Popen(
         [launcher, "-n", "2", sys.executable, "-c", smoke],

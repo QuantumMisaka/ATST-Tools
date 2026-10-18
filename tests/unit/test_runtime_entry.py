@@ -8,13 +8,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+from helpers import child_test_environment
+
 SRC_ROOT = Path(__file__).resolve().parents[2] / "src"
 
 
 def _run_python(code: str):
-    """Run one snippet in a fresh interpreter with the source tree on sys.path."""
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(SRC_ROOT)
+    """Run one snippet against the selected source or installed distribution."""
+    environment = child_test_environment(SRC_ROOT)
     return subprocess.run(
         [sys.executable, "-c", code],
         capture_output=True,
@@ -350,8 +351,7 @@ def test_runner_direct_entry_resolves_paths_from_the_caller_directory(tmp_path):
         "    parameters: {}\n",
         encoding="utf-8",
     )
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(SRC_ROOT)
+    environment = child_test_environment(SRC_ROOT)
     environment["CUDA_VISIBLE_DEVICES"] = "0"
     completed = subprocess.run(
         [

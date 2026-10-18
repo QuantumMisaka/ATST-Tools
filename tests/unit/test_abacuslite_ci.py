@@ -1,62 +1,23 @@
-import re
+"""The ATST CI must exercise the required installed abacuslite backend."""
+
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-WORKFLOW = ROOT / ".github" / "workflows" / "abacuslite-ase-interface.yml"
-SNAPSHOT = ROOT / "src" / "atst_tools" / "external" / "ASE_interface" / "ABACUSLITE_SNAPSHOT.md"
+WORKFLOW = ROOT / ".github/workflows/tests.yml"
 
 
-def test_abacuslite_ci_workflow_exists():
-    """The vendored ASE interface should have a dedicated maintenance CI."""
-    assert WORKFLOW.exists()
-
-
-def test_abacuslite_ci_runs_atst_regression_and_vendored_module_tests():
-    """The CI should cover both ATST wrappers and upstream-style parser tests."""
+def test_installed_consumer_ci_has_one_external_lane_and_verifies_its_report():
     workflow = WORKFLOW.read_text(encoding="utf-8")
-
-    assert "tests/unit/test_abacuslite_profile.py" in workflow
-    assert "tests/unit/test_abacus_io.py" in workflow
-    assert "tests/unit/test_abacuslite_frame_selection.py" in workflow
-    assert "tests/unit/test_checker_efermi_whitelist.py" in workflow
-    assert "atst_tools.external.ASE_interface.abacuslite.io.generalio" in workflow
-    assert "atst_tools.external.ASE_interface.abacuslite.io.legacyio" in workflow
-    assert "atst_tools.external.ASE_interface.abacuslite.io.latestio" in workflow
-    assert "atst_tools.external.ASE_interface.abacuslite.utils.ksampling" in workflow
-    assert "src/atst_tools/external/ASE_interface/**" in workflow
+    assert "--backend external" in workflow
+    assert "--verify-report" in workflow
+    assert "--backend vendored" not in workflow
+    assert "venv-vendored" not in workflow
+    assert "--compare" not in workflow
 
 
-def test_abacuslite_ci_runs_snapshot_drift_checker():
-    """The abacuslite CI should resolve ABACUS_DEVELOP_REF from ABACUSLITE_SNAPSHOT.md (single source of truth)."""
+def test_ci_keeps_minimum_python_ase_matrix_and_no_live_snapshot_drift_job():
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    snapshot = SNAPSHOT.read_text(encoding="utf-8")
-
-    # ABACUSLITE_SNAPSHOT.md pins exactly one upstream baseline SHA (spec R4/P6).
-    baselines = re.findall(r"当前基线：上游 `([0-9a-f]{40})`", snapshot)
-    assert len(baselines) == 1
-    baseline = baselines[0]
-
-    # The workflow must parse ABACUS_DEVELOP_REF from ABACUSLITE_SNAPSHOT.md instead of hardcoding it,
-    # so the pinned baseline is never written twice.
-    assert "ABACUSLITE_SNAPSHOT.md" in workflow
-    assert "当前基线：上游" in workflow
-    assert "ABACUS_DEVELOP_REF" in workflow
-    assert baseline not in workflow
-
-    assert "repository: deepmodeling/abacus-develop" in workflow
-    assert "path: abacus-develop" in workflow
-    assert "scripts/check_abacuslite_snapshot.py" in workflow
-    assert "--upstream abacus-develop/interfaces/ASE_interface" in workflow
-    assert "--vendored src/atst_tools/external/ASE_interface" in workflow
-
-
-def test_abacuslite_ci_runs_reorder_and_snapshot_tests_when_ci_changes():
-    """Workflow path filters should include new abacuslite CI guard files."""
-    workflow = WORKFLOW.read_text(encoding="utf-8")
-
-    assert "tests/unit/test_abacuslite_io_reorder.py" in workflow
-    assert "tests/unit/test_abacuslite_snapshot_ci.py" in workflow
-    assert "tests/unit/test_abacuslite_frame_selection.py" in workflow
-    assert "tests/unit/test_checker_efermi_whitelist.py" in workflow
-    assert "scripts/check_abacuslite_snapshot.py" in workflow
+    assert 'python-version: ["3.10", "3.12"]' in workflow
+    assert 'ase-version: ["3.28.0", "latest"]' in workflow
+    assert not (ROOT / ".github/workflows/abacuslite-ase-interface.yml").exists()

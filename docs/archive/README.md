@@ -29,7 +29,8 @@ authoritative evidence for their dates.
 ## Release notes
 
 Release notes for `2.0.0` through `2.2.6` are in [releases/](releases/).
-`2.2.7` through `2.2.9` remain in `docs/releases/`.
+`2.2.7` through `2.2.9` and the current `2.3.0` candidate remain in
+`docs/releases/`.
 
 ## Reports
 

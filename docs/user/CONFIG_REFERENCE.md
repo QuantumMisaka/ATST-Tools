@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.2.9
-**Last Updated**: 2026-10-16
-**Status**: Published 2.2.9 reference
+**Version**: 2.3.0
+**Last Updated**: 2026-10-19
+**Status**: Source reference for 2.3.0 (unpublished)
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -231,7 +231,12 @@ ATST-Tools supports two MD drivers:
   DP provides forces through the normal ASE calculator interface.
 - `driver: abacus_native`: ABACUS owns the MD run. ATST-Tools uses abacuslite to
   prepare `INPUT`, `KPT`, and `STRU`, starts the ABACUS command in the configured
-  directory, then collects `running_md.log` / `MD_dump` outputs.
+  directory, then collects `running_md.log`, `MD_dump`, and `eig_occ.txt` from
+  the exact `OUT.<suffix>` directory named by that run's `INPUT` (`OUT.ABACUS`
+  by default). Historical flat outputs in the run directory remain readable
+  when that output directory is absent. It does not combine files across
+  directories. A zero-exit engine run without MD frames records a failed
+  summary/manifest and raises an error instead of reporting completion.
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -670,6 +675,10 @@ The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
 fixed-cell `relax` and ordinary `neb`. Those optimization workflows require one
 scalar target and do not support a target list, cell relaxation, or CP stress.
+The density reader accepts one complete cube naming family per evaluation:
+`SPIN1_CHG.cube`/`SPIN2_CHG.cube` (LTS), or `chg.cube` for one spin and
+`chgs1.cube`/`chgs2.cube` for two spins (current ABACUS). Mixed or incomplete
+families and `out_freq_ion > 0` indexed cubes are rejected explicitly.
 
 For CP `relax` and `neb`, restart reads the last complete trajectory frame or
 band. Each restarted calculator uses the corresponding frame's last evaluated
@@ -707,7 +716,9 @@ The `calculator` section configures the underlying compute engine (DFT or ML Pot
 > **Note**: For backward compatibility, parameters can also be placed under an `abacus` root key instead of `calculator.abacus`.
 > For GPU LCAO calculations, choose a site-compatible GPU solver according to
 > the documentation for the installed ABACUS version.
-> ATST-Tools imports an independently installed `abacuslite` package first and falls back to the vendored `src/atst_tools/external/ASE_interface/abacuslite` snapshot if that import is unavailable.
+> ATST-Tools requires the independently installed `abacuslite>=1.1.0,<2` package.
+> Historical vendored import paths forward to that package; a missing or broken
+> installation fails instead of selecting a second implementation.
 
 For `calculation: scf`, abacuslite automatically identifies the latest running
 log frame corresponding to the current STRU, accepting periodic-equivalent
@@ -740,7 +751,12 @@ variables removed so ABACUS does not accidentally join the Python MPI world.
 environment assignments such as `OMP_NUM_THREADS=4 abacus`; use `omp: 4`
 instead. For other environment variables, use an explicit `env VAR=value ...`
 command or a site wrapper, and set `version_command` when version probing needs
-a different lightweight command.
+a different lightweight command. When ATST adds its own MPI or environment
+wrapper, it derives the version probe from the original configured executable,
+including an absolute `env -u` prefix and trailing ABACUS arguments. For a
+fully user-authored MPI command, the historical default probes its final
+token as the executable; set `version_command` if that command has trailing
+ABACUS arguments or uses a site wrapper.
 
 The same `calculator.abacus` block can be used for local input preparation:
 

@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from ase import Atoms
 from ase.constraints import FixAtoms, FixCartesian
+from ase.units import AUT, Bohr
 
 from atst_tools.calculators import abacuslite_backend
 from atst_tools.calculators.abacuslite_backend import ATSTAbacusProfile
@@ -19,13 +20,23 @@ from atst_tools.external.ASE_interface.abacuslite.core import (
 from atst_tools.external.ASE_interface.abacuslite.io.generalio import file_safe_backup, read_stru, write_stru
 
 
-def test_abacuslite_backend_does_not_hide_external_package_import_errors(monkeypatch):
-    """Only a missing top-level external package may trigger the vendored fallback."""
+@pytest.mark.parametrize(
+    "error",
+    [
+        ImportError("external abacuslite internal dependency failed"),
+        ModuleNotFoundError(
+            "external abacuslite internal dependency failed", name="abacuslite"
+        ),
+    ],
+)
+def test_abacuslite_backend_does_not_hide_external_package_import_errors(monkeypatch, error):
+    """A broken installed package must report its import failure unchanged."""
     original_import = builtins.__import__
+    monkeypatch.setattr(abacuslite_backend, "find_spec", lambda name: object())
 
     def broken_external_import(name, *args, **kwargs):
         if name == "abacuslite":
-            raise ImportError("external abacuslite internal dependency failed")
+            raise error
         return original_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", broken_external_import)
@@ -39,8 +50,8 @@ def test_parse_version_accepts_legacy_abacus_version_line():
     assert AbacusProfile.parse_version("ABACUS version v3.9.0.17\n") == "v3.9.0.17"
 
 
-def test_vendored_abacuslite_accepts_current_beta_version_format(monkeypatch):
-    """The fallback parser accepts current upstream beta banners without a dot.
+def test_installed_abacuslite_accepts_current_beta_version_format(monkeypatch):
+    """The installed parser accepts current beta banners without a dot.
 
     switch_io_backend_version 会改写模块级 __LEGACYIO__ 全局；用 monkeypatch 快照，
     防止该全局状态泄漏到同一 pytest 进程中的后续测试（CI 顺序依赖防御）。
@@ -137,6 +148,73 @@ def test_atst_version_uses_bare_executable_for_env_sanitized_command(monkeypatch
     assert calls == [["abacus", "--version"]]
 
 
+@pytest.mark.parametrize(
+    ("run_command", "expected_probe"),
+    [
+        ("/usr/bin/env -u OMPI_COMM_WORLD_SIZE abacus", "abacus"),
+        ("/usr/bin/env -u PMIX_RANK /opt/abacus/bin/abacus -n 2",
+         "/opt/abacus/bin/abacus"),
+    ],
+)
+def test_atst_version_probe_unwraps_absolute_env_prefix(
+    monkeypatch, run_command, expected_probe,
+):
+    calls = []
+
+    def fake_read_stdout(command):
+        calls.append(command)
+        return "ABACUS v3.10.1\n"
+
+    monkeypatch.setattr(abacuslite_backend, "read_stdout", fake_read_stdout)
+    profile = ATSTAbacusProfile(run_command)
+    assert profile.version() == "v3.10.1"
+    assert profile.command == run_command
+    assert calls == [[expected_probe, "--version"]]
+
+
+@pytest.mark.parametrize(
+    "run_command",
+    [
+        "srun --job-name abacus /opt/abacus/bin/abacus",
+        "mpirun --wdir /scratch/abacus /opt/abacus/bin/abacus",
+        "srun -n4 -c8 /opt/abacus/bin/abacus",
+        "srun --ntasks-per-node 4 /opt/abacus/bin/abacus",
+        "mpirun --tag-output -np 4 /opt/abacus/bin/abacus",
+        "mpirun -np 4 -x OMP_NUM_THREADS=8 /opt/abacus/bin/abacus",
+        "env -u PMIX_RANK mpirun --tag-output -np 4 /opt/abacus/bin/abacus",
+    ],
+)
+def test_atst_version_probe_keeps_legacy_executable_last_mpi_commands(
+    monkeypatch, run_command,
+):
+    calls = []
+    monkeypatch.setattr(
+        abacuslite_backend, "read_stdout",
+        lambda command: calls.append(command) or "ABACUS v3.10.1\n",
+    )
+
+    profile = ATSTAbacusProfile(run_command)
+
+    assert profile.version() == "v3.10.1"
+    assert profile.command == run_command
+    assert calls == [["/opt/abacus/bin/abacus", "--version"]]
+
+
+def test_atst_version_command_override_handles_full_mpi_command_with_engine_args(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        abacuslite_backend, "read_stdout",
+        lambda command: calls.append(command) or "ABACUS v3.10.1\n",
+    )
+    profile = ATSTAbacusProfile(
+        "mpirun --tag-output -np 4 /opt/abacus/bin/abacus -n 2",
+        version_command="/opt/abacus/bin/abacus --version",
+    )
+
+    assert profile.version() == "v3.10.1"
+    assert calls == [["/opt/abacus/bin/abacus", "--version"]]
+
+
 def test_atst_version_command_override_is_used_verbatim(monkeypatch):
     """Site-specific version probe commands can be configured explicitly."""
     calls = []
@@ -156,8 +234,8 @@ def test_atst_version_command_override_is_used_verbatim(monkeypatch):
     assert calls == [["srun", "--partition", "debug", "abacus", "--version"]]
 
 
-def test_vendored_abacusprofile_version_keeps_native_probe(monkeypatch):
-    """The vendored abacuslite profile should not contain ATST's fallback policy."""
+def test_installed_abacusprofile_version_keeps_native_probe(monkeypatch):
+    """The independent profile must keep its native version-probe command."""
     calls = []
 
     def fake_read_stdout(command):
@@ -275,8 +353,8 @@ def test_write_stru_records_cartesian_coordinates_pp_basis_and_magmom(tmp_path):
     assert data["species"][0]["atom"][1]["mag"] == 2.0
 
 
-def test_write_stru_preserves_constraints_as_mobility_and_zeroes_velocities(tmp_path):
-    """ASE constraints should round-trip to ABACUS mobility flags."""
+def test_write_stru_preserves_constraints_and_converts_velocities(tmp_path):
+    """The installed writer retains mobile velocities in ABACUS atomic units."""
     atoms = Atoms(
         symbols=["H", "He", "H"],
         positions=[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
@@ -297,7 +375,9 @@ def test_write_stru_preserves_constraints_as_mobility_and_zeroes_velocities(tmp_
     atoms_in_stru = [atom for species in data["species"] for atom in species["atom"]]
 
     assert [atom["m"] for atom in atoms_in_stru] == [[0, 0, 0], [1, 1, 1], [0, 1, 0]]
-    assert [atom["v"] for atom in atoms_in_stru] == [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+    expected = atoms.get_velocities()[[0, 2, 1]] * AUT / Bohr
+    np.testing.assert_allclose([atom["v"] for atom in atoms_in_stru], expected, atol=1e-12)
+    assert np.linalg.norm(expected[1]) > 0
 
 
 def test_abacus_template_uses_first_occurrence_species_grouping(tmp_path):

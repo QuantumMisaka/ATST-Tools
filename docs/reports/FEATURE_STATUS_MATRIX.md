@@ -1,9 +1,14 @@
 # ATST-Tools Feature Status Matrix
 
-**Version**: 2.2.9
-**Last Updated**: 2026-10-17
-**Status**: Published (PyPI clean-install verified)
+**Version**: 2.3.0
+**Last Updated**: 2026-10-19
+**Status**: Source candidate (unpublished)
 **Owner**: ATST-Tools maintainers
+
+Release 2.3.0 makes the independently installed `abacuslite` package the sole
+ABACUS ASE backend. The vendored snapshot is retired as a runtime fallback;
+historical imports forward to the installed package. The latest published
+package remains 2.2.9.
 
 Release 2.2.9 includes the following changes, absent from 2.2.8.
 Historical local acceptance (2026-10-15): the published capability
@@ -81,8 +86,9 @@ for fields, artifacts, and failure semantics.
 | **CCQN** | ✅ Supported | Constrained Cone Quasi-Newton TS Search | Standalone workflow and D2S refinement option, including reactive-mode enumeration, product alignment, diagnostics, mode manifest, and artifact manifest. |
 | **D2S** | ✅ Supported | Double-Ended to Single | `atst run` dispatches endpoint optimization, rough DyNEB, then Dimer, Sella, or CCQN refinement. Experimental `rough_method: dmf` can replace rough DyNEB but is not a supported production default. |
 | **IRC** | ✅ Supported | Intrinsic Reaction Coordinate | Sella backend and descent backend are supported, with controlled boundary diagnostics and artifact manifests. |
-| **MD** | ✅ Supported | Molecular Dynamics | Supports ASE-driven MD with ABACUS/DP calculators and ABACUS-native MD input/run/output orchestration. |
-| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | Base behavior published in 2.2.5. The 2.2.9 vendored default uses `1e-5 Å`, `rtol=0` for cell components and periodic Cartesian residuals; former `1e-5`–`1e-4 Å` matches may now be rejected. Selects the latest matching frame and rejects malformed candidates. Native `relax`/`md`/`MD_dump` retain last-frame semantics; external abacuslite is not patched. |
+| **MD** | ✅ Supported | Molecular Dynamics | Supports ASE-driven MD with ABACUS/DP calculators and ABACUS-native MD input/run/output orchestration. Native MD selects the exact `OUT.<suffix>` from its INPUT, retains flat-output compatibility, and fails rather than reporting completion when no frames are produced. Bounded current-develop native-MD handoff passed on SAI job 1820042, including physical cell, periodic boundaries and raw trajectory checks; this does not establish scientific convergence or indexed-package release. |
+| **Independent abacuslite required backend** | ✅ Supported (2.3.0 source) | One installed backend for calculator, ABACUS input/output, reverse configuration, native MD and gate compensation | Requires published `abacuslite>=1.1.0,<2`; missing or broken imports fail closed. Historical `atst_tools.external.ASE_interface.abacuslite` paths forward to the same installed modules for Paimon and other callers. The installed-wheel external consumer lane runs in CI, with a weekly schedule and an optional abacuslite ref for coordinated validation. Prior paired vendored/external wheel evidence remains frozen audit history. No new scientific convergence or TS claim follows from this migration. |
+| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | The published abacuslite 1.1.0 carries the `1e-5 Å`, `rtol=0` SCF identity behavior tested by ATST; the retired vendored copy was the previous baseline. Native `relax`/`md`/`MD_dump` retain last-frame semantics. |
 | **Fixed-cell input and NEB runtime preparation** | ✅ Implemented (2.2.9) | Input fidelity and common periodic runtime boundaries | `1e-5 Å`, `rtol=0`; preserve input rounding, warn/override larger cell or PBC differences on copies. NEB/AutoNEB/DyNEB adapts only necessary periodic runtime rows, invalidates changed-boundary endpoint caches, and records actual boundaries in trajectory and manifest. ASE source unchanged. Local controlled-calculator evidence; no new GPU evidence. |
 | **DMF** | 🧪 Experimental | Direct MaxFlux TS candidate/path optimizer | Standalone `calculation.type: dmf` and D2S `rough_method: dmf` are available for candidate generation. Outputs are TS candidates, not validated TS results. PBC support is limited to explicit `cartesian_unwrapped` experimental mode. Requires `cyipopt`/IPOPT at runtime. |
 | **Artifact Manifests** | ✅ Supported | Workflow output registry | Implemented for NEB, D2S, CCQN, Vibration, IRC, MD, AutoNEB, Sella, Relax, and experimental DMF. |

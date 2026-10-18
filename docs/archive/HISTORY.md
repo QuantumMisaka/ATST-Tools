@@ -23,6 +23,7 @@ status ledger. Release notes remain the authoritative scope and evidence.
 | 2.2.7 | 2026-09-21 | Runtime and benchmark hardening |
 | 2.2.8 | 2026-09-22 | GPU/runtime evidence line |
 | 2.2.9 | 2026-10-17 | Scientific-contract and delivery repairs |
+| 2.3.0 | 2026-10-19 | Required independent abacuslite backend (source candidate) |
 
 Release notes for 2.2.7–2.2.9 remain in `docs/releases/`. Earlier notes are in
 [releases/](releases/). Documentation milestones, publication checks and

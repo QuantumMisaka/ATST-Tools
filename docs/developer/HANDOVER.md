@@ -1,7 +1,7 @@
 # 文档系统交接与维护
 
-**版本**: 2026-10-16
-**日期**: 2026-10-16
+**版本**: 2026-10-17
+**日期**: 2026-10-17
 **状态**: 维护
 **责任人**: ATST-Tools maintainers
 
@@ -56,7 +56,7 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 
 | 交接 | 责任方与关闭条件 | 本仓承接 |
 | --- | --- | --- |
-| abacuslite 上游同步 | 维护者按既有延后决定另行安排 PR；上游合入后才更新基线和归一化。 | `PATCHES.md`、`ABACUSLITE_SNAPSHOT.md` 与本页 backend checklist。 |
+| abacuslite 实现维护 | calculator/parser 修复在独立 `QuantumMisaka/abacuslite` 仓实施；本仓仅维护 ATST adapter 与旧路径转发。 | 本页 backend checklist；历史快照账本只作审计。 |
 | abacuslite 后续 SIF/harness | 父仓 ABACUS owner 负责交付与其验收；历史直接 SAI 力读取检验已通过，不替代后续平台交付。 | 后端快照和版本说明；不在本仓重开已完成实现。 |
 | convergence 消费 | Paimon owner 完成 fixture 映射与联合验收；父仓 companion plan 为 `toolbox/ABACUS/docs/superpowers/plans/2026-09-17-matesbench-toolbox-hardening-plan.md`。 | [API 阶段事实](../user/PYTHON_API_REFERENCE.md)、`docs/reports/data/convergence_fixtures_20260917/`；真实运行时和 curated 产物更新须有相应证据。 |
 | GPU P6 平台迁移 | ABACUS/MLIP-Agent owner 完成共享 image 参数/runner、guide、交接测试与 E2E/平台验收。 | [唯一活跃计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md)，保留 DP 容器/FT²DP 条件项。 |
@@ -115,24 +115,26 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 - 更新 `docs/user/USER_GUIDE_CN.md` 的运行时依赖和环境边界。
 - 更新 feature/status reports 和 calculator factory tests。
 - 若 backend 涉及 ABACUS/DP 环境，补充验证报告或在现有报告中记录边界。
-- `abacuslite` vendored ASE interface 变更需同步运行
-  `.github/workflows/abacuslite-ase-interface.yml` 覆盖的 pytest 回归测试、
-  package-mode upstream-style parser tests 和 snapshot drift check；不要直接使用
-  上游 `xtest.sh`，因为 ATST vendored copy 使用包内相对导入，直接脚本模式会
-  绕过包上下文。
-- 同步 `temp_repos/abacus-develop/interfaces/ASE_interface` 时，先运行
-  `conda run -n atst-dev python scripts/check_abacuslite_snapshot.py --upstream temp_repos/abacus-develop/interfaces/ASE_interface --vendored src/atst_tools/external/ASE_interface`。
-  若上游 reference commit 更新，更新
-  `src/atst_tools/external/ASE_interface/ABACUSLITE_SNAPSHOT.md` 的基线 SHA 与
-  差异摘要；CI 的 `ABACUS_DEVELOP_REF` 从该文件解析（单一事实源），不再直接改
-  `.github/workflows/abacuslite-ase-interface.yml`。
-- `abacuslite` vendored 快照维护遵循"本仓为主 + 定期上游同步"：基线文件与补丁
-  清单是同步纪律的账本，任何对 vendored 的语义修改必须先登记
-  `src/atst_tools/external/ASE_interface/PATCHES.md`（文件/位置/补丁/登记日期/
-  上游状态），并同步更新 `ABACUSLITE_SNAPSHOT.md` 的差异摘要；随后运行
-  `scripts/check_abacuslite_snapshot.py --upstream <基线树> --vendored src/atst_tools/external/ASE_interface`
-  确认对钉扎基线 exit 0（未登记新 drift exit 1）。语义补丁收敛后提交回
-  abacus-develop 上游；合入后推进基线并再同步 vendored。
+- 2.3.0 声明 `abacuslite>=1.1.0,<2` 为运行时依赖，ABACUS 只使用
+  独立安装的包。缺包或包内部导入损坏应失败，不回退。旧
+  `atst_tools.external.ASE_interface.abacuslite` 顶层、`core`、
+  `io.generalio`/`latestio`/`legacyio` 和 `utils.ksampling` 模块路径为薄转发层；
+  Paimon 的直接 `generalio` 导入继续可用且与独立包模块同一对象。
+- `.github/workflows/tests.yml` 的 `installed-abacuslite-consumer` job 构建 ATST
+  wheel，正常 PR/push 使用已发布 abacuslite 1.1.0，schedule 跟踪兼容范围内
+  最新 PyPI 版本，手动 `abacuslite_ref` 可从协调提交构建候选 wheel。只有一套
+  external 安装环境；从 checkout 外调用
+  `scripts/run_abacuslite_consumer.py --atst-root ROOT --backend external --report JSON`，
+  再执行 `--verify-report JSON`。无 live vendored lane 或双报告比较。
+- runner 核验已安装 ATST/abacuslite 的 site-packages 来源、安装文件指纹、
+  ATST wheel 哈希、首次 runtime 消费者无旧路径导入、原始 SCF/MD fixture 的
+  独立数值常量、完整离线测试 case ID/结果及 pytest 起止来源。测试因文档/example
+  相对路径从仓根运行；`ATST_TEST_INSTALLED_WHEEL=1` 与共享子进程环境 helper
+  保留安装来源，惰性 `sitecustomize` 防源码遮蔽。新增 Python 子进程测试复用
+  该 helper。显式旧路径转发测试允许兼容导入，但不将其算成第二套实现。
+- `ABACUSLITE_SNAPSHOT.md` 与 `PATCHES.md` 保留冻结历史；配对验收的 wheel
+  hash、原始日志和 2026-10-17 结果保留在 Git 历史。旧 drift checker、vendored
+  实现 CI 和快照 mutation 测试已退役；新的 parser 修复由独立 abacuslite 仓测试。
 - 维护 `abacuslite` property-derived keywords 时，显式用户输入与自动派生值需按
   ABACUS 开关语义比较，例如 `True`、`1`、`"1"` 等价；但 `False`/`0` 与请求
   `forces` 或 `stress` 自动需要的 `"1"` 仍应作为冲突报错。
