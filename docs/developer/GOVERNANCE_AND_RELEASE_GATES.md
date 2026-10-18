@@ -11,24 +11,30 @@ gate.
 
 ## Phase 1: local and CI mechanical gates
 
-Run these checks from the repository root before asking for a release review:
+Run these checks from the repository root before asking for a release review.
+For a worktree, select its source explicitly so an editable installation from
+another checkout cannot supply the code under test:
 
 ```bash
 conda run -n atst-dev python scripts/check_docs_governance.py
-conda run -n atst-dev python scripts/check_release_readiness.py --tag v2.2.4
-conda run -n atst-dev python -m pytest tests -q
+PYTHONPATH=src conda run -n atst-dev python -m pytest tests -q
 conda run -n atst-dev python -m build
 conda run -n atst-dev python -m twine check --strict dist/*
 conda run -n atst-dev python scripts/verify_wheel_api.py
 ```
 
-Run the readiness command from a checkout whose `HEAD` is the exact commit
-targeted by the existing `v<version>` tag; the checker compares that peeled tag
-commit with `HEAD` as well as checking the version and release note. The
-published `v2.2.4` tag points to `eaac64a76215e33588d362a788c138464519a7ba`.
-The 2026-09-05 record that `v2.2.3` pointed to the earlier published release
-remains historical evidence. The checker is offline and does not create a tag,
-push a commit, publish an artifact, or contact GitHub, Gitee, or PyPI.
+After deliberate creation of the intended local release tag, run the readiness
+check from that commit, for example:
+
+```bash
+conda run -n atst-dev python scripts/check_release_readiness.py --tag v2.3.0
+```
+
+The checker requires the existing tag's peeled commit to equal `HEAD` and
+checks the package version and release note. Before tag creation, record this
+check as pending; do not use a historical release tag to validate a new
+candidate. The checker is offline and does not create a tag, push a commit,
+publish an artifact, or contact GitHub, Gitee, or PyPI.
 
 The same mechanical contracts run in CI. The general workflow runs the full
 pytest suite and `documentation-governance` runs
