@@ -364,9 +364,9 @@ Developer governance starts from these maintained entry points:
 Project status and validation entry points:
 
 - [Feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md)
-- [DP validation report](docs/reports/DP_VALIDATION_2.0.0.md)
-- [Issue #25 AutoNEB fmax fix report](docs/reports/ISSUE_25_AUTONEB_FMAX_FIX_REPORT_2026-05-22.md)
-- [MPI image-level NEB parallel summary](docs/reports/MPI4PY_ASE_NEB_PARALLEL_ATST_SUMMARY_2026-05-27.md)
+- [2.2.9 release notes](docs/releases/RELEASE_NOTES_2.2.9.md)
+- Historical validation reports are indexed in
+  [the archive](docs/archive/README.md).
 
 ## Version Governance
 

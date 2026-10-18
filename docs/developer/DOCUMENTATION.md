@@ -27,6 +27,8 @@ Validation and site operations are documented in
   `docs/developer/`.
 - Reports are evidence. Link them from the feature matrix or release notes when
   needed; do not require users to read them.
+- Keep reports for the current support line in `docs/reports/`; move older
+  dated reports to `docs/archive/reports/`.
 - Keep one release note per version. Older notes may be archived after the
   current release and its two predecessors.
 - Active Markdown links must resolve inside the repository. Use relative links.

@@ -158,9 +158,9 @@ StageRecord/advisory；不应重新 cherry-pick 旧中文提示实现。
 
 ## 5. 证据入口
 
-- [2.2.0 发布说明](../releases/RELEASE_NOTES_2.2.0.md)：API/runner。
-- [2.2.5 发布说明](../releases/RELEASE_NOTES_2.2.5.md)：周期帧身份及旧分支语义承接。
-- [2.2.6 发布说明](../releases/RELEASE_NOTES_2.2.6.md)：收敛契约。
+- [2.2.0 发布说明](../archive/releases/RELEASE_NOTES_2.2.0.md)：API/runner。
+- [2.2.5 发布说明](../archive/releases/RELEASE_NOTES_2.2.5.md)：周期帧身份及旧分支语义承接。
+- [2.2.6 发布说明](../archive/releases/RELEASE_NOTES_2.2.6.md)：收敛契约。
 - [2.2.7 发布说明](../releases/RELEASE_NOTES_2.2.7.md)：runtime/bench/恒电势候选。
 - [2.2.8 发布说明](../releases/RELEASE_NOTES_2.2.8.md)：PT 与证据收口。
 - [系统审查](ARCHITECTURE_DISTRIBUTION_REVIEW_2026-10-13.md)：本轮实现、文档与合入验证。

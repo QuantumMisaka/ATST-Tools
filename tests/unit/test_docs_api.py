@@ -13,7 +13,7 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[2]
 API_REFERENCE = ROOT / "docs/user/PYTHON_API_REFERENCE.md"
 API_EXAMPLE = ROOT / "examples/12_ccqn_H2-Au/ccqn_api_auto_modes.py"
-RELEASE_NOTES = ROOT / "docs/releases/RELEASE_NOTES_2.2.1.md"
+RELEASE_NOTES = ROOT / "docs/archive/releases/RELEASE_NOTES_2.2.1.md"
 
 
 def test_api_reference_is_linked_from_public_navigation():

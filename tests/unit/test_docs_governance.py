@@ -156,7 +156,9 @@ def test_user_entrypoints_exclude_maintainer_and_site_operations():
 def test_maintenance_guidance_labels_sai_as_validation_only():
     agents = Path("AGENTS.md").read_text(encoding="utf-8")
     cli_skill = Path("docs/skills/atst-cli/SKILL.md").read_text(encoding="utf-8")
-    release_notes = Path("docs/releases/RELEASE_NOTES_2.2.3.md").read_text(encoding="utf-8")
+    release_notes = Path("docs/archive/releases/RELEASE_NOTES_2.2.3.md").read_text(
+        encoding="utf-8"
+    )
 
     assert "维护验证环境" in agents
     assert "用户运行前提" not in agents
