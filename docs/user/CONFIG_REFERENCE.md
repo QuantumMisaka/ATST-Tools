@@ -716,7 +716,9 @@ The `calculator` section configures the underlying compute engine (DFT or ML Pot
 > **Note**: For backward compatibility, parameters can also be placed under an `abacus` root key instead of `calculator.abacus`.
 > For GPU LCAO calculations, choose a site-compatible GPU solver according to
 > the documentation for the installed ABACUS version.
-> ATST-Tools imports an independently installed `abacuslite` package first and falls back to the vendored `src/atst_tools/external/ASE_interface/abacuslite` snapshot if that import is unavailable.
+> ATST-Tools requires the independently installed `abacuslite>=1.1.0,<2` package.
+> Historical vendored import paths forward to that package; a missing or broken
+> installation fails instead of selecting a second implementation.
 
 For `calculation: scf`, abacuslite automatically identifies the latest running
 log frame corresponding to the current STRU, accepting periodic-equivalent
@@ -749,7 +751,12 @@ variables removed so ABACUS does not accidentally join the Python MPI world.
 environment assignments such as `OMP_NUM_THREADS=4 abacus`; use `omp: 4`
 instead. For other environment variables, use an explicit `env VAR=value ...`
 command or a site wrapper, and set `version_command` when version probing needs
-a different lightweight command.
+a different lightweight command. When ATST adds its own MPI or environment
+wrapper, it derives the version probe from the original configured executable,
+including an absolute `env -u` prefix and trailing ABACUS arguments. For a
+fully user-authored MPI command, the historical default probes its final
+token as the executable; set `version_command` if that command has trailing
+ABACUS arguments or uses a site wrapper.
 
 The same `calculator.abacus` block can be used for local input preparation:
 

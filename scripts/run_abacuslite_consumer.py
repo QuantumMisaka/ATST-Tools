@@ -33,6 +33,13 @@ _REQUIRED_CASES = (
     "tests.unit.test_backend_routing::test_legacy_import_paths_forward_to_the_installed_modules",
     "tests.unit.test_installed_child_provenance::test_child_import_uses_selected_source_and_rejects_installed_shadow",
 )
+# Literal lattice from multiframe_md_latest/MD_dump: LATTICE_VECTORS times
+# LATTICE_CONSTANT (Angstrom). Keep this oracle independent of plugin readers.
+_MD_CELL_ANGSTROM = [
+    [5.34197 * 0.529177, 5.34197 * 0.529177, 0.0],
+    [0.0, 5.34197 * 0.529177, 5.34197 * 0.529177],
+    [5.34197 * 0.529177, 0.0, 5.34197 * 0.529177],
+]
 
 
 def ensure_installed_origin(path: str | Path, site_packages: Path, checkout: Path) -> Path:
@@ -128,15 +135,12 @@ def verify_report(report: dict) -> None:
         "md": {"frames": 2, "last_energy_eV": -1940.6311063727,
                "last_forces_eV_per_ang": [[0.1191299488, 0.2678988387, 1.5033416041],
                                              [-0.1191299488, -0.2678988387, -1.5033416041]],
+               "cell_angstrom": _MD_CELL_ANGSTROM,
                "pbc": [True, True, True], "symbols": ["As", "Ga"]},
     }
     for section, values in expected.items():
         for key, value in values.items():
             _compare_values(facts.get(section, {}).get(key), value, f"facts.{section}.{key}")
-    if len(facts.get("md", {}).get("cell_angstrom", [])) != 3:
-        raise ValueError("MD cell shape is incomplete")
-    _compare_values(facts["md"]["cell_angstrom"][0][0], 5.34197 * 0.529177,
-                    "facts.md.cell_angstrom[0][0]")
 
 
 def _installed_file_digest(distribution: metadata.Distribution, prefix: str) -> str:
@@ -358,8 +362,8 @@ def _fixture_facts(root: Path) -> dict:
              [-0.1191299488, -0.2678988387, -1.5033416041]],
             rtol=0, atol=1e-10,
         )
-        np.testing.assert_allclose(md_last.cell.array[0, 0], 5.34197 * 0.529177,
-                                   atol=1e-10)
+        np.testing.assert_allclose(md_last.cell.array, _MD_CELL_ANGSTROM,
+                                   rtol=0, atol=1e-10)
         assert md_last.pbc.all()
         return {
             "scf": {

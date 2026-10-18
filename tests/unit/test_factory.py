@@ -46,7 +46,7 @@ def test_abacus_factory_flattens_config(monkeypatch):
 
     assert calc.kwargs["directory"] == "run"
     assert calc.kwargs["profile"].kwargs["command"] == "mpirun -np 4 abacus"
-    assert calc.kwargs["profile"].kwargs["version_command"] is None
+    assert calc.kwargs["profile"].kwargs["version_command"] == "abacus --version"
     assert calc.kwargs["profile"].kwargs["omp_num_threads"] == 2
     assert calc.kwargs["pseudopotentials"] == {"H": "H.upf"}
     assert calc.kwargs["basissets"] == {"H": "H.orb"}
@@ -76,6 +76,43 @@ def test_abacus_factory_uses_explicit_version_command(monkeypatch):
     assert profile_kwargs["command"] == "mpirun -np 4 abacus"
     assert profile_kwargs["version_command"] == "abacus --version"
     assert "version_command" not in calc.kwargs
+
+
+@pytest.mark.parametrize(
+    ("raw_command", "mpi", "expected_command", "expected_probe"),
+    [
+        ("/opt/abacus/bin/abacus -n 2", 4,
+         "mpirun -np 4 /opt/abacus/bin/abacus -n 2",
+         "/opt/abacus/bin/abacus --version"),
+        ("/usr/bin/env -u PMIX_RANK /opt/abacus/bin/abacus -n 2", 4,
+         "mpirun -np 4 /usr/bin/env -u PMIX_RANK /opt/abacus/bin/abacus -n 2",
+         "/opt/abacus/bin/abacus --version"),
+    ],
+)
+def test_abacus_factory_probes_raw_executable_before_adding_mpi_wrapper(
+    monkeypatch, raw_command, mpi, expected_command, expected_probe,
+):
+    monkeypatch.setattr(factory, "ATSTAbacusProfile", FakeProfile)
+    monkeypatch.setattr(factory, "Abacus", FakeAbacus)
+    config = {"calculator": {"abacus": {"command": raw_command, "mpi": mpi}}}
+
+    profile = factory.AbacusFactory.get_calculator(config).kwargs["profile"]
+
+    assert profile.kwargs["command"] == expected_command
+    assert profile.kwargs["version_command"] == expected_probe
+
+
+def test_abacus_factory_probes_raw_executable_before_adding_env_wrapper(monkeypatch):
+    monkeypatch.setenv("OMPI_COMM_WORLD_SIZE", "3")
+    monkeypatch.setattr(factory, "ATSTAbacusProfile", FakeProfile)
+    monkeypatch.setattr(factory, "Abacus", FakeAbacus)
+    config = {"calculator": {"abacus": {"command": "/opt/abacus/bin/abacus -n 2"}}}
+
+    profile = factory.AbacusFactory.get_calculator(config).kwargs["profile"]
+
+    assert profile.kwargs["command"].startswith("env -u OMPI_COMM_WORLD_SIZE")
+    assert profile.kwargs["command"].endswith(" /opt/abacus/bin/abacus -n 2")
+    assert profile.kwargs["version_command"] == "/opt/abacus/bin/abacus --version"
 
 
 def test_abacus_factory_rejects_shell_style_omp_assignment(monkeypatch):
@@ -157,6 +194,23 @@ def test_abacus_factory_does_not_wrap_explicit_srun_command(monkeypatch):
     calc = factory.CalculatorFactory.get_calculator("abacus", config)
 
     assert calc.kwargs["profile"].kwargs["command"] == "srun -n 2 abacus"
+    assert calc.kwargs["profile"].kwargs["version_command"] is None
+
+
+def test_abacus_factory_preserves_full_mpi_command_and_explicit_version_probe(monkeypatch):
+    monkeypatch.setattr(factory, "ATSTAbacusProfile", FakeProfile)
+    monkeypatch.setattr(factory, "Abacus", FakeAbacus)
+    raw_command = "mpirun --tag-output -np 4 /opt/abacus/bin/abacus -n 2"
+    config = {"calculator": {"abacus": {
+        "command": raw_command,
+        "mpi": 4,
+        "version_command": "/opt/abacus/bin/abacus --version",
+    }}}
+
+    profile = factory.AbacusFactory.get_calculator(config).kwargs["profile"]
+
+    assert profile.kwargs["command"] == raw_command
+    assert profile.kwargs["version_command"] == "/opt/abacus/bin/abacus --version"
 
 
 def test_abacus_factory_strips_outer_mpi_env_for_single_process_abacus(monkeypatch):

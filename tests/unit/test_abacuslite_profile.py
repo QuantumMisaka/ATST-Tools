@@ -148,6 +148,73 @@ def test_atst_version_uses_bare_executable_for_env_sanitized_command(monkeypatch
     assert calls == [["abacus", "--version"]]
 
 
+@pytest.mark.parametrize(
+    ("run_command", "expected_probe"),
+    [
+        ("/usr/bin/env -u OMPI_COMM_WORLD_SIZE abacus", "abacus"),
+        ("/usr/bin/env -u PMIX_RANK /opt/abacus/bin/abacus -n 2",
+         "/opt/abacus/bin/abacus"),
+    ],
+)
+def test_atst_version_probe_unwraps_absolute_env_prefix(
+    monkeypatch, run_command, expected_probe,
+):
+    calls = []
+
+    def fake_read_stdout(command):
+        calls.append(command)
+        return "ABACUS v3.10.1\n"
+
+    monkeypatch.setattr(abacuslite_backend, "read_stdout", fake_read_stdout)
+    profile = ATSTAbacusProfile(run_command)
+    assert profile.version() == "v3.10.1"
+    assert profile.command == run_command
+    assert calls == [[expected_probe, "--version"]]
+
+
+@pytest.mark.parametrize(
+    "run_command",
+    [
+        "srun --job-name abacus /opt/abacus/bin/abacus",
+        "mpirun --wdir /scratch/abacus /opt/abacus/bin/abacus",
+        "srun -n4 -c8 /opt/abacus/bin/abacus",
+        "srun --ntasks-per-node 4 /opt/abacus/bin/abacus",
+        "mpirun --tag-output -np 4 /opt/abacus/bin/abacus",
+        "mpirun -np 4 -x OMP_NUM_THREADS=8 /opt/abacus/bin/abacus",
+        "env -u PMIX_RANK mpirun --tag-output -np 4 /opt/abacus/bin/abacus",
+    ],
+)
+def test_atst_version_probe_keeps_legacy_executable_last_mpi_commands(
+    monkeypatch, run_command,
+):
+    calls = []
+    monkeypatch.setattr(
+        abacuslite_backend, "read_stdout",
+        lambda command: calls.append(command) or "ABACUS v3.10.1\n",
+    )
+
+    profile = ATSTAbacusProfile(run_command)
+
+    assert profile.version() == "v3.10.1"
+    assert profile.command == run_command
+    assert calls == [["/opt/abacus/bin/abacus", "--version"]]
+
+
+def test_atst_version_command_override_handles_full_mpi_command_with_engine_args(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        abacuslite_backend, "read_stdout",
+        lambda command: calls.append(command) or "ABACUS v3.10.1\n",
+    )
+    profile = ATSTAbacusProfile(
+        "mpirun --tag-output -np 4 /opt/abacus/bin/abacus -n 2",
+        version_command="/opt/abacus/bin/abacus --version",
+    )
+
+    assert profile.version() == "v3.10.1"
+    assert calls == [["/opt/abacus/bin/abacus", "--version"]]
+
+
 def test_atst_version_command_override_is_used_verbatim(monkeypatch):
     """Site-specific version probe commands can be configured explicitly."""
     calls = []

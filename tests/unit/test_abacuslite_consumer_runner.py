@@ -65,7 +65,11 @@ def _report() -> dict:
                    "last_forces_eV_per_ang": [
                        [0.1191299488, 0.2678988387, 1.5033416041],
                        [-0.1191299488, -0.2678988387, -1.5033416041]],
-                   "cell_angstrom": [[5.34197 * 0.529177, 0, 0], [0, 1, 0], [0, 0, 1]],
+                   "cell_angstrom": [
+                       [5.34197 * 0.529177, 5.34197 * 0.529177, 0],
+                       [0, 5.34197 * 0.529177, 5.34197 * 0.529177],
+                       [5.34197 * 0.529177, 0, 5.34197 * 0.529177],
+                   ],
                    "pbc": [True, True, True], "symbols": ["As", "Ga"]},
         },
     }
@@ -142,6 +146,9 @@ def test_pytest_attestation_starts_fresh_when_report_path_is_reused(monkeypatch,
     lambda report: report["tests"].update(deselected=1),
     lambda report: report["pytest_attestation"].update(deselected=["tests/unit/test_omitted.py::test_omitted"]),
     lambda report: report["tests"].pop("deselected"),
+    lambda report: report["facts"]["md"]["cell_angstrom"][0].__setitem__(1, 99.0),
+    lambda report: report["facts"]["md"]["cell_angstrom"].__setitem__(1, [1.0, 2.0]),
+    lambda report: report["facts"]["md"]["cell_angstrom"][2].__setitem__(2, "invalid"),
 ])
 def test_runner_rejects_external_report_mutations(mutation):
     report = deepcopy(_report())

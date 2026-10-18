@@ -52,17 +52,15 @@ def import_ksampling():
     return ksampling
 
 
-def _command_executable(command: str) -> str:
-    """Return the executable from a possibly launcher- or env-wrapped command."""
-    parts = shlex.split(command)
-    if not parts:
-        return "abacus"
-    if Path(parts[0]).name in {"mpirun", "mpiexec", "srun"}:
-        return parts[-1]
-    if parts[0] == "env":
-        index = 1
+def _skip_env_prefix(parts: list[str], index: int) -> int:
+    """Skip explicit env wrappers without changing the calculation command."""
+    while index < len(parts) and Path(parts[index]).name == "env":
+        index += 1
         while index < len(parts):
-            if parts[index] == "-u":
+            if parts[index] == "--":
+                index += 1
+                break
+            if parts[index] in {"-u", "--unset"}:
                 index += 2
                 continue
             if parts[index].startswith("-"):
@@ -71,9 +69,21 @@ def _command_executable(command: str) -> str:
             if "=" in parts[index]:
                 index += 1
                 continue
-            return parts[index]
+            break
+    return index
+
+
+def _command_executable(command: str) -> str:
+    """Find a bare command's executable or retain legacy MPI-last behavior."""
+    parts = shlex.split(command)
+    if not parts:
         return "abacus"
-    return parts[0]
+    index = _skip_env_prefix(parts, 0)
+    if index >= len(parts):
+        return "abacus"
+    if Path(parts[index]).name in {"mpirun", "mpiexec", "srun"}:
+        return parts[-1]
+    return parts[index]
 
 
 def _default_version_command(command: str) -> list[str]:
