@@ -1,6 +1,6 @@
 # ATST-Tools
 
-[![Version](https://img.shields.io/badge/version-2.3.0-blue)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-2.3.1-blue)](pyproject.toml)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-LGPL--v3-blue)](#license)
 
@@ -28,18 +28,19 @@ or by an Agent's Python integration instead of one-off scripts.
 
 ## At A Glance
 
-| Area | Current 2.3.0 status |
+| Area | Current 2.3.1 status (source candidate; not yet published) |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.3.0` is published on PyPI (2026-10-19). See the [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md). |
+| Release | `2.3.1` source candidate; the latest published package remains `2.3.0`. See the [2.3.1 release notes](docs/releases/RELEASE_NOTES_2.3.1.md). |
 
-Version 2.3.0 makes the independently maintained `abacuslite` package the
-single ABACUS ASE backend. The previous vendored snapshot is no longer a
-runtime fallback.
+Version 2.3.0 made the independently maintained `abacuslite` package the
+single ABACUS ASE backend; 2.3.1 requires `abacuslite>=1.2.1` for the
+entropy-aware `free_energy` handoff used by constant-potential calculations.
+The previous vendored snapshot is no longer a runtime fallback.
 
 ## What You Can Run
 
@@ -90,7 +91,7 @@ pip install atst-tools
 ```
 
 This installs the current PyPI release. ATST-Tools requires Python 3.10 or
-newer; `sella>=2.5` and `abacuslite>=1.2.0,<2` are required runtime
+newer; `sella>=2.5` and `abacuslite>=1.2.1,<2` are required runtime
 dependencies.
 
 Installation profiles:
@@ -260,7 +261,7 @@ for hand-written guidance.
 ### ABACUS
 
 ABACUS is integrated through the independently installed `abacuslite` package.
-In 2.3.0 it is a required dependency; missing or broken imports
+In 2.3.1 it is a required dependency; missing or broken imports
 fail visibly. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
 configuration, native MD and gate compensation use that one package. Historical
 imports under `atst_tools.external.ASE_interface.abacuslite` remain as forwarding
@@ -353,7 +354,7 @@ Developer governance starts from these maintained entry points:
 Project status and validation entry points:
 
 - [Feature status matrix](docs/reports/FEATURE_STATUS_MATRIX.md)
-- [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md)
+- [2.3.1 release notes](docs/releases/RELEASE_NOTES_2.3.1.md)
 - Historical validation reports are indexed in
   [the archive](docs/archive/README.md).
 

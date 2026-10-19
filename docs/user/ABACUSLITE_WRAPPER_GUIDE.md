@@ -2,12 +2,13 @@
 
 ## Current Integration State
 
-ATST-Tools uses the independently installed `abacuslite>=1.2.0,<2` package
+ATST-Tools uses the independently installed `abacuslite>=1.2.1,<2` package
 for every ABACUS calculator and file reader/writer. Missing or broken imports
 fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
 forward to the same installed implementation for existing callers, including
-Paimon; they do not select a separate backend. 2.3.0 is published with this
-required-dependency cutover.
+Paimon; they do not select a separate backend. 2.3.0 introduced this
+required-dependency cutover; 2.3.1 requires `abacuslite>=1.2.1` for the
+entropy-aware `free_energy` handoff.
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow
@@ -45,8 +46,9 @@ When `write_input` uses a custom `stru_file`, the same filename is used for the
 identity check; without a prior `write_input`, the default `STRU` behavior is
 preserved. These semantics are part of the current installed abacuslite baseline;
 ATST does not patch the parser. The 2.3.0 closeout records installed-package
-checks, but the 1.2.0 baseline did not repeat the earlier engine validation;
-upgrading a deployed runtime still requires its own validation.
+checks; 1.2.1 adds the entropy-aware `free_energy` fix, and its baseline did
+not repeat the earlier engine validation; upgrading a deployed runtime still
+requires its own validation.
 
 ## Historical Snapshot Evidence
 

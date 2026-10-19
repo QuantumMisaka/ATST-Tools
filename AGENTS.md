@@ -37,7 +37,7 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 
 ### 基本边界
 - abacuslite 是项目的 ABACUS-ASE backend，`pyproject.toml` 声明
-  `abacuslite>=1.2.0,<2`。独立包由 `QuantumMisaka/abacuslite` 维护；缺包或已安装包
+  `abacuslite>=1.2.1,<2`。独立包由 `QuantumMisaka/abacuslite` 维护；缺包或已安装包
   损坏均应失败，不回退到旧实现。`src/atst_tools/external/ASE_interface/abacuslite`
   仅保留薄转发模块供 Paimon 等既有调用方使用，计算器和 parser 类对象仍来自
   独立包。原 vendored 基线、补丁登记和双环境验收记录是历史审计证据，

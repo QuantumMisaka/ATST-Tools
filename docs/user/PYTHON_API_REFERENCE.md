@@ -19,8 +19,8 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference tracks 2.3.0, published on PyPI on 2026-10-19; its official
-no-cache installation checks passed.
+This reference tracks the 2.3.1 source candidate; 2.3.1 becomes installable
+from PyPI after publication.
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -46,7 +46,7 @@ responsibility.
 
 ## Stable imports
 
-The stable root imports in the current 2.3.0 release are:
+The stable root imports in the current 2.3.1 release are:
 
 ```python
 from atst_tools.api import (
@@ -68,7 +68,7 @@ from atst_tools.api import (
 Workflow, calculator, MEP, and historical compatibility paths are not stable
 integration surfaces. Do not couple an application to their constructors or
 helper functions; use the names above instead. `validate_ts` was added in
-2.2.9 and is a stable lazy root import in 2.3.0. `RuntimeBindingError` is raised
+2.2.9 and is a stable lazy root import in 2.3.1. `RuntimeBindingError` is raised
 when a runtime device-binding request is inadmissible.
 
 ### `build_config_from_abacus_dir(abacus_run_dir, *, workflow="neb", init_structure=None, final_structure=None, n_images=5, gate_dirs=None)`
@@ -171,7 +171,7 @@ schema as the CLI; it does not add a new stable root import. It is currently
 limited to fixed-geometry serial evaluations/scans and fixed-cell
 `compensated_gate` `relax`/`neb` calls. The legacy `reference_fcp` boundary is
 reference-only and cannot be used for those optimization workflows. This
-development candidate is included in the current 2.3.0 package, but its
+development candidate is included in the current 2.3.1 package, but its
 presence does not imply production or Paimon/public tool-chain acceptance.
 
 ### Process runner for external hosts
@@ -416,7 +416,7 @@ Backend delegation has four invariants:
    `calculator` (`abacus`, `dp`, or `supplied`), `identity_basis`
    (`configuration` or `calculator_instance`), `source` (`external`, `deepmd`,
    `caller`, or `unknown`), `calculator_type`, `backend_version`, `snapshot`,
-   and `model`. In 2.3.0 `snapshot` is always `"unknown"` because the vendored
+   and `model`. In 2.3.1 `snapshot` is always `"unknown"` because the vendored
    provenance fields were retired. DP model facts can include absolute `path`,
    suffix-derived `kind`, `backend` (`pt`, `tf`, or `unknown`),
    configured/attached `head`, and `size_bytes`. Missing facts remain
@@ -426,7 +426,7 @@ Backend delegation has four invariants:
 
 ### `validate_ts(vibration_results, *, structure=None, fmax_threshold=0.05, imaginary_cutoff_cm1=50.0, output=None)`
 
-The current 2.3.0 release exposes `validate_ts` as a lazy root import from
+The current 2.3.1 release exposes `validate_ts` as a lazy root import from
 `atst_tools.api`. It screens stored vibration results and optional frozen
 structure facts. It never calls a live calculator or starts new force or
 vibration calculations. An ASE structure path supplies force evidence only
@@ -452,7 +452,7 @@ summary = validate_ts(
 )
 ```
 
-This additive entry point was introduced in 2.2.9 and is stable in 2.3.0.
+This additive entry point was introduced in 2.2.9 and is stable in 2.3.1.
 
 ## Errors and support boundary
 
@@ -479,9 +479,9 @@ or calculator-embedding API.
 
 ## Compatibility and Deprecation
 
-The public Python API surface is additive across 2.2.x. In 2.3.0, existing
+The public Python API surface is additive across 2.2.x. In 2.3.1, existing
 CLI commands, YAML fields/defaults, output names, relative-path behavior, MPI
-rules, and exit contracts remain unchanged, but `abacuslite>=1.2.0,<2` becomes
+rules, and exit contracts remain unchanged, but `abacuslite>=1.2.1,<2` becomes
 a required runtime dependency and `BACKEND_SOURCE` is always `external`. Only
 the stable root imports listed above receive the API compatibility promise.
 The 2.2.1 additions (progress events, plotting helpers, and the

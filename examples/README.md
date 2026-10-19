@@ -46,7 +46,7 @@ repository checkout at the tag matching your installed version. All paths below
 state their starting directory. For a first session without a backend, follow
 the local CLI path before selecting a real calculation.
 
-The **current 2.3.0 release** uses an absolute `1e-5 Å` cell tolerance.
+The **current 2.3.1 release** uses an absolute `1e-5 Å` cell tolerance.
 Preprocessing preserves rounding within that bound, and NEB runtime copies adapt
 periodic vectors only when required by ASE. See the
 [fixed-cell rules](../docs/user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
@@ -255,7 +255,7 @@ with validation status or auxiliary output references.
 * `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs and the fixed-electron/force validation sequence.
 
 This is a development validation fixture, not a production benchmark. The
-constant-potential workflow code is included in 2.3.0 as a development candidate.
+constant-potential workflow code is included in 2.3.1 as a development candidate.
 Its `compensated_gate` inputs use a custom chemical-potential boundary and keep
 gate, blocking, field, dipole, PP, ORB, and KPT settings explicit. The fixture
 does not establish universal basis/cutoff convergence, a calibrated SHE/RHE

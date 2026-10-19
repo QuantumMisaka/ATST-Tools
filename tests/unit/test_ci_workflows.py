@@ -90,8 +90,8 @@ def test_abacuslite_ci_runs_one_external_installed_consumer_suite():
     assert "--backend external" in job
     assert 'run_abacuslite_consumer.py" --verify-report' in job
     assert "--report" in job
-    assert "abacuslite==1.2.0" in job
-    assert "abacuslite>=1.2.0,<2" in job
+    assert "abacuslite==1.2.1" in job
+    assert "abacuslite>=1.2.1,<2" in job
     assert "git -C abacuslite-candidate rev-parse HEAD" in job
 
 

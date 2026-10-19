@@ -1,14 +1,15 @@
 # ATST-Tools Feature Status Matrix
 
-**Version**: 2.3.0
+**Version**: 2.3.1
 **Last Updated**: 2026-10-20
-**Status**: Released 2.3.0 (PyPI, 2026-10-19)
+**Status**: Source candidate (unpublished)
 **Owner**: ATST-Tools maintainers
 
-Release 2.3.0 makes the independently installed `abacuslite` package the sole
-ABACUS ASE backend. The vendored snapshot is retired as a runtime fallback;
+Release 2.3.0 made the independently installed `abacuslite` package the sole
+ABACUS ASE backend. 2.3.1 requires `abacuslite>=1.2.1` for the entropy-aware
+`free_energy` handoff. The vendored snapshot is retired as a runtime fallback;
 historical imports forward to the installed package. The latest published
-package is 2.3.0.
+package remains 2.3.0.
 
 Current distribution acceptance and development-branch disposition are tracked
 in the [2.3.0 integration closeout](ABACUSLITE_230_CLOSEOUT_2026-10-19.md).
@@ -75,14 +76,14 @@ boundary. The legacy `reference_fcp` boundary remains reference-only. Local
 ATST behavior checks, bounded numerical profile evidence and a 2026-09-21 SAI 4V100
 joint run with the `runtime` section exist (gate single point plus three-point scan,
 2/2 cases). It has been included since 2.2.8 and remains a development candidate
-in 2.3.0, with no Paimon/public tool-chain or deployment acceptance claim. See the
+in 2.3.1, with no Paimon/public tool-chain or deployment acceptance claim. See the
 [CP configuration section](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
 for fields, artifacts, and failure semantics.
 
 | Feature | Status | Description | Notes |
 | :--- | :--- | :--- | :--- |
 | **Relax** | ✅ Supported | Geometry Optimization | Uses ASE optimizers. |
-| **Constant-potential** | 🧪 Development candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It remains a development candidate in 2.3.0; the public Paimon chain remains pending. The 2.2.9 CP-01 repair restores the legacy `profile_status` label on facts-v1 output and tests actual 2.2.8 readers; transition facts without the label require validated republishing for old consumers. The 2026-10-20 Pt/LCAO single-point `reference_fcp` parity on ABACUS LTS 3.10.1 passed with a patched abacuslite 1.2.0 (see [the parity report](ATST_CP_PARITY_2026-10-20.md)); published abacuslite 1.2.0 still needs the entropy-aware `free_energy` fix. The same fixture also completed both `reference_fcp` and `compensated_gate` on develop/latest-format builds `v3.11.0-beta6` (job 1864431), `v3.11.0-beta9` (job 1864468), and a locally built `origin/develop` `7be5df975` / `v3.11.0-beta11` (job 1864773); these are execution/format checks, not FCP v2 parity or scientific acceptance. |
+| **Constant-potential** | 🧪 Development candidate | ABACUS-only fixed-electron electronic-number loop and fixed-geometry serial scan; fixed-cell `relax`/`neb` may use the explicit compensated-gate boundary. | `reference_fcp` is reference-only; compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi, or explicit `nupdown` scope. It remains a development candidate in 2.3.1; the public Paimon chain remains pending. The 2.2.9 CP-01 repair restores the legacy `profile_status` label on facts-v1 output and tests actual 2.2.8 readers; transition facts without the label require validated republishing for old consumers. The 2026-10-20 Pt/LCAO single-point `reference_fcp` parity on ABACUS LTS 3.10.1 passed with abacuslite 1.2.1 (see [the parity report](ATST_CP_PARITY_2026-10-20.md)); 1.2.1 includes the entropy-aware `free_energy` fix. The same fixture also completed both `reference_fcp` and `compensated_gate` on develop/latest-format builds `v3.11.0-beta6` (job 1864431), `v3.11.0-beta9` (job 1864468), and a locally built `origin/develop` `7be5df975` / `v3.11.0-beta11` (job 1864773); these are execution/format checks, not FCP v2 parity or scientific acceptance. |
 | **Vibration** | ✅ Supported | Frequency Analysis and TS validation | Finite difference method with JSON results, TS validation, and artifact manifest support. |
 | **NEB** | ✅ Supported | Nudged Elastic Band | CI-NEB, two-stage NEB, endpoint single-point repair, optional endpoint relaxation, native ASE selector, artifact manifest, ABACUS STRU inputs for `atst neb make`, and MPI image-level parallelism are supported. |
 | **AutoNEB** | ✅ Supported | Automated NEB | Adaptive image handling, native ASE selector, endpoint single-point repair, and MPI image-level parallelism are supported. |
@@ -92,8 +93,8 @@ for fields, artifacts, and failure semantics.
 | **D2S** | ✅ Supported | Double-Ended to Single | `atst run` dispatches endpoint optimization, rough DyNEB, then Dimer, Sella, or CCQN refinement. Experimental `rough_method: dmf` can replace rough DyNEB but is not a supported production default. |
 | **IRC** | ✅ Supported | Intrinsic Reaction Coordinate | Sella backend and descent backend are supported, with controlled boundary diagnostics and artifact manifests. |
 | **MD** | ✅ Supported | Molecular Dynamics | Supports ASE-driven MD with ABACUS/DP calculators and ABACUS-native MD input/run/output orchestration. Native MD selects the exact `OUT.<suffix>` from its INPUT, retains flat-output compatibility, and fails rather than reporting completion when no frames are produced. Bounded current-develop native-MD handoff passed on SAI job 1820042, including physical cell, periodic boundaries and raw trajectory checks; this does not establish scientific convergence or indexed-package release. |
-| **Independent abacuslite required backend** | ✅ Supported (2.3.0) | One installed backend for calculator, ABACUS input/output, reverse configuration, native MD and gate compensation | Requires published `abacuslite>=1.2.0,<2`; missing or broken imports fail closed. Historical `atst_tools.external.ASE_interface.abacuslite` paths forward to the same installed modules for Paimon and other callers. The installed-wheel external consumer lane runs in CI, with a weekly schedule and an optional abacuslite ref for coordinated validation. Prior paired vendored/external wheel evidence remains frozen audit history. No new scientific convergence or TS claim follows from this migration. |
-| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | The installed `abacuslite==1.2.0` baseline carries the `1e-5 Å`, `rtol=0` SCF identity behavior tested by ATST; the retired vendored copy was the previous baseline. Native `relax`/`md`/`MD_dump` retain last-frame semantics. |
+| **Independent abacuslite required backend** | ✅ Supported (2.3.1) | One installed backend for calculator, ABACUS input/output, reverse configuration, native MD and gate compensation | Requires published `abacuslite>=1.2.1,<2`; missing or broken imports fail closed. Historical `atst_tools.external.ASE_interface.abacuslite` paths forward to the same installed modules for Paimon and other callers. The installed-wheel external consumer lane runs in CI, with a weekly schedule and an optional abacuslite ref for coordinated validation. Prior paired vendored/external wheel evidence remains frozen audit history. No new scientific convergence or TS claim follows from this migration. |
+| **ABACUSLite SCF frame identity** | ✅ Supported | Periodic-aware running-log frame selection | The installed `abacuslite==1.2.1` baseline carries the `1e-5 Å`, `rtol=0` SCF identity behavior tested by ATST; the retired vendored copy was the previous baseline. Native `relax`/`md`/`MD_dump` retain last-frame semantics. |
 | **Fixed-cell input and NEB runtime preparation** | ✅ Implemented (2.2.9) | Input fidelity and common periodic runtime boundaries | `1e-5 Å`, `rtol=0`; preserve input rounding, warn/override larger cell or PBC differences on copies. NEB/AutoNEB/DyNEB adapts only necessary periodic runtime rows, invalidates changed-boundary endpoint caches, and records actual boundaries in trajectory and manifest. ASE source unchanged. Local controlled-calculator evidence; no new GPU evidence. |
 | **DMF** | 🧪 Experimental | Direct MaxFlux TS candidate/path optimizer | Standalone `calculation.type: dmf` and D2S `rough_method: dmf` are available for candidate generation. Outputs are TS candidates, not validated TS results. PBC support is limited to explicit `cartesian_unwrapped` experimental mode. Requires `cyipopt`/IPOPT at runtime. |
 | **Artifact Manifests** | ✅ Supported | Workflow output registry | Implemented for NEB, D2S, CCQN, Vibration, IRC, MD, AutoNEB, Sella, Relax, and experimental DMF. |

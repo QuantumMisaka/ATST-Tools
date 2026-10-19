@@ -3,14 +3,14 @@
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
-当前 `main` 与最新发布版本均为 2.3.0（详见
-[release notes](../releases/RELEASE_NOTES_2.3.0.md)），把独立维护的 abacuslite
+当前 `main` 与最新发布版本均为 2.3.1（详见
+[release notes](../releases/RELEASE_NOTES_2.3.1.md)），把独立维护的 abacuslite
 设为唯一 ABACUS ASE backend。包升级不会自动更新既有部署环境。
 项目把原 main branch 的脚本集合整理为可安装 Python package，
 统一通过 `atst` 命令和 YAML 配置运行 NEB、AutoNEB、Dimer、Sella、CCQN、
 D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 候选路径任务。
-当前 2.3.0 包还包含 ABACUS 恒电势**开发候选**（`calculation.type: constant_potential`）；它的边界和验收状态见
-[功能状态矩阵](../reports/FEATURE_STATUS_MATRIX.md)，该候选代码随当前 2.3.0 包提供，但不代表成熟生产支持，也没有平台/公共工具链验收声明。
+当前 2.3.1 包还包含 ABACUS 恒电势**开发候选**（`calculation.type: constant_potential`）；它的边界和验收状态见
+[功能状态矩阵](../reports/FEATURE_STATUS_MATRIX.md)，该候选代码随当前 2.3.1 包提供，但不代表成熟生产支持，也没有平台/公共工具链验收声明。
 
 ATST-Tools 的边界是工作流编排、配置校验、calculator 构造、轨迹命名、
 重启辅助、ABACUS 常见前后处理和示例文档。ABACUS、DeePMD-kit、ASE、Sella
@@ -248,7 +248,7 @@ AutoNEB、D2S、MD、两 Fermi 或显式 `nupdown`，也不表示 Paimon/public 
 
 ## 5. ABACUS / abacuslite 集成
 
-ABACUS calculator 通过独立安装的 `abacuslite>=1.2.0,<2` 集成。缺包或导入失败会
+ABACUS calculator 通过独立安装的 `abacuslite>=1.2.1,<2` 集成。缺包或导入失败会
 直接报错，不回退到仓库内实现；`atst_tools.external.ASE_interface.abacuslite`
 历史路径仅转发到同一独立包，不包含第二套实现。
 
@@ -262,7 +262,7 @@ fail-closed 并给出诊断，不会用较早的合法帧掩盖损坏输出。�
 `write_input` 的自定义 `stru_file`，检查会读取同一文件名；未调用 `write_input` 时
 仍使用默认 `STRU`。
 
-当前 2.3.0 使用独立 abacuslite（验证基线 1.2.0）的 SCF 帧匹配行为：按
+当前 2.3.1 使用独立 abacuslite（验证基线 1.2.1）的 SCF 帧匹配行为：按
 `1e-5 Å、rtol=0` 比较晶胞分量和周期等价的 Cartesian 坐标残差；旧默认 `1e-4 Å`
 能接受的较大误差现在可能被拒绝。这是几何匹配容差，不是 SCF 或力收敛阈值；
 ATST 不再维护或修改 vendored 匹配器。

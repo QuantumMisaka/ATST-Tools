@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.3.0
-**Last Updated**: 2026-10-19
-**Status**: Reference for the published 2.3.0 release
+**Version**: 2.3.1
+**Last Updated**: 2026-10-20
+**Status**: Reference for the 2.3.1 source candidate
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -80,7 +80,7 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 **Type**: `neb`
 
 The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
-described below are part of the current 2.3.0 release (introduced in 2.2.9).
+described below are part of the current 2.3.1 release (introduced in 2.2.9).
 
 Fixed-cell input preparation compares the complete cell matrix in Angstrom
 with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
@@ -644,7 +644,7 @@ Saving these results does not request another backend evaluation.
 **Type**: `constant_potential`
 
 `constant_potential` is an ABACUS-only development candidate included in the
-current 2.3.0 package; package inclusion is not a production or platform
+current 2.3.1 package; package inclusion is not a production or platform
 acceptance claim. It evaluates one fixed structure at one target or scans an
 ordered list of targets serially. The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
@@ -727,7 +727,7 @@ The `calculator` section configures the underlying compute engine (DFT or ML Pot
 > **Note**: For backward compatibility, parameters can also be placed under an `abacus` root key instead of `calculator.abacus`.
 > For GPU LCAO calculations, choose a site-compatible GPU solver according to
 > the documentation for the installed ABACUS version.
-> ATST-Tools requires the independently installed `abacuslite>=1.2.0,<2` package.
+> ATST-Tools requires the independently installed `abacuslite>=1.2.1,<2` package.
 > Historical compatibility import paths forward to that package; a missing or
 > broken installation fails instead of selecting a second implementation.
 

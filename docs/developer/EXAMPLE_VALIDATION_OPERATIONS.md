@@ -143,7 +143,7 @@ The 2026-10-20 Pt/LCAO `reference_fcp` single-point run (SAI job `1864305`,
 ABACUS LTS 3.10.1) is recorded in
 [ATST_CP_PARITY_2026-10-20.md](../reports/ATST_CP_PARITY_2026-10-20.md). It
 passed after the abacuslite entropy-aware `free_energy` fix; the published
-`abacuslite==1.2.0` does not yet include that fix.
+`abacuslite==1.2.1` includes that fix.
 
 Develop/latest-format smoke runs on the same fixture are recorded in
 `docs/reports/data/ATST_CP_DEVELOP_20261020/`:

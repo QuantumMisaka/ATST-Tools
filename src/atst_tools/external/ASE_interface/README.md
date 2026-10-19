@@ -1,6 +1,6 @@
 # ABACUS ASE interface compatibility paths
 
-ATST-Tools uses the independently installed `abacuslite>=1.2.0,<2` package.
+ATST-Tools uses the independently installed `abacuslite>=1.2.1,<2` package.
 The `abacuslite/` Python modules here only forward historical import paths to
 that installed package. They contain no calculator or parser implementation.
 In particular, `atst_tools.external.ASE_interface.abacuslite.io.generalio`
