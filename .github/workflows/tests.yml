@@ -107,9 +107,9 @@ jobs:
             test "${#PLUGIN_WHEEL[@]}" -eq 1
             "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" "${PLUGIN_WHEEL[0]}"
           elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
-            "$PYTHON" -m pip install --upgrade --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite>=1.1.0,<2'
+            "$PYTHON" -m pip install --upgrade --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite>=1.2.0,<2'
           else
-            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite==1.1.0'
+            "$PYTHON" -m pip install --force-reinstall --no-deps --report "$RUNNER_TEMP/plugin-install.json" 'abacuslite==1.2.0'
           fi
           "$PYTHON" -m pip check
           echo "ATST_DIST_WHEEL=${ATST_WHEEL[0]}" >> "$GITHUB_ENV"

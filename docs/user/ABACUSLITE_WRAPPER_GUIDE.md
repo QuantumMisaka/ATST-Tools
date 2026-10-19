@@ -2,7 +2,7 @@
 
 ## Current Integration State
 
-ATST-Tools uses the independently installed `abacuslite>=1.1.0,<2` package
+ATST-Tools uses the independently installed `abacuslite>=1.2.0,<2` package
 for every ABACUS calculator and file reader/writer. Missing or broken imports
 fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
 forward to the same installed implementation for existing callers, including

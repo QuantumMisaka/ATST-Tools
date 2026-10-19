@@ -14,7 +14,7 @@ ABACUS ASE backend. ATST-Tools keeps its workflow, YAML and CLI responsibilities
 calculator construction, ABACUS input/output and parser behavior move to the
 installed package.
 
-- Declare `abacuslite>=1.1.0,<2` as a required runtime dependency.
+- Declare `abacuslite>=1.2.0,<2` as a required runtime dependency.
 - Remove vendored selection: missing or broken installations now fail with a
   clear diagnostic instead of falling back to a bundled copy.
 - Route calculator, INPUT/STRU/KPT I/O, output readers, reverse configuration,
@@ -33,10 +33,14 @@ installed package.
 Existing CLI, YAML and public Python API entry points remain available. The
 mandatory `abacuslite` dependency is the deliberate compatibility boundary:
 offline or air-gapped installations that relied on the bundled snapshot must
-now provide `abacuslite>=1.1.0,<2`. `BACKEND_SOURCE` is always `external`;
+now provide `abacuslite>=1.2.0,<2`. `BACKEND_SOURCE` is always `external`;
 callers that branched on the former `vendored` value must adapt. Historical
 import paths continue to resolve to the installed modules. No YAML schema field
 is removed or renamed.
+
+The validated 2.3.0 consumer baseline is `abacuslite==1.2.0` (PyPI, 2026-10-19);
+the earlier `1.1.0` candidate is outside the supported range and is retained
+only as historical acceptance evidence.
 
 ## Validation
 
@@ -55,6 +59,13 @@ The final runtime candidate at `49c8626` passes installed-distribution acceptanc
 13 real-engine cases, including parallel NEB and LTS 3.10.1). These bounded
 execution checks do not establish scientific convergence. Exact wheel hashes
 and retained evidence locations are recorded in the closeout report above.
+
+The `abacuslite==1.2.0` baseline re-run on this branch reproduces those results:
+the installed-state suite collects 1419 tests with 0 failures and 35
+environment-gated skips, and the installed-wheel external consumer suite
+reports 1419 collected / 1386 passed / 33 skipped / 0 failed, identical to the
+1.1.0 run. The 1.2.0 wheel SHA256 is
+`3e5e245c0a03e8182c2c726d7ccad1c800c20250641abd4b81a8e22e892bc4a0`.
 
 ## Related documents
 

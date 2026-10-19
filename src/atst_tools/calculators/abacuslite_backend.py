@@ -17,7 +17,7 @@ BackendSource = Literal["external"]
 def _load_abacuslite_backend():
     if find_spec("abacuslite") is None:
         raise ModuleNotFoundError(
-            "abacuslite is required by ATST-Tools; install abacuslite>=1.1.0,<2",
+            "abacuslite is required by ATST-Tools; install abacuslite>=1.2.0,<2",
             name="abacuslite",
         )
     from abacuslite import Abacus, AbacusProfile

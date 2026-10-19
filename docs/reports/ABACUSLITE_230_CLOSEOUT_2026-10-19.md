@@ -4,6 +4,16 @@ Date: 2026-10-19. Scope: the external abacuslite integration, installed
 distribution acceptance, and disposition of local development branches.
 ATST 2.3.0 remains unpublished.
 
+## Update 2026-10-19 (user decision)
+
+The release candidate now targets the published `abacuslite==1.2.0`
+(wheel sha256 `3e5e245c0a03e8182c2c726d7ccad1c800c20250641abd4b81a8e22e892bc4a0`,
+PyPI upload 2026-10-19T03:41:48Z). The supported dependency range is
+`abacuslite>=1.2.0,<2`, and 2.3.0 installed-distribution plus installed-consumer
+acceptance is re-run against 1.2.0 before publication. The `1.1.0` acceptance
+below stays as the historical record for the earlier candidate; it is not
+relabeled and its artifacts are not reused for the 1.2.0 candidate.
+
 ## Release baseline
 
 The runtime candidate is ATST `49c8626a9d85858f7022fc7a732cbb01d871298a`

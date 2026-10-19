@@ -28,7 +28,7 @@ def test_runtime_dependency_policy_is_explicit() -> None:
 
     assert project["requires-python"] == ">=3.10"
     assert project["dependencies"] == [
-        "abacuslite>=1.1.0,<2",
+        "abacuslite>=1.2.0,<2",
         "ase>=3.28.0",
         "numpy>=1.26,<3",
         "scipy>=1.13,<2",
