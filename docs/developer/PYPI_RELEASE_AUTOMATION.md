@@ -28,10 +28,9 @@ The release workflow lives at `.github/workflows/publish-pypi.yml`.
   clean-wheel API checks in that order. The publisher receives only the checked
   distribution artifact.
 
-The latest published tag is `v2.2.9`; its publication evidence is tracked in
-[release notes](../releases/RELEASE_NOTES_2.2.9.md). The `main` source is
-2.3.0 and has no release tag yet; see the
-[2.3.0 release notes](../releases/RELEASE_NOTES_2.3.0.md).
+The latest published tag is `v2.3.0` (2026-10-19); its publication evidence is
+tracked in the [2.3.0 release notes](../releases/RELEASE_NOTES_2.3.0.md). The
+`main` source is 2.3.0 at that tag.
 
 ## Local Readiness Gate
 

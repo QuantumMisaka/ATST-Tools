@@ -6,9 +6,8 @@ ATST-Tools uses the independently installed `abacuslite>=1.2.0,<2` package
 for every ABACUS calculator and file reader/writer. Missing or broken imports
 fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
 forward to the same installed implementation for existing callers, including
-Paimon; they do not select a separate backend. This is the 2.3.0 source
-behavior; the latest published package, 2.2.9, predates the required-dependency
-cutover.
+Paimon; they do not select a separate backend. 2.3.0 is published with this
+required-dependency cutover.
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow

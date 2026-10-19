@@ -2,7 +2,7 @@
 
 **Version**: 2.3.0
 **Last Updated**: 2026-10-19
-**Status**: Source reference for 2.3.0 (unpublished)
+**Status**: Reference for the published 2.3.0 release
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration

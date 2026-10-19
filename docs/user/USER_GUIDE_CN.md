@@ -5,8 +5,8 @@
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
 `main` 当前为 2.3.0（详见
 [release notes](../releases/RELEASE_NOTES_2.3.0.md)），把独立维护的 abacuslite
-设为唯一 ABACUS ASE backend；最新已发布版本仍为
-[2.2.9](../releases/RELEASE_NOTES_2.2.9.md)。包升级不会自动更新既有部署环境。
+设为唯一 ABACUS ASE backend；最新已发布版本为
+[2.3.0](../releases/RELEASE_NOTES_2.3.0.md)。包升级不会自动更新既有部署环境。
 项目把原 main branch 的脚本集合整理为可安装 Python package，
 统一通过 `atst` 命令和 YAML 配置运行 NEB、AutoNEB、Dimer、Sella、CCQN、
 D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 候选路径任务。

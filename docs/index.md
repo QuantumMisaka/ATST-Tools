@@ -39,8 +39,8 @@ minimal run. Use the paths below for details.
 
 - [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md): the current
   supported/partial/experimental boundary.
-- [2.3.0 release notes](releases/RELEASE_NOTES_2.3.0.md): current source
-  candidate; [2.2.9](releases/RELEASE_NOTES_2.2.9.md) is the latest published
+- [2.3.0 release notes](releases/RELEASE_NOTES_2.3.0.md): published on PyPI
+  (2026-10-19); [2.2.9](releases/RELEASE_NOTES_2.2.9.md) is the previous
   release.
 - Historical notes: [2.2.5](archive/releases/RELEASE_NOTES_2.2.5.md),
   [2.2.4](archive/releases/RELEASE_NOTES_2.2.4.md).
