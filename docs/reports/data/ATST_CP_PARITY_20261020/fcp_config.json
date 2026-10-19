@@ -1,0 +1,42 @@
+{
+  "atoms": "/home/galileo-group/galileouser02/atst-cp-parity-20261019/case/STRU",
+  "atoms_format": "abacus",
+  "command": "abacus",
+  "pseudo_dir": "/home/galileo-group/galileouser02/atst-cp-parity-20261019/case",
+  "basis_dir": "/home/galileo-group/galileouser02/atst-cp-parity-20261019/case",
+  "pseudopotentials": {"Pt": "Pt_ONCV_PBE-1.0.upf"},
+  "basissets": {"Pt": "Pt_gga_7au_100Ry_4s2p2d1f.orb"},
+  "kpts": {"size": [1, 1, 1], "gamma": true},
+  "parameters": {
+    "calculation": "scf",
+    "dft_functional": "pbe",
+    "symmetry": 0,
+    "cal_force": 1,
+    "cal_stress": 1,
+    "ecutwfc": 100,
+    "scf_nmax": 200,
+    "scf_thr": 1e-9,
+    "basis_type": "lcao",
+    "ks_solver": "cusolver",
+    "nspin": 1,
+    "nbands": 130,
+    "smearing_method": "gauss",
+    "smearing_sigma": 0.015,
+    "mixing_type": "broyden",
+    "mixing_beta": 0.1,
+    "out_pot": 2,
+    "nelec": 217
+  },
+  "directory": "/home/galileo-group/galileouser02/atst-cp-parity-20261019/fcp_run",
+  "fcp": {
+    "U": 0.4,
+    "NELECT": 217,
+    "NELECT0": 216,
+    "C": 0.0125,
+    "FCPconv": 1e-4,
+    "work_ref": 4.6,
+    "max_FCP_iter": 100,
+    "always_adjust": false,
+    "adaptive_lr": false
+  }
+}

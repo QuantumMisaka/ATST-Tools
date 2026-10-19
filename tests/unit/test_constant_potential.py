@@ -122,6 +122,49 @@ def test_constant_potential_newton_uses_measured_residual_and_publishes_omega(tm
     assert len(calculator.evaluation_history) == 2
 
 
+def test_reference_fcp_uses_force_consistent_energy_like_fcp_v2(tmp_path):
+    """FCP v2 publishes force-consistent energy as ``energy``."""
+
+    class SplitEnergyCalculator(Calculator):
+        implemented_properties = ["energy", "free_energy", "forces"]
+
+        def __init__(self, nelec):
+            super().__init__()
+            self.nelec = float(nelec)
+
+        def calculate(self, atoms=None, properties=("energy",), system_changes=all_changes):
+            super().calculate(atoms, properties, system_changes)
+            self.results.update(
+                {
+                    "energy": -100.0,
+                    "free_energy": -101.0,
+                    "forces": np.zeros((len(atoms), 3)),
+                    "efermi": 5.0,
+                    "vacuum_level": 10.0,
+                    "scf_converged": True,
+                }
+            )
+
+    atoms = Atoms("H", positions=[[0.0, 0.0, 0.0]], cell=[10.0, 10.0, 10.0], pbc=True)
+    calculator = ConstantPotentialCalculator(
+        lambda nelec, directory: SplitEnergyCalculator(nelec),
+        potential_v=0.4,
+        reference_electrons=10.0,
+        initial_electrons=10.0,
+        work_ref=4.6,
+        work_ref_source="test",
+        potential_tolerance_v=1e-12,
+        directory=tmp_path,
+    )
+    atoms.calc = calculator
+
+    assert atoms.get_potential_energy() == pytest.approx(-101.0)
+    assert calculator.results["raw_energy"] == pytest.approx(-101.0)
+    assert calculator.results["raw_free_energy"] == pytest.approx(-100.0)
+    assert calculator.results["energy"] == pytest.approx(-101.0)
+    assert calculator.results["free_energy"] == pytest.approx(-100.0)
+
+
 def test_constant_potential_requires_an_explicit_initial_electron_guess(tmp_path):
     with pytest.raises(ValueError, match="initial_electrons is required"):
         ConstantPotentialCalculator(

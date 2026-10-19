@@ -1,0 +1,1281 @@
+/opt/modules/lmod/9.2.4/init/bash: line 93: LD_PRELOAD: unbound variable
+job=1864773 host=4v100n09.mr-sai.ai
+cereal=/opt/apps/abacus/abacus-develop-LTSv3.10.1/toolchain/install/cereal-master
+elpa=/opt/devtools/elpa/elpa-2026.02.001-2603-gnu/nvidia scalapack=unset
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test COMPILER_SUPPORT_M32
+-- Performing Test COMPILER_SUPPORT_M32 - Success
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    BUILD_TESTS
+
+
+-- Build files have been written to: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-build
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives/binary.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives/portable_binary.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives/adapters.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives/json.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/archives/xml.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/cereal.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/version.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/static_object.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/helpers.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/util.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/polymorphic_impl.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/polymorphic_impl_fwd.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/details/traits.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/macros.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/access.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/base64.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/rapidxml_utils.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/rapidxml_iterators.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/manual.html
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/rapidxml.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/rapidxml_print.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidxml/license.txt
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/LICENSE
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/LICENSE
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/allocators.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/ostreamwrapper.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/pointer.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/reader.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/writer.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/cursorstreamwrapper.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/schema.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/stringbuffer.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/encodedstream.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/prettywriter.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/document.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/msinttypes
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/msinttypes/stdint.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/msinttypes/LICENSE
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/msinttypes/inttypes.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/filewritestream.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/memorystream.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/stream.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/filereadstream.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/rapidjson.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/fwd.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/encodings.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/istreamwrapper.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/error
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/error/error.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/error/en.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/regex.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/biginteger.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/ieee754.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/strtod.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/swap.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/strfunc.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/itoa.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/stack.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/pow10.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/diyfp.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/dtoa.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/internal/meta.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/external/rapidjson/memorybuffer.h
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/list.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/vector.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/concepts
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/concepts/pair_associative_container.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/optional.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/base_class.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/deque.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/string.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/utility.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/boost_variant.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/forward_list.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/valarray.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/array.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/variant.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/set.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/chrono.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/polymorphic.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/map.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/memory.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/tuple.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/unordered_map.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/complex.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/atomic.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/functional.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/common.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/bitset.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/unordered_set.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/stack.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/types/queue.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/include/cereal/specialize.hpp
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/lib/cmake/cereal/cerealConfig.cmake
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/lib/cmake/cereal/cerealConfigVersion.cmake
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/lib/cmake/cereal/cerealTargets.cmake
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/cereal-install/share/pkgconfig/cereal.pc
+CMake Warning at CMakeLists.txt:13 (message):
+  The build system now uses cmake_dependent_option extensively.
+
+  Many advanced options are now conditionally enabled based on their
+  dependencies; when dependency conditions are not met, the corresponding
+  options will beautomatically turned OFF and hidden in cmake-gui/ccmake.
+
+  Please review your configuration if you previously set these options
+  manually.
+
+
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /opt/devtools/openmpi/openmpi-5.0.10-nvhpc263-gnu-cuda12-avx512/bin/mpicxx - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Git: /usr/bin/git (found version "2.43.0")
+-- Found git: attempting to get commit info...
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+CMake Warning at CMakeLists.txt:184 (message):
+  Failed to get git commit info
+
+
+-- Found ELPA: /opt/devtools/elpa/elpa-2026.02.001-2603-gnu/nvidia/lib/libelpa_openmp.so
+-- Performing Test ELPA_VERSION_SATISFIES
+-- Performing Test ELPA_VERSION_SATISFIES - Success
+-- Found MPI_CXX: /opt/devtools/openmpi/openmpi-5.0.10-nvhpc263-gnu-cuda12-avx512/bin/mpicxx (found version "3.1")
+-- Found MPI: TRUE (found version "3.1") found components: CXX
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5")
+-- Looking for sgemm_
+-- Looking for sgemm_ - not found
+-- Looking for sgemm_
+-- Looking for sgemm_ - found
+-- Found BLAS: /opt/devtools/saiblas/2603-gnu-avx512/lib/libopenblas.so
+-- Looking for cheev_
+-- Looking for cheev_ - found
+-- Found LAPACK: /opt/devtools/saiblas/2603-gnu-avx512/lib/libopenblas.so;-lm;-ldl
+-- Found ScaLAPACK: /opt/devtools/saiblas/2603-gnu-avx512/lib/libscalapack.so
+-- Found FFTW3: /opt/devtools/fftw/fftw-3.3.10/lib/libfftw3.so
+-- Looking for a CUDA compiler
+-- Looking for a CUDA compiler - /opt/devtools/nvidia/cuda-12.9.1/bin/nvcc
+-- Found CUDAToolkit: /opt/devtools/nvidia/cuda-12.9.1/targets/x86_64-linux/include (found version "12.9.86")
+-- The CUDA compiler identification is NVIDIA 12.9.86 with host compiler GNU 13.3.0
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /opt/devtools/nvidia/cuda-12.9.1/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Setting up build information...
+ ===================================================================
+                       ABACUS Build Summary                         
+ ===================================================================
+ Build Type        : Release
+ Platform          : CPU + NVIDIA CUDA
+ Compiler          : GNU 13.3.0
+ -------------------------------------------------------------------
+ MPI Support       : OpenMPI (MPI standard: 3.1)
+ CUDA-Aware MPI    : no (available but not enabled)
+ OpenMP Support    : yes (v4.5)
+ -------------------------------------------------------------------
+ LCAO Enabled      : True
+ Two-center FFT    : Enabled
+ -------------------------------------------------------------------
+ Math Libraries    : BLAS           = Generic BLAS
+                     FFTW           = yes (v3.3.10)
+                     ELPA           = yes (v)
+ Accelerators      : CUDA           = yes (v12.9.86)
+                     cuSOLVERMp     = no
+                     cuBLASMp       = no
+                     NCCL parallel  = Disabled
+                     HIP/ROCm       = no
+ Machine Learning  : MLALGO         = Disabled
+                     Torch          = no
+                     DeePMD         = no
+                     NEP            = no
+ Features          : Libxc          = no
+                     LibRI          = no
+                     DFT-D4         = no
+                     JSON           = no
+                     PEXSI          = no
+                     CNPY           = no
+ -------------------------------------------------------------------
+ Build Testing     : OFF
+ ===================================================================
+-- Build info header configured: /home/galileo-group/galileouser02/atst-cp-parity-20261019/abacus-latest-build/source/source_io/build_info.h
+-- Configuring done (2.9s)
+-- Generating done (1.5s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CEREAL_INCLUDE_DIR
+
+
+-- Build files have been written to: /home/galileo-group/galileouser02/atst-cp-parity-20261019/abacus-latest-build
+[  0%] Building CXX object source/source_lcao/module_rdmft/CMakeFiles/rdmft.dir/rdmft.cpp.o
+[  0%] Building CXX object source/CMakeFiles/driver.dir/source_main/driver.cpp.o
+[  0%] Building CXX object source/source_cell/CMakeFiles/domain_decomposition.dir/domain_decomposition.cpp.o
+[  0%] Building CXX object source/source_cell/module_neighbor/CMakeFiles/neighbor.dir/sltk_atom.cpp.o
+[  0%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/base/core/refcount.cpp.o
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_other.cpp.o
+[  0%] Building CXX object source/source_cell/CMakeFiles/cell.dir/basecell.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/projector_gradient_op.cpp.o
+[  0%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/base/core/cpu_allocator.cpp.o
+[  0%] Building CXX object source/source_cell/module_neighbor/CMakeFiles/neighbor.dir/sltk_atom_arrange.cpp.o
+[  0%] Building CXX object source/source_cell/CMakeFiles/cell.dir/atom_pseudo.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/nonlocal_op.cpp.o
+[  0%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/base/core/gpu_allocator.cpp.o
+[  0%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/ops/einsum_op.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/veff_op.cpp.o
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_basic.cpp.o
+[  0%] Building CXX object source/source_cell/module_neighbor/CMakeFiles/neighbor.dir/sltk_grid.cpp.o
+[  0%] Building CXX object source/CMakeFiles/driver.dir/source_main/driver_run.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/ekinetic_op.cpp.o
+[  0%] Building CXX object source/source_cell/CMakeFiles/cell.dir/atom_spec.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/meta_op.cpp.o
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_basic_order.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_stodft/kernels/hpsi_norm_op.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_basis/module_pw/kernels/pw_op.cpp.o
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_basic_setgroup.cpp.o
+[  0%] Building CXX object source/source_cell/module_neighbor/CMakeFiles/neighbor.dir/sltk_grid_driver.cpp.o
+[  0%] Built target domain_decomposition
+[  0%] Building CXX object source/source_cell/CMakeFiles/cell.dir/pseudo.cpp.o
+[  0%] Building CXX object source/source_lcao/module_rdmft/CMakeFiles/rdmft.dir/rdmft_tools.cpp.o
+[  0%] Building CXX object source/CMakeFiles/device.dir/source_hsolver/kernels/hegvd_op.cpp.o
+[  0%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp.cpp.o
+[  0%] Built target driver
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_basic_pointgroup.cpp.o
+[  0%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_analysis.cpp.o
+[  0%] Built target neighbor
+[  1%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/ops/linalg_op.cpp.o
+[  1%] Building CXX object source/source_lcao/module_rdmft/CMakeFiles/rdmft.dir/rdmft_pot.cpp.o
+[  1%] Building CXX object source/CMakeFiles/device.dir/source_hsolver/kernels/bpcg_kernel_op.cpp.o
+[  1%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_complete.cpp.o
+[  1%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_check.cpp.o
+[  1%] Building CXX object source/source_cell/module_neighlist/CMakeFiles/neighbor_search.dir/bin_manager.cpp.o
+[  1%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_getgroup.cpp.o
+[  1%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_upf100.cpp.o
+[  1%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/core/tensor.cpp.o
+[  2%] Building CXX object source/CMakeFiles/device.dir/source_hsolver/kernels/linear_op.cpp.o
+[  2%] Building CXX object source/source_cell/module_neighlist/CMakeFiles/neighbor_search.dir/neighbor_list.cpp.o
+[  3%] Building CXX object source/source_psi/CMakeFiles/psi.dir/psi.cpp.o
+[  3%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_hermite.cpp.o
+[  3%] Building CXX object source/source_cell/module_neighlist/CMakeFiles/neighbor_search.dir/neighbor_search.cpp.o
+[  3%] Building CXX object source/source_lcao/module_rdmft/CMakeFiles/rdmft.dir/update_state_rdmft.cpp.o
+[  3%] Building CXX object source/CMakeFiles/device.dir/source_estate/kernels/elecstate_op.cpp.o
+[  3%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_upf201.cpp.o
+[  4%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_lattice.cpp.o
+[  4%] Building CXX object source/CMakeFiles/device.dir/source_base/module_device/device.cpp.o
+[  4%] Building CXX object source/source_cell/module_neighlist/CMakeFiles/neighbor_search.dir/page_allocator.cpp.o
+[  4%] Built target psi
+[  5%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_blps.cpp.o
+[  5%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_magnetic.cpp.o
+[  5%] Building CXX object source/CMakeFiles/device.dir/source_base/module_device/device_helpers.cpp.o
+[  5%] Built target neighbor_search
+[  5%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_vwr.cpp.o
+[  5%] Building CXX object source/source_cell/CMakeFiles/cell.dir/mdcell_reader.cpp.o
+[  5%] Building CXX object source/CMakeFiles/device.dir/source_base/module_device/output_device.cpp.o
+[  5%] Built target rdmft
+[  5%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/core/tensor_buffer.cpp.o
+[  5%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_pricell.cpp.o
+[  5%] Building CXX object source/CMakeFiles/device.dir/source_base/module_device/memory_op.cpp.o
+[  5%] Building CXX object source/source_psi/CMakeFiles/psi_overall_init.dir/setup_psi_pw.cpp.o
+[  5%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/core/tensor_map.cpp.o
+[  5%] Building CXX object source/CMakeFiles/device.dir/source_base/kernels/math_kernel_op.cpp.o
+[  5%] Building CXX object source/source_psi/CMakeFiles/psi_overall_init.dir/setup_psi.cpp.o
+[  6%] Building CXX object source/source_psi/CMakeFiles/psi_overall_init.dir/psi_prepare.cpp.o
+[  6%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_base.cpp.o
+[  6%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_rho.cpp.o
+[  6%] Building CXX object source/CMakeFiles/device.dir/source_base/kernels/math_kernel_op_vec.cpp.o
+[  6%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/core/tensor_shape.cpp.o
+[  6%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/force_op.cpp.o
+[  6%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_random.cpp.o
+[  6%] Building CXX object source/source_cell/CMakeFiles/cell.dir/mdcell.cpp.o
+[  6%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/core/tensor_types.cpp.o
+[  6%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/blas.cpp.o
+[  6%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symmetry.cpp.o
+[  6%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_file.cpp.o
+[  6%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate.cpp.o
+[  6%] Building CXX object source/source_cell/CMakeFiles/cell.dir/unitcell.cpp.o
+[  6%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/init_scf.cpp.o
+[  6%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/lapack.cpp.o
+[  7%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/stress_op.cpp.o
+[  7%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_atomic.cpp.o
+[  7%] Built target psi_overall_init
+[  8%] Building CXX object source/source_cell/CMakeFiles/cell.dir/unitcell_index.cpp.o
+[  8%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/estate_e_terms.cpp.o
+[  8%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_rot_spin.cpp.o
+[  8%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_atom_rand.cpp.o
+[  8%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/little_group.cpp.o
+[  8%] Building CXX object source/source_cell/CMakeFiles/cell.dir/unitcell_stats.cpp.o
+[  8%] Building CXX object source/source_hamilt/CMakeFiles/hamilt_general.dir/operator.cpp.o
+[  8%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_energy.cpp.o
+[  8%] Building CXX object source/source_hamilt/CMakeFiles/hamilt_general.dir/hs_matrix_k.cpp.o
+[  8%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/irred_sec.cpp.o
+[  8%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/onsite_op.cpp.o
+[  8%] Building CXX object source/source_cell/CMakeFiles/cell.dir/unitcell_setup.cpp.o
+[  8%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/linalg.cpp.o
+[  8%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_exx.cpp.o
+[  8%] Building CXX object source/source_hamilt/CMakeFiles/hamilt_general.dir/module_ewald/h_ewald_pw.cpp.o
+[  8%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/wf_op.cpp.o
+[  8%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/vnl_op.cpp.o
+[  9%] Building CXX object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/memory_impl.cpp.o
+[  9%] Building CXX object source/CMakeFiles/device.dir/source_base/kernels/math_ylm_op.cpp.o
+[  9%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_print.cpp.o
+[  9%] Building CXX object source/source_hamilt/CMakeFiles/hamilt_general.dir/module_ewald/dnrm2.cpp.o
+[  9%] Building CXX object source/CMakeFiles/device.dir/source_hamilt/module_xc/kernels/xc_functional_op.cpp.o
+[  9%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdw_xcname.cpp.o
+[  9%] Built target hamilt_general
+[  9%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_nao.cpp.o
+[  9%] Building CUDA object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/cuda/blas.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[  9%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/surchem.cpp.o
+[  9%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/irred_sec_bvk.cpp.o
+[  9%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_atoms.cpp.o
+[  9%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cal_density_real_op.cpp.o
+[  9%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd2_parameters.cpp.o
+[  9%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/mul_potential_op.cpp.o
+[  9%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/vec_mul_cx_op.cpp.o
+[  9%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_atoms_helper.cpp.o
+[ 10%] Building CXX object source/source_cell/module_symmetry/CMakeFiles/symmetry.dir/symm_rotation_k.cpp.o
+[ 10%] Building CXX object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/exx_cal_energy_op.cpp.o
+[ 10%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd2.cpp.o
+[ 11%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/projector_gradient_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 11%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_tools.cpp.o
+[ 12%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd3_data.cpp.o
+[ 12%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/h_corr_pw.cpp.o
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_orb.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd3_parameters.cpp.o
+[ 13%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_pw.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd3_evaluator.cpp.o
+[ 13%] Building CXX object source/source_psi/CMakeFiles/psi_init.dir/psi_init_nao_random.cpp.o
+[ 13%] Building CUDA object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/cuda/lapack.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/cal_epsilon.cpp.o
+[ 13%] Built target symmetry
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/klist.cpp.o
+[ 13%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/nonlocal_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdwd3.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/cal_pseudo.cpp.o
+[ 13%] Built target psi_init
+[ 13%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/uspp_density.cpp.o
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/klist_io.cpp.o
+[ 13%] Building CUDA object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/cuda/linalg.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CUDA object source/source_base/module_container/CMakeFiles/container.dir/ATen/kernels/cuda/memory.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CXX object source/source_hamilt/module_vdw/CMakeFiles/vdw.dir/vdw.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/cal_totn.cpp.o
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/reciprocal_grid.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/cal_vcav.cpp.o
+[ 13%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_pw_sdft.cpp.o
+[ 13%] Built target vdw
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/parallel_kpoints.cpp.o
+[ 13%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/veff_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/cal_vel.cpp.o
+[ 13%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_pw_cal_tau.cpp.o
+[ 13%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/ekinetic_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cell_index.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_functional.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/minimize_cg.cpp.o
+[ 13%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_functional_ncgga_sf.cpp.o
+[ 13%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cell_tools.cpp.o
+[ 14%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/makov_payne.cpp.o
+[ 14%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/base_matrix.cpp.o
+[ 15%] Building CXX object source/source_hamilt/module_surchem/CMakeFiles/surchem.dir/sol_force.cpp.o
+[ 15%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cell_geometry.cpp.o
+[ 15%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_ncgga_radial.cpp.o
+[ 15%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/charge_moments.cpp.o
+[ 15%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/pcc_0d.cpp.o
+[ 15%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_pot.cpp.o
+[ 15%] Building CXX object source/source_cell/CMakeFiles/cell.dir/record_adj.cpp.o
+[ 15%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/biggrid_info.cpp.o
+[ 15%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/atom_pair.cpp.o
+[ 15%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/pcc_2d.cpp.o
+[ 15%] Linking CXX static library libcontainer.a
+[ 15%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/meta_op.cu.o
+[ 15%] Built target container
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 15%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/big_grid.cpp.o
+[ 15%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/gatefield.cpp.o
+[ 15%] Built target surchem
+[ 15%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/divide_info.cpp.o
+[ 16%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad.cpp.o
+[ 16%] Building CXX object source/source_cell/CMakeFiles/cell.dir/check_atomic_stru.cpp.o
+[ 16%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad_prepare.cpp.o
+[ 16%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/hcontainer.cpp.o
+[ 16%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/efield.cpp.o
+[ 16%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_atom.cpp.o
+[ 16%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/output_hcontainer.cpp.o
+[ 17%] Building CXX object source/source_cell/CMakeFiles/cell.dir/update_cell.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad_kernel.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_info.cpp.o
+[ 17%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_stodft/kernels/cuda/hpsi_norm_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 17%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/radial_proj.cpp.o
+[ 17%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/h_hartree_pw.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad_assemble.cpp.o
+[ 17%] Building CXX object source/source_cell/CMakeFiles/cell.dir/magnetism.cpp.o
+[ 17%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/projgen.cpp.o
+[ 17%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/h_tddft_pw.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint.cpp.o
+[ 17%] Building CXX object source/source_cell/CMakeFiles/cell.dir/bcast_cell.cpp.o
+[ 17%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_print.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad_wfc.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/read_hcontainer.cpp.o
+[ 17%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_xc.cpp.o
+[ 17%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_grad_utils.cpp.o
+[ 18%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl.cpp.o
+[ 18%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_stru.cpp.o
+[ 18%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/func_folding.cpp.o
+[ 18%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_local.cpp.o
+[ 18%] Building CXX object source/source_cell/CMakeFiles/cell.dir/print_cell.cpp.o
+[ 18%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/hamilt_pw.cpp.o
+[ 18%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_lda_wrap.cpp.o
+[ 18%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj.cpp.o
+[ 18%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_metagga.cpp.o
+[ 18%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/onsite_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 19%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_pcc.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/transfer.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_gga_wrap.cpp.o
+[ 19%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_init.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_nspin4.cpp.o
+[ 19%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/potential_new.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_lda_exch.cpp.o
+[ 19%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/td_history_pw.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_mgga_n4.cpp.o
+[ 19%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_lda_corr.cpp.o
+[ 19%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_overlap.cpp.o
+[ 20%] Building CXX object source/source_hamilt/module_hcontainer/CMakeFiles/hcontainer.dir/func_transfer.cpp.o
+[ 20%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/potential_types.cpp.o
+[ 20%] Building CUDA object source/CMakeFiles/device.dir/source_basis/module_pw/kernels/cuda/pw_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 20%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_rho.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_gga_exch.cpp.o
+[ 21%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_tools.cpp.o
+[ 21%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_atom_species.cpp.o
+[ 21%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/td_pw.cpp.o
+[ 21%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_surchem.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_gga_corr.cpp.o
+[ 21%] Built target hcontainer
+[ 21%] Building CXX object source/source_cell/CMakeFiles/cell.dir/sep.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_drho.cpp.o
+[ 21%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_ekin.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/xc_hcth.cpp.o
+[ 21%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_tools_becp.cpp.o
+[ 21%] Building CXX object source/source_cell/CMakeFiles/cell.dir/sep_cell.cpp.o
+[ 21%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_ml_exx.cpp.o
+[ 21%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_ml_exx_label.cpp.o
+[ 21%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_sep.cpp.o
+[ 21%] Building CUDA object source/CMakeFiles/device.dir/source_hsolver/kernels/cuda/hegvd_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 21%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_ekin_td.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_setup.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_tools.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_pot.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_lda_wrap.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_gga_wrap.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/libxc_mgga_wrap.cpp.o
+[ 21%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_tau.cpp.o
+[ 22%] Building CXX object source/source_hamilt/module_xc/CMakeFiles/xc_.dir/exx_info.cpp.o
+[ 22%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_xc_fdm.cpp.o
+[ 23%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_tools_dbecp.cpp.o
+[ 23%] Building CXX object source/source_cell/CMakeFiles/cell.dir/qlist.cpp.o
+[ 23%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_tf.cpp.o
+[ 23%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/pot_cosikr.cpp.o
+[ 23%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_veff.cpp.o
+[ 23%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_fvl.cpp.o
+[ 23%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_tools_force.cpp.o
+[ 23%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_vw.cpp.o
+[ 23%] Built target xc_
+[ 24%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/td_field.cpp.o
+[ 25%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cal_nelec_nband.cpp.o
+[ 26%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/projector_gradient.cpp.o
+[ 26%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/td_field_profiles.cpp.o
+[ 27%] Building CUDA object source/CMakeFiles/device.dir/source_hsolver/kernels/cuda/bpcg_kernel_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 27%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_fvl_meta.cpp.o
+[ 27%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_pot/td_field_manager.cpp.o
+[ 27%] Building CXX object source/source_pw/module_proj/CMakeFiles/module_proj.dir/onsite_proj_tools_stress.cpp.o
+[ 27%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_env_gamma.cpp.o
+[ 27%] Building CXX object source/source_cell/CMakeFiles/cell.dir/read_pp_ucell.cpp.o
+[ 27%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_wt.cpp.o
+[ 27%] Built target module_proj
+[ 27%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/velocity_workspace.cpp.o
+[ 27%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_routine.cpp.o
+[ 27%] Building CUDA object source/CMakeFiles/device.dir/source_hsolver/kernels/cuda/linear_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 27%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cal_wfc.cpp.o
+[ 28%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_env_k.cpp.o
+[ 28%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_extwt.cpp.o
+[ 28%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/nonlocal_workspace.cpp.o
+[ 28%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/charge.cpp.o
+[ 28%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_dvlocal.cpp.o
+[ 28%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_hamilt_pw.cpp.o
+[ 28%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_xwm.cpp.o
+[ 28%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_nl.cpp.o
+[ 28%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_atomic.cpp.o
+[ 29%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_hsolver_pw.cpp.o
+[ 29%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_lkt.cpp.o
+[ 29%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cal_ux.cpp.o
+[ 29%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_nl_td.cpp.o
+[ 29%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/localcell_info.cpp.o
+[ 29%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_atomic_inner.cpp.o
+[ 29%] Building CUDA object source/CMakeFiles/device.dir/source_estate/kernels/cuda/elecstate_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 29%] Building CXX object source/source_cell/CMakeFiles/cell.dir/cif_io.cpp.o
+[ 29%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/kedf_manager.cpp.o
+[ 29%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/hamilt_lcao.cpp.o
+[ 29%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/phi_operator.cpp.o
+[ 29%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_meta.cpp.o
+[ 29%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_init.cpp.o
+[ 29%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_iter.cpp.o
+[ 29%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/of_stress_pw.cpp.o
+[ 29%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_vel.cpp.o
+[ 29%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/set_ddphi.cpp.o
+[ 29%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_tools.cpp.o
+[ 29%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/of_print_info.cpp.o
+[ 29%] Building CXX object source/source_cell/CMakeFiles/cell.dir/ucell_io.cpp.o
+[ 30%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/hamilt_lcao_factory.cpp.o
+[ 30%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/unitcell_info.cpp.o
+[ 30%] Building CUDA object source/CMakeFiles/device.dir/source_base/module_device/cuda/memory_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 30%] Built target cell
+[ 31%] Building CXX object source/source_pw/module_ofdft/CMakeFiles/module_ofdft.dir/evolve_ofdft.cpp.o
+[ 31%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw.cpp.o
+[ 31%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_parallel.cpp.o
+[ 31%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_common.cpp.o
+[ 31%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_proj.cpp.o
+[ 31%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_che.cpp.o
+[ 32%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_extra.cpp.o
+[ 32%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/evolve_elec.cpp.o
+[ 32%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/operator_lcao.cpp.o
+[ 32%] Built target module_ofdft
+[ 32%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/veff_lcao.cpp.o
+[ 32%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_wf.cpp.o
+[ 32%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_interface.cpp.o
+[ 32%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_exx.cpp.o
+[ 32%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_mix.cpp.o
+[ 32%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_func.cpp.o
+[ 32%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/evolve_psi.cpp.o
+[ 32%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/force_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 32%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_fs_k.cpp.o
+[ 32%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/veff_dh.cpp.o
+[ 32%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_forces.cpp.o
+[ 32%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_prec_ctrl.cpp.o
+[ 32%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_mix_rho.cpp.o
+[ 33%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/kernel/gint_gpu_vars.cpp.o
+[ 33%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/band_energy.cpp.o
+[ 34%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_folding.cpp.o
+[ 34%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_stress_pw.cpp.o
+[ 34%] Building CUDA object source/source_hamilt/module_gint/CMakeFiles/gint.dir/kernel/phi_operator_gpu.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 34%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/middle_hamilt.cpp.o
+[ 34%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_dmr.cpp.o
+[ 34%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_pots.cpp.o
+[ 34%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_tool.cpp.o
+[ 35%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_exx_ace.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/norm_psi.cpp.o
+[ 35%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/meta_lcao.cpp.o
+[ 35%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_drho.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_occ.cpp.o
+[ 35%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/stress_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 35%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/deepks_lcao.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/propagator.cpp.o
+[ 35%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_drho_inner.cpp.o
+[ 35%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_elecond.cpp.o
+[ 35%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/op_pw_exx_pot.cpp.o
+[ 35%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_precond.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_energy.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/propagator_cn2.cpp.o
+[ 35%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/op_exx_lcao.cpp.o
+[ 35%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/overlap.cpp.o
+[ 35%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_tau.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_op.cpp.o
+[ 35%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/propagator_taylor.cpp.o
+[ 35%] Building CUDA object source/source_hamilt/module_gint/CMakeFiles/gint.dir/kernel/phi_operator_kernel.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 35%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_symm.cpp.o
+[ 35%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/kernels/exx_batch_op.cpp.o
+[ 35%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/ovlp_block.cpp.o
+[ 35%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/kernels/exx_batch_op_float_stub.cpp.o
+[ 36%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_uspp.cpp.o
+[ 37%] Building CXX object source/source_pw/module_stodft/CMakeFiles/module_stodft.dir/sto_dos.cpp.o
+[ 37%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/dftu_base.cpp.o
+[ 37%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/propagator_etrs.cpp.o
+[ 37%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_symm_detail.cpp.o
+[ 37%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/overlap_fs.cpp.o
+[ 37%] Building CUDA object source/source_hamilt/module_gint/CMakeFiles/gint.dir/kernel/set_const_mem.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 37%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_adj.cpp.o
+[ 37%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/wf_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 38%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/upsi.cpp.o
+[ 38%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_charge/chg_rhog_io.cpp.o
+[ 38%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/dftu_base_io.cpp.o
+[ 38%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/batch_biggrid.cpp.o
+[ 38%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/td_info.cpp.o
+[ 38%] Built target module_stodft
+[ 39%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/ekinetic.cpp.o
+[ 39%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_fs_r.cpp.o
+[ 39%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/write_elecstat_pot.cpp.o
+[ 39%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_gpu.cpp.o
+[ 39%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/vnl_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 39%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/write_init.cpp.o
+[ 39%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/dftu_base_io_read.cpp.o
+[ 39%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/velocity_op.cpp.o
+[ 39%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_rho_gpu.cpp.o
+[ 39%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/ekinetic_fs.cpp.o
+[ 39%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_fs_reduce.cpp.o
+[ 39%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/spin_constrain.cpp.o
+[ 39%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/dftu_pw.cpp.o
+[ 39%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/fp_energy.cpp.o
+[ 39%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_for_r.cpp.o
+[ 39%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_fvl_gpu.cpp.o
+[ 39%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/occupy.cpp.o
+[ 40%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_str_r.cpp.o
+[ 40%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/ekinetic_dh.cpp.o
+[ 40%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/dftu_pw_tools.cpp.o
+[ 40%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/occ_matrix.cpp.o
+[ 40%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/deltaspin_init.cpp.o
+[ 40%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_metagga_gpu.cpp.o
+[ 40%] Building CXX object source/CMakeFiles/device.dir/source_base/module_device/cuda_compat.cpp.o
+[ 40%] Building CXX object source/source_lcao/module_dftu/CMakeFiles/dftu.dir/dftu_nao_op_legacy.cpp.o
+[ 41%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/yukawa_screening.cpp.o
+[ 41%] Building CUDA object source/CMakeFiles/device.dir/source_base/kernels/cuda/math_ylm_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 41%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/radial_interpolation.cpp.o
+[ 41%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/snap_proj_half_tddft.cpp.o
+[ 41%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/occ_comput.cpp.o
+[ 41%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/nonlocal.cpp.o
+[ 41%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_nspin4_gpu.cpp.o
+[ 41%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/cal_mw.cpp.o
+[ 41%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/setup_pot.cpp.o
+[ 41%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/occ_mixer.cpp.o
+[ 41%] Built target dftu
+[ 41%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/nonlocal_dh.cpp.o
+[ 42%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/param_update.cpp.o
+[ 43%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_vl_mgga_n4_gpu.cpp.o
+[ 43%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/snap_psb_half_tddft.cpp.o
+[ 43%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/setup_estate_pw.cpp.o
+[ 43%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/basic_funcs.cpp.o
+[ 43%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/setup_pwrho.cpp.o
+[ 44%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/lambda_loop_helper.cpp.o
+[ 44%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/snap_pha_half_tddft.cpp.o
+[ 44%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_tau_gpu.cpp.o
+[ 45%] Building CUDA object source/CMakeFiles/device.dir/source_base/kernels/cuda/math_kernel_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 45%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/update_pot.cpp.o
+[ 45%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/setup_pwwfc.cpp.o
+[ 45%] Building CUDA object source/CMakeFiles/device.dir/source_base/kernels/cuda/math_kernel_op_vec.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 45%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/td_folding.cpp.o
+[ 45%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/nonlocal_fs.cpp.o
+[ 45%] Building CXX object source/source_hamilt/module_gint/CMakeFiles/gint.dir/gint_fvl_meta_gpu.cpp.o
+[ 45%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/uspp_support.cpp.o
+[ 45%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/elecstate_lcao.cpp.o
+[ 45%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/solve_propagation.cpp.o
+[ 45%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/update_cell_pw.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/boundary_fix.cpp.o
+[ 46%] Building CUDA object source/source_hamilt/module_gint/CMakeFiles/gint.dir/kernel/dgemm_vbatch.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 46%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dm_routine.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/lambda_loop.cpp.o
+[ 46%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/setup_dftu_pw.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/td_moving_gauge.cpp.o
+[ 46%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/td_ekinetic_lcao.cpp.o
+[ 46%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/density_matrix.cpp.o
+[ 46%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/deltaspin_pw.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/lambda_loop_diag.cpp.o
+[ 46%] Building CXX object source/source_hsolver/CMakeFiles/diag_cusolver.dir/kernels/hegvd_op.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_rt/CMakeFiles/tddft.dir/force_rt_overlap.cpp.o
+[ 46%] Building CUDA object source/source_hsolver/CMakeFiles/diag_cusolver.dir/kernels/cuda/diag_cusolver.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 46%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw_nl.cpp.o
+[ 46%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dmr_gamma.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/cal_mw_from_lambda.cpp.o
+[ 46%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/td_nonlocal_lcao.cpp.o
+[ 46%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dm_tools.cpp.o
+[ 46%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw_cc.cpp.o
+[ 46%] Building CUDA object source/source_lcao/module_rt/CMakeFiles/tddft.dir/kernels/cuda/snap_psibeta_kernel.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 46%] Building CXX object source/source_hsolver/CMakeFiles/diag_cusolver.dir/diago_cusolver.cpp.o
+[ 46%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/template_helpers.cpp.o
+[ 46%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dmr_k.cpp.o
+[ 47%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw_scc.cpp.o
+[ 47%] Built target diag_cusolver
+[ 47%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw.cpp.o
+[ 47%] Building CUDA object source/CMakeFiles/device.dir/source_hamilt/module_xc/kernels/cuda/xc_functional_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 47%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/deltaspin_lcao.cpp.o
+[ 47%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dmr_td.cpp.o
+[ 47%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/td_pot_hybrid.cpp.o
+[ 47%] Building CUDA object source/source_lcao/module_rt/CMakeFiles/tddft.dir/kernels/cuda/snap_psibeta_gpu.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 48%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dmr_full.cpp.o
+[ 48%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/deltaspin_lcao_mi.cpp.o
+[ 48%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/td_pot_hybrid_fs.cpp.o
+[ 48%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw_us.cpp.o
+[ 48%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dmr_init.cpp.o
+[ 48%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diag_const_nums.cpp.o
+[ 48%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_cg.cpp.o
+[ 48%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_ofdft/kernels/cuda/kedf_wt_gpu.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 48%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/force_pw_onsite.cpp.o
+[ 48%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/deltaspin_state.cpp.o
+[ 49%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/dspin_lcao.cpp.o
+[ 49%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dm_setter.cpp.o
+[ 49%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/deltaspin_pw_mi.cpp.o
+[ 49%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_cc.cpp.o
+[ 49%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dm_getter.cpp.o
+[ 49%] Building CUDA object source/source_lcao/module_rt/CMakeFiles/tddft.dir/kernels/cuda/norm_psi_kernel.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 49%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_ewa.cpp.o
+[ 49%] Building CUDA object source/source_lcao/module_rt/CMakeFiles/tddft.dir/kernels/cuda/band_energy_kernel.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 50%] Building CXX object source/source_lcao/module_deltaspin/CMakeFiles/deltaspin.dir/mi_tools.cpp.o
+[ 50%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/dm_from_psi.cpp.o
+[ 50%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/cal_density_real_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 50%] Built target deltaspin
+[ 50%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_david.cpp.o
+[ 50%] Built target tddft
+[ 50%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_dav_subspace.cpp.o
+[ 50%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_gga.cpp.o
+[ 50%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/dspin_fs.cpp.o
+[ 50%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/edm_tddft.cpp.o
+[ 50%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_mgga.cpp.o
+[ 50%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/mul_potential_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 50%] Building CXX object source/source_estate/CMakeFiles/elecstate.dir/module_dm/edm_tddft_lapack.cpp.o
+[ 50%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_har.cpp.o
+[ 50%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_bpcg.cpp.o
+[ 50%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/vec_mul_vec_complex.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 50%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/module_operator_lcao/operator_fs_utils.cpp.o
+[ 50%] Building CXX object source/source_hsolver/module_genelpa/CMakeFiles/genelpa.dir/elpa_new.cpp.o
+[ 51%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_kin.cpp.o
+[ 51%] Built target elecstate
+[ 51%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/para_lin_tf.cpp.o
+[ 51%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/setup_dftu_lcao.cpp.o
+[ 51%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_loc.cpp.o
+[ 51%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/exx_cal_energy_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 51%] Building CXX object source/source_hsolver/module_genelpa/CMakeFiles/genelpa.dir/elpa_new_real.cpp.o
+[ 51%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver_pw.cpp.o
+[ 51%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/pulay_fs_center2.cpp.o
+[ 51%] Built target gint
+[ 52%] Building CXX object source/source_hsolver/module_genelpa/CMakeFiles/genelpa.dir/elpa_new_complex.cpp.o
+[ 52%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_nl.cpp.o
+[ 52%] Building CUDA object source/CMakeFiles/device.dir/source_pw/module_pwdft/kernels/cuda/exx_batch_op.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 52%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver_pw_tddft.cpp.o
+[ 52%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/force_stress_lcao.cpp.o
+[ 52%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_us.cpp.o
+[ 52%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_atomic.cpp.o
+[ 52%] Building CXX object source/source_hsolver/module_genelpa/CMakeFiles/genelpa.dir/elpa_runtime_check.cpp.o
+[ 52%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/force_stress_assemble.cpp.o
+[ 52%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_atomic_lm.cpp.o
+[ 52%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_onsite.cpp.o
+[ 52%] Building CXX object source/source_hsolver/module_genelpa/CMakeFiles/genelpa.dir/utils.cpp.o
+[ 52%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_gaunt_table.cpp.o
+[ 52%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/force_stress_terms.cpp.o
+[ 52%] Built target genelpa
+[ 52%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_exx.cpp.o
+[ 52%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/stress_tools.cpp.o
+[ 52%] Built target device
+[ 52%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_nonlocal.cpp.o
+[ 53%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver_lcaopw.cpp.o
+[ 53%] Building CXX object source/source_basis/module_nao/CMakeFiles/nao_smoothgen.dir/smoothgen.cpp.o
+[ 53%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stress_pw.cpp.o
+[ 53%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vl_pw.cpp.o
+[ 54%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/numerical_radial.cpp.o
+[ 54%] Built target nao_smoothgen
+[ 54%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/radial_set.cpp.o
+[ 54%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_nonlocal_lm.cpp.o
+[ 55%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/edm.cpp.o
+[ 55%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/spar_dh.cpp.o
+[ 55%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_iter_assist.cpp.o
+[ 56%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/orb_read.cpp.o
+[ 56%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/atomic_radials.cpp.o
+[ 56%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/beta_radials.cpp.o
+[ 56%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw.cpp.o
+[ 56%] Building CXX object source/source_md/CMakeFiles/md.dir/fire.cpp.o
+[ 56%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_alpha.cpp.o
+[ 56%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver.cpp.o
+[ 56%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/sphbes_radials.cpp.o
+[ 56%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/parallel_orbitals.cpp.o
+[ 56%] Building CXX object source/source_md/CMakeFiles/md.dir/langevin.cpp.o
+[ 56%] Building CXX object source/source_md/module_plumed/CMakeFiles/module_plumed.dir/plumed_interface.cpp.o
+[ 56%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_basis.cpp.o
+[ 56%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_pxxxgvx.cpp.o
+[ 56%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/spar_exx.cpp.o
+[ 56%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/spar_hsr.cpp.o
+[ 57%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_deeq.cpp.o
+[ 57%] Built target module_plumed
+[ 57%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_grid_geometry.cpp.o
+[ 57%] Building CXX object source/source_basis/module_ao/CMakeFiles/orb.dir/elem_basis_idx_orb.cpp.o
+[ 57%] Building CXX object source/source_md/CMakeFiles/md.dir/md_base.cpp.o
+[ 57%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/hydrogen_radials.cpp.o
+[ 57%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_basis_k.cpp.o
+[ 57%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_getvnl.cpp.o
+[ 57%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diag_hs_para.cpp.o
+[ 57%] Built target orb
+[ 57%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/spar_st.cpp.o
+[ 57%] Building CXX object source/source_md/CMakeFiles/md.dir/md_func.cpp.o
+[ 57%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_params.cpp.o
+[ 57%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_basis_sup.cpp.o
+[ 57%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/pswfc_radials.cpp.o
+[ 57%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_bicgstab.cpp.o
+[ 57%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_grad.cpp.o
+[ 57%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_distributeg.cpp.o
+[ 57%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_set.cpp.o
+[ 57%] Building CXX object source/source_md/CMakeFiles/md.dir/msst.cpp.o
+[ 57%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_init_vnl.cpp.o
+[ 57%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_cgs.cpp.o
+[ 57%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_distg_method1.cpp.o
+[ 58%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_distg_method2.cpp.o
+[ 58%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_set_fs.cpp.o
+[ 58%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/radial_collection.cpp.o
+[ 58%] Building CXX object source/source_md/CMakeFiles/md.dir/nhchain.cpp.o
+[ 58%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_qrad.cpp.o
+[ 58%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vnl_pw_table.cpp.o
+[ 58%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_distributer.cpp.o
+[ 58%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_factory.cpp.o
+[ 58%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/real_gaunt_table.cpp.o
+[ 58%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_init.cpp.o
+[ 58%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_set_st.cpp.o
+[ 58%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_gmres.cpp.o
+[ 58%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/two_center_table.cpp.o
+[ 58%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stru_fac.cpp.o
+[ 58%] Building CXX object source/source_md/CMakeFiles/md.dir/run_md.cpp.o
+[ 58%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_transform.cpp.o
+[ 58%] Building CXX object source/source_md/CMakeFiles/md.dir/verlet.cpp.o
+[ 58%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/stru_fac_k.cpp.o
+[ 58%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_nl_mu.cpp.o
+[ 59%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/two_center_integrator.cpp.o
+[ 59%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_sys.cpp.o
+[ 59%] Built target md
+[ 59%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_algebra.cpp.o
+[ 59%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/soc.cpp.o
+[ 59%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks.cpp.o
+[ 59%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_transform_gpu.cpp.o
+[ 59%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_estruc.cpp.o
+[ 59%] Building CXX object source/source_basis/module_nao/CMakeFiles/numerical_atomic_orbitals.dir/two_center_bundle.cpp.o
+[ 60%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/elecond.cpp.o
+[ 60%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/pw_transform_k.cpp.o
+[ 60%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_set_zero.cpp.o
+[ 61%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_fp.cpp.o
+[ 62%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/orthonormal.cpp.o
+[ 62%] Built target numerical_atomic_orbitals
+[ 62%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_relax.cpp.o
+[ 62%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/__/__/source_base/module_fft/fft_bundle.cpp.o
+[ 63%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_allocate.cpp.o
+[ 63%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks_pw.cpp.o
+[ 63%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/__/__/source_base/module_fft/fft_cpu.cpp.o
+[ 63%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/fs_nonlocal_tools.cpp.o
+[ 63%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_set_mat2d.cpp.o
+[ 63%] Building CXX object source/source_basis/module_pw/CMakeFiles/planewave.dir/__/__/source_base/module_fft/fft_cuda.cpp.o
+[ 63%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/orthonormal_small.cpp.o
+[ 64%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_parameter/input_conv.cpp.o
+[ 64%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/fs_nonlocal_tools_vkb.cpp.o
+[ 64%] Built target planewave
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_input_item_md.cpp.o
+[ 65%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks_pw_tddft.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/lcao_init_basis.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ctrl/ctrl_output_fp.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/fs_nonlocal_tools_stress.cpp.o
+[ 65%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/cn_subspace.cpp.o
+[ 65%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_low_rank.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_unk/unk_overlap_pw.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/fs_nonlocal_tools_force.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/setup_nonlocal.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_unk/berryphase.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ctrl/ctrl_output_pw.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_ofdft.cpp.o
+[ 65%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/linear_workspace.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/setup_exx.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/fs_kin_tools.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/nonlocal_maths.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90.cpp.o
+[ 65%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks_lcaopw.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/setup_deepks.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_input_item_sdft.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ctrl/ctrl_output_td.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/onsite_proj_force_stress.cpp.o
+[ 65%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver_linear.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/allocate_dm.cpp.o
+[ 65%] Building CXX object source/source_relax/CMakeFiles/relax.dir/relax_data.cpp.o
+[ 65%] Building CXX object source/source_pw/module_pwdft/CMakeFiles/module_pwdft.dir/vsep_pw.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_pw.cpp.o
+[ 65%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_sdft_pw.cpp.o
+[ 65%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_ipi.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/bessel_basis.cpp.o
+[ 65%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_frame_utils.cpp.o
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/rho_tau_lcao.cpp.o
+[ 65%] Built target module_pwdft
+[ 65%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/center2orb.cpp.o
+[ 65%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_frame.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_tddft.cpp.o
+[ 65%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_pw_io.cpp.o
+[ 65%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/hsolver_lcao.cpp.o
+[ 66%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_utils.cpp.o
+[ 66%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lj.cpp.o
+[ 66%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/cal_test.cpp.o
+[ 67%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/center2orb_orb11.cpp.o
+[ 67%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_scalapack.cpp.o
+[ 67%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_pw_setup.cpp.o
+[ 67%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_handlers.cpp.o
+[ 67%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/cal_dos.cpp.o
+[ 67%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_dp.cpp.o
+[ 67%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/center2orb_orb21.cpp.o
+[ 67%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_pw_overlap.cpp.o
+[ 67%] Building CXX object source/source_relax/CMakeFiles/relax.dir/socket_driver.cpp.o
+[ 67%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/cal_ldos.cpp.o
+[ 67%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_nep.cpp.o
+[ 67%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/parallel_k2d.cpp.o
+[ 67%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_bse.cpp.o
+[ 67%] Building CXX object source/source_lcao/CMakeFiles/hamilt_lcao.dir/center2orb_orb22.cpp.o
+[ 68%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_lcao_pw.cpp.o
+[ 68%] Building CXX object source/source_relax/CMakeFiles/relax.dir/cg_base.cpp.o
+[ 69%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_lapack.cpp.o
+[ 69%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_of.cpp.o
+[ 69%] Built target hamilt_lcao
+[ 69%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_dfpt.cpp.o
+[ 69%] Building CXX object source/source_relax/CMakeFiles/relax.dir/relax_driver.cpp.o
+[ 69%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_lcao.cpp.o
+[ 69%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ml/cal_mlkedf_desc.cpp.o
+[ 69%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_elpa.cpp.o
+[ 69%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_of_tddft.cpp.o
+[ 69%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_deepks.cpp.o
+[ 69%] Building CXX object source/source_io/module_parameter/CMakeFiles/parameter.dir/parameter.cpp.o
+[ 69%] Building CXX object source/source_relax/CMakeFiles/relax.dir/relax_stru_io.cpp.o
+[ 69%] Building CXX object source/source_hsolver/CMakeFiles/hsolver.dir/diago_elpa_native.cpp.o
+[ 70%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/write_dos_pw.cpp.o
+[ 70%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_lcao_io.cpp.o
+[ 70%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_model.cpp.o
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_of_interface.cpp.o
+[ 71%] Building CXX object source/source_relax/CMakeFiles/relax.dir/relax_sync.cpp.o
+[ 71%] Built target parameter
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_of_tool.cpp.o
+[ 71%] Built target hsolver
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/pw_others.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_energy/write_bands.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/lr_util.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_lcao_setup.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/lr_sparse.cpp.o
+[ 71%] Building CXX object source/source_relax/CMakeFiles/relax.dir/line_search.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_energy/write_eig_occ.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/to_w90_lcao_overlap.cpp.o
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_dfpt_pw.cpp.o
+[ 71%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_lbfgs.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_energy/td_eij_io.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_postproc.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/op_exx_lcao.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/meta_lcao.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/numerical_basis.cpp.o
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks_lcao.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/lr_io.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/veff_lcao.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_exx_dftu.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_wannier/fr_overlap.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/numerical_basis_overlap.cpp.o
+[ 71%] Building CXX object source/source_relax/CMakeFiles/relax.dir/relax_nsync.cpp.o
+[ 71%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_ks_lcao_tddft.cpp.o
+[ 71%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/exciton_plotter.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_unk/unk_overlap_lcao.cpp.o
+[ 71%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/numerical_basis_output.cpp.o
+[ 72%] Building CXX object source/source_relax/CMakeFiles/relax.dir/bfgs_basic.cpp.o
+[ 72%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/veff_dh.cpp.o
+[ 73%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_other.cpp.o
+[ 73%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/numerical_basis_jyjy.cpp.o
+[ 73%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_basic.cpp.o
+[ 73%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_bessel/numerical_descriptor.cpp.o
+[ 73%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_bfgs.cpp.o
+[ 74%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/ao_to_mo_transformer/ao_to_mo_parallel.cpp.o
+[ 74%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/print_info.cpp.o
+[ 74%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_orb.cpp.o
+[ 74%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_bfgs2.cpp.o
+[ 74%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hs_dense_io.cpp.o
+[ 74%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/deepks_lcao.cpp.o
+[ 74%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_inp_out.cpp.o
+[ 74%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/ao_to_mo_transformer/ao_to_mo_serial.cpp.o
+[ 75%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/read_cube.cpp.o
+[ 75%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_cg.cpp.o
+[ 75%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/overlap.cpp.o
+[ 75%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hs_sparse_io.cpp.o
+[ 75%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/ao_to_mo_transformer/cvcx_par.cpp.o
+[ 75%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/read_wfc_pw.cpp.o
+[ 75%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_init.cpp.o
+[ 75%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_sd.cpp.o
+[ 75%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/ao_to_mo_transformer/cvcx_serial.cpp.o
+[ 75%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/dhs_sparse_writer.cpp.o
+[ 75%] Building CXX object source/source_relax/CMakeFiles/relax.dir/ions_move_methods.cpp.o
+[ 75%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/read_wf2rho_pw.cpp.o
+[ 75%] Building CXX object source/source_relax/CMakeFiles/relax.dir/lattice_change_basic.cpp.o
+[ 75%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/ovlp_block.cpp.o
+[ 75%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/dm_trans/dm_trans_parallel.cpp.o
+[ 76%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hsk_writer.cpp.o
+[ 76%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_restart/restart.cpp.o
+[ 76%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/write_wfc_pw.cpp.o
+[ 76%] Building CXX object source/source_relax/CMakeFiles/relax.dir/lattice_change_cg.cpp.o
+[ 76%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hsr_writer.cpp.o
+[ 77%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/overlap_fs.cpp.o
+[ 77%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/availability.cpp.o
+[ 77%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_cfg.cpp.o
+[ 77%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/write_pao.cpp.o
+[ 77%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/dm_trans/dm_trans_serial.cpp.o
+[ 78%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_lcao_tddft.cpp.o
+[ 78%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/ekinetic.cpp.o
+[ 78%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/write_cube.cpp.o
+[ 78%] Building CXX object source/source_relax/CMakeFiles/relax.dir/lat_change_method.cpp.o
+[ 78%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/availability_validator.cpp.o
+[ 78%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/operator_casida/operator_lr_hxc.cpp.o
+[ 79%] Building CXX object source/source_relax/CMakeFiles/relax.dir/matrix_methods.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hsr_legacy.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_elf/write_elf.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_input.cpp.o
+[ 79%] Built target relax
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_input.dir/module_parameter/read_set_globalv.cpp.o
+[ 79%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/ekinetic_fs.cpp.o
+[ 79%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/operator_casida/operator_lr_exx.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/hterm_writer.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/lat_r_csr.cpp.o
+[ 79%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dipole/write_dipole.cpp.o
+[ 79%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/ekinetic_dh.cpp.o
+[ 79%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/potentials/pot_hxc_lrtd.cpp.o
+[ 80%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ml/write_mlkedf_desc.cpp.o
+[ 80%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_current/td_current_io.cpp.o
+[ 80%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_grad.cpp.o
+[ 80%] Building CXX object source/source_base/CMakeFiles/base.dir/assoc_laguerre.cpp.o
+[ 80%] Building CXX object source/source_base/CMakeFiles/base.dir/module_external/blas_connector_base.cpp.o
+[ 80%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/pos_op_csr.cpp.o
+[ 80%] Built target io_input
+[ 81%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/potentials/pot_grad_xc.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_current/td_current_io_comm.cpp.o
+[ 81%] Building CXX object source/source_base/CMakeFiles/base.dir/module_external/blas_connector_vector.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/pos_op_basis.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/nonlocal.cpp.o
+[ 81%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_lr_rlx.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/kernel_pots.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/nonlocal_dh.cpp.o
+[ 81%] Building CXX object source/source_base/CMakeFiles/base.dir/module_external/blas_connector_matrix.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/pos_op_calc.cpp.o
+[ 81%] Building CXX object source/source_base/CMakeFiles/base.dir/clebsch_gordan_coeff.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/init_helpers.cpp.o
+[ 81%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_gets.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_current/td_current_pw.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/pos_op_writer.cpp.o
+[ 81%] Building CXX object source/source_base/CMakeFiles/base.dir/complexarray.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/hsolver_lrtd.cpp.o
+[ 81%] Building CXX object source/source_base/CMakeFiles/base.dir/complexmatrix.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/nonlocal_fs.cpp.o
+[ 81%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/zeq_solver.cpp.o
+[ 81%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_efield/td_efield_io.cpp.o
+[ 82%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/pos_op_mat.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/element_basis_index.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/inverse_matrix.cpp.o
+[ 83%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/lcao_others.cpp.o
+[ 83%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/td_ekinetic_lcao.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_efield/td_vector_pot_io.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/vxc_op_tools.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/gather_math_lib_info.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_chgpot/write_libxc_r.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/output_log.cpp.o
+[ 83%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/td_nonlocal_lcao.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/global_file.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/vxc_op_mat.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/vxc_op_r.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/global_function.cpp.o
+[ 83%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_dm2rho.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_json/para_json.cpp.o
+[ 83%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/zeq_cg.cpp.o
+[ 83%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/parse_args.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/glob_fn_ddotreal.cpp.o
+[ 83%] Building CXX object source/source_base/CMakeFiles/base.dir/global_variable.cpp.o
+[ 83%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/td_pot_hybrid.cpp.o
+[ 84%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/input_help.cpp.o
+[ 84%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/esolver_double_xc.cpp.o
+[ 84%] Building CXX object source/source_base/CMakeFiles/base.dir/intarray.cpp.o
+[ 84%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/vxc_op_lip.cpp.o
+[ 84%] Building CXX object source/source_esolver/CMakeFiles/esolver.dir/__/source_pw/module_pwdft/exx_helper.cpp.o
+[ 84%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/hamilt_ulr.cpp.o
+[ 84%] Building CXX object source/source_base/CMakeFiles/base.dir/math_integral.cpp.o
+[ 84%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_chgpot/get_pchg_pw.cpp.o
+[ 84%] Building CXX object source/source_base/CMakeFiles/base.dir/math_lebedev_laikov.cpp.o
+[ 84%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_hs/output_mat_sparse.cpp.o
+[ 85%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/td_pot_hybrid_fs.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_polyint.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_density.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/dspin_lcao.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_sphbes.cpp.o
+[ 86%] Built target esolver
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_erf_complex.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_ylmreal.cpp.o
+[ 86%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_energy/write_eband_terms.cpp.o
+[ 86%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/get_wf_pw.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/dspin_fs.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/spectrum_mo.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_bspline.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/math_chebyshev.cpp.o
+[ 86%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_ctrl/ctrl_scf_lcao.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_operator_lcao/CMakeFiles/operator_ks_lcao.dir/operator_fs_utils.cpp.o
+[ 86%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/utils/spectrum_out.cpp.o
+[ 86%] Building CXX object source/source_base/CMakeFiles/base.dir/mathzone_add1.cpp.o
+[ 86%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_ctrl/ctrl_runner_lcao.cpp.o
+[ 86%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/write_dos_lcao.cpp.o
+[ 87%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/dm_trans/dm_diff_ser.cpp.o
+[ 87%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/dm_trans/dm_diff_par.cpp.o
+[ 87%] Building CXX object source/source_base/CMakeFiles/base.dir/matrix.cpp.o
+[ 87%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/cal_pdos_gamma.cpp.o
+[ 87%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_spectrum.cpp.o
+[ 87%] Building CXX object source/source_base/CMakeFiles/base.dir/matrix3.cpp.o
+[ 87%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_spectrum_velocity.cpp.o
+[ 87%] Built target operator_ks_lcao
+[ 87%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/hamilt_casida.cpp.o
+[ 88%] Building CXX object source/source_base/CMakeFiles/base.dir/memory_recorder.cpp.o
+[ 88%] Building CXX object source/source_base/CMakeFiles/base.dir/mymath.cpp.o
+[ 88%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/cal_pdos_multik.cpp.o
+[ 88%] Building CXX object source/source_io/CMakeFiles/io_advanced.dir/module_ctrl/ctrl_iter_lcao.cpp.o
+[ 88%] Building CXX object source/source_base/CMakeFiles/base.dir/opt_cg.cpp.o
+[ 88%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dos/write_pdos_text.cpp.o
+[ 88%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/potentials/xc_kernel.cpp.o
+[ 88%] Building CXX object source/source_base/CMakeFiles/base.dir/opt_dcsrch.cpp.o
+[ 88%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/potentials/xc_kxc.cpp.o
+[ 88%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_output/write_orb_info.cpp.o
+[ 88%] Building CXX object source/source_base/CMakeFiles/base.dir/opt_tn.cpp.o
+[ 88%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/gradient_output.cpp.o
+[ 88%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_energy/write_proj_band_lcao.cpp.o
+[ 88%] Built target io_advanced
+[ 89%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_chgpot/get_pchg_lcao.cpp.o
+[ 89%] Building CXX object source/source_base/CMakeFiles/base.dir/output.cpp.o
+[ 89%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/get_wf_lcao.cpp.o
+[ 89%] Building CXX object source/source_base/CMakeFiles/base.dir/para_gemm.cpp.o
+[ 89%] Building CXX object source/source_base/CMakeFiles/base.dir/realarray.cpp.o
+[ 89%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_grad_cs.cpp.o
+[ 90%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_grad_os.cpp.o
+[ 90%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/read_wfc_nao.cpp.o
+[ 90%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_wf/write_wfc_nao.cpp.o
+[ 90%] Building CXX object source/source_base/CMakeFiles/base.dir/sph_bessel_rec_d1.cpp.o
+[ 90%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_force.cpp.o
+[ 90%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/exx_proj.cpp.o
+[ 90%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dm/write_dmk.cpp.o
+[ 90%] Building CXX object source/source_base/CMakeFiles/base.dir/sph_bessel_rec_d2.cpp.o
+[ 90%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dm/write_dmr.cpp.o
+[ 91%] Building CXX object source/source_base/CMakeFiles/base.dir/timer.cpp.o
+[ 91%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/lr_force_aux.cpp.o
+[ 91%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/grad_degen.cpp.o
+[ 91%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/state_group.cpp.o
+[ 91%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_qo/to_qo_kernel.cpp.o
+[ 91%] Building CXX object source/source_base/CMakeFiles/base.dir/tool_check.cpp.o
+[ 91%] Building CXX object source/source_base/CMakeFiles/base.dir/tool_quit.cpp.o
+[ 91%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/state_track.cpp.o
+[ 91%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_qo/to_qo_mpi.cpp.o
+[ 91%] Building CXX object source/source_base/CMakeFiles/base.dir/tool_title.cpp.o
+[ 91%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_qo/to_qo_structures.cpp.o
+[ 91%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_mulliken/output_sk.cpp.o
+[ 92%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_mulliken/output_dmk.cpp.o
+[ 92%] Building CXX object source/source_base/CMakeFiles/base.dir/ylm.cpp.o
+[ 92%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/state_ovlp.cpp.o
+[ 92%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/grad_jt.cpp.o
+[ 92%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/cal_edm.cpp.o
+[ 92%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_common.cpp.o
+[ 92%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_cell.cpp.o
+[ 92%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_mulliken/output_mulliken.cpp.o
+[ 92%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_ml/io_npz.cpp.o
+[ 92%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_global.cpp.o
+[ 92%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_hs/angmom_op_mat.cpp.o
+[ 93%] Building CXX object source/source_lcao/module_lr/CMakeFiles/lr.dir/zeqlin_solv.cpp.o
+[ 93%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_comm.cpp.o
+[ 93%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dhs/write_dh.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_reduce.cpp.o
+[ 94%] Building CXX object source/source_io/CMakeFiles/io_basic.dir/module_dhs/write_dh_terms.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_device.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_grid.cpp.o
+[ 94%] Built target lr
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/sph_bessel_tf.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/cubic_spline.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/parallel_2d.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/binstream.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/filename.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/sparse_matrix.cpp.o
+[ 94%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/file_reader.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/csr_reader.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/read_exit_file.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_out/orb_io.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_mixing/mixing_data.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_mixing/mixing.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_mixing/plain_mixing.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_mixing/pulay_mixing.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_mixing/broyden_mixing.cpp.o
+[ 95%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_band_output.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_collection.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_kmesh_world.cpp.o
+[ 96%] Built target io_basic
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_pw_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_diag_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_rgrid_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_bgroup_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_matrix_world.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_mpi_func.cpp.o
+[ 96%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_setup.cpp.o
+[ 97%] Building CXX object source/source_base/CMakeFiles/base.dir/module_parallel/para_bridge.cpp.o
+[ 97%] Built target base
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw_init.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw_run.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw_solve.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw_q0.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pw_data.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_kq_basis.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pert.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pert_vkb.cpp.o
+[ 98%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_pert_nl.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_stern.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_rho.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_phon.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_phon_ewald.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_phon_elec.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_q0.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_q0_pos.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_metal.cpp.o
+[ 99%] Building CXX object source/source_pw/module_dfpt/CMakeFiles/module_dfpt.dir/dfpt_hamilt_shift.cpp.o
+[100%] Linking CXX static library libmodule_dfpt.a
+[100%] Built target module_dfpt
+[100%] Building CXX object source/CMakeFiles/abacus_basic_gpu.dir/source_main/main.cpp.o
+[100%] Linking CXX executable ../abacus_basic_gpu
+[100%] Built target abacus_basic_gpu
+-- Install configuration: "Release"
+-- Installing: /home/galileo-group/galileouser02/atst-cp-parity-20261019/abacus-latest-install/bin/abacus_basic_gpu
+=== built version ===
+ABACUS version v3.11.0-beta11
+reference status complete points 1
+  {'nelec': 215.96601352598628, 'efermi': 5.034404363, 'mu_calc': -4.999997234, 'residual_mu': 2.765999999709834e-06, 'energy': -39571.25588354986, 'free_energy': -39572.37399897855, 'cp_iterations': 5, 'cp_converged': True}
+compensated status complete points 1
+  {'nelec': 217.0, 'efermi': 9.3259947437, 'mu_calc': 15.045970063867365, 'residual_mu': -5.940589442587907e-07, 'energy': -39581.25428741653, 'free_energy': -39582.38418888383, 'cp_iterations': 1, 'cp_converged': True}
+reference_status=0 compensated_status=0

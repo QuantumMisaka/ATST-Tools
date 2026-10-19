@@ -49,6 +49,115 @@ main 01/02 examples and example 13 use `two_stage: true` with
 `stage1_fmax: 0.20` and `stage1_steps: 20`; the short configurations retain
 their recorded step limits.
 
+### Constant-potential FCP v2 reference trace
+
+The committed `tests/data/constant_potential_reference.json` is generated from
+the pinned upstream `version2/FCPelectrochem.py` source with a deterministic
+analytic backend. Reproduce it without executing ABACUS:
+
+```bash
+ATST_FCP_REFERENCE_SOURCE=/path/to/v2_FCPelectrochem.py \
+  pytest tests/integration/test_constant_potential_reference_source.py -q
+```
+
+The reference source is GPL-3.0 and is not vendored; keep it in a local
+reference tree. This checks the FCP v2 outer loop and the committed trace
+provenance, not a real-engine calculation. A real-engine side-by-side run
+between FCP v2 + ase-abacus and ATST + abacuslite remains an opt-in site
+acceptance.
+
+### Constant-potential real-engine record parity
+
+For a real-engine single-point comparison, produce one normalized record from
+each implementation and compare them:
+
+```bash
+# Candidate side: an ATST run directory containing constant_potential_results.json
+python scripts/extract_constant_potential_record.py \
+  --input RUN_DIR/constant_potential_results.json \
+  --output atst_record.json
+
+# Reference side: requires legacy ase-abacus, pandas, ABACUS, and the pinned
+# version2/FCPelectrochem.py checkout
+python scripts/run_fcp_v2_reference.py \
+  --config fcp_reference_config.json \
+  --fcp-source /path/to/v2_FCPelectrochem.py \
+  --output fcp_record.json
+
+python scripts/compare_constant_potential_results.py \
+  --reference fcp_record.json \
+  --candidate atst_record.json
+```
+
+The reference producer accepts a JSON configuration with the same physical
+settings on both sides. A minimal shape is:
+
+```json
+{
+  "atoms": "/path/to/STRU",
+  "atoms_format": "abacus",
+  "command": "mpirun -np 4 abacus",
+  "pseudo_dir": "/path/to/PP_ORB",
+  "basis_dir": "/path/to/PP_ORB",
+  "pseudopotentials": {"Pt": "Pt_ONCV_PBE-1.0.upf"},
+  "basissets": {"Pt": "Pt_gga_7au_100Ry_4s2p2d1f.orb"},
+  "kpts": [1, 1, 1],
+  "parameters": {
+    "calculation": "scf",
+    "basis_type": "lcao",
+    "ecutwfc": 100
+  },
+  "directory": "/path/to/fcp_reference_run",
+  "fcp": {
+    "U": 0.4,
+    "NELECT": 217.0,
+    "NELECT0": 216.0,
+    "C": 0.0125,
+    "FCPconv": 1e-5,
+    "work_ref": 4.6,
+    "max_FCP_iter": 100,
+    "always_adjust": false,
+    "adaptive_lr": false
+  }
+}
+```
+
+Use `always_adjust: false` for the first single-point parity. FCP v2 defaults
+to `true`; ATST currently stops at convergence, so the adjusted next guess is
+a separate warm-start decision.
+
+The same comparison is available as an opt-in test:
+
+```bash
+ATST_FCP_REFERENCE_CONFIG=fcp_reference_config.json \
+ATST_FCP_REFERENCE_SOURCE=/path/to/v2_FCPelectrochem.py \
+ATST_CP_CANDIDATE_RESULTS=RUN_DIR/constant_potential_results.json \
+pytest --run-slurm tests/integration/test_constant_potential_record_parity.py -q
+```
+
+The comparator uses explicit absolute tolerances and reports every differing
+field. It compares one point; scan, restart, relax/NEB, and cross-basis/spin
+matrices remain separate acceptance cases.
+
+The 2026-10-20 Pt/LCAO `reference_fcp` single-point run (SAI job `1864305`,
+ABACUS LTS 3.10.1) is recorded in
+[ATST_CP_PARITY_2026-10-20.md](../reports/ATST_CP_PARITY_2026-10-20.md). It
+passed after the abacuslite entropy-aware `free_energy` fix; the published
+`abacuslite==1.2.0` does not yet include that fix.
+
+Develop/latest-format smoke runs on the same fixture are recorded in
+`docs/reports/data/ATST_CP_DEVELOP_20261020/`:
+
+- `abacus/develop-git-079fd0c-260724-sm70-auto` (`v3.11.0-beta6`), job
+  `1864431`;
+- `abacus/v3.11.0-beta9-auto` (`v3.11.0-beta9`), job `1864468`.
+- locally built `deepmodeling/abacus-develop` `origin/develop` `7be5df975`
+  (`v3.11.0-beta11`), job `1864773`; build and smoke evidence is under
+  `docs/reports/data/ATST_CP_DEVELOP_20261020/latest/`.
+
+Both `reference_fcp` and `compensated_gate` completed. These are execution and
+format checks, not FCP v2 numerical parity or scientific acceptance.
+
 Use the normal unit and example checks appropriate to the changed surface.
 The authoritative P0/P1 execution evidence is
 [P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md](../archive/reports/P0_P1_EXAMPLE_RUNTIME_VALIDATION_2026-05-28.md).

@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "compared": [
+    "nelec",
+    "efermi_eV",
+    "vacuum_level_eV",
+    "fermishift_eV",
+    "mu_calc_eV",
+    "mu_target_eV",
+    "residual_mu_eV",
+    "energy_eV",
+    "free_energy_eV",
+    "capacitance_e_per_V",
+    "forces_eV_per_A",
+    "iterations",
+    "converged"
+  ],
+  "tolerances": {
+    "nelec": 1e-06,
+    "efermi_eV": 1e-05,
+    "vacuum_level_eV": 1e-05,
+    "fermishift_eV": 1e-05,
+    "mu_calc_eV": 1e-05,
+    "mu_target_eV": 1e-06,
+    "residual_mu_eV": 1e-05,
+    "energy_eV": 1e-06,
+    "free_energy_eV": 1e-06,
+    "forces_eV_per_A": 1e-05,
+    "density_integral_e": 1e-06,
+    "compensation_derivative_eV": 0.0001,
+    "capacitance_e_per_V": 1e-06
+  },
+  "mismatches": [],
+  "informational": [
+    {
+      "field": "capacitance_e_per_V",
+      "reference": 0.1991980521931316,
+      "candidate": 0.198502026335202,
+      "atol": 1e-06,
+      "delta": 0.0006960258579296053
+    },
+    {
+      "field": "iterations",
+      "reference": 6,
+      "candidate": 5,
+      "atol": null,
+      "delta": null
+    }
+  ]
+}
