@@ -53,13 +53,14 @@ The [integration closeout record](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.
 tracks the current distribution, installed-consumer and real-engine acceptance,
 the published plugin baseline, and remaining delivery work.
 
-The final runtime candidate at `49c8626` passes installed-distribution acceptance
+The historical `abacuslite==1.1.0` candidate at `49c8626` passed installed-distribution acceptance
 (1386 passed, 33 environment-gated skips) and SAI job 1848462 (18 stages,
 13 real-engine cases, including parallel NEB and LTS 3.10.1). These bounded
 execution checks do not establish scientific convergence. Exact wheel hashes
 and retained evidence locations are recorded in the closeout report above.
 
-The `abacuslite==1.2.0` baseline re-run on this branch reproduces those results:
+The `abacuslite==1.2.0` baseline re-run reproduced installed-package results;
+it did not rerun SAI job 1848462 or establish GPU acceptance for 1.2.0:
 the installed-state suite collects 1419 tests with 0 failures and 35
 environment-gated skips, and the installed-wheel external consumer suite
 reports 1419 collected / 1386 passed / 33 skipped / 0 failed, identical to the
@@ -83,6 +84,14 @@ reports 1419 collected / 1386 passed / 33 skipped / 0 failed, identical to the
 - Published metadata requires `abacuslite<2,>=1.2.0`.
 - Fresh-venv check of the published package: version `2.3.0`,
   `BACKEND_SOURCE` reports `external`, and `pip check` is clean.
+
+The published PyPI wheel was independently rechecked on 2026-10-19 with
+`abacuslite==1.2.0`, Python 3.10 and ASE 3.28.0 in a fresh environment:
+1419 collected / 1386 passed / 33 skipped / 0 failed / 0 deselected. Both
+published distribution artifacts were supplied to the suite, and their SHA256
+values match PyPI. The consumer report verifier, `pip check`, CLI version and
+installed-package provenance checks passed. Raw evidence is retained under
+`/home/james/scratch/atst-230-finalize-20261019-za20o8qf/`.
 
 ## Related documents
 

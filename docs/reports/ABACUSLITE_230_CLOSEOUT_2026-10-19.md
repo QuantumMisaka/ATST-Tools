@@ -11,27 +11,28 @@ The release candidate now targets the published `abacuslite==1.2.0`
 (wheel sha256 `3e5e245c0a03e8182c2c726d7ccad1c800c20250641abd4b81a8e22e892bc4a0`,
 PyPI upload 2026-10-19T03:41:48Z). The supported dependency range is
 `abacuslite>=1.2.0,<2`, and 2.3.0 installed-distribution plus installed-consumer
-acceptance is re-run against 1.2.0 before publication. The `1.1.0` acceptance
+acceptance passed against 1.2.0 before publication. The `1.1.0` acceptance
 below stays as the historical record for the earlier candidate; it is not
 relabeled and its artifacts are not reused for the 1.2.0 candidate.
 
-## Release baseline
+## Historical 1.1.0 candidate baseline
 
-The runtime candidate is ATST `49c8626a9d85858f7022fc7a732cbb01d871298a`
+The historical runtime candidate was ATST `49c8626a9d85858f7022fc7a732cbb01d871298a`
 with published `abacuslite==1.1.0` (tag source
-`94a26e4c7f31ed817eac36c871ff74a7b7abe418`). The supported dependency range
-remains `abacuslite>=1.1.0,<2`. ATST owns workflow, launcher and result
+`94a26e4c7f31ed817eac36c871ff74a7b7abe418`). That candidate used the dependency range
+`abacuslite>=1.1.0,<2`; the published release requires 1.2.0 as stated above. ATST owns workflow, launcher and result
 contracts; the independent package owns calculator and parser behavior.
 Historical imports are forwarding modules, with no vendored runtime fallback.
 
-Ruling: retain the published 1.1.0 floor for this candidate. The plugin's
+Historical ruling (superseded by the 1.2.0 release decision above): retain the
+published 1.1.0 floor for that candidate. The plugin's
 post-tag PP/ORB directory defaults, explicit atomic-mass preservation and
 configured restart-input repairs are not included in the 1.1.0 wheel. A future
 ATST requirement for those behaviors must follow a plugin release and targeted
 consumer acceptance, rather than copying the fixes into ATST or relying on an
 unpublished plugin checkout.
 
-## Acceptance
+## Historical 1.1.0 candidate acceptance
 
 - Main-branch [GitHub run 39145038570](https://github.com/QuantumMisaka/atst-tools/actions/runs/39145038570)
   passes four Python/ASE lanes, documentation governance and the installed
@@ -56,7 +57,7 @@ unpublished plugin checkout.
   which satisfies the existing provenance gate without changing it.
 - `scripts/verify_wheel_api.py --wheel ...` passes its separate clean-install
   CLI/API dry runs, stored-data TS validation and public API example checks.
-- Current-wheel GPU acceptance passes as SAI job 1848462 on `4v100n09`
+- Historical 1.1.0-candidate GPU acceptance passed as SAI job 1848462 on `4v100n09`
   (4V100, two GPUs): `COMPLETED`, exit `0:0`, elapsed 11m49s. All 18 stages
   and 13 real-engine cases pass; the retained-archive audit returns
   `pass: true`, `errors: []`. The develop engine source is `4b92455` and
@@ -79,6 +80,29 @@ documentation. The parent
 `app-tools` index still records `45d8c78`; the parent owner must integrate the
 chosen submodule revision with its own delivery changes. No parent gitlink
 commit is implied by this report.
+
+## Publication workspace finalization (2026-10-19)
+
+PRs #39, #40 and #41 are merged. Their branch file trees were compared with
+merge commits `fa1ba07`, `b8c3218` and `2465e24`, respectively, with no differences.
+Local recovery branches now preserve the three heads:
+
+- `archive/230-integration-closeout-20261019` retains `d7f8971`.
+- `archive/230-abacuslite-120-release-20261019` retains `e58900f`.
+- `archive/230-publication-record-20261019` retains `f287091`.
+
+The two historical worktrees listed above remain in place with their scientific
+artifacts. The parent-managed submodule checkout remains at `45d8c78`;
+publication finalization uses an isolated worktree and does not update the
+parent gitlink. Local `main` has been fast-forwarded to the published-source
+history. The reversible branch mapping and verification artifacts are retained
+under `/home/james/scratch/atst-230-finalize-20261019-za20o8qf/`.
+
+The published-wheel consumer recheck with abacuslite 1.2.0 passed all 1386
+executed tests (33 environment-gated skips, no failures or deselections), with
+both PyPI distribution artifacts supplied. Package imports resolve to the
+isolated environment, `BACKEND_SOURCE=external`, and `pip check` passes.
+This recheck does not add GPU or scientific-convergence evidence.
 
 ## Integration and remaining delivery work
 
