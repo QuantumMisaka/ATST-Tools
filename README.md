@@ -29,14 +29,14 @@ matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
 
 ## At A Glance
 
-| Area | Current 2.3.0 status (source candidate; not yet published) |
+| Area | Current 2.3.0 status (published on PyPI, 2026-10-19) |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.3.0` source candidate; the latest published package remains `2.2.9`. See the [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md). |
+| Release | `2.3.0` is published on PyPI (2026-10-19). See the [2.3.0 release notes](docs/releases/RELEASE_NOTES_2.3.0.md). |
 
 Version 2.3.0 makes the independently maintained `abacuslite` package the
 single ABACUS ASE backend. The previous vendored snapshot is no longer a
@@ -97,8 +97,7 @@ it installs the current published release.
 ATST-Tools requires Python 3.10 or newer. Sella-backed workflows install
 `sella>=2.5` with the default package because Sella is a first-class workflow
 backend. From 2.3.0, `abacuslite>=1.2.0,<2` is a required runtime dependency.
-The latest published package, 2.2.9, predates this dependency change; install
-2.3.0 from source or `main` until it is published.
+2.3.0 is the current published release and requires `abacuslite>=1.2.0,<2`.
 
 安装 profile：
 
@@ -266,7 +265,7 @@ for hand-written guidance.
 ### ABACUS
 
 ABACUS is integrated through the independently installed `abacuslite` package.
-In this source candidate it is a required dependency; missing or broken imports
+In 2.3.0 it is a required dependency; missing or broken imports
 fail visibly. Calculator, INPUT/STRU/KPT helpers, output readers, reverse
 configuration, native MD and gate compensation use that one package. Historical
 imports under `atst_tools.external.ASE_interface.abacuslite` remain as forwarding

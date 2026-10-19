@@ -2,7 +2,8 @@
 
 Date: 2026-10-19. Scope: the external abacuslite integration, installed
 distribution acceptance, and disposition of local development branches.
-ATST 2.3.0 remains unpublished.
+ATST 2.3.0 is published on PyPI (2026-10-19); publication evidence is recorded in the
+[release notes](../releases/RELEASE_NOTES_2.3.0.md).
 
 ## Update 2026-10-19 (user decision)
 
@@ -84,7 +85,7 @@ commit is implied by this report.
 | Work | Owner and completion boundary |
 | --- | --- |
 | Plugin consumer CI reference | [abacuslite PR #5](https://github.com/QuantumMisaka/abacuslite/pull/5) replaces the deleted ATST integration branch with main and pins PR checks to `49c8626`. The follow-up documentation correction distinguishes proposed ABACUS adoption from merged ATST adoption. All 16 checks passed at `6409df6`; merged as `87f0960` on 2026-10-19 (Asia/Shanghai). |
-| ATST 2.3.0 publication | Current-wheel acceptance is complete. Use the existing [release procedure](../developer/PYPI_RELEASE_AUTOMATION.md). Tag creation, registry publication and indexed-install verification remain separate actions. |
+| ATST 2.3.0 publication | Completed 2026-10-19: tag `v2.3.0` at `b8c3218`, publish run [39196721131](https://github.com/QuantumMisaka/atst-tools/actions/runs/39196721131) success, PyPI wheel `80a5e242…5729` and sdist `af317351…3bf2`; fresh-venv install reports 2.3.0 with `BACKEND_SOURCE=external`. See the [release notes](../releases/RELEASE_NOTES_2.3.0.md). |
 | Upstream engine adoption | [ABACUS PR #8175](https://github.com/deepmodeling/abacus-develop/pull/8175) is the external-only engine/harness adoption. After upstream merge, the plugin owner updates its reviewed harness reference and reruns its engine gate. |
 | GPU P6 / Paimon delivery | Parent ABACUS/MLIP-Agent owners retain the [active platform plan](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md). Package acceptance does not close SIF, platform invocation or production publication. |
 

@@ -2,9 +2,9 @@
 
 **Version**: 2.3.0
 **Date**: 2026-10-19
-**Status**: Source candidate (unpublished)
+**Status**: Published on PyPI (2026-10-19)
 **Branch**: `main`
-**Tag**: Pending
+**Tag**: `v2.3.0` at `b8c3218` (tag object `04334a7`)
 
 ## Summary
 
@@ -44,11 +44,10 @@ only as historical acceptance evidence.
 
 ## Validation
 
-The source candidate passes the default unit suite with five environment-gated
+The 2.3.0 candidate passed the default unit suite with five environment-gated
 skips, documentation governance, and the installed-wheel external consumer
-suite. Remote GitHub tests and the publication gate are recorded separately
-after merge. Publication, tag creation and PyPI upload are not implied by this
-source release note.
+suite. Hosted tests and the publication gate are recorded under Publication
+below.
 
 The [integration closeout record](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.md)
 tracks the current distribution, installed-consumer and real-engine acceptance,
@@ -66,6 +65,24 @@ environment-gated skips, and the installed-wheel external consumer suite
 reports 1419 collected / 1386 passed / 33 skipped / 0 failed, identical to the
 1.1.0 run. The 1.2.0 wheel SHA256 is
 `3e5e245c0a03e8182c2c726d7ccad1c800c20250641abd4b81a8e22e892bc4a0`.
+
+## Publication
+
+- Tag `v2.3.0` points to `b8c3218ade7380116d3fbc2162cf11bb7a8dded8`
+  (squash merge of #40); annotated tag object
+  `04334a754b6d32a4b1caabc3a3cfd3c86d22dc12`.
+- Publish workflow run
+  [39196721131](https://github.com/QuantumMisaka/atst-tools/actions/runs/39196721131)
+  (`push` on `v2.3.0`) completed successfully, so preflight and upload both
+  passed.
+- PyPI artifacts: `atst_tools-2.3.0-py3-none-any.whl` SHA256
+  `80a5e2422176df48bfdcc1e88bd66a11cdcb953c735ae86fe62cb91004fd5729`
+  and `atst_tools-2.3.0.tar.gz` SHA256
+  `af317351ab95e2526301288619fc55fd8c316fbf6a3f9711b50b5fc75aef3bf2`
+  (uploaded 2026-10-19T03:59:48Z and 03:59:50Z).
+- Published metadata requires `abacuslite<2,>=1.2.0`.
+- Fresh-venv check of the published package: version `2.3.0`,
+  `BACKEND_SOURCE` reports `external`, and `pip check` is clean.
 
 ## Related documents
 
