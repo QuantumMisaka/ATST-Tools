@@ -120,13 +120,13 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 - 更新 `docs/user/USER_GUIDE_CN.md` 的运行时依赖和环境边界。
 - 更新 feature/status reports 和 calculator factory tests。
 - 若 backend 涉及 ABACUS/DP 环境，补充验证报告或在现有报告中记录边界。
-- 2.3.0 声明 `abacuslite>=1.1.0,<2` 为运行时依赖，ABACUS 只使用
+- 2.3.0 声明 `abacuslite>=1.2.0,<2` 为运行时依赖，ABACUS 只使用
   独立安装的包。缺包或包内部导入损坏应失败，不回退。旧
   `atst_tools.external.ASE_interface.abacuslite` 顶层、`core`、
   `io.generalio`/`latestio`/`legacyio` 和 `utils.ksampling` 模块路径为薄转发层；
   Paimon 的直接 `generalio` 导入继续可用且与独立包模块同一对象。
 - `.github/workflows/tests.yml` 的 `installed-abacuslite-consumer` job 构建 ATST
-  wheel，正常 PR/push 使用已发布 abacuslite 1.1.0，schedule 跟踪兼容范围内
+  wheel，正常 PR/push 使用已发布 abacuslite 1.2.0，schedule 跟踪兼容范围内
   最新 PyPI 版本，手动 `abacuslite_ref` 可从协调提交构建候选 wheel。只有一套
   external 安装环境；从 checkout 外调用
   `scripts/run_abacuslite_consumer.py --atst-root ROOT --backend external --report JSON`，

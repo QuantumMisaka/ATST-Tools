@@ -716,7 +716,7 @@ The `calculator` section configures the underlying compute engine (DFT or ML Pot
 > **Note**: For backward compatibility, parameters can also be placed under an `abacus` root key instead of `calculator.abacus`.
 > For GPU LCAO calculations, choose a site-compatible GPU solver according to
 > the documentation for the installed ABACUS version.
-> ATST-Tools requires the independently installed `abacuslite>=1.1.0,<2` package.
+> ATST-Tools requires the independently installed `abacuslite>=1.2.0,<2` package.
 > Historical vendored import paths forward to that package; a missing or broken
 > installation fails instead of selecting a second implementation.
 

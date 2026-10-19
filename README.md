@@ -96,7 +96,7 @@ it installs the current published release.
 
 ATST-Tools requires Python 3.10 or newer. Sella-backed workflows install
 `sella>=2.5` with the default package because Sella is a first-class workflow
-backend. From 2.3.0, `abacuslite>=1.1.0,<2` is a required runtime dependency.
+backend. From 2.3.0, `abacuslite>=1.2.0,<2` is a required runtime dependency.
 The latest published package, 2.2.9, predates this dependency change; install
 2.3.0 from source or `main` until it is published.
 

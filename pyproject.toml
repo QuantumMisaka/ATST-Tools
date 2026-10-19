@@ -10,7 +10,7 @@ readme = "README.md"
 license = "LGPL-3.0-or-later"
 requires-python = ">=3.10"
 dependencies = [
-    "abacuslite>=1.1.0,<2",
+    "abacuslite>=1.2.0,<2",
     "ase>=3.28.0",
     "numpy>=1.26,<3",
     "scipy>=1.13,<2",
