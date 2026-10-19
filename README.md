@@ -4,13 +4,15 @@
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-LGPL--v3-blue)](#license)
 
-> 用户文档与示例：
-> [GitHub 用户指南](https://github.com/QuantumMisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
-> · [Gitee 用户指南](https://gitee.com/jamesmisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
-> · [GitHub 示例](https://github.com/QuantumMisaka/atst-tools/tree/main/examples)
-> · [Gitee 示例](https://gitee.com/jamesmisaka/atst-tools/tree/main/examples)
+> User documentation and examples:
+> [Chinese user guide: GitHub](https://github.com/QuantumMisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
+> · [Gitee](https://gitee.com/jamesmisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
+> · [Examples: GitHub](https://github.com/QuantumMisaka/atst-tools/tree/main/examples)
+> · [Gitee](https://gitee.com/jamesmisaka/atst-tools/tree/main/examples)
 >
-> 协作与规范源在 GitHub；Gitee 是维护者从 GitHub 手动拉取的同内容只读镜像；PyPI 仅发布 Python 包。
+> GitHub is the source of truth for development and specifications. Gitee is a
+> read-only mirror synchronized manually by the maintainer; PyPI publishes only
+> the Python package.
 
 ATST-Tools is a pip-installable **ASE transition-state workflow toolkit** for
 ABACUS and DeePMD-kit calculators. It turns the project's legacy script
@@ -22,14 +24,11 @@ atst run CONFIG.yaml
 
 Use it when you want repeatable NEB, AutoNEB, Dimer, Sella, CCQN, D2S,
 relaxation, vibration, IRC, MD, or experimental DMF calculations driven by YAML
-or by an Agent's Python integration instead of one-off scripts. The package
-also includes a constant-potential development candidate in 2.2.8; its scope and
-validation boundary are documented separately below and in the [feature status
-matrix](docs/reports/FEATURE_STATUS_MATRIX.md).
+or by an Agent's Python integration instead of one-off scripts.
 
 ## At A Glance
 
-| Area | Current 2.3.0 status (published on PyPI, 2026-10-19) |
+| Area | Current 2.3.0 status |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
@@ -58,14 +57,13 @@ runtime fallback.
 | `md` | Molecular dynamics | ASE-driven MD with ABACUS/DP calculators, or ABACUS native MD input/run/output orchestration. |
 | `dmf` | Direct MaxFlux | Experimental TS candidate/path optimizer; non-periodic first and not a validated TS result. |
 
-The `constant_potential` workflow ships in the 2.2.8 package as a development
-candidate; its presence does not establish production readiness or
-Paimon/public tool-chain or platform acceptance. The current ATST scope is ABACUS-only
-fixed-geometry single-point/serial scans plus fixed-cell `relax`/`neb` with the
-explicit `compensated_gate` boundary. The legacy `reference_fcp` boundary is
-reference-only and is rejected for optimization workflows; no Paimon/public
-tool-chain acceptance is implied. See the
-[configuration reference](docs/user/CONFIG_REFERENCE.md) before using it.
+`constant_potential` remains a development candidate and does not establish
+production readiness or Paimon/public tool-chain acceptance. Its current scope
+is ABACUS-only fixed-geometry single-point/serial scans plus fixed-cell
+`relax`/`neb` with the explicit `compensated_gate` boundary. The legacy
+`reference_fcp` boundary is reference-only and is rejected for optimization
+workflows. See the [configuration reference](docs/user/CONFIG_REFERENCE.md)
+before using it.
 
 Local pre/post-processing commands are intentionally lightweight. They do not
 construct calculators or submit expensive calculations:
@@ -91,19 +89,19 @@ atst abacus collect ...
 pip install atst-tools
 ```
 
-Without a version pin, this installs the version currently published on PyPI;
-it installs the current published release.
+This installs the current PyPI release. ATST-Tools requires Python 3.10 or
+newer; `sella>=2.5` and `abacuslite>=1.2.0,<2` are required runtime
+dependencies.
 
-ATST-Tools requires Python 3.10 or newer. Sella-backed workflows install
-`sella>=2.5` with the default package because Sella is a first-class workflow
-backend. From 2.3.0, `abacuslite>=1.2.0,<2` is a required runtime dependency.
-2.3.0 is the current published release and requires `abacuslite>=1.2.0,<2`.
+Installation profiles:
 
-安装 profile：
-
-- **Serial（默认）**：`pip install atst-tools`；不安装也不需要 `mpi4py`，可运行全部非 image-parallel 工作流和串行 NEB/AutoNEB。
-- **DP**：`pip install "atst-tools[dp]"`；仅 DeePMD-kit calculator 工作流需要。
-- **Image-parallel NEB/AutoNEB**：`pip install "atst-tools[parallel]"`；仅当通过外部 `mpirun`/`srun` 启动一个 Python rank 对应一个活动 image 时需要。
+- **Serial (default)**: `pip install atst-tools`; installs no `mpi4py` and
+  supports every non-image-parallel workflow, including serial NEB/AutoNEB.
+- **DP**: `pip install "atst-tools[dp]"`; required only for DeePMD-kit
+  calculator workflows.
+- **Image-parallel NEB/AutoNEB**: `pip install "atst-tools[parallel]"`; required
+  only when launching one Python rank per active image through an external
+  `mpirun`/`srun`.
 
 ### From Source
 
@@ -164,11 +162,10 @@ cd ../..
 ```
 
 `first_chain.traj` contains five initial-guess frames, not evaluated energies or
-forces. Configuration validation does not establish backend readiness. Once
-ABACUS, its data files and suitable resources are available, run a calculation
-from its example directory. The H2/Au Relax example uses four backend MPI ranks,
-`cusolver`, and a one-step optimization limit; adapt it to your environment and
-inspect convergence separately. The [Chinese guide](docs/user/USER_GUIDE_CN.md#3-10-分钟快速上手)
+forces; configuration validation does not establish backend readiness. Once
+ABACUS and its data files are available, run the H2/Au Relax example (four
+backend MPI ranks, `cusolver`, one-step optimization limit) from its directory
+and inspect convergence separately. The [Chinese guide](docs/user/USER_GUIDE_CN.md)
 walks through that run, its outputs, and common problems.
 
 Embed the same schema validation from Python when a calling program needs a
@@ -181,16 +178,14 @@ config = validate_config("examples/06_relax_H2-Au/config.yaml")
 print(config["calculation"]["type"])
 ```
 
-CLI/YAML and the Agent Python API consume the same ASE transition-state
-workflows. Use CLI/YAML for interactive or scheduled calculations; use the API
-when an Agent or Python application needs structured results or caller-owned
-calculator integration. A calculation reports execution and available optimizer
-facts; it does not automatically establish transition-state validity or launch
-IRC. Transition-state screening is a separate explicit read-only operation:
-In 2.2.9, `atst vibration validate` or the additive
-`validate_ts` API consumes saved
-vibration and optional frozen structure evidence. The [Python API reference](docs/user/PYTHON_API_REFERENCE.md)
-defines the result, MPI, artifact, and calculator boundaries.
+CLI/YAML and the Agent Python API use the same ASE transition-state workflows.
+Use CLI/YAML for interactive or scheduled calculations; use the API for
+structured results or caller-owned calculator integration. A calculation does
+not by itself establish transition-state validity or launch IRC. Validate a
+candidate separately with `atst vibration validate` or the additive
+`validate_ts` API, which consume saved vibration and optional frozen-structure
+evidence. The [Python API reference](docs/user/PYTHON_API_REFERENCE.md) defines
+the result, MPI, artifact, and calculator boundaries.
 
 For an external process host that needs a stable JSON handoff without parsing
 terminal output, use the installed API runner:
@@ -325,29 +320,19 @@ python scripts/download_dp_model.py --check-only
 ## Examples
 
 The [examples directory](examples/README.md) is the fastest way to learn the
-project:
+project. Each calculation example uses `config.yaml` for ABACUS and, where
+available, `config_dp.yaml` for DP.
 
-| Directory | Workflow focus |
-| :--- | :--- |
-| `examples/01_neb_Li-Si` | Quick NEB smoke case. |
-| `examples/02_neb_H2-Au` | Surface NEB example. |
-| `examples/03_autoneb_Cy-Pt` | AutoNEB workflow. |
-| `examples/04_dimer_CO-Pt` | Dimer transition-state search. |
-| `examples/05_sella_H2-Au` | Sella saddle search. |
-| `examples/06_relax_H2-Au` | Geometry relaxation. |
-| `examples/07_vibration_H2-Au` | Surface vibration analysis. |
-| `examples/08_d2s_Cy-Pt` | Rough NEB plus single-ended TS search. |
-| `examples/09_lightweight_cli` | Local helper command examples. |
-| `examples/10_irc_H2` | IRC YAML examples. |
-| `examples/11_vibration_ideal_gas_H2` | Ideal-gas thermochemistry example. |
-| `examples/12_ccqn_H2-Au` | CCQN single-ended saddle search. |
-| `examples/13_neb_parallel_Cy-Pt` | Image-parallel NEB example. |
-| `examples/14_autoneb_parallel_Cy-Pt` | Image-parallel AutoNEB example. |
-| `examples/15_md_Li-Si` | ASE-driven and ABACUS-native MD templates starting from the `01_neb_Li-Si` initial structure. |
-| `examples/19_constant_potential_Pt` | Unreleased ABACUS constant-potential gate/dipole fixtures and bounded validation inputs; not a production benchmark. |
-
-Each calculation example uses `config.yaml` for ABACUS and, where available,
-`config_dp.yaml` for DP.
+- **NEB / AutoNEB / D2S**: `01_neb_Li-Si`, `02_neb_H2-Au`,
+  `03_autoneb_Cy-Pt`, `08_d2s_Cy-Pt`, `13_neb_parallel_Cy-Pt`,
+  `14_autoneb_parallel_Cy-Pt`.
+- **Single-ended TS search**: `04_dimer_CO-Pt`, `05_sella_H2-Au`,
+  `12_ccqn_H2-Au`.
+- **Relaxation, vibration, IRC**: `06_relax_H2-Au`, `07_vibration_H2-Au`,
+  `10_irc_H2`, `11_vibration_ideal_gas_H2`.
+- **MD and local CLI**: `15_md_Li-Si`, `09_lightweight_cli`.
+- **Constant potential**: `19_constant_potential_Pt` (development fixtures, not
+  a production benchmark).
 
 ## For Developers
 
@@ -374,17 +359,12 @@ Project status and validation entry points:
 
 ## Version Governance
 
-The package version has one source of truth:
-
-```text
-pyproject.toml -> [project].version
-```
-
-Runtime entry points read that governed package version through
-`atst_tools.package_version()`. Source-tree runs read `pyproject.toml`, while
-installed-package runs use distribution metadata generated from the same field.
-There is no YAML-level `config_version`; user YAML is governed directly by the
-installed package schema, and unknown top-level fields are rejected.
+The package version has one source of truth: `pyproject.toml ->
+[project].version`. Runtime entry points read it through
+`atst_tools.package_version()`; source-tree runs read `pyproject.toml`, while
+installed runs use distribution metadata generated from the same field. User
+YAML has no `config_version` and is governed by the installed package schema;
+unknown top-level fields are rejected.
 
 ## Project Boundary
 

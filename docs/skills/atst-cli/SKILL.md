@@ -91,7 +91,7 @@ atst traj transform collection.traj --format extxyz --output-prefix collection
 `atst neb make --method` accepts `IDPP` (default) or `linear`.
 `summary` commands are read-only monitors/post-summaries; they do not create
 calculators or launch ABACUS/DP.
-In the unreleased development tree, `atst vibration validate` is an explicit
+In the current 2.3.0 release, `atst vibration validate` is an explicit
 read-only screen of saved vibration data and optional frozen structure evidence.
 It never launches a calculator; missing evidence remains `unknown`.
 

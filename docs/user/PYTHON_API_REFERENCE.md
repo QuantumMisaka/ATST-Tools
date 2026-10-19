@@ -46,14 +46,14 @@ responsibility.
 
 ## Stable imports
 
-Version 2.2.9 adds the explicit read-only `validate_ts` entry point to the
-ten stable root imports available in 2.2.8.
+The stable root imports in the current 2.3.0 release are:
 
 ```python
 from atst_tools.api import (
     CCQNOptions,
     RunOptions,
     WorkflowResult,
+    validate_ts,
     build_config_from_abacus_dir,
     ccqn_energy_curve,
     neb_energy_profile,
@@ -61,13 +61,15 @@ from atst_tools.api import (
     run_workflow,
     sella_energy_curve,
     validate_config,
+    RuntimeBindingError,
 )
 ```
 
-Workflow, calculator, MEP, and vendored implementation packages are not stable
+Workflow, calculator, MEP, and historical compatibility paths are not stable
 integration surfaces. Do not couple an application to their constructors or
-helper functions; use the names above instead. In the current development tree,
-`validate_ts` is also lazily available from `atst_tools.api`.
+helper functions; use the names above instead. `validate_ts` was added in
+2.2.9 and is a stable lazy root import in 2.3.0. `RuntimeBindingError` is raised
+when a runtime device-binding request is inadmissible.
 
 ### `build_config_from_abacus_dir(abacus_run_dir, *, workflow="neb", init_structure=None, final_structure=None, n_images=5, gate_dirs=None)`
 
@@ -169,7 +171,7 @@ schema as the CLI; it does not add a new stable root import. It is currently
 limited to fixed-geometry serial evaluations/scans and fixed-cell
 `compensated_gate` `relax`/`neb` calls. The legacy `reference_fcp` boundary is
 reference-only and cannot be used for those optimization workflows. This
-development candidate is included in the published 2.2.8 package, but its
+development candidate is included in the current 2.3.0 package, but its
 presence does not imply production or Paimon/public tool-chain acceptance.
 
 ### Process runner for external hosts
@@ -409,23 +411,22 @@ Backend delegation has four invariants:
    pseudopotentials, orbitals, working directory, MPI settings, or I/O.
 3. ATST does not re-export individual backend I/O functions. It remains the
    workflow, schema, artifact, and orchestration layer.
-4. Released 2.2.8 metadata records the selected `backend_source` for
-   configuration-driven calculations. Version 2.2.9 adds a top-level manifest `backend_identity` object. Its fields are
+4. Configuration-driven ABACUS runs record `backend_source: external`. The
+   top-level manifest `backend_identity` object (introduced in 2.2.9) has
    `calculator` (`abacus`, `dp`, or `supplied`), `identity_basis`
-   (`configuration` or `calculator_instance`), `source` (`external`,
-   `vendored`, `deepmd`, `caller`, or `unknown`), `calculator_type`,
-   `backend_version`, `snapshot`, and `model`. A vendored snapshot can include
-   `upstream_sha`, `snapshot_document`, `patches_document`, and
-   `patches_sha256`; DP model facts can include absolute `path`, suffix-derived
-   `kind`, `backend` (`pt`, `tf`, or `unknown`), configured/attached `head`,
-   and `size_bytes`. Missing facts remain `unknown`. The `configuration` basis
-   records resolved selection, not observed evaluation; the instance basis
-   records the supplied calculator type. Model identity does not reload
-   DeepPot or hash a large model file.
+   (`configuration` or `calculator_instance`), `source` (`external`, `deepmd`,
+   `caller`, or `unknown`), `calculator_type`, `backend_version`, `snapshot`,
+   and `model`. In 2.3.0 `snapshot` is always `"unknown"` because the vendored
+   provenance fields were retired. DP model facts can include absolute `path`,
+   suffix-derived `kind`, `backend` (`pt`, `tf`, or `unknown`),
+   configured/attached `head`, and `size_bytes`. Missing facts remain
+   `unknown`. The `configuration` basis records resolved selection, not observed
+   evaluation; the instance basis records the supplied calculator type. Model
+   identity does not reload DeepPot or hash a large model file.
 
 ### `validate_ts(vibration_results, *, structure=None, fmax_threshold=0.05, imaginary_cutoff_cm1=50.0, output=None)`
 
-The current development tree exposes `validate_ts` as a lazy root import from
+The current 2.3.0 release exposes `validate_ts` as a lazy root import from
 `atst_tools.api`. It screens stored vibration results and optional frozen
 structure facts. It never calls a live calculator or starts new force or
 vibration calculations. An ASE structure path supplies force evidence only
@@ -451,7 +452,7 @@ summary = validate_ts(
 )
 ```
 
-This additive entry point is introduced in 2.2.9; it is absent from 2.2.8.
+This additive entry point was introduced in 2.2.9 and is stable in 2.3.0.
 
 ## Errors and support boundary
 
@@ -469,7 +470,7 @@ and DMF's `cyipopt`/IPOPT requirement),
 optional workflow name and diagnostic context; the original failure is chained
 as its cause where available. These error types are available from
 `atst_tools.api.models`; they are intentionally not additional stable root
-imports beyond the ten names listed above. The CLI unwraps them to retain its
+imports beyond the names listed above. The CLI unwraps them to retain its
 existing exception and message surface.
 
 DMF remains experimental. `run_workflow()` preserves its current dependency
@@ -478,10 +479,12 @@ or calculator-embedding API.
 
 ## Compatibility and Deprecation
 
-This release is additive: existing CLI commands, YAML fields/defaults, output
-names, relative-path behavior, MPI rules, and exit contracts remain unchanged.
-Only the ten root imports in this document receive the stable API
-compatibility promise. The 2.2.1 additions (progress events, plotting helpers,
-and the `profiles`/`plots` result extensions) are optional and do not change
-any existing document or behavior. A future removal or incompatible behavior
-change will be documented and deprecated in a release before removal.
+The public Python API surface is additive across 2.2.x. In 2.3.0, existing
+CLI commands, YAML fields/defaults, output names, relative-path behavior, MPI
+rules, and exit contracts remain unchanged, but `abacuslite>=1.2.0,<2` becomes
+a required runtime dependency and `BACKEND_SOURCE` is always `external`. Only
+the stable root imports listed above receive the API compatibility promise.
+The 2.2.1 additions (progress events, plotting helpers, and the
+`profiles`/`plots` result extensions) are optional and do not change existing
+behavior. A future removal or incompatible behavior change will be documented
+and deprecated in a release before removal.

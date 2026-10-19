@@ -20,11 +20,11 @@ atst run CONFIG.yaml
 `neb`, `autoneb`, `d2s`, `dimer`, `sella`, `ccqn`, `relax`, `vibration`, `irc`, and
 `md` can all use `calculator.name: abacus`.
 
-### SCF frame identity (2.2.5 release)
+### SCF frame identity
 
-For `calculation: scf`, the candidate reader automatically compares the
-current STRU with every parsed running-log frame in the same ASE atom order and
-Cartesian Å coordinates. It accepts periodic images: a frame is a match when
+For `calculation: scf`, the reader automatically compares the current STRU with
+every parsed running-log frame in the same ASE atom order and Cartesian Å
+coordinates. It accepts periodic images: a frame is a match when
 each atom differs by an integer combination of the same 3×3 cell vectors,
 including different integer translations for different atoms and non-orthogonal
 cells. The reader scans from the end and returns the latest matching frame, so
@@ -35,17 +35,18 @@ The check remains fail-closed. Different cells, atom counts or shapes,
 non-finite or singular cells/coordinates, element or atom-order mismatches,
 malformed frames, and non-integer residual displacements are rejected with a
 diagnostic rather than being silently accepted as the current structure. The
-matching step does not wrap or modify the STRU, candidate `Atoms`, forces, cell,
-or transition-state/NEB coordinates.
+matching step does not wrap or modify the STRU, input or parsed `Atoms`, forces,
+cell, or transition-state/NEB coordinates.
 
 This automatic behavior has no `pbc_mode`, tolerance, or other YAML switch.
 Native `relax`, `md`, and `MD_dump` output keeps its existing last-frame
 semantics; the PBC-aware identity check applies only to SCF result selection.
 When `write_input` uses a custom `stru_file`, the same filename is used for the
 identity check; without a prior `write_input`, the default `STRU` behavior is
-preserved. These semantics are included in the published 2.2.5 package; upgrading
-the package does not automatically update an existing deployed runtime, whose
-external runtime validation has not been performed.
+preserved. These semantics are part of the current installed abacuslite baseline;
+ATST does not patch the parser. The 2.3.0 closeout records installed-package
+checks, but the 1.2.0 baseline did not repeat the earlier engine validation;
+upgrading a deployed runtime still requires its own validation.
 
 ## Historical Snapshot Evidence
 
