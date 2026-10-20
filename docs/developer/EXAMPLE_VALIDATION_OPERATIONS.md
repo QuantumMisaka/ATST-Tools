@@ -1,9 +1,9 @@
 # Example Validation Operations
 
-**版本**: 2026-07-23
-**日期**: 2026-07-23
-**状态**: 维护
-**责任人**: ATST-Tools maintainers
+**Version**: 2026-07-23
+**Date**: 2026-07-23
+**Status**: Maintained
+**Owner**: ATST-Tools maintainers
 
 ## Scope
 

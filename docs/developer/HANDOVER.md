@@ -1,40 +1,47 @@
-# 文档系统交接与维护
+# Documentation Handover and Maintenance
 
-**版本**: 2026-10-17
-**日期**: 2026-10-17
-**状态**: 维护
-**责任人**: ATST-Tools maintainers
+**Version**: 2026-10-20
+**Date**: 2026-10-20
+**Status**: Maintained
+**Owner**: ATST-Tools maintainers
 
-本文档是维护者日常 checklist。任何功能、YAML、CLI、backend、example、report 或
-release 变更，都先从对应小节确认需要同步的文档。
+This is the maintainers' daily checklist. Before changing a feature, YAML
+input, CLI, backend, example, report, or release, use the corresponding section
+to identify the documentation that must be updated.
 
-## 1. 日常入口
+## 1. Daily entry points
 
-- 用户入口：[README.md](../../README.md)、[docs/index.md](../index.md)、
-  [USER_GUIDE_CN.md](../user/USER_GUIDE_CN.md)。
-- 参数入口：[CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md) 和
-  [YAML_INPUT_VARIABLES.md](../user/YAML_INPUT_VARIABLES.md)。
-- 源码入口：[源码导览](../../src/atst_tools/README.md)，用于理解模块目标、主要内容、
-  调用关系与修改位置；新增目录或调整职责时同步更新。
-- 开发入口：[YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md)、
-  [DOCUMENTATION.md](DOCUMENTATION.md)、
-  [EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 和
-  [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md)。
-- 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)。
+- User entry points: [README.md](../../README.md), [docs/index.md](../index.md),
+  [USER_GUIDE_CN.md](../user/USER_GUIDE_CN.md).
+- Configuration entry points: [CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md)
+  and [YAML_INPUT_VARIABLES.md](../user/YAML_INPUT_VARIABLES.md).
+- Source entry point: [source architecture](../../src/atst_tools/README.md)
+  explains module purposes, key components, call paths, and where to make
+  changes. Update it when adding a directory or changing responsibilities.
+- Developer entry points: [YAML_INPUT_GOVERNANCE.md](YAML_INPUT_GOVERNANCE.md),
+  [DOCUMENTATION.md](DOCUMENTATION.md),
+  [EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md), and
+  [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md).
+- Project status: [FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md).
 
-README 提供安装和首次使用路径；参数、后端与 API 细节由各自用户参考维护。
-功能矩阵展示当前支持状态并链接验收报告，下游平台的发布与验收事实留在对应报告中。
-GitHub 为开发规范源，Gitee 由维护者手动同步；PyPI 只分发 Python 包，示例从仓库取得。
+The README covers installation and the first run. User references own the
+configuration, backend, and API details. The feature matrix shows current
+support and links to validation reports; downstream platform publication and
+acceptance facts remain in their respective reports. GitHub is the development
+source of truth; maintainers sync Gitee manually. PyPI distributes only the
+Python package; get examples from the repository. Follow the
+[documentation language policy](DOCUMENTATION.md#language-policy) for English
+primary references and the Chinese user guide.
 
-## 1.1 新 checkout 与 CPU 开发准备
+## 1.1 Prepare a new checkout for CPU development
 
-从 GitHub checkout 开发时，先创建 Python 3.10+ 环境，再以 editable 模式安装
-项目及测试依赖。下面命令不需要 ABACUS、GPU、SAI 或 `mpi4py`，适合跑普通
-CPU-only unit tests：
+For a GitHub checkout, create a Python 3.10+ environment and install the project
+and test dependencies in editable mode. These commands need no ABACUS, GPU,
+SAI, or `mpi4py` and are suitable for ordinary CPU-only unit tests.
 
-若当前环境已从其他 checkout 安装了 `atst_tools`，在 worktree 中运行测试前使用
-`PYTHONPATH=src` 或 `pip install -e .`，并确认 `atst_tools.__file__` 指向当前
-worktree。
+If `atst_tools` is already installed from another checkout, use
+`PYTHONPATH=src` or `pip install -e .` before running worktree tests. Confirm
+that `atst_tools.__file__` points to the current worktree.
 
 ```bash
 python -m venv .venv
@@ -45,230 +52,315 @@ python -c "import atst_tools; print(atst_tools.__file__)"
 python -m pytest tests/unit -q
 ```
 
-`atst_tools.__file__` 应指向当前 checkout 的 `src/atst_tools`。此环境仅能证明
-不需计算后端的普通测试；ABACUS/DP、image-level MPI 和站点运行时验证另按
-[EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md) 的证据边界执行。
-不要把未执行的站点或计算验证写成通过。
+`atst_tools.__file__` should resolve under the current checkout's
+`src/atst_tools`. This environment verifies only ordinary tests that do not
+need calculation backends. Verify ABACUS/DP, image-level MPI, and site runtime
+separately under the evidence boundaries in
+[EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md). Never
+report unexecuted site or calculation checks as passing.
 
-CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；服务层在
-确定调用方的 MPI world 后调度执行 helper，CLI 层负责参数、模板与输出。独立
-`validate_ts`/`atst vibration validate` 只读已有结果，不是 workflow 的自动后处理。
+The CLI and Python API share `atst_tools.workflows.execution`. The service
+layer selects the caller's MPI world before dispatching to execution helpers;
+the CLI layer handles arguments, templates, and output. Standalone
+`validate_ts` / `atst vibration validate` reads existing results; it is not an
+automatic workflow postprocessing step.
 
-## 1.2 已交付计划的外部交接
+## 1.2 External handoffs from completed plans
 
-2026-10-16 将两份本仓已完成实施计划归档；以下交接仍开放，归档不代表外部验收完成。
+Two completed implementation plans were archived on 2026-10-16. The handoffs
+below remain open; archiving the plans did not complete external acceptance.
 
-| 交接 | 责任方与关闭条件 | 本仓承接 |
+| Handoff | Owner and closure condition | ATST-Tools responsibility |
 | --- | --- | --- |
-| abacuslite 实现维护 | calculator/parser 修复在独立 `QuantumMisaka/abacuslite` 仓实施；本仓仅维护 ATST adapter 与旧路径转发。 | 本页 backend checklist；历史快照账本只作审计。 |
-| abacuslite 后续 SIF/harness | 父仓 ABACUS owner 负责交付与其验收；历史直接 SAI 力读取检验已通过，不替代后续平台交付。 | 后端快照和版本说明；不在本仓重开已完成实现。 |
-| convergence 消费 | Paimon owner 完成 fixture 映射与联合验收；父仓 companion plan 为 `toolbox/ABACUS/docs/superpowers/plans/2026-09-17-matesbench-toolbox-hardening-plan.md`。 | [API 阶段事实](../user/PYTHON_API_REFERENCE.md)、`docs/reports/data/convergence_fixtures_20260917/`；真实运行时和 curated 产物更新须有相应证据。 |
-| GPU P6 平台迁移 | ABACUS/MLIP-Agent owner 完成共享 image 参数/runner、guide、交接测试与 E2E/平台验收。 | [唯一活跃计划](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md)，保留 DP 容器/FT²DP 条件项。 |
+| abacuslite implementation | Maintain calculator/parser repairs in the independent `QuantumMisaka/abacuslite` repository; this repository owns only the ATST adapter and legacy import forwarding. | Backend checklist here; historical snapshot ledgers remain audit evidence. |
+| Later abacuslite SIF/harness delivery | The parent repository's ABACUS owner handles delivery and acceptance. A previous direct SAI force-read check passed, but does not replace later platform delivery. | Backend snapshot and version notes; do not reopen the completed implementation here. |
+| Convergence consumption | The Paimon owner completes fixture mapping and joint acceptance. Parent companion plan: `toolbox/ABACUS/docs/superpowers/plans/2026-09-17-matesbench-toolbox-hardening-plan.md`. | [API stage facts](../user/PYTHON_API_REFERENCE.md) and `docs/reports/data/convergence_fixtures_20260917/`; actual runtime and curated artifact updates need their own evidence. |
+| GPU P6 platform migration | The ABACUS/MLIP-Agent owner completes shared image parameters/runner, guide, handoff tests, and E2E/platform acceptance. | [Active plan](../superpowers/plans/2026-09-20-atst-gpu-node-tuning-plan.md), retaining conditional DP container/FT²DP items. |
 
-当前设计来源继续保留；是否归档取决于其决策是否已被长期参考吸收，不以代码已交付
-为唯一依据。逐项处置见 [本地集成与收口](../reports/MAIN_REVIEW_FIXES_2026-10-16.md#6-本地合入与在途收口2026-10-16)。
+Keep the current design sources until their decisions are absorbed into
+long-lived references; code delivery alone does not decide archival. See the
+[local integration closeout](../reports/MAIN_REVIEW_FIXES_2026-10-16.md#6-本地合入与在途收口2026-10-16)
+for item-level disposition.
 
-## 2. 新增或修改 workflow
+<a id="2-新增或修改-workflow"></a>
+## 2. Add or change a workflow
 
-- 接入 `utils/config_schema.py` 的判别联合与类型表，更新 CLI 模板和
-  `api/services.py` 的调度；按能力核对返回结构适配、合成产物、profiles/plots。
-  新工作流应自己产出阶段事实和 manifest，不依靠 API 从轨迹推断收敛。
-- 明确输入/重启身份、冻结结果和产物路径契约；复合工作流由外层拥有顶层 manifest，
-  子任务交回阶段事实。同步验证 CLI 与 API 的科学执行一致性，保留各自既有输出契约。
-- 更新 `README.md` 的支持列表和 quick start 说明。
-- 更新 `docs/user/USER_GUIDE_CN.md`、`CLI_REFERENCE.md`、`CONFIG_REFERENCE.md`。
-- 添加或更新 `examples/<case>/config*.yaml` 和 `examples/README.md`。
-- 更新 `docs/reports/FEATURE_STATUS_MATRIX.md`。
-- 添加或更新 workflow 测试、example 测试和必要验证报告。
-- 运行期消息（print/warning/logging/异常）统一英文；改动收敛或诊断文案时同步更新
-  锁定语义 token 的测试。
-- 固定晶胞准备复用 `utils/geometry.py`：输入容差 `1e-5 Å、rtol=0`，容差内保真；
-  NEB 所需适配只改内部运行副本的必要周期向量。必须在端点校验/计算前完成，
-  cell/PBC 变化后丢弃旧 SPC、端点标记和恒电势事实。调用层传已有 world 协调 root
-  warning 和已有失败同步，不在几何原语创建 communicator；长期说明见
-  [CONFIG_REFERENCE.md](../user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb)。
+- Integrate with the discriminated union and type table in
+  `utils/config_schema.py`; update the CLI template and `api/services.py`
+  dispatch. Check result adaptation, composite artifacts, and profiles/plots
+  according to the feature. A new workflow must produce its own stage facts and
+  manifest instead of asking the API to infer convergence from trajectories.
+- Define input/restart identity, frozen results, and artifact path contracts.
+  The outer composite workflow owns the top-level manifest; child tasks return
+  stage facts. Verify scientific execution parity between CLI and API while
+  preserving each interface's existing output contract.
+- Update the supported workflows and quick start in `README.md`.
+- Update `docs/user/USER_GUIDE_CN.md`, `CLI_REFERENCE.md`, and
+  `CONFIG_REFERENCE.md`.
+- Add or update `examples/<case>/config*.yaml` and `examples/README.md`.
+- Update `docs/reports/FEATURE_STATUS_MATRIX.md`.
+- Add or update workflow and example tests and any necessary validation report.
+- Keep runtime messages (print/warning/logging/exceptions) in English. When
+  changing convergence or diagnostic text, update tests that lock semantic
+  tokens.
+- Reuse `utils/geometry.py` for fixed-cell preparation: input tolerance
+  `1e-5 Å` with `rtol=0`, retaining values within tolerance; adjust only the
+  necessary periodic vectors in internal run copies for NEB. Prepare geometry
+  before endpoint checks or calculations. After cell/PBC changes, discard old
+  SPC, endpoint labels, and constant-potential facts. The caller passes its
+  existing world to coordinate root warnings and existing failure sync; the
+  geometry primitive must not create a communicator. See the lasting
+  [configuration reference](../user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
 
-## 3. 新增或修改 YAML 字段
+## 3. Add or change a YAML field
 
-- 修改 `src/atst_tools/utils/config_schema.py`。
-- 重新生成 `docs/user/YAML_INPUT_VARIABLES.md`。
-- 在 `docs/user/CONFIG_REFERENCE.md` 解释语义、默认值影响和常见配置组合。
-- 更新示例 YAML。
-- 运行 `tests/unit/test_config.py` 和相关 workflow/example tests。
+- Change `src/atst_tools/utils/config_schema.py`.
+- Regenerate `docs/user/YAML_INPUT_VARIABLES.md`.
+- Explain semantics, the effect of defaults, and common combinations in
+  `docs/user/CONFIG_REFERENCE.md`.
+- Update example YAML.
+- Run `tests/unit/test_config.py` and relevant workflow/example tests.
 
-## 4. 新增或修改 CLI
+## 4. Add or change the CLI
 
-- 更新 `docs/user/CLI_REFERENCE.md`。
-- 更新 `docs/skills/atst-cli/SKILL.md` 中的操作片段。
-- 必要时更新 README 的轻量命令列表。
-- 添加 CLI 测试或更新现有命令测试。
+- Update `docs/user/CLI_REFERENCE.md`.
+- Update operational examples in `docs/skills/atst-cli/SKILL.md`.
+- Update the README's short command list if needed.
+- Add CLI tests or update existing command tests.
 
-## 4.1 新增或修改稳定 Python API / process runner
+## 4.1 Add or change the stable Python API or process runner
 
-- 保持 `atst_tools.api.__all__` 的既有稳定 root imports；runner 不得成为新的
-  root import 或改变 `atst` CLI 行为。
-- 更新 `docs/user/PYTHON_API_REFERENCE.md`、README、中文用户指南、release notes
-  和功能矩阵，说明 JSON schema、退出码、manifest 权威性与 MPI 责任边界。
-- 对 `python -m atst_tools.api.runner` 运行 API/document、clean-wheel 和实际 MPI
-  门禁；runner 只能消费 API，绝不启动 Slurm、`mpirun` 或 `srun`。
+- Preserve stable root imports in `atst_tools.api.__all__`; the runner must not
+  become a new root import or change `atst` CLI behavior.
+- Update `docs/user/PYTHON_API_REFERENCE.md`, the README, Chinese user guide,
+  release notes, and feature matrix. Explain the JSON schema, exit codes,
+  manifest authority, and MPI responsibility boundary.
+- Check `python -m atst_tools.api.runner` with API/document, clean-wheel, and
+  actual MPI gates. The runner only consumes the API; it must never launch
+  Slurm, `mpirun`, or `srun`.
 
-## 5. 新增或修改 calculator backend
+## 5. Add or change a calculator backend
 
-2.3.1 的发布与安装验证证据见
-[发布说明](../releases/RELEASE_NOTES_2.3.1.md)；历史工作树处置见
-[集成收尾记录](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.md)。
-旧 `integrate/abacuslite-atst229-20261017` 已被主线方案取代，其科学修复已经吸收；
-后续工作从当前主线开展，不恢复该分支的 vendored 回退。
+See the [2.3.1 release notes](../releases/RELEASE_NOTES_2.3.1.md) for
+publication and installed-package validation. The
+[integration closeout](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.md)
+records historical worktree disposition. Main superseded the old
+`integrate/abacuslite-atst229-20261017` branch and incorporated its scientific
+repairs. Continue from current main; do not restore that branch's vendored
+fallback.
 
-- 更新 README backend section 和项目边界说明。
-- 更新 `docs/user/CONFIG_REFERENCE.md` 的 calculator 配置说明。
-- 更新 `docs/user/USER_GUIDE_CN.md` 的运行时依赖和环境边界。
-- 更新 feature/status reports 和 calculator factory tests。
-- 若 backend 涉及 ABACUS/DP 环境，补充验证报告或在现有报告中记录边界。
-- 2.3.1 声明 `abacuslite>=1.2.1,<2` 为运行时依赖，ABACUS 只使用
-  独立安装的包。缺包或包内部导入损坏应失败，不回退。旧
-  `atst_tools.external.ASE_interface.abacuslite` 顶层、`core`、
-  `io.generalio`/`latestio`/`legacyio` 和 `utils.ksampling` 模块路径为薄转发层；
-  Paimon 的直接 `generalio` 导入继续可用且与独立包模块同一对象。
-- `.github/workflows/tests.yml` 的 `installed-abacuslite-consumer` job 构建 ATST
-  wheel，正常 PR/push 使用已发布 abacuslite 1.2.1，schedule 跟踪兼容范围内
-  最新 PyPI 版本，手动 `abacuslite_ref` 可从协调提交构建候选 wheel。只有一套
-  external 安装环境；从 checkout 外调用
-  `scripts/run_abacuslite_consumer.py --atst-root ROOT --backend external --report JSON`，
-  再执行 `--verify-report JSON`。无 live vendored lane 或双报告比较。
-- runner 核验已安装 ATST/abacuslite 的 site-packages 来源、安装文件指纹、
-  ATST wheel 哈希、首次 runtime 消费者无旧路径导入、原始 SCF/MD fixture 的
-  独立数值常量、完整离线测试 case ID/结果及 pytest 起止来源。测试因文档/example
-  相对路径从仓根运行；`ATST_TEST_INSTALLED_WHEEL=1` 与共享子进程环境 helper
-  保留安装来源，惰性 `sitecustomize` 防源码遮蔽。新增 Python 子进程测试复用
-  该 helper。显式旧路径转发测试允许兼容导入，但不将其算成第二套实现。
-- `ABACUSLITE_SNAPSHOT.md` 与 `PATCHES.md` 保留冻结历史；配对验收的 wheel
-  hash、原始日志和 2026-10-17 结果保留在 Git 历史。旧 drift checker、vendored
-  实现 CI 和快照 mutation 测试已退役；新的 parser 修复由独立 abacuslite 仓测试。
-- 维护 `abacuslite` property-derived keywords 时，显式用户输入与自动派生值需按
-  ABACUS 开关语义比较，例如 `True`、`1`、`"1"` 等价；但 `False`/`0` 与请求
-  `forces` 或 `stress` 自动需要的 `"1"` 仍应作为冲突报错。
+- Update the README backend section and project boundary.
+- Update calculator configuration in `docs/user/CONFIG_REFERENCE.md`.
+- Update runtime dependencies and environment boundaries in
+  `docs/user/USER_GUIDE_CN.md`.
+- Update feature/status reports and calculator factory tests.
+- If the backend involves ABACUS/DP environments, add a validation report or
+  record the relevant boundary in an existing report.
+- Release 2.3.1 declares `abacuslite>=1.2.1,<2` as a runtime dependency. ABACUS
+  uses only the independently installed package. Missing or broken imports
+  must fail without fallback. The old
+  `atst_tools.external.ASE_interface.abacuslite` root, `core`,
+  `io.generalio`/`latestio`/`legacyio`, and `utils.ksampling` module paths are
+  thin forwarding layers. Paimon's direct `generalio` import remains usable
+  and resolves to the same object as in the independent package.
+- The `installed-abacuslite-consumer` job in `.github/workflows/tests.yml`
+  builds an ATST wheel. Normal PR/push runs use published abacuslite 1.2.1;
+  the scheduled run tracks the latest PyPI version in the compatible range;
+  manual `abacuslite_ref` runs can build a candidate wheel from a coordinated
+  commit. There is one external installation environment. Invoke
+  `scripts/run_abacuslite_consumer.py --atst-root ROOT --backend external --report JSON`
+  from outside the checkout, then run `--verify-report JSON`. There is no live
+  vendored lane or two-report comparison.
+- The runner checks installed ATST/abacuslite site-packages provenance,
+  installed-file fingerprints, ATST wheel hash, absence of old-path imports
+  in the first runtime consumer, independent numerical constants for raw
+  SCF/MD fixtures, complete offline test case IDs/results, and pytest start/end
+  provenance. Tests run from the repository root for relative documentation
+  and example paths. `ATST_TEST_INSTALLED_WHEEL=1` and a shared child-process
+  environment helper retain installed provenance; lazy `sitecustomize`
+  prevents source shadowing. Reuse that helper in new Python subprocess tests.
+  Explicit legacy forwarding tests may import compatibility paths, but they
+  do not constitute a second implementation.
+- `ABACUSLITE_SNAPSHOT.md` and `PATCHES.md` retain frozen history. Paired
+  acceptance wheel hashes, raw logs, and 2026-10-17 results remain in Git
+  history. The old drift checker, vendored implementation CI, and snapshot
+  mutation tests are retired; test new parser repairs in the independent
+  abacuslite repository.
+- When maintaining abacuslite property-derived keywords, compare explicit
+  inputs and derived values using ABACUS switch semantics: `True`, `1`, and
+  `"1"` are equivalent. `False`/`0` still conflicts with the `"1"`
+  automatically required by a `forces` or `stress` request.
 
-## 6. 新增或修改依赖
+## 6. Add or change dependencies
 
-- 默认 `dependencies` 只放普通安装必须具备的轻量运行时依赖；重型后端、
-  MPI、绘图和发布工具优先进入 `[project.optional-dependencies]`。
-- Sella 是一等 workflow backend，默认依赖需保持 `sella>=2.5,<3`，除非有
-  明确兼容性回退证据。
-- DP 工作流使用 `dp` extra，MPI image-level parallelism 使用 `parallel`
-  extra，NEB plotting helper 使用 `plot` extra。
-- 基础安装测试必须保持不依赖 `mpi4py`；使用 `parallel` extra 的用户在 image-parallel
-  验证前必须确认站点兼容的 MPI import 与 launcher。
-- 修改依赖范围时，更新 README、`docs/user/USER_GUIDE_CN.md` 和本文件。
-- 添加或更新 package metadata 测试，并运行构建检查：
-  `pytest tests/unit/test_package_metadata.py -q`、`python -m build` 和
-  `python -m twine check --strict dist/*`。
-- 对包含稳定 Python API 的 release，运行
-  `python scripts/verify_wheel_api.py`；它在临时目录构建 wheel、在临时 venv
-  安装 wheel（默认会从配置的包索引解析依赖），并验证公共 root imports、H2/Au 的受控
-  public API example、installed API runner JSON handoff 和显式验证 CLI/API 一致性，不在工作树保留 build artifact。若 release 环境已
-  准备 `mpi4py` 和 `mpiexec`，额外运行
-  `python scripts/verify_wheel_api.py --mpi-smoke`；该 two-rank smoke 限时，
-  验证 image-parallel NEB/AutoNEB 的 rank-0 endpoint failure 以及 rank-local
-  optimizer construction failure 会使所有 rank 以 typed API failure 退出，且在
-  找不到 launcher 时明确跳过。
+- Keep default `dependencies` limited to light runtime dependencies needed
+  for an ordinary installation. Put heavy backends, MPI, plotting, and
+  publication tools in `[project.optional-dependencies]` where possible.
+- Sella is a first-class workflow backend. Keep `sella>=2.5,<3` in default
+  dependencies unless there is clear compatibility evidence for a rollback.
+- DP workflows use the `dp` extra; MPI image-level parallelism uses `parallel`;
+  NEB plotting helpers use `plot`.
+- Basic installation tests must not require `mpi4py`. Before validating image
+  parallelism with the `parallel` extra, users must confirm an MPI import and
+  launcher compatible with their site.
+- When changing dependency ranges, update the README,
+  `docs/user/USER_GUIDE_CN.md`, and this file.
+- Add or update package metadata tests and run build checks:
+  `pytest tests/unit/test_package_metadata.py -q`, `python -m build`, and
+  `python -m twine check --strict dist/*`.
+- For a release that includes the stable Python API, run
+  `python scripts/verify_wheel_api.py`. It builds a wheel in a temporary
+  directory, installs it into a temporary venv (resolving dependencies from
+  the configured index by default), and checks public root imports, a
+  controlled H2/Au public API example, installed API runner JSON handoff,
+  and explicit CLI/API parity. It leaves no build artifacts in the worktree.
+  If `mpi4py` and `mpiexec` are ready in the release environment, also run
+  `python scripts/verify_wheel_api.py --mpi-smoke`. This time-limited two-rank
+  smoke check verifies that an image-parallel NEB/AutoNEB rank-0 endpoint
+  failure or rank-local optimizer construction failure makes every rank exit
+  with a typed API failure. It explicitly skips when no launcher is found.
 
-## 7. 新增或修改 example
+## 7. Add or change an example
 
-- 更新 `examples/README.md` 的学习路径、目录说明和 chemical systems 表。
-- 涉及示例的本地维护检查、SAI/Slurm 执行、curated outputs 或运行溯源时，先查
-  `docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md`；示例 README 不承载这些维护者操作。
-- 更新 `examples/reference_results.json`，或明确该 example 暂无 reference 结果。
-- 保证新增输入在 `inputs/` 或受控路径下，生成输出不进入 git。
-- 运行 example 解析、dry-run 或 reference-result 测试。
+- Update the learning path, directory descriptions, and chemical systems
+  table in `examples/README.md`.
+- For local example maintenance checks, SAI/Slurm runs, curated outputs, or
+  run provenance, consult
+  `docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md`. The examples README does
+  not carry these maintainer operations.
+- Update `examples/reference_results.json`, or state that the example has no
+  reference result yet.
+- Keep new inputs under `inputs/` or another controlled path; do not commit
+  generated output.
+- Run example parsing, dry-run, or reference-result tests.
 
-## 7.1 新增或修改基准工具链（bench）
+<a id="71-新增或修改基准工具链bench"></a>
+## 7.1 Add or change the benchmark tooling
 
-术语（2026-09-21 定）：**bench** = 测量工具链（`atst_tools.bench`）；**batch** = 一次运行
-（一个 manifest 在一个已有 allocation 内跑一遍）；**harness** 是这批模块与产物的历史名，
-仅保留在下面列出的冻结字符串里，不再用于新文字或新代码。
+Terminology set on 2026-09-21: **bench** is the measurement toolkit
+(`atst_tools.bench`); **batch** is one run of a manifest within an existing
+allocation. **Harness** is a historical name for these modules and artifacts.
+Keep it only in the frozen strings below; do not use it in new prose or code.
 
-三件套：
+The three tools are:
 
-| 工具 | 命令 | 作用 |
+| Tool | Command | Purpose |
 | --- | --- | --- |
-| 批次执行器 | `python -m atst_tools.bench.batch_runner --manifest cases.json --out runs --devices 0,1 --slots 1 --cpu-budget 8 --threads 2` | 在既有分配内执行一张用例清单：槽位调度、超时回收、每 case 报告 + 批次汇总 |
-| 变体扫描 | `python -m atst_tools.bench.sweep --manifest cases.json --out runs/sweep --devices 0,1 --slots 1,2,3 --repeats 3` | 变体 × 重复矩阵，交替顺序，出 `sweep_summary.json` |
-| 测量记录 | `python -m atst_tools.bench.record --manifest cases.json --out runs/bench_record.json --run-dir runs --job-id … --partition … --qos …` | 自描述记录：修订/分支/dirty、清单与夹具哈希、结果树哈希、operator 字段 |
+| Batch runner | `python -m atst_tools.bench.batch_runner --manifest cases.json --out runs --devices 0,1 --slots 1 --cpu-budget 8 --threads 2` | Execute a case manifest inside an existing allocation: slot scheduling, timeout cleanup, per-case reports, and batch summary. |
+| Variant sweep | `python -m atst_tools.bench.sweep --manifest cases.json --out runs/sweep --devices 0,1 --slots 1,2,3 --repeats 3` | Alternate the order of a variant × repeat matrix and write `sweep_summary.json`. |
+| Measurement record | `python -m atst_tools.bench.record --manifest cases.json --out runs/bench_record.json --run-dir runs --job-id … --partition … --qos …` | Record revision, branch, dirty state, manifest and fixture hashes, result-tree hash, and operator fields. |
 
-站点一键入口：`scripts/sai_runtime_bench.sbatch`（计时 sweep → 证据 pass → 记录）。
-通道夹具（2026-09-22）：`record` 的 `--fixture`（可重复）对文件夹具逐字段不变；目录夹具按 `file_count`/`tree_sha256` 记录，新增可重复的
-`--fixture-labeled LABEL=PATH`（与前者按命令行顺序共同写入 `inputs.fixtures`，元素多一个
-`label`；PATH 是目录时另记 `file_count`/`tree_sha256`，缺件 warning 措辞不变）。
-`scripts/sai_runtime_bench.sbatch` 因此按通道传参：`MODEL` → `dp_model=`、`ABACUS_INPUTS`
-（文件或目录）→ `abacus_inputs=`，label 集合写入 `--note`，ABACUS 通道不再记成 DP 模型哈希。
-清单模板：`examples/runtime_batch_cases.example.json`。清单字段：`case_id`、`config`、
-`slots`、`threads`、`timeout_s`、`workdir`、`launcher`、`ranks`、`env`；**每个 case 必须有
-自己的目录**（未给 `workdir` 时按配置目录）。2026-10-16 未发布修复以解析后的
-实际路径判重，包括显式/默认目录和符号链接别名；case_id 必须是安全的单路径段，
-允许内部空格，进度协议须完整传递 ID。env 可传普通自定义值，受管设备、线程、缓存
-和绑定事实由批次控制；YAML/runtime、显式 omp 和 runner 参数不能突破该预算或
-改写 coordinator 管理的输入/输出位置。相对 config 在加载清单时按批次启动 cwd
-解析一次，预检与两种 worker 使用同一绝对路径，避免 chdir 后读到同名异文件。
-具体证据及兼容说明见 [九项问题整改验收](../reports/MAIN_REVIEW_FIXES_2026-10-16.md)。
+Site one-command entry point: `scripts/sai_runtime_bench.sbatch` (timed sweep
+→ evidence pass → record).
 
-线程记账为 `case.threads × ranks`；`ranks` 优先使用 case 显式声明，否则尝试从
-launcher 的 rank 参数识别，未识别时为 1。任意 calculator command 启动的后端
-子进程数不由 bench 自动审计；使用嵌套 ABACUS MPI 时需显式计入其资源需求。
-这是调度预算，不是操作系统层的 CPU 硬隔离。
+Channel fixtures (2026-09-22): repeatable `record --fixture` keeps the
+per-field behavior of file fixtures; directory fixtures record `file_count`
+and `tree_sha256`. Repeatable `--fixture-labeled LABEL=PATH` writes entries
+to `inputs.fixtures` in CLI order alongside `--fixture`, with an additional
+`label`. Directory PATH entries also record `file_count`/`tree_sha256`;
+missing-fixture warning text is unchanged. Accordingly,
+`scripts/sai_runtime_bench.sbatch` passes `MODEL` as `dp_model=` and
+`ABACUS_INPUTS` (file or directory) as `abacus_inputs=`. It writes the label
+set into `--note`; the ABACUS channel is no longer recorded as a DP model hash.
 
-产物（新运行）：`<out>/<case_id>/case_report.json`（每 case）、`batch_summary.json`（批次）、
-`worker.out` / `worker.err`（每 case 报告目录内）；用例配置带 `runtime.telemetry` 时另有
-`runtime_evidence.json`；批量侧 `bench_record.json`。
+Manifest template: `examples/runtime_batch_cases.example.json`. Fields:
+`case_id`, `config`, `slots`, `threads`, `timeout_s`, `workdir`, `launcher`,
+`ranks`, and `env`. **Every case needs its own work directory**; without
+`workdir`, use the configuration directory. The path-collision fix recorded
+on 2026-10-16 rejects duplicate resolved paths, including explicit/default
+directories and symlink aliases; it shipped in
+[2.2.9](../releases/RELEASE_NOTES_2.2.9.md). A `case_id` must be a safe single
+path component, may contain internal spaces, and must pass through the
+progress protocol intact. `env` may carry ordinary custom values. The batch
+controls managed device, thread, cache, and binding facts; YAML/runtime,
+explicit `omp`, and runner arguments cannot exceed that budget or rewrite
+coordinator-managed input/output locations. Resolve a relative `config` once
+against the batch launch cwd when loading the manifest. Preflight and both
+workers use the same absolute path, avoiding a same-name different file after
+`chdir`. See the [repair validation report](../reports/MAIN_REVIEW_FIXES_2026-10-16.md)
+for evidence and compatibility details.
 
-**共享 worker 模式（`--share-worker`，2026-09-21 新增）**：整批 case 在同一个 worker 进程里顺序执行，
-模型加载与首次调用预热只付一次（维护者实测：2 例 CCQN 批 68.2 s → 34.2 s，第 2 例只花 3.1 s）。语义与约束：
-要求 `--slots 1`；拒绝 per-case `launcher`、非一致的 per-case `env`、超预算线程与空 `--devices`；
-共享 worker 以「已绑定进程」身份启动（用 `runtime.launch.build_child_environment` 发布
-`ATST_RUNTIME_BOUND`/`ATST_INHERITED_DEVICES`/`ATST_EFFECTIVE_DEVICES`/`ATST_BINDING`），所以带 `runtime:`
-段的配置可以运行，**与绑定矛盾的请求仍逐 case fail-closed**（例如只持有 0 号卡时请求 `devices: [1]`）；
-单进程没有 rank 轮转，配置里的 `round_robin` 不产生旋转；`--timeout` 与 `--stop-on-failure` 仍生效
-（超时杀 worker → 该 case `timeout`、其余 `failed`/`shared worker exited`）。新增产物：
-`<out>/batch_jobs.json`、`<out>/worker.out|err`；每 case 报告多一个 `"shared_worker": true` 键。
+Account for threads as `case.threads × ranks`. Prefer the case's explicit
+`ranks`; otherwise infer it from launcher rank arguments, defaulting to 1
+when unrecognized. Bench does not automatically audit backend subprocess
+counts launched by arbitrary calculator commands. Budget nested ABACUS MPI
+resources explicitly. This is a scheduling budget, not an operating-system
+CPU isolation boundary.
 
-命名沿革（先读）：2026-09-21 之前上述产物叫 `harness_case.json` / `harness_summary.json` /
-`harness_worker.{out,err}`；**归档切片 `docs/reports/data/**` 仍带旧名，照原样保留**，
-`bench_record` 读取时同时接受新旧汇总名（新名优先）。两条历史拼写**冻结不动**：schema 字符串
-`atst-bench-harness-v1`（版本化文档标识，不是模块名）与证据取值 `ATST_THREADS_SOURCE=harness`
-（归档 sidecar 的 `threads_source` 就是它）。
+New runs produce `<out>/<case_id>/case_report.json` per case,
+`batch_summary.json` for the batch, and `worker.out` / `worker.err` in each
+case report directory. A case with `runtime.telemetry` also produces
+`runtime_evidence.json`; the batch side can produce `bench_record.json`.
 
-边界：它不是生产队列/调度器（不申请资源、不跨作业排队），也不新增 `atst batch` 公共
-接口；科学逻辑在 `workflows/`。回归：`tests/unit/test_bench_batch_runner.py`、
-`tests/integration/test_bench_batch_runner_mpi.py`。
+**Shared worker mode (`--share-worker`, added 2026-09-21)** runs all cases
+sequentially in one worker process, paying model loading and first-call warmup
+once. In a maintainer measurement, a two-case CCQN batch fell from 68.2 s to
+34.2 s; the second case took 3.1 s. It requires `--slots 1` and rejects
+per-case `launcher`, inconsistent per-case `env`, over-budget threads, and
+empty `--devices`. The shared worker starts as an already-bound process:
+`runtime.launch.build_child_environment` publishes `ATST_RUNTIME_BOUND`,
+`ATST_INHERITED_DEVICES`, `ATST_EFFECTIVE_DEVICES`, and `ATST_BINDING`. Thus
+configurations with `runtime:` can run, while requests that conflict with
+the binding **fail closed per case** (for example, requesting `devices: [1]`
+when only device 0 is held). A single process has no rank rotation, so
+configured `round_robin` has no rotation effect. `--timeout` and
+`--stop-on-failure` still apply: a timeout kills the worker, marks that case
+`timeout`, and marks the others `failed` / `shared worker exited`. Additional
+artifacts are `<out>/batch_jobs.json` and `<out>/worker.out|err`; each case
+report gains `"shared_worker": true`.
 
-## 8. 新增 report 或移动旧 report
+Historical names: before 2026-09-21, these artifacts were named
+`harness_case.json`, `harness_summary.json`, and `harness_worker.{out,err}`.
+Archived slices in `docs/reports/data/**` retain those names. `bench_record`
+accepts both old and new summary filenames, preferring the new one. Two
+historical spellings are **frozen**: the schema string
+`atst-bench-harness-v1` is a versioned document identifier, not a module
+name, and the evidence value `ATST_THREADS_SOURCE=harness` is the archived
+sidecar's `threads_source`.
 
-- 新增 report 时写清日期、环境和证据范围。
-- 只有当 report 是核心入口或当前重点证据时，才从 `docs/index.md` 链接。
-- 被取代的 report 先吸收结论，再移到 `docs/archive/reports/`。
-- 新增 spec/plan 放入 `docs/superpowers/specs/` 或 `docs/superpowers/plans/`；
-  完成后吸收结论并移入 `docs/archive/`。
+Boundary: bench is not a production queue or scheduler. It does not request
+resources or queue across jobs, and it does not add a public `atst batch`
+interface. Scientific logic belongs in `workflows/`. Regression tests:
+`tests/unit/test_bench_batch_runner.py` and
+`tests/integration/test_bench_batch_runner_mpi.py`.
 
-## 9. 准备 release
+## 8. Add a report or move an old report
 
-- 包版本以 `pyproject.toml` 的 `[project].version` 为唯一来源；
-  `atst_tools.package_version()` 在源码树读取该字段，安装后读取发行包元数据。
-- 更新 `docs/releases/RELEASE_NOTES_<version>.md`。
-- 更新 README badge、版本说明和 release scope。
-- 运行离线门禁：`python scripts/check_release_readiness.py --tag v<version>`。
-- 按 [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md) 完成本地/CI
-  机械门禁；当前模型家族的独立审查是正常终审。触及 AGENTS、SKILL 或治理契约时，
-  维护者可按需要求跨家族审查作为 owner-judged advisory evidence；可移植的冻结
-  diff 审查证据与 launcher 产物同样有效，缺少跨家族审查不阻断交付。
-- GitHub 分支保护、`pypi` Environment 审批/标签限制、PyPI Trusted Publisher、
-  push/tag/release、Gitee 手动同步及发布后渲染检查均由管理员/维护者负责，
-  不是仓库文件修改的副作用。
-- 若 release 包含示例或 curated-output 变更，按
-  `docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md` 复核运行证据与溯源。
-- 更新 `FEATURE_STATUS_MATRIX.md`。
-- 运行文档链接、格式和相关测试。
+- State the date, environment, and evidence scope in every new report.
+- Link a report from `docs/index.md` only when it is a core entry point or
+  current high-priority evidence.
+- Absorb findings from a superseded report before moving it to
+  `docs/archive/reports/`.
+- Put new specs/plans under `docs/superpowers/specs/` or
+  `docs/superpowers/plans/`. When complete, absorb their conclusions and move
+  them to `docs/archive/`.
 
-## 10. 最小检查
+## 9. Prepare a release
+
+- Use `[project].version` in `pyproject.toml` as the sole package version
+  source. `atst_tools.package_version()` reads it in the source tree and reads
+  distribution metadata after installation.
+- Update `docs/releases/RELEASE_NOTES_<version>.md`.
+- Update the README badge, version text, and release scope.
+- Run the offline gate: `python scripts/check_release_readiness.py --tag v<version>`.
+- Complete local and CI mechanical gates in
+  [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md). An
+  independent review by the current model family is the usual final review.
+  For AGENTS, SKILL, or governance contract changes, the maintainer may seek
+  cross-family review as owner-judged advisory evidence. Portable review
+  evidence bound to a frozen diff is as valid as launcher output; absence of
+  cross-family review does not block delivery.
+- Administrators/maintainers handle GitHub branch protection, `pypi`
+  Environment approval/tag restrictions, PyPI Trusted Publisher, push/tag/
+  release, manual Gitee synchronization, and post-publication rendering
+  checks. Editing repository files does not perform those actions.
+- If the release changes examples or curated outputs, verify execution
+  evidence and provenance against
+  `docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md`.
+- Update `FEATURE_STATUS_MATRIX.md`.
+- Run documentation link, format, and relevant tests.
+
+## 10. Minimum checks
 
 ```bash
 git diff --check -- README.md docs examples/README.md
@@ -276,14 +368,14 @@ rg -n "^<<<<<<<|^=======|^>>>>>>>" README.md docs examples/README.md
 python scripts/check_docs_governance.py
 ```
 
-若修改 YAML schema：
+If the YAML schema changes:
 
 ```bash
 conda run -n atst-dev python -m atst_tools.utils.config_docs --output docs/user/YAML_INPUT_VARIABLES.md
 conda run -n atst-dev pytest tests/unit/test_config.py -q
 ```
 
-改动运行期消息（print/warning/logging/异常/CLI 文案）时：
+If runtime messages change (print/warning/logging/exceptions/CLI text):
 
 ```bash
 conda run -n atst-dev pytest tests/unit/test_program_output_language.py -q

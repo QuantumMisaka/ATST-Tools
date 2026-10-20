@@ -114,3 +114,10 @@ references now identify 2.3.1 and stored-data TS screening as released, while
 retaining the experimental constant-potential and DMF boundaries. This is a
 documentation-only follow-up on main; the published tag and artifacts are
 unchanged, and no CLI, YAML or Python API behavior changes.
+
+The primary language for active documentation is now English, including the
+source architecture and developer checklists. The Chinese user guide remains
+a complete onboarding path, with advanced details linked to the English
+references. The language policy and historical-material exceptions are defined
+in [Documentation](../developer/DOCUMENTATION.md#language-policy). English
+setup and result-reading paths no longer depend on the Chinese guide.

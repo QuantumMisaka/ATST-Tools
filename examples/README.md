@@ -84,8 +84,14 @@ periodic vectors only when required by ASE. See the
 
 After a run, use the workflow's `summary` command and `atst_artifacts.json` to
 inspect outputs and stage convergence. A zero process exit code is not a
-scientific convergence or transition-state validation claim. The
-[Chinese guide](../docs/user/USER_GUIDE_CN.md#33-读取结果与选择下一步) explains the Relax outputs.
+scientific convergence or transition-state validation claim. For the Relax
+example, `relax.traj` holds the trajectory, `final_relaxed.traj` the final
+structure and saved results, and `relax_run/` the ABACUS inputs and outputs.
+Read `stages` in `atst_artifacts.json`: `converged: true` records convergence,
+`false` records non-convergence, and `null` means no convergence fact is
+available. Use `atst relax summary relax.traj --tail 5` to inspect the final
+steps. A Chinese walkthrough is available in the
+[Chinese guide](../docs/user/USER_GUIDE_CN.md#33-读取结果与选择下一步).
 
 ## Suggested Learning Paths
 

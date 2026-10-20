@@ -196,7 +196,12 @@ the ABACUS subprocess count for one image. ATST-Tools does not run or generate
 Slurm submission commands; use your site launch script to start the outer Python
 MPI command, and keep all ABACUS executable details in `calculator.abacus`.
 
-Image parallel 是可选能力；默认的单进程 NEB/AutoNEB 不导入 mpi4py。通过外部 MPI 启动前，先按用户指南完成 mpi4py import 与 two-rank launcher 预检；若 wheel 与站点 MPI 不兼容，应使用站点 `mpicc` 从源码重装 mpi4py。
+Image parallelism is optional; default single-process NEB/AutoNEB does not
+import `mpi4py`. Before launching through external MPI, check the `mpi4py`
+import and a two-rank launch as described in the
+[MPI setup guide](ABACUSLITE_WRAPPER_GUIDE.md#neb-image-level-mpi). If the wheel
+is incompatible with the site MPI implementation, rebuild `mpi4py` from source
+with the site's `mpicc`.
 
 ### 2.3 AutoNEB
 **Type**: `autoneb`
@@ -907,15 +912,24 @@ the isolated worker path: devices and thread budgets are applied before the
 scientific stack is imported, and telemetry writes `runtime_evidence.json`
 next to the artifact manifest.
 
-DP 后端与制品（2026-09-22）：ATST 按制品后缀判定类型并存证——`.pt` 原始 checkpoint（推荐）、
-`.pth` 冻结归档（TorchScript，**与导出时的 deepmd-kit 构建锁定**）、`.pb`/`.pbtxt` TF 图（kind 级）。
-多任务（multi-task）PT 模型**必须**给 `head`：缺失或名称错误会抛 `DeepPotentialError`，
-消息列出可用 heads 并给出 `dp --pt show <model> model-branch`（`dp --pt freeze -c <ckpt> -o out [--head <branch>]`
-是 PT 出品 `.pth` 的入口）。冻结归档若与当前构建算子不匹配，首次求值即被翻译为可操作错误
-（建议改用原始 `.pt` 或与归档匹配的构建）；`CUDA out of memory` 等真实错误原样上抛。
-线程预算：`runtime.threads` 同时写 `OMP_NUM_THREADS` 与 deepmd 自荐的
-`DP_INTRA_OP_PARALLELISM_THREADS`/`DP_INTER_OP_PARALLELISM_THREADS`；`calculator.dp.omp` 只设 OMP（既有语义不变）。
-`dp_model_identity()` 可回读 kind/backend/head/ntypes/rcut/type_map 等事实（会加载模型元数据，约数秒，不在默认运行路径调用）。
+DP backend and artifacts (2026-09-22): ATST classifies and records artifact
+kind by suffix: `.pt` for raw checkpoints (recommended), `.pth` for frozen
+TorchScript archives (**tied to the deepmd-kit build used for export**), and
+`.pb`/`.pbtxt` for TensorFlow graphs (kind-level identification).
+Multi-task PT models **require** `head`. A missing or invalid name raises
+`DeepPotentialError`, listing the available heads and the inspection command
+`dp --pt show <model> model-branch`. Export a PT model as `.pth` with
+`dp --pt freeze -c <ckpt> -o out [--head <branch>]`. If a frozen archive's
+operators do not match the current build, the first evaluation reports an
+error suggesting the raw `.pt` checkpoint or a matching build. Unrelated
+errors such as `CUDA out of memory` propagate unchanged.
+
+For thread budgets, `runtime.threads` sets `OMP_NUM_THREADS` together with
+DeepMD's recommended `DP_INTRA_OP_PARALLELISM_THREADS` and
+`DP_INTER_OP_PARALLELISM_THREADS`; `calculator.dp.omp` sets only OMP, preserving
+its existing semantics. `dp_model_identity()` reads facts such as kind, backend,
+head, ntypes, rcut and type_map. It loads model metadata, which can take several
+seconds, and is not called on the default execution path.
 
 ```yaml
 runtime:

@@ -1,165 +1,120 @@
-# ATST-Tools 源码导览
+# ATST-Tools source architecture
 
-**版本**: 2026-10-16
-**日期**: 2026-10-16
-**状态**: 维护
-**责任人**: ATST-Tools maintainers
+**Version**: 2026-10-20
 
-本页是开发者与项目管理者的源码架构指南：解释各模块为什么存在、主要内容和修改入口。
-ATST-Tools 围绕 ASE 组织过渡态及相关科学计算，以 abacuslite 和 DeePMD-kit 提供计算
-后端，通过 CLI/YAML 和 Python API 交付同一套工作流。
+**Date**: 2026-10-20
 
-阅读时可先按问题定位：**执行科学计算看 `workflows/` 与 `mep/`，接入调用方看
-`api/` 与 `scripts/`，管理运行资源看 `runtime/`，比较性能配置看 `bench/`。**
-本文描述当前 checkout；能力成熟度、已知问题及发行边界统一查
-[功能矩阵](../../docs/reports/FEATURE_STATUS_MATRIX.md)，避免从目录存在推断功能已验收。
+**Status**: Maintained
 
-## 1. 各模块的目标与主要内容
+**Owner**: ATST-Tools maintainers
 
-| 目录 | 为什么存在、主要负责什么 | 建议先读 |
+This guide explains the purpose, contents, and change points of the source modules for developers and project maintainers. ATST-Tools uses ASE to organize transition-state and related scientific calculations. It uses abacuslite and DeePMD-kit as calculation backends and exposes the same workflows through CLI/YAML and the Python API.
+
+To locate an implementation, start with **`workflows/` and `mep/` for scientific calculations, `api/` and `scripts/` for callers, `runtime/` for execution resources, and `bench/` for performance experiments**. This page describes the current checkout. Consult the [feature status matrix](../../docs/reports/FEATURE_STATUS_MATRIX.md) for maturity, known issues, and release boundaries; the presence of a directory alone does not establish acceptance.
+
+## 1. Module responsibilities
+
+| Directory | Purpose and main contents | Start here |
 | --- | --- | --- |
-| [`api/`](api/) | 为 Python 程序、Agent 和外部宿主提供稳定调用与结果交接。包含配置校验、工作流调度、类型化错误、结果对象、进程 runner，以及显式的已存结果验证入口。 | [`__init__.py`](api/__init__.py) 看公开导出；[`services.py`](api/services.py) 看服务流程；[`models.py`](api/models.py) 看输入选项和结果。 |
-| [`scripts/`](scripts/) | 将命令行请求转换为服务调用，提供参数、子命令、配置模板和终端输出。轻入口先处理资源启动，再加载科学实现。 | [`cli.py`](scripts/cli.py) → [`cli_impl.py`](scripts/cli_impl.py)；`atst run` 的适配与模板在 [`main.py`](scripts/main.py)。 |
-| [`workflows/`](workflows/) | 组织一次科学任务的步骤、输入、重启与交付。包含 Relax、Vibration、D2S、IRC、MD、DMF、恒电势工作流，以及 NEB 等共享执行入口。 | [`execution.py`](workflows/execution.py)；复合流程可读 [`d2s.py`](workflows/d2s.py)，简单流程可读 [`relax.py`](workflows/relax.py)。 |
-| [`mep/`](mep/) | 承载最小能量路径（MEP）及过渡态搜索组件：NEB、AutoNEB、Dimer、Sella 的项目适配，以及 CCQN 实现。由科学工作流调用和组合。 | [`neb.py`](mep/neb.py)、[`autoneb.py`](mep/autoneb.py)、[`ccqn.py`](mep/ccqn.py)。 |
-| [`calculators/`](calculators/) | 把配置装配成 ASE calculator，统一 ABACUS/DP 后端选择、命令与模型设置、后端身份记录；恒电势装饰器在固定几何下迭代电子数。 | [`factory.py`](calculators/factory.py)、[`abacuslite_backend.py`](calculators/abacuslite_backend.py)、[`dp.py`](calculators/dp.py)。 |
-| [`runtime/`](runtime/) | 让一次运行获得明确的设备、线程与进程环境，并留下实际运行证据。包含设备解析、worker 启动、绑定校验、采样和调用计数。 | [`cli_dispatch.py`](runtime/cli_dispatch.py)、[`launch.py`](runtime/launch.py)、[`evidence.py`](runtime/evidence.py)。 |
-| [`bench/`](bench/) | 为维护者组织有限批次的性能实验：运行一组案例、扫描并发配置、重复测量和保存测量来源。普通单次科学计算无需经过它。 | [`batch_runner.py`](bench/batch_runner.py)、[`sweep.py`](bench/sweep.py)、[`record.py`](bench/record.py)；用途见 §3。 |
-| [`utils/`](utils/) | 保存跨工作流复用的配置、结构与几何处理、MPI 协调、产物和收敛事实、后处理与绘图工具。 | 配置从 [`config_schema.py`](utils/config_schema.py) / [`config.py`](utils/config.py) 开始；结果从 [`artifacts.py`](utils/artifacts.py) / [`convergence.py`](utils/convergence.py) 开始。 |
-| [`external/`](external/) | abacuslite 的历史导入转发路径与审计记录，以及有来源记录的 PyDMF 快照。 | [ABACUS 历史基线](external/ASE_interface/ABACUSLITE_SNAPSHOT.md)、[补丁记录](external/ASE_interface/PATCHES.md)、[PyDMF 来源](external/pydmf/UPSTREAM.md)。 |
+| [`api/`](api/) | Provides stable calls and result handoff for Python programs, Agents, and external hosts. Includes configuration validation, workflow dispatch, typed errors, result models, the process runner, and explicit validation of stored results. | [`__init__.py`](api/__init__.py) for public exports; [`services.py`](api/services.py) for service flow; [`models.py`](api/models.py) for options and results. |
+| [`scripts/`](scripts/) | Converts command-line requests into service calls and provides options, subcommands, configuration templates, and terminal output. Its light entry point starts resources before importing the scientific implementation. | [`cli.py`](scripts/cli.py) → [`cli_impl.py`](scripts/cli_impl.py); [`main.py`](scripts/main.py) for `atst run` adaptation and templates. |
+| [`workflows/`](workflows/) | Organizes the steps, inputs, restarts, and deliverables of a scientific task. Includes Relax, Vibration, D2S, IRC, MD, DMF, constant-potential workflows, and shared execution paths such as NEB. | [`execution.py`](workflows/execution.py); [`d2s.py`](workflows/d2s.py) for a composite workflow; [`relax.py`](workflows/relax.py) for a simpler one. |
+| [`mep/`](mep/) | Holds minimum-energy-path (MEP) and transition-state search components: project adaptations of NEB, AutoNEB, Dimer, and Sella, plus the CCQN implementation. Scientific workflows call and combine them. | [`neb.py`](mep/neb.py), [`autoneb.py`](mep/autoneb.py), [`ccqn.py`](mep/ccqn.py). |
+| [`calculators/`](calculators/) | Builds ASE calculators from configuration, selects ABACUS or DP, sets commands and models, and records backend identity. The constant-potential decorator iterates the electron count at fixed geometry. | [`factory.py`](calculators/factory.py), [`abacuslite_backend.py`](calculators/abacuslite_backend.py), [`dp.py`](calculators/dp.py). |
+| [`runtime/`](runtime/) | Sets explicit device, thread, and process environments for a run and records what actually ran. Includes device resolution, worker launch, binding checks, sampling, and call counts. | [`cli_dispatch.py`](runtime/cli_dispatch.py), [`launch.py`](runtime/launch.py), [`evidence.py`](runtime/evidence.py). |
+| [`bench/`](bench/) | Organizes bounded performance experiments for maintainers: runs cases, sweeps concurrency, repeats measurements, and records provenance. Ordinary single scientific runs do not pass through it. | [`batch_runner.py`](bench/batch_runner.py), [`sweep.py`](bench/sweep.py), [`record.py`](bench/record.py); see §3. |
+| [`utils/`](utils/) | Holds shared configuration, structure and geometry processing, MPI coordination, artifact and convergence facts, post-processing, and plotting helpers. | [`config_schema.py`](utils/config_schema.py) / [`config.py`](utils/config.py) for configuration; [`artifacts.py`](utils/artifacts.py) / [`convergence.py`](utils/convergence.py) for results. |
+| [`external/`](external/) | Retains the historical abacuslite import-forwarding path and audit records, plus a PyDMF snapshot with recorded provenance. | [ABACUS historical baseline](external/ASE_interface/ABACUSLITE_SNAPSHOT.md), [patch record](external/ASE_interface/PATCHES.md), [PyDMF provenance](external/pydmf/UPSTREAM.md). |
 
-包根的 [`__init__.py`](__init__.py) 主要提供版本查询；版本源是仓库根
-[`pyproject.toml`](../../pyproject.toml)。对外集成优先使用 `atst_tools.api` 的公开导出，
-具体契约见 [Python API 参考](../../docs/user/PYTHON_API_REFERENCE.md)。内部文件路径
-用于开发定位，不自动成为稳定外部接口。
+The package-level [`__init__.py`](__init__.py) chiefly provides version lookup; the version source is the repository's [`pyproject.toml`](../../pyproject.toml). External integrations should prefer the public exports of `atst_tools.api`; see the [Python API reference](../../docs/user/PYTHON_API_REFERENCE.md) for their contracts. Internal file paths help developers find code but do not automatically become stable public interfaces.
 
-## 2. 一次科学计算如何经过这些模块
+## 2. How a scientific run crosses the modules
 
-下面以配置驱动的 `atst run` / `run_workflow` 为主线：
+The configuration-driven `atst run` / `run_workflow` path illustrates the main flow:
 
 ```mermaid
 flowchart TD
-    CLI["命令行 scripts"] --> API["api.services 配置、调度与结果交接"]
-    PY["Python / Agent 调用"] --> API
-    RUNNER["api.runner 进程入口"] --> API
-    BENCH["bench 性能实验"] --> RUNNER
-    BENCH -->|共享 worker 调用 API| API
-    RT["runtime 设备、线程与运行证据"] -.-> RUNNER
-    API --> WF["workflows 科学步骤"]
-    WF --> ALG["mep / ASE / Sella 搜索与优化"]
-    WF --> CALC["calculators 后端装配"]
-    ALG -->|请求能量和力| BACK["ASE calculator / ABACUS / DeePMD-kit"]
+    CLI["Command line: scripts"] --> API["api.services: configuration, dispatch, result handoff"]
+    PY["Python / Agent caller"] --> API
+    RUNNER["api.runner: process entry point"] --> API
+    BENCH["bench: performance experiments"] --> RUNNER
+    BENCH -->|Shared worker calls API| API
+    RT["runtime: devices, threads, execution evidence"] -.-> RUNNER
+    API --> WF["workflows: scientific steps"]
+    WF --> ALG["mep / ASE / Sella: search and optimization"]
+    WF --> CALC["calculators: backend assembly"]
+    ALG -->|Request energy and forces| BACK["ASE calculator / ABACUS / DeePMD-kit"]
     CALC --> BACK
-    WF --> OUT["轨迹、阶段事实、产物清单"]
-    API --> RESULT["WorkflowResult / JSON 交接"]
+    WF --> OUT["Trajectories, stage facts, artifact manifest"]
+    API --> RESULT["WorkflowResult / JSON handoff"]
     OUT --> RESULT
 ```
 
-以 NEB 为例，CLI 将请求交给 `api.services`；服务层归一化 YAML、确定 MPI world，
-再调用 `workflows.execution.run_neb`。执行层准备图像、端点和 calculator，调用
-选定的 NEB 实现与 ASE 优化器，记录轨迹和收敛阶段；API 读取或补齐产物清单并构造
-结果。CLI 保留终端展示，进程 runner 在 root rank 写出 JSON，具体交接差异见 API 参考。
+For NEB, the CLI passes the request to `api.services`. The service normalizes YAML, identifies the MPI world, and calls `workflows.execution.run_neb`. The execution layer prepares images, endpoints, and calculators; calls the chosen NEB implementation and ASE optimizer; and records trajectories and convergence stages. The API reads or completes the artifact manifest and constructs the result. The CLI formats terminal output, while the process runner writes JSON on the root rank. See the API reference for the distinct handoff contracts.
 
-这张图覆盖工作流主线。配置检查、轨迹分析、绘图等轻量命令可以直接使用对应工具；
-嵌入式 `run_ccqn` 可以直接调用 MEP 组件。`validate_ts` 读取已有振动和冻结结构事实，
-本身不会启动新的科学计算。
+The diagram covers the workflow path. Light commands for configuration checks, trajectory analysis, and plotting can use their tools directly; embedded `run_ccqn` can call the MEP component directly. `validate_ts` reads existing vibration and frozen-structure facts and does not start a new scientific calculation.
 
-几个会影响修改位置的分工：
+These distinctions determine where changes belong:
 
-- **`workflows` 与 `mep`**：前者负责“这次任务有哪些科学步骤”，后者负责具体搜索
-  组件。例如 D2S 组织端点优化、粗路径和单端精修，精修可调用 Dimer、Sella 或 CCQN。
-  当前一些 `mep` 类也管理轨迹、calculator 和阶段事实，不能将现状理解为严格的纯算法层。
-- **`api` 与 `scripts`**：API 管理程序调用契约，CLI 管理命令行表达；科学执行应由
-  共享层承担。API 不依赖 CLI 模块来运行计算。
-- **`calculators` 与 `external`**：前者承担本项目的装配和适配，后者保留历史
-  abacuslite 导入转发路径和 PyDMF 快照。ABACUS 只使用独立安装的 abacuslite；
-  DP 使用 DeePMD-kit 的 ASE calculator。
-- **`runtime` 的启动时机**：设备和线程环境需要在科学库初始化前生效，因此轻入口及
-  `api` 导出采用延迟加载。嵌入式 API 在调用方现有进程中运行，不会自动创建隔离 worker；
-  进程隔离由 CLI/runner 的资源启动路径负责。采样和计数服务于观测，不决定科学收敛。
+- **`workflows` and `mep`**: workflows define the scientific steps in a task; MEP provides search components. For example, D2S organizes endpoint relaxation, a rough path, and single-ended refinement, which can use Dimer, Sella, or CCQN. Some current `mep` classes also manage trajectories, calculators, and stage facts, so the current implementation is not a strictly pure algorithm layer.
+- **`api` and `scripts`**: the API owns programmatic call contracts; the CLI owns command-line presentation. Scientific execution belongs in shared code. The API does not depend on CLI modules to run a calculation.
+- **`calculators` and `external`**: calculators hold this project's assembly and adaptation; external retains the historical abacuslite import-forwarding path and the PyDMF snapshot. ABACUS uses only the independently installed abacuslite package; DP uses DeePMD-kit's ASE calculator.
+- **`runtime` initialization**: device and thread settings must take effect before scientific libraries initialize, so light entry points and `api` exports use lazy loading. An embedded API call runs in the caller's existing process and does not automatically create an isolated worker. The CLI/runner resource-launch path provides process isolation. Sampling and call counts are observations, not scientific convergence criteria.
 
-目录表达主要职责，不代表所有文件都遵守严格的单向分层。例如 `runtime.errors`
-复用 `api.models` 的轻量错误类型；`utils.geometry` / `neb_endpoints` 为了清理或校验
-恒电势事实，会依赖对应 calculator 模块。新增代码应按具体职责选择依赖，不能把
-`utils` 当成没有领域依赖的公共底层。
+Directories indicate primary responsibilities rather than strict one-way layering. For example, `runtime.errors` reuses lightweight error types from `api.models`; `utils.geometry` / `neb_endpoints` depend on the corresponding calculator module when cleaning or validating constant-potential facts. Choose dependencies by their concrete responsibility; `utils` is not a domain-free foundation layer.
 
-## 3. 为什么有 bench：性能实验的组织工具
+## 3. Why bench exists: organizing performance experiments
 
-`bench` 是 benchmark 的缩写，源于项目的共享 GPU 节点与 DP 推理调优工作。
-它用于回答：同一批计算逐个执行或并发执行，哪种总耗时更短；线程数和 MPI 图像布局
-怎样影响吞吐；共享进程能否减少模型加载成本；重复测量是否仍能得到相同结论。
+`bench` supports work on shared GPU nodes and DP inference tuning. It helps answer whether serial or concurrent execution shortens total time for the same cases; how thread counts and MPI image layout affect throughput; whether a shared process reduces model-loading cost; and whether repeated measurements support the same conclusion.
 
-例如，对同一组 NEB/Relax 配置，比较每张卡同时运行 1、2、3 个案例，各重复 3 次。
-这些计算仍由已有工作流完成，bench 组织执行顺序、资源预算、失败/超时记录及性能汇总。
-只有相应计算结果也得到科学验证，性能比较才能用于支持运行策略。
+For example, maintainers can compare running one, two, or three NEB/Relax cases at a time on each GPU, with three repetitions per variant. Existing workflows still perform the calculations. Bench organizes ordering, resource budgets, failure and timeout records, and performance summaries. A performance comparison can support a run strategy only when the corresponding scientific results have also been validated.
 
-| 组件 | 做什么 | 主要产物 |
+| Component | Role | Main artifacts |
 | --- | --- | --- |
-| [`batch_runner.py`](bench/batch_runner.py) | 在已经获得的资源内执行有限 case 清单，按设备槽位与 CPU 线程预算安排 worker，处理超时、失败和取消。 | `case_report.json`、`batch_summary.json`、worker 标准输出/错误日志。 |
-| [`batch_worker.py`](bench/batch_worker.py) | `--share-worker` 模式下，在同一子进程内依次调用工作流，支持复用 DP 模型及预热状态。默认模式则每个 case 使用独立 runner 进程。 | 各 case 的 `atst_api_result.json` 和供批次汇总读取的进度行。 |
-| [`sweep.py`](bench/sweep.py) | 扫描设备槽位并发数，重复执行同一清单并交替变体顺序，汇总整批耗时与成功案例吞吐。其他线程/launcher 配置由案例清单控制。 | `sweep_summary.json`，以及每个变体、每次重复的批次目录。 |
-| [`record.py`](bench/record.py) | 记录代码修订、环境、输入夹具和结果文件身份，关联运行时记录与操作者提供的作业信息。 | `bench_record.json` 等测量记录，缺失信息显式标记。 |
+| [`batch_runner.py`](bench/batch_runner.py) | Runs a bounded case list within already allocated resources, assigns workers by device slot and CPU thread budget, and handles timeouts, failures, and cancellation. | `case_report.json`, `batch_summary.json`, worker stdout/stderr logs. |
+| [`batch_worker.py`](bench/batch_worker.py) | In `--share-worker` mode, calls workflows sequentially in one child process to reuse a DP model and warm state. The default mode uses a separate runner process for each case. | Each case's `atst_api_result.json` and progress lines for batch aggregation. |
+| [`sweep.py`](bench/sweep.py) | Sweeps device-slot concurrency, repeats the same case list in alternating variant order, and summarizes total duration and successful-case throughput. The case list controls other thread and launcher settings. | `sweep_summary.json` and batch directories for each variant and repetition. |
+| [`record.py`](bench/record.py) | Records code revision, environment, input fixture, and result-file identities; links runtime records and operator-provided job metadata. | Measurement records such as `bench_record.json`, with missing facts explicitly marked. |
 
-`runtime` 提供设备绑定、线程环境和采样等单次运行能力；`bench` 使用这些能力安排和
-比较一组运行。二者都在调用方已有资源内工作；bench 不申请 Slurm 资源，也不充当
-长期生产队列。普通用户继续使用 `atst run` 或 Python API，项目没有新增 `atst batch`
-公共命令。维护者使用 `python -m atst_tools.bench.<组件>`，详细命令和约束集中在
-[HANDOVER 的 bench 小节](../../docs/developer/HANDOVER.md#71-新增或修改基准工具链bench)。
+`runtime` supplies binding, thread environments, and sampling for a single run; `bench` uses those capabilities to organize and compare multiple runs. Both operate within resources already allocated to the caller. Bench does not request Slurm resources or act as a long-running production queue. Regular users continue to use `atst run` or the Python API; there is no public `atst batch` command. Maintainers use `python -m atst_tools.bench.<module>`; commands and constraints are in the [HANDOVER bench section](../../docs/developer/HANDOVER.md#71-add-or-change-the-benchmark-tooling).
 
-性能实验需要分清源码、案例与实际运行目录：
+Performance experiments distinguish source, cases, and actual run directories:
 
-| 位置或概念 | 承载内容 |
+| Location or concept | Contents |
 | --- | --- |
-| [`examples/`](../../examples/README.md) | 用户案例、配置、输入和精选参考结果；可被性能实验选作负载。 |
-| [`tests/`](../../tests/) | 行为验证代码和夹具，运行时通常使用临时目录。 |
-| 每个 case 的 `workdir` | 本次科学计算的读写现场：轨迹、重启数据、后端输出、产物清单及相关缓存。它是运行位置，不要求仓库存在固定的 `workdir/` 目录。 |
-| bench 的 `--out` | 批次和 case 报告、扫描结果；可以包含各 case 的工作目录，二者也可以分开配置。 |
+| [`examples/`](../../examples/README.md) | User cases, configurations, inputs, and selected reference results; cases can serve as benchmark workloads. |
+| [`tests/`](../../tests/) | Behavioral checks and fixtures, usually run in temporary directories. |
+| Each case's `workdir` | The read/write location for this scientific run: trajectories, restart data, backend output, artifact manifests, and related caches. It is a runtime location; the repository need not have a fixed `workdir/` directory. |
+| Bench `--out` | Batch and case reports and sweep results. It can contain the case workdirs, or they can be configured separately. |
 
-未指定 `workdir` 时使用配置文件所在目录；显式相对路径以 `--out` 为基准，绝对路径
-直接使用。bench 不自动复制输入。多次运行可以共享只读结构或模型，但需要正确解析
-输入路径并隔离可写产物。当前实现的已知限制见功能矩阵中的审查入口，不能把目录规划
-意图当作所有输入组合都已验证。
+If `workdir` is absent, the configuration file's directory is used. An explicit relative `workdir` is resolved against `--out`; an absolute path is used directly. Bench does not copy inputs automatically. Runs can share read-only structures or models, but input paths must resolve correctly and writable artifacts must be isolated. Consult the feature status matrix for known implementation limits; a directory layout does not establish validation of every input combination.
 
-## 4. 修改什么，从哪里开始
+## 4. Where to start a change
 
-| 修改目标 | 源码起点与联动位置 |
+| Change | Source entry points and related updates |
 | --- | --- |
-| 新增或修改科学工作流 | [`utils/config_schema.py`](utils/config_schema.py) → 对应 `workflows/` / `mep/` → [`api/services.py`](api/services.py) 的调度和结果交接；共享执行 helper 放 `workflows/execution.py`；同步配置模板、用户说明、案例及对应验证。 |
-| 调整 NEB/TS 搜索过程 | 对应 `mep/` 实现及调用它的工作流；几何、端点和重启行为分别查 `utils/geometry.py`、`neb_endpoints.py`、`restart_helpers.py`。 |
-| 接入或调整计算后端 | `calculators/factory.py` 及后端适配文件；同步 backend identity。abacuslite 实现归独立仓，旧导入路径只做兼容转发。 |
-| 新增 YAML 字段或 CLI 命令 | YAML 从 schema 与 [`config_docs.py`](utils/config_docs.py) 开始；CLI 从 `scripts/cli_impl.py` 的子命令路由开始，`atst run` 相关适配在 `scripts/main.py`。保留轻量 bootstrap 的导入边界。 |
-| 修改结果/收敛交接 | `utils/artifacts.py`、`convergence.py` 与对应生产者；检查 `api/models.py`、`services.py`、[`utils/summary.py`](utils/summary.py) 及外部消费者的路径和协议语义。 |
-| 调整资源分配或性能实验 | 单次设备/线程/启动看 `runtime/`；批次预算、共享 worker、扫描与测量记录看 `bench/`；科学步骤继续由已有工作流实现。 |
+| Add or change a scientific workflow | Start with [`utils/config_schema.py`](utils/config_schema.py), the relevant `workflows/` / `mep/` code, then dispatch and result handoff in [`api/services.py`](api/services.py). Put shared execution helpers in `workflows/execution.py`. Update templates, user documentation, examples, and relevant checks. |
+| Change NEB/TS search | Inspect the relevant `mep/` implementation and calling workflow. Geometry, endpoint, and restart behavior reside in `utils/geometry.py`, `neb_endpoints.py`, and `restart_helpers.py`, respectively. |
+| Add or change a calculation backend | Start with `calculators/factory.py` and the backend adapter; update backend identity. Implement abacuslite changes in its separate repository; the old import path forwards for compatibility only. |
+| Add a YAML field or CLI command | For YAML, start with the schema and [`config_docs.py`](utils/config_docs.py). For CLI, start with subcommand routing in `scripts/cli_impl.py`; `scripts/main.py` adapts `atst run`. Preserve the light bootstrap import boundary. |
+| Change result or convergence handoff | Inspect `utils/artifacts.py`, `convergence.py`, and the producers; check path and protocol semantics in `api/models.py`, `services.py`, [`utils/summary.py`](utils/summary.py), and external consumers. |
+| Change resource allocation or performance experiments | For a single run, inspect `runtime/`; for batch budgets, shared workers, sweeps, and measurement records, inspect `bench/`. Existing workflows continue to own scientific steps. |
 
-仓库根 [`scripts/`](../../scripts/) 放文档检查、构建验收、参考结果生成等维护脚本；
-它与包内 `src/atst_tools/scripts/` 的安装后 CLI 职责不同。
+The repository-level [`scripts/`](../../scripts/) contains maintenance scripts for documentation checks, build acceptance, and reference-result generation. It has a different role from the installed CLI modules in `src/atst_tools/scripts/`.
 
-具体开发环境、变更后的检查及文档同步要求见
-[HANDOVER](../../docs/developer/HANDOVER.md)，配置治理见
-[YAML_INPUT_GOVERNANCE](../../docs/developer/YAML_INPUT_GOVERNANCE.md)，验证操作见
-[EXAMPLE_VALIDATION_OPERATIONS](../../docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md)。
-文档目录和事实来源见 [DOCUMENTATION](../../docs/developer/DOCUMENTATION.md)。
-新增目录、改变模块职责或主要调用关系时同步本页；版本状态和逐次验证结果继续维护在
-功能矩阵、release notes 和报告中。
+See [HANDOVER](../../docs/developer/HANDOVER.md) for development setup, change checks, and documentation updates; [YAML_INPUT_GOVERNANCE](../../docs/developer/YAML_INPUT_GOVERNANCE.md) for configuration governance; [EXAMPLE_VALIDATION_OPERATIONS](../../docs/developer/EXAMPLE_VALIDATION_OPERATIONS.md) for validation procedures; and [DOCUMENTATION](../../docs/developer/DOCUMENTATION.md) for document ownership and sources of truth. Update this page when a directory, module responsibility, or major call path changes. Keep version status and individual validation results in the feature matrix, release notes, and reports.
 
-## 5. 后续迭代应保持的设计边界
+## 5. Design boundaries for further work
 
-当前采用一个 Python 包内分模块协作的结构：ASE 对象和 calculator 接口连接科学
-组件，CLI/YAML 与 Python API 共用执行实现。现有规模适合保持这一结构；扩展时先
-复用已有组件和契约。以下是设计约束，具体路径是否完整满足仍以测试和功能矩阵为准。
+The current structure has several modules within one Python package. ASE objects and calculator interfaces connect the scientific components; CLI/YAML and the Python API share the execution implementation. Continue to reuse existing components and contracts as the project grows. The following design rules describe intended boundaries; tests and the feature matrix determine which paths satisfy them today.
 
-| 设计边界 | 维护要求 |
+| Boundary | Maintenance rule |
 | --- | --- |
-| 科学实现与入口分开 | 科学步骤进入 `workflows`，搜索组件进入 `mep` 或复用 ASE；CLI 和 Agent 接口不各自维护一套算法。已有 MEP 任务适配器可随实际扩展逐步整理，保留兼容入口。 |
-| 后端以 ASE 接口交付 | 工厂负责配置装配，能量、力及受支持的其他性质交由 calculator 提供。`BaseCalculator` 当前没有实际接入点；新增后端不必继承它。 |
-| 事实由实际生产者负责 | 优化器/工作流记录阶段收敛，外层复合任务聚合子阶段；API 负责交接。执行完成、优化收敛、TS 验证分开表达，缺失事实保留 unknown。 |
-| 结构与结果共同校验 | 重启和多端点路径必须确认原子身份、顺序、晶胞/PBC 与图像布局。复制几何、复制有效冻结结果、主动调用后端求值是不同操作，按用途选择 helper。 |
-| 文件与协议有共同语义 | manifest 用可选 `path_base` 明确相对产物的基准，API 重写时保留；恒电势 facts-v1 写出保留旧 reader 所需的兼容字段，并用历史 reader 验证。协议名称相同不代替互读检查。 |
-| 运行资源有明确归属 | 调用方取得外层资源，bench 在其内安排案例，runtime 建立单次运行环境；采样只记录事实。工作目录、线程与设备约束须在 worker 启动前一致，避免科学代码承担批次调度。 |
+| Separate scientific implementation from entry points | Put scientific steps in `workflows`; put search components in `mep` or reuse ASE. CLI and Agent interfaces should not each maintain their own algorithm. Existing MEP task adapters can be reorganized incrementally while preserving compatibility entry points. |
+| Deliver backends through ASE interfaces | The factory assembles configuration; calculators provide energy, forces, and other supported properties. `BaseCalculator` currently has no active integration point, so a new backend need not inherit it. |
+| Let producers own their facts | Optimizers and workflows record stage convergence; outer composite tasks aggregate substages; the API hands facts off. Report execution completion, optimization convergence, and TS validation separately, and preserve `unknown` for missing facts. |
+| Validate structure together with results | Restart and multi-endpoint paths must check atom identity and order, cell/PBC, and image layout. Copying geometry, copying valid frozen results, and actively evaluating the backend are different operations; choose helpers accordingly. |
+| Keep file and protocol semantics aligned | The manifest's optional `path_base` sets the base for relative artifacts and survives API rewriting. Constant-potential facts-v1 output retains compatibility fields required by older readers and is checked with a historical reader. A shared protocol name does not replace a read-compatibility check. |
+| Assign run resources explicitly | The caller obtains outer resources, bench schedules cases within them, and runtime establishes the environment of each run. Sampling records facts only. Workdir, thread, and device constraints must agree before worker launch so scientific code does not take on batch scheduling. |
 
-新增 workflow 要同时检查 schema、模板、服务调度、manifest、返回结构和可选
-profiles/plots；接入清单见 [HANDOVER §2](../../docs/developer/HANDOVER.md#2-新增或修改-workflow)。
-本次架构判断、依赖例外和整改顺序见
-[2026-10-16 架构复核](../../docs/reports/ARCHITECTURE_REVIEW_2026-10-16.md)；九项缺陷的
-局部修复、回归及旧数据迁移说明见
-[整改验收](../../docs/reports/MAIN_REVIEW_FIXES_2026-10-16.md)。这些源码修复尚未发布。
+When adding a workflow, check the schema, templates, service dispatch, manifest, result model, and optional profiles/plots together. See the [HANDOVER §2 checklist](../../docs/developer/HANDOVER.md#2-add-or-change-a-workflow). The [2026-10-16 architecture review](../../docs/reports/ARCHITECTURE_REVIEW_2026-10-16.md) records the design assessment, dependency exceptions, and repair order. The [repair acceptance report](../../docs/reports/MAIN_REVIEW_FIXES_2026-10-16.md) records the nine local fixes, regressions, and old-data migration notes from that review. For current availability and release status, consult the [feature matrix](../../docs/reports/FEATURE_STATUS_MATRIX.md) and [release notes](../../docs/releases/RELEASE_NOTES_2.3.1.md).

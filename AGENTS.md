@@ -10,7 +10,8 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 - 代码库尽可能集成和封装，CLI设计尽可能兼顾易用和可扩展，仓库核心代码架构需要具备足够可扩展性。
 - Unit Test覆盖度足够且粒度合适，Example中需要覆盖项目各方面功能并作为用户快速上手入口。
 - 核心代码库各个函数需要具有精练且完整的，Google Style的docstring。
-- 程序性输出（stdout/stderr、warning、logging、异常消息、CLI help/错误）统一英文；文档保持现有语言，新增或修改的注释与 docstring 使用英文。
+- 程序性输出（stdout/stderr、warning、logging、异常消息、CLI help/错误）统一英文；新增或修改的注释与 docstring 使用英文。
+- 活跃项目文档以英文为主，保留 `docs/user/USER_GUIDE_CN.md` 作为完整中文入门指南；内部讨论、维护记录和历史归档可保留原语言。具体分工见 `docs/developer/DOCUMENTATION.md`。
 - 项目一段开发任务结束后，在 `docs/` 的合适位置完成更新；维护规则见
   `docs/developer/DOCUMENTATION.md`。
 

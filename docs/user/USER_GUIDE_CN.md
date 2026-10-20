@@ -1,5 +1,9 @@
 # ATST-Tools 用户指南
 
+项目主文档使用英文，本指南提供从安装、首次运行到结果读取和常见问题排查的
+完整中文入门路径。详细参数、CLI 和 Python API 契约统一维护在英文参考文档中；
+下文在对应步骤提供链接，全部入口见 [文档索引](../index.md)。
+
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
@@ -97,7 +101,7 @@ ATST-Tools 只安装 Python 工作流层。真实计算还需要后端运行时�
 首次使用请先取得与安装版本对应的示例；已经在仓库中的用户无需重复克隆：
 
 ```bash
-git clone --branch main https://github.com/QuantumMisaka/atst-tools.git
+git clone --branch v2.3.1 https://github.com/QuantumMisaka/atst-tools.git
 cd atst-tools
 atst --version
 atst run --list-types

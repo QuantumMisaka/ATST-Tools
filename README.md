@@ -13,7 +13,7 @@ into another program.
 atst run config.yaml
 ```
 
-User guide: [中文 · GitHub](https://github.com/QuantumMisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
+Chinese guide: [中文 · GitHub](https://github.com/QuantumMisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md)
 · [Gitee](https://gitee.com/jamesmisaka/atst-tools/blob/main/docs/user/USER_GUIDE_CN.md).
 Examples: [GitHub](https://github.com/QuantumMisaka/atst-tools/tree/main/examples)
 · [Gitee](https://gitee.com/jamesmisaka/atst-tools/tree/main/examples).
@@ -63,7 +63,9 @@ install `mpi4py`. ABACUS calculations also need an ABACUS executable and the
 pseudopotential/orbital files referenced by the configuration. DP calculations
 need a compatible model. Image-parallel runs require a matching MPI runtime;
 DMF additionally requires `cyipopt` and IPOPT. See the
-[environment guide](docs/user/USER_GUIDE_CN.md#2-安装与环境检查) for setup.
+[MPI setup guide](docs/user/ABACUSLITE_WRAPPER_GUIDE.md#neb-image-level-mpi) for
+image-parallel setup and the [examples guide](examples/README.md#usage) for
+backend inputs.
 
 ## Quick Start
 
@@ -96,10 +98,10 @@ atst run config.yaml
 
 This example uses four ABACUS MPI ranks, the GPU `cusolver` solver and a
 one-step optimization limit. Validation and dry-run do not launch ABACUS;
-check the resulting convergence status separately. The
-[Chinese guide](docs/user/USER_GUIDE_CN.md#3-10-分钟快速上手) explains inputs,
-outputs and next steps. For other methods or DP variants, follow the
-[examples guide](examples/README.md).
+check the resulting convergence status separately. Follow the
+[examples guide](examples/README.md#usage) to inspect results and choose other
+methods or DP variants. A complete walkthrough is also available in the
+[Chinese guide](docs/user/USER_GUIDE_CN.md#3-10-分钟快速上手).
 
 ## Documentation
 
@@ -112,6 +114,7 @@ outputs and next steps. For other methods or DP variants, follow the
 | Check support and releases | [Feature matrix](docs/reports/FEATURE_STATUS_MATRIX.md) · [2.3.1 release notes](docs/releases/RELEASE_NOTES_2.3.1.md) |
 | Contribute | [Developer handover](docs/developer/HANDOVER.md) · [Source architecture](src/atst_tools/README.md) |
 
+The primary documentation is in English, with a [Chinese user guide](docs/user/USER_GUIDE_CN.md).
 The [documentation index](docs/index.md) organizes user, developer and project
 status material. GitHub is the development source; Gitee is a manually updated
 mirror. PyPI distributes the Python package; obtain examples from the repository.

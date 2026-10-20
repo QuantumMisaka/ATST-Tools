@@ -65,23 +65,26 @@ to ASE's recommended `improvedtangent` method. Direct `AbacusNEB(...)`
 construction pins the same default explicitly, so its behavior does not
 depend on an ASE release's implicit default.
 
-### Force / fmax 口径（RAW vs 投影，2026-08-04 确认）
+## Forces and fmax: raw and constrained values
 
-ABACUS 的 `running_*.log` 中 `TOTAL-FORCE` 输出的是**全原子原始力（RAW）**，包含
-STRU 中 `m 0 0 0` 固定原子——这是期望行为（与 VASP OUTCAR 等 DFT 惯例一致），
-固定原子由驱动层约束处理。下游消费口径：
+ABACUS `TOTAL-FORCE` in `running_*.log` contains **raw forces on all atoms**,
+including atoms fixed with `m 0 0 0` in STRU. The driving workflow applies
+constraints; the raw log alone does not describe optimizer convergence.
 
-- **计算器层（独立 abacuslite backend）**：返回 RAW 全原子力，不做预投影；约束投影由 ASE
-  `Atoms.get_forces()`（默认 `apply_constraint=True`，按 `FixAtoms`）执行。
-- **优化器层（sella/ASE）**：收敛判据使用**投影后自由原子力**；不要把 RAW 全原子
-  fmax 直接与收敛阈值比较。
-- **汇总/报告层（transition summary 等）**：报告 fmax 须明确口径（投影后自由原子力
-  与 RAW 全原子力），约束体系收敛以投影后为准。
-- **诊断/取证**：比较力必须同口径（投影后 vs 投影后，或仅自由原子原始力）；禁止把
-  ASE 投影后值与 running log RAW 全原子值直接对比下结论。
+- **Calculator:** the independent abacuslite backend returns raw forces on all
+  atoms. ASE `Atoms.get_forces()` applies constraints such as `FixAtoms` by
+  default (`apply_constraint=True`).
+- **Optimizer (Sella/ASE):** convergence uses forces after constraints are
+  applied. For fixed atoms, compare the free-atom fmax with the threshold.
+- **Summary/report:** label whether fmax refers to raw all-atom forces or forces
+  after constraints. Use the latter to assess constrained optimization.
+- **Diagnostics:** compare like with like: constrained forces against constrained
+  forces, or raw forces on free atoms only. Comparing an ASE constrained fmax
+  directly with the raw all-atom log fmax can misidentify a force-reading error.
 
-该口径是"固定 Au 上 sella 提前收敛"曾被误诊为力读取 bug 的根因（约束投影被误读为
-陈旧缓存），已按此修正。
+This distinction, confirmed on 2026-08-04, explained an earlier report of Sella
+converging too early on fixed Au atoms: constraint projection had been mistaken
+for stale cached forces.
 
 ## Wrapper Boundary
 
@@ -165,6 +168,17 @@ separately with `calculator.abacus.command`. When a bare single-process
 `abacus` command runs inside an image-level MPI workflow, ATST-Tools clears the
 outer MPI launcher environment for the ABACUS subprocess so it remains a
 one-image calculation.
+
+Before launching an image-parallel calculation, check both the import and a
+two-rank launch in that environment:
+
+```bash
+python -c "from mpi4py import MPI; print(MPI.Get_library_version())"
+mpiexec -n 2 python -c "from mpi4py import MPI; print(MPI.COMM_WORLD.Get_rank())"
+```
+
+The second command should report ranks `0` and `1`. Serial users do not need
+`mpi4py` or these checks.
 
 If the installed wheel is incompatible with the site MPI implementation, rebuild
 `mpi4py` with the site compiler:
