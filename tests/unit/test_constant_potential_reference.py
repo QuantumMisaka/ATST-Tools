@@ -14,6 +14,52 @@ from atst_tools.calculators.constant_potential import ConstantPotentialCalculato
 REFERENCE = Path(__file__).parents[1] / "data/constant_potential_reference.json"
 
 
+def test_recorded_lts_trace_keeps_reference_parity_with_explicit_energy(tmp_path):
+    """Replay retained electronic facts; this does not execute an ABACUS engine."""
+    evidence = Path(__file__).parents[2] / "docs/reports/data/ATST_CP_PARITY_20261020"
+    point = json.loads((evidence / "atst_results.json").read_text())["points"][0]
+    reference = json.loads((evidence / "fcp_reference.json").read_text())
+    trace = iter(point["cp_history"])
+
+    class RecordedCalculator(Calculator):
+        implemented_properties = ["energy", "free_energy", "forces"]
+
+        def __init__(self, nelec):
+            super().__init__()
+            self.row = next(trace)
+            assert nelec == pytest.approx(self.row["nelec"], abs=1e-9)
+
+        def calculate(self, atoms=None, properties=("energy",), system_changes=all_changes):
+            super().calculate(atoms, properties, system_changes)
+            # The historical candidate stored no-entropy energy in raw_energy
+            # and E_KohnSham in raw_free_energy. Supply the corrected contract.
+            self.results.update(
+                energy=self.row["raw_free_energy"],
+                free_energy=self.row["raw_free_energy"],
+                energy_without_entropy=self.row["raw_energy"],
+                efermi=self.row["efermi"],
+                vacuum_level=self.row["vacuum_level"],
+                forces=np.asarray(point["forces"]),
+                scf_converged=True,
+            )
+
+    atoms = Atoms("Pt" * len(point["forces"]), cell=[10, 10, 10], pbc=True)
+    atoms.calc = ConstantPotentialCalculator(
+        lambda nelec, directory: RecordedCalculator(nelec),
+        potential_v=0.4, reference_electrons=216, initial_electrons=217,
+        work_ref=4.6, work_ref_source="recorded LTS parity",
+        capacitance_initial=1 / point["cp_history"][0]["derivative_eV_per_e"],
+        capacitance_unit="e/V", potential_tolerance_v=1e-4,
+        max_iterations=100, directory=tmp_path,
+    )
+    assert atoms.get_potential_energy() == pytest.approx(reference["energy_eV"], abs=1e-6, rel=0)
+    assert atoms.get_potential_energy(force_consistent=True) == pytest.approx(
+        reference["free_energy_eV"], abs=1e-6, rel=0
+    )
+    assert atoms.calc.results["cp_iterations"] == len(point["cp_history"])
+    assert next(trace, None) is None
+
+
 class AnalyticAbacus(Calculator):
     """Expose the same analytic response through an ABACUS-style log."""
 

@@ -195,3 +195,16 @@ registry 返回 HTTP 500。prod 未发布 ABACUS 1.2.76，活动 SIF 未变。
 详细身份、失败与门禁原始记录由父仓
 `docs/reports/2026-10-17-atst-229-p6-closeout.md` 及其 verification.json 维护。
 P6.3/P6.5 仍开放；P6.4 混合并行与 MLIP/DP 条件项不在本次完成声明中。
+
+## 9. 2026-10-20 下游状态复核
+
+父仓已合入 P6 代码（`84e27556d` 在 main），index 已记录 ATST `e427a70`
+与 abacuslite `e8acc4c`。父仓报告
+`toolbox/ABACUS/docs/reports/2026-10-19-abacus-1.2.76-final-platform-acceptance.md`
+记录 1.2.76 已在 dev/prod 发布并通过 GaN relax/band/DOS 的 Agent/Flow 验收；
+新 SIF 已提供 abacuslite 1.2.0，ATST 随 Toolbox 交付。§8 的历史失败保留，
+但不能继续作为当前“prod 未发布、缺后端依赖”的状态结论。
+
+本轮证据不包含同输入 1/4 卡 NEB 对照；P6.3、P6.4 混合并行与 P6.5 的
+剩余默认路径验收仍开放。ATST 2.3.1 / abacuslite 1.2.1 发布与该平台验收
+分开记录，后续依赖及 SIF 升级仍由父仓 owner 收口。

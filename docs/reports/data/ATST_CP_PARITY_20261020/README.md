@@ -17,5 +17,7 @@ SAI job `1864305` (`4V100`, 1 GPU, COMPLETED, 00:03:22), ABACUS LTS
 
 The run used a locally patched `abacuslite` 1.2.0 wheel
 (`ad05df5afd63be6298a6392a40a077002f3284f32af84435336b1602d31abd67`)
-that exposes the entropy-corrected `free_energy`. The published
-`abacuslite==1.2.0` does not include that fix.
+that placed the no-entropy value in `free_energy`. That mapping was rejected
+during release review; the raw evidence remains unchanged. The corrected
+backend preserves force-consistent energies and exposes the no-entropy value
+separately. See the parity report for the offline replay and scope limits.

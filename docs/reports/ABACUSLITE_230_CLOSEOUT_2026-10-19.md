@@ -75,9 +75,9 @@ unpublished plugin checkout.
 | `fix/ase-ts-dual-interface-20261013` at `3163c06` | Commit is an ancestor of main; tracked and untracked state is clean, but ignored scientific artifacts remain. | Completed historical worktree, already archived under `/home/james/scratch/atst-tools-closeout-20261015-153534/atst-tools-worktree`; retain its branch and artifacts. |
 | `docs/gpu-p6-inner-mpi-20261016`, `fix/review-nine-findings-20261016`, `release/2.2.9-p6-closeout-20261017` | All are ancestors of main; none has a separate checked-out worktree. | Renamed locally to `archive/gpu-p6-inner-mpi-20261016`, `archive/review-nine-findings-20261016` and `archive/2.2.9-p6-closeout-20261017`. Every original commit is retained; the reversible mapping is in `branch-archive.json` beside the acceptance artifacts. |
 
-The runtime baseline was synchronized to `49c8626`; this closeout adds only
+At the original closeout, the runtime baseline was synchronized to `49c8626`; it added only
 documentation. The parent
-`app-tools` index still records `45d8c78`; the parent owner must integrate the
+`app-tools` index then recorded `45d8c78`; the parent owner must integrate the
 chosen submodule revision with its own delivery changes. No parent gitlink
 commit is implied by this report.
 
@@ -92,7 +92,7 @@ Local recovery branches now preserve the three heads:
 - `archive/230-publication-record-20261019` retains `f287091`.
 
 The two historical worktrees listed above remain in place with their scientific
-artifacts. The parent-managed submodule checkout remains at `45d8c78`;
+artifacts. At that checkpoint, the parent-managed submodule checkout remained at `45d8c78`;
 publication finalization uses an isolated worktree and does not update the
 parent gitlink. Local `main` has been fast-forwarded to the published-source
 history. The reversible branch mapping and verification artifacts are retained
@@ -118,3 +118,14 @@ initial/restart, native MD, serial/parallel NEB, CP baseline/point, vibration,
 legacy-reader Relax, Sella, CCQN and descent IRC. Dimer and scientific
 convergence studies are excluded. One-step optimizer completion does not
 establish a converged structure, transition state or reaction path.
+
+## Downstream status verified on 2026-10-20
+
+The parent index now pins ATST `e427a70` and abacuslite `e8acc4c` (2.3.0 /
+1.2.0 source lines). Parent P6 code is merged. The parent's dated
+`toolbox/ABACUS/docs/reports/2026-10-19-abacus-1.2.76-final-platform-acceptance.md`
+records Toolbox 1.2.76 deployed to dev/prod with Agent and Flow GaN
+relax/band/DOS acceptance. Its SIF contains abacuslite 1.2.0 and ATST is
+delivered with the Toolbox. These facts supersede the earlier parent-pin and
+general deployment blockers; they do not close P6's 1/4-card NEB comparison.
+The 1.2.1 / 2.3.1 package closeout does not update those downstream pins or SIF.

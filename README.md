@@ -28,18 +28,18 @@ or by an Agent's Python integration instead of one-off scripts.
 
 ## At A Glance
 
-| Area | Current 2.3.1 status (source candidate; not yet published) |
+| Area | Version 2.3.1 capabilities |
 | :--- | :--- |
 | Package | Python package with the `atst` console command. |
 | Main interface | `atst run CONFIG.yaml` for all calculator-backed workflows. |
 | Lightweight tools | `atst config`, `atst abacus`, `atst neb`, `atst traj`, `atst dimer`, `atst relax`, `atst vibration`. |
 | Calculators | ABACUS through `abacuslite`; DeePMD-kit through `deepmd.calculator.DP`. |
 | Configuration | Pydantic-governed YAML schema with generated user documentation. |
-| Release | `2.3.1` source candidate; the latest published package remains `2.3.0`. See the [2.3.1 release notes](docs/releases/RELEASE_NOTES_2.3.1.md). |
+| Release | Version `2.3.1`; see [release notes](docs/releases/RELEASE_NOTES_2.3.1.md) for publication status and verified artifacts. |
 
 Version 2.3.0 made the independently maintained `abacuslite` package the
 single ABACUS ASE backend; 2.3.1 requires `abacuslite>=1.2.1` for the
-entropy-aware `free_energy` handoff used by constant-potential calculations.
+explicit `energy_without_entropy` handoff used by reference-only FCP comparisons.
 The previous vendored snapshot is no longer a runtime fallback.
 
 ## What You Can Run

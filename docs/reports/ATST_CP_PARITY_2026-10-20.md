@@ -1,6 +1,8 @@
 # ATST constant-potential reference parity (2026-10-20)
 
-**Status**: Single-point `reference_fcp` parity passed on a real ABACUS engine.
+**Status**: Historical candidate single-point `reference_fcp` parity passed
+on a real ABACUS engine. The release handoff was corrected during review;
+see the closeout note below for its distinct verification scope.
 
 ## Scope
 
@@ -75,18 +77,33 @@ E_KohnSham     -39572.545121
 E_entropy(-TS)  -1.118110
 ```
 
-FCP v2 uses the entropy-corrected energy (`Ewithoutentropy`) for the
-force-consistent grand potential. `abacuslite==1.2.0` set both `energy` and
-`free_energy` to `E_KohnSham`, so ATST's CP grand energy omitted the entropy
-term.
+FCP v2 publishes the no-entropy energy (`Ewithoutentropy`) under its `energy`
+key and `E_KohnSham` under `free_energy`. Published abacuslite 1.2.0 reports
+both standard keys as `E_KohnSham`, so it lacks the separate value needed to
+reproduce that reference bookkeeping.
 
-The fix:
+The initial parity candidate put the no-entropy value in backend `free_energy`
+and swapped the keys in ATST. **That backend mapping was rejected during
+pre-release review:** ABACUS `E_KohnSham` already includes `E_entropy(-TS)`;
+subtracting it is not the ASE force-consistent free energy. The unconditional
+swap also affected the compensated-gate optimization path.
 
-- `abacuslite` reports `energy=E_KohnSham` and
-  `free_energy=E_KohnSham - E_entropy(-TS)`.
-- `ConstantPotentialCalculator` uses the force-consistent `free_energy` for
-  the CP `energy` result and `energy` for the CP `free_energy` result, matching
-  FCP v2's result-key convention.
+The corrected 1.2.1 / 2.3.1 pair preserves backend
+`energy=free_energy=E_KohnSham`, exposes `energy_without_entropy` separately,
+and uses that extra value only for `reference_fcp.energy`.
+`compensated_gate` retains the standard backend keys and correction.
+
+### Release closeout verification (2026-10-20)
+
+The retained SAI outputs below are unchanged historical evidence for their
+recorded patched wheel. Parser and file-calculator regressions check the
+corrected handoff on legacy/latest fixtures and matching-frame SCF selection.
+ATST regressions distinguish both CP boundaries. The test
+`test_recorded_lts_trace_keeps_reference_parity_with_explicit_energy` replays
+all five retained electronic evaluations through the corrected CP calculator
+and checks the final two energy values against FCP v2 within `1e-6 eV`.
+This is offline replay, not a new GPU run; the develop compensated-gate values
+below must not be represented as corrected-release results.
 
 ## What this confirms
 
@@ -133,5 +150,5 @@ artifact check, not an FCP v2 numerical parity run. The beta11 build used
   smoke are separate checks.
 - Scan, restart, relax, NEB, `always_adjust=true`, or other basis/spin
   combinations.
-- The published `abacuslite==1.2.0`; a patch release is required before ATST
-  can claim the fix in an indexed dependency.
+- The published `abacuslite==1.2.0`, or GPU execution of the corrected
+  release pair; see the release notes for indexed-package acceptance.

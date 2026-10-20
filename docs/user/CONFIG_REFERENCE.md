@@ -675,12 +675,15 @@ The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
 fixed-cell `relax` and ordinary `neb`. Those optimization workflows require one
 scalar target and do not support a target list, cell relaxation, or CP stress.
-For `reference_fcp`, the CP `energy` result uses the force-consistent
-entropy-corrected energy (`Ewithoutentropy`, exposed by abacuslite as
-`free_energy`); the CP `free_energy` result uses `E_KohnSham`. This matches the
-FCP v2 result-key convention. An abacuslite build that does not expose the
-entropy-corrected value cannot reproduce FCP v2 grand energies on smeared
-calculations.
+For `reference_fcp`, CP `energy` uses the explicit no-entropy energy
+(`E_KohnSham - E_entropy(-TS)`, exposed by abacuslite 1.2.1 as
+`energy_without_entropy`); CP `free_energy` retains the backend's
+force-consistent `E_KohnSham`, with the reference grand-potential correction
+applied to both. The no-entropy value is not itself force-consistent.
+`compensated_gate` preserves the backend's standard `energy`/`free_energy`
+relationship and adds its own grand-potential correction. If no explicit
+no-entropy fact is available, `reference_fcp` retains the backend energy;
+parity for a smeared calculation requires the explicit entropy fact.
 The workflow is not hard-wired to LTS: abacuslite selects `legacyio` for LTS
 3.10.1 and `latestio` for v3.11/develop. Single-point `reference_fcp` and
 `compensated_gate` runs completed on site develop/latest-format builds

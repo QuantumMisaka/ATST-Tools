@@ -1278,16 +1278,17 @@ class ConstantPotentialCalculator(Calculator):
             raise ConstantPotentialEvaluationError(
                 f"fixed-electron evaluation at nelec={nelec} returned invalid forces"
             )
-        # FCP v2 publishes its force-consistent energy under the ``energy``
-        # key and its Kohn-Sham total under ``free_energy``.  Keep that
-        # result-key convention so the grand-potential fields are comparable
-        # with the reference implementation.
-        raw_energy = _first_finite(raw_results, ("free_energy", "energy"))
-        raw_free_energy = _first_finite(raw_results, ("energy", "free_energy"))
+        # Preserve the backend's ASE energy keys for the compensated boundary.
+        # The reference-only FCP convention uses the explicit no-entropy
+        # energy, without changing the force-consistent free energy.
+        raw_energy = _first_finite(raw_results, ("energy",))
+        raw_free_energy = _first_finite(raw_results, ("free_energy",))
         if raw_energy is None:
-            raw_energy = _finite(force_consistent_energy, "raw energy")
+            raw_energy = _finite(kohn_sham_energy, "raw energy")
         if raw_free_energy is None:
-            raw_free_energy = _finite(kohn_sham_energy, "raw free energy")
+            raw_free_energy = _finite(force_consistent_energy, "raw free energy")
+        if self.energy_boundary == "reference_fcp" and "energy_without_entropy" in raw_results:
+            raw_energy = _finite(raw_results["energy_without_entropy"], "energy without entropy")
         efermi = _backend_efermi(inner, raw_results)
         if efermi is None:
             raise ConstantPotentialEvaluationError(
