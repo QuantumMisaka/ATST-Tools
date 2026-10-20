@@ -3,11 +3,16 @@
 Start with the repository [README](../README.md) for installation and a first
 example. Use this index to choose a user, developer or project-status path.
 
+The primary documentation is in English. For a complete Chinese walkthrough,
+from installation to result inspection and troubleshooting, use the
+[中文用户指南](user/USER_GUIDE_CN.md).
+
 ## Start Here
 
 | Goal | Entry |
 | --- | --- |
-| Run a first calculation and inspect its results | [Chinese user guide](user/USER_GUIDE_CN.md) |
+| Run a first calculation and inspect its results | [Examples usage guide](../examples/README.md#usage) |
+| Follow a complete walkthrough in Chinese | [中文用户指南](user/USER_GUIDE_CN.md) |
 | Choose a workflow and sample inputs | [Examples overview](../examples/README.md) |
 | Python or agent integration | [Python API reference](user/PYTHON_API_REFERENCE.md) |
 | Contribute code | [Developer handover](developer/HANDOVER.md) |

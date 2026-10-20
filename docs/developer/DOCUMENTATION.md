@@ -19,6 +19,28 @@ This is the single maintenance guide for the ATST-Tools documentation tree.
 Validation and site operations are documented in
 [EXAMPLE_VALIDATION_OPERATIONS.md](EXAMPLE_VALIDATION_OPERATIONS.md).
 
+## Language policy
+
+English is the primary language for the README, documentation index, CLI/API
+and configuration references, example instructions, developer guides, feature
+matrix and new release notes. Keep each topic in its existing canonical file.
+
+Maintain [USER_GUIDE_CN.md](../user/USER_GUIDE_CN.md) as a complete Chinese
+onboarding path: installation, a first run, result inspection, troubleshooting
+and links to advanced workflows. Keep it aligned when user-facing behavior
+changes; link to the English references for exhaustive parameters and API
+contracts instead of maintaining a second reference manual. Make the Chinese
+guide easy to find from the README and documentation index. English user paths
+should reach setup and result instructions without requiring the Chinese guide.
+
+Internal design discussions, maintainer instructions such as `AGENTS.md`, dated
+maintenance records and historical or archived material may retain their
+original language. Do not translate archives solely for consistency. Existing
+links, identifiers, commands and quoted evidence keep their original spelling.
+
+Program output (including CLI help, warnings and errors), new or revised code
+comments and docstrings use English.
+
 ## Rules
 
 - Keep one current guide per topic and link instead of duplicating it.
@@ -41,8 +63,6 @@ Validation and site operations are documented in
 - Active Markdown links must resolve inside the repository. Use relative links.
 - Generated documents must state their source; for example
   `docs/user/YAML_INPUT_VARIABLES.md` is generated from `config_schema.py`.
-- Program output and new diagnostics/docstrings use English. Existing
-  documentation language is preserved.
 - Do not add metadata headers, L1-L4 report levels, a separate report ledger or
   a pending-delete inventory. Use `docs/archive/` directly.
 
