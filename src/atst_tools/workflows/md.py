@@ -14,6 +14,7 @@ from typing import Any
 
 import numpy as np
 from ase import Atoms, units
+from ase.calculators.calculator import Calculator, all_changes
 from ase.io import read, write
 from ase.md import Bussi, Langevin, VelocityVerlet
 from ase.md.nptberendsen import NPTBerendsen
@@ -71,6 +72,30 @@ def _validate_md_cp(config: dict[str, Any], calc_name: str, calc_config: dict[st
 def _json_write(path: str | Path, data: dict[str, Any]) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+
+
+class _ScfValidatedCalculator(Calculator):
+    """Reject ABACUS forces/stress unless the same evaluation has SCF evidence."""
+
+    def __init__(self, backend: Calculator):
+        super().__init__()
+        self.backend = backend
+        self.implemented_properties = list(backend.implemented_properties)
+
+    def calculate(self, atoms=None, properties=("energy",), system_changes=all_changes):
+        """Delegate evaluation and expose results only after strict SCF validation."""
+        from atst_tools.calculators.constant_potential import _backend_scf_converged
+
+        super().calculate(atoms, properties, system_changes)
+        for name in properties:
+            self.backend.get_property(name, atoms)
+        results = dict(self.backend.results)
+        converged = _backend_scf_converged(self.backend, results)
+        if converged is not True:
+            status = "not converged" if converged is False else "missing convergence evidence"
+            self.results = {}
+            raise RuntimeError(f"ABACUS MD SCF {status}; refusing unvalidated forces/stress")
+        self.results = {**results, "scf_converged": True}
 
 
 class MDWorkflow:
@@ -196,6 +221,7 @@ class AseMDRunner:
             "final_temperature_K": temperature,
             "trajectory": self.calc_config["trajectory"],
             "final_structure": self.calc_config["final_structure"],
+            **({"scf_converged": True} if isinstance(atoms.calc, _ScfValidatedCalculator) else {}),
         }
 
     def run(self) -> None:
@@ -210,11 +236,12 @@ class AseMDRunner:
             ).run(lambda: read_structure(self.calc_config["init_structure"]), self.calc_name)
             return
         atoms = self._read_atoms()
-        atoms.calc = CalculatorFactory.get_calculator(
+        calculator = CalculatorFactory.get_calculator(
             self.calc_name,
             self.config,
             directory=self.calc_config["directory"],
         )
+        atoms.calc = _ScfValidatedCalculator(calculator) if self.calc_name == "abacus" else calculator
         self._initialize_velocities(atoms)
         dynamics = self._build_dynamics(atoms)
         dynamics.run(self.calc_config["steps"])

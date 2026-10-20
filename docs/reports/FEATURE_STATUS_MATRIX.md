@@ -3,6 +3,12 @@
 **Version**: 2.3.2
 **Last Updated**: 2026-10-20
 **Status**: 2.3.2 is published on PyPI and GitHub; support and validation scope are distinguished below
+
+Post-release development: ordinary ASE/ABACUS MD now rejects each force/stress
+evaluation with failed or missing SCF evidence. The analytic regression checks
+cover success, explicit failure and missing evidence; new real ABACUS validation
+is pending. This fix is not included in the published 2.3.2 tag; see
+[MD configuration](../user/CONFIG_REFERENCE.md#23b-molecular-dynamics-md).
 **Owner**: ATST-Tools maintainers
 
 This matrix describes the current source tree's supported, experimental and

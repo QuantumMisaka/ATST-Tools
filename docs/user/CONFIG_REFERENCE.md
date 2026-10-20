@@ -228,6 +228,14 @@ image. If `n_simul` is set, `world.size` must equal `n_simul`; if `n_simul` is
 ordinary NEB applies.
 
 ### 2.3b Molecular Dynamics (MD)
+
+Post-2.3.2 development: ordinary ASE-driven ABACUS MD validates SCF
+convergence on every calculator evaluation, using the same explicit-result
+or running-log evidence reader as CP. Missing or failed convergence evidence
+raises before the forces/stress can be consumed by the integrator; no completed
+summary or final structure is published. Successful ordinary ABACUS MD summaries
+include `scf_converged: true`. This fix is not part of the published 2.3.2 tag.
+Other calculators and the native ABACUS MD route retain their existing behavior.
 **Type**: `md`
 
 ATST-Tools supports two MD drivers:
