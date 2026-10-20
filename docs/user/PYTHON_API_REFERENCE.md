@@ -19,8 +19,7 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference tracks the 2.3.1 source candidate; 2.3.1 becomes installable
-from PyPI after publication.
+This reference describes the published [2.3.1 API](../releases/RELEASE_NOTES_2.3.1.md).
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -169,10 +168,10 @@ print(result.status, result.artifact_manifest)
 The `constant_potential` mapping uses the same `run_workflow` route and strict
 schema as the CLI; it does not add a new stable root import. It is currently
 limited to fixed-geometry serial evaluations/scans and fixed-cell
-`compensated_gate` `relax`/`neb` calls. The legacy `reference_fcp` boundary is
-reference-only and cannot be used for those optimization workflows. This
-development candidate is included in the current 2.3.1 package, but its
-presence does not imply production or Paimon/public tool-chain acceptance.
+`compensated_gate` `relax`/`neb` calls. The `reference_fcp` boundary is
+reference-only and cannot be used for those optimization workflows. See the
+[CP configuration reference](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+for target units, energy definitions and restart requirements.
 
 ### Process runner for external hosts
 

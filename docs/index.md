@@ -1,17 +1,17 @@
 # ATST-Tools Documentation
 
-Start with the repository [README](../README.md) for installation and a
-minimal run. Use the paths below for details.
+Start with the repository [README](../README.md) for installation and a first
+example. Use this index to choose a user, developer or project-status path.
 
 ## Start Here
 
 | Goal | Entry |
 | --- | --- |
-| New user | [Chinese user guide](user/USER_GUIDE_CN.md) |
-| Run examples | [Examples overview](../examples/README.md) |
+| Run a first calculation and inspect its results | [Chinese user guide](user/USER_GUIDE_CN.md) |
+| Choose a workflow and sample inputs | [Examples overview](../examples/README.md) |
 | Python or agent integration | [Python API reference](user/PYTHON_API_REFERENCE.md) |
 | Contribute code | [Developer handover](developer/HANDOVER.md) |
-| Check current support | [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md) |
+| Check current support and validation limits | [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md) |
 
 ## User Path
 
@@ -50,7 +50,7 @@ Start from the feature matrix and follow the relevant report only when needed.
 
 ## Backend
 
-ATST-Tools uses `abacuslite` as the ABACUS ASE backend. The current backend
-selection, migration policy and supported versions are maintained in
-[AGENTS.md](../AGENTS.md) and the
+ATST-Tools uses the installed `abacuslite` package as its ABACUS ASE backend.
+Input/output setup, frame matching and parallel execution are described in the
 [ABACUSLite wrapper guide](user/ABACUSLITE_WRAPPER_GUIDE.md).
+Contributor responsibilities are maintained in [AGENTS.md](../AGENTS.md).

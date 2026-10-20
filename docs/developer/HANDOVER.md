@@ -22,6 +22,10 @@ release 变更，都先从对应小节确认需要同步的文档。
   [GOVERNANCE_AND_RELEASE_GATES.md](GOVERNANCE_AND_RELEASE_GATES.md)。
 - 项目状态入口：[FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md)。
 
+README 提供安装和首次使用路径；参数、后端与 API 细节由各自用户参考维护。
+功能矩阵展示当前支持状态并链接验收报告，下游平台的发布与验收事实留在对应报告中。
+GitHub 为开发规范源，Gitee 由维护者手动同步；PyPI 只分发 Python 包，示例从仓库取得。
+
 ## 1.1 新 checkout 与 CPU 开发准备
 
 从 GitHub checkout 开发时，先创建 Python 3.10+ 环境，再以 editable 模式安装
@@ -247,6 +251,8 @@ launcher 的 rank 参数识别，未识别时为 1。任意 calculator command �
 
 ## 9. 准备 release
 
+- 包版本以 `pyproject.toml` 的 `[project].version` 为唯一来源；
+  `atst_tools.package_version()` 在源码树读取该字段，安装后读取发行包元数据。
 - 更新 `docs/releases/RELEASE_NOTES_<version>.md`。
 - 更新 README badge、版本说明和 release scope。
 - 运行离线门禁：`python scripts/check_release_readiness.py --tag v<version>`。

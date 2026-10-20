@@ -2,7 +2,7 @@
 
 **Version**: 2.3.1
 **Last Updated**: 2026-10-20
-**Status**: Reference for the 2.3.1 source candidate
+**Status**: Reference for the 2.3.1 release
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -643,10 +643,9 @@ Saving these results does not request another backend evaluation.
 ### 2.11 Constant-Potential Evaluation (development candidate)
 **Type**: `constant_potential`
 
-`constant_potential` is an ABACUS-only development candidate included in the
-current 2.3.1 package; package inclusion is not a production or platform
-acceptance claim. It evaluates one fixed structure at one target or scans an
-ordered list of targets serially. The electronic-number loop is supplied by the
+`constant_potential` is an experimental ABACUS workflow. It evaluates one
+fixed structure at one target or scans an ordered list of targets serially.
+The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
 fields are documented in [§3.1a](#31a-constant-potential-decorator).
 
@@ -684,11 +683,9 @@ applied to both. The no-entropy value is not itself force-consistent.
 relationship and adds its own grand-potential correction. If no explicit
 no-entropy fact is available, `reference_fcp` retains the backend energy;
 parity for a smeared calculation requires the explicit entropy fact.
-The workflow is not hard-wired to LTS: abacuslite selects `legacyio` for LTS
-3.10.1 and `latestio` for v3.11/develop. Single-point `reference_fcp` and
-`compensated_gate` runs completed on site develop/latest-format builds
-v3.11.0-beta6, v3.11.0-beta9, and a locally built `origin/develop`
-`7be5df975` (`v3.11.0-beta11`).
+abacuslite selects the output reader for the ABACUS version. For supported
+versions and numerical validation evidence, see the
+[constant-potential status](../reports/FEATURE_STATUS_MATRIX.md#constant-potential-validation).
 The density reader accepts one complete cube naming family per evaluation:
 `SPIN1_CHG.cube`/`SPIN2_CHG.cube` (LTS), or `chg.cube` for one spin and
 `chgs1.cube`/`chgs2.cube` for two spins (current ABACUS). Mixed or incomplete
@@ -716,8 +713,7 @@ published for optimization.
 The factory rejects CP for `autoneb`, `dimer`, `sella`, `ccqn`, `d2s`,
 `vibration`, `irc`, `md`, and `dmf`. This candidate also rejects explicit
 `nupdown` (including `0`) and `two_fermi`; supported profiles use one common
-Fermi level. No claim of Paimon/public tool-chain acceptance or package release
-is made by this section.
+Fermi level.
 
 ---
 
