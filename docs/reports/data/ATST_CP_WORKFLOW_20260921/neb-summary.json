@@ -1,0 +1,37 @@
+{
+  "job_id": 1425552,
+  "historical_integration_commit": "d30747b6c7f826d7f53e6fc31e9534ad9e2c36ed",
+  "scope": "Historical constrained H/Pt serial CP NEB; not a new run of ATST 2.3.2.",
+  "provenance": {
+    "observation_file": "completed-neb-007-evidence/observations.json",
+    "observation_sha256": "fe9780842940a4971e413f515f055b3bf06468e45416ddec911c33e355691034",
+    "trajectory_sha256": "906bc9599cad26ccfff35a2414a07448a48abeaa571c734f47a14ae05a73c938",
+    "formal_work_dir_evidence": {
+      "kind": "directory",
+      "output": "work_dir",
+      "port": {
+        "description": "ABACUS workflow file or directory path",
+        "ext": "*"
+      },
+      "sha256": "064fad408661d7ff997b9907140cf143ce439d37f8a98a5ce5c113b7c1fc5fc8",
+      "size": 14523057723,
+      "source": "cp-neb-007-4342",
+      "value": "cp-neb-007-4342"
+    }
+  },
+  "sdk_verified": true,
+  "frames": 176,
+  "complete_bands": 44,
+  "neb_fmax_ev_A": 0.07040171575749063,
+  "requested_neb_fmax_ev_A": 0.08,
+  "max_final_residual_mu_ev": 6.7457968100370636e-09,
+  "relative_omega_ev": [
+    0.0,
+    -0.0685499971950776,
+    0.006273360311752185,
+    8.300412446260452e-07
+  ],
+  "summary_rechecked_on": "2026-10-20",
+  "recheck_scope": "Trajectory checksum, frame count, fixed-Pt displacement and final potential residual; NEB fmax retained from the historical observation.",
+  "fixed_pt_max_displacement_norm_A": 4.965068306494546e-16
+}

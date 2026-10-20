@@ -1,0 +1,54 @@
+[
+  {
+    "job": 1425101,
+    "evidence_sha256": "35c73b1a8bec734a073a03b0200ee94d0f92e79ce7bf9ee395175e269e3242e3",
+    "sigint_then_resume": [
+      130,
+      0
+    ],
+    "actual_nuclear_steps": 0,
+    "final_fmax_ev_A": 0.030216003706012837,
+    "requested_fmax_ev_A": 0.05,
+    "comparison": [
+      {
+        "image": 0,
+        "warmstart_required": true,
+        "checkpoint_nelec": 217.09954502031675,
+        "first_evaluated_nelec": 217.09954502031675,
+        "final_nelec": 217.09954502031675,
+        "residual_mu_ev": 4.6364192485270905e-09,
+        "geometry_max_change_A": 0.0,
+        "omega_difference_ev": -1.0986695997416973e-09,
+        "force_max_difference_ev_A": 2.1109999998047968e-07
+      }
+    ],
+    "recovery_behavior_passed": true,
+    "scientific_precision_assessed": false
+  },
+  {
+    "job": 1425120,
+    "evidence_sha256": "df8e09fd45f94c6e0a9d4a103d88beb77fa96272c0f1db076e6b47f7c086dbc7",
+    "sigint_then_resume": [
+      130,
+      0
+    ],
+    "actual_nuclear_steps": 2,
+    "final_fmax_ev_A": 0.02595259200708214,
+    "requested_fmax_ev_A": 0.05,
+    "comparison": [
+      {
+        "image": 0,
+        "warmstart_required": true,
+        "checkpoint_nelec": 217.09995870362752,
+        "first_evaluated_nelec": 217.09995870362752,
+        "final_nelec": 217.09954738527213,
+        "residual_mu_ev": 1.0228935920508775e-08,
+        "geometry_max_change_A": 0.0007934010078649578,
+        "omega_difference_ev": -2.242800110252574e-05,
+        "force_max_difference_ev_A": 0.004263411200000001
+      }
+    ],
+    "recovery_behavior_passed": true,
+    "scientific_precision_assessed": false
+  }
+]

@@ -283,9 +283,14 @@ After successful MD workflows, ATST-Tools writes a post-processing summary by
 default. Trajectory conversion is opt-in in YAML or can be run later with
 `atst md post`.
 
-#### Experimental constant-potential MD
+<a id="experimental-constant-potential-md"></a>
 
-Added in 2.3.2, this extension retains experimental status.
+#### Constant-potential MD
+
+Fixed-cell constant-potential ASE MD is supported since 2.3.2. Real-backend
+verification covers short trajectories; choose the timestep and sampling
+length for your scientific observable. See the
+[validation scope](../reports/FEATURE_STATUS_MATRIX.md#constant-potential-validation).
 
 Set `calculation.type: md`, `driver: ase`, `calculator.name: abacus`, and
 `calculator.constant_potential` with `energy_boundary: compensated_gate`,
@@ -336,7 +341,7 @@ state; stochastic continuations are not guaranteed bitwise identical. On an
 electronic failure, the last complete checkpoint and frames remain, a failed
 summary/manifest is written, and CLI/API execution raises an error.
 
-The [Pt slab MD materializer](../../examples/19_constant_potential_Pt/README.md#experimental-fixed-cell-cp-md-input)
+The [Pt slab MD materializer](../../examples/19_constant_potential_Pt/README.md#fixed-cell-cp-md-input)
 provides a pinned, constrained LCAO starting configuration with an explicitly
 supplied target for the same Hamiltonian.
 
@@ -704,11 +709,13 @@ Saving these results does not request another backend evaluation.
 
 ---
 
-### 2.11 Constant-Potential Evaluation (development candidate)
+<a id="211-constant-potential-evaluation-development-candidate"></a>
+
+### 2.11 Constant-Potential Evaluation
 **Type**: `constant_potential`
 
-`constant_potential` is an experimental ABACUS workflow. It evaluates one
-fixed structure at one target or scans an ordered list of targets serially.
+`constant_potential` is an ABACUS workflow for evaluating one
+fixed structure at one target or scanning an ordered list of targets serially.
 The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
 fields are documented in [§3.1a](#31a-constant-potential-decorator).
@@ -737,9 +744,12 @@ workflow for algorithm comparison, but it is rejected for `relax`, `neb` and
 `md`.
 The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
-fixed-cell `relax`, ordinary `neb`, and experimental ASE-driven `md`. These
+fixed-cell `relax`, serial `neb`, and ASE-driven `md`. These
 nuclear workflows require one scalar target and do not support a target list,
 cell relaxation, or CP stress.
+Serial execution is the validated CP NEB path; CP-specific real image-parallel
+verification remains open. See the [support assessment](../reports/ATST_CP_SUPPORT_ASSESSMENT_2026-10-20.md)
+for historical optimization and current-version validation evidence.
 For `reference_fcp`, CP `energy` uses the explicit no-entropy energy
 (`E_KohnSham - E_entropy(-TS)`, exposed by abacuslite 1.2.1 as
 `energy_without_entropy`); CP `free_energy` retains the backend's
@@ -778,7 +788,7 @@ published for optimization.
 
 The factory rejects CP for `autoneb`, `dimer`, `sella`, `ccqn`, `d2s`,
 `vibration`, `irc`, and `dmf`; the restricted MD combinations above are
-accepted. This candidate also rejects explicit
+accepted. CP also rejects explicit
 `nupdown` (including `0`) and `two_fermi`; supported profiles use one common
 Fermi level.
 
@@ -935,7 +945,8 @@ Facts-v1 compatibility fix (2026-10-16): new persisted facts again
 include the historical `profile_status` field required by the 2.2.8 reader.
 Its values remain `reference_only_unvalidated` for `reference_fcp` and
 `compensated_gate_pending_scientific_acceptance` for `compensated_gate`; these
-are compatibility labels, not scientific validation results. The current
+are historical compatibility labels, not current software-support ratings or
+scientific validation results. The current
 reader accepts both older frames containing this field and transitional
 unreleased frames that omitted it. The old 2.2.8 reader still cannot consume
 those transitional frames directly; use the current reader and validated
@@ -1057,7 +1068,7 @@ calculator:
     share_calculator: true
 ```
 
-For the constant-potential development candidate, keep the gate/dipole settings
+For constant-potential calculations, keep the gate/dipole settings
 in the ABACUS block and declare the CP boundary separately. This is a schema
 shape example; derive the target chemical potential and geometry-specific gate
 positions for the actual input:

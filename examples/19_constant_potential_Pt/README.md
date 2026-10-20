@@ -105,9 +105,13 @@ constrained optimization, CP facts persistence and per-image electronic
 convergence. Gamma sampling, the fixed thin substrate and the finite image
 chain do not establish a production H diffusion barrier.
 
-## Experimental fixed-cell CP MD input
+<a id="experimental-fixed-cell-cp-md-input"></a>
 
-CP MD requires ATST 2.3.2 or later and retains experimental status.
+## Fixed-cell CP MD input
+
+CP MD is supported in ATST 2.3.2 or later. This fixture provides a short-run
+validation input; choose sampling length and convergence settings for your
+scientific application.
 
 `materialize_md.py` creates a new, self-contained LCAO fixture and
 `config_md.yaml`; it does not run ABACUS. It fixes the bottom eight of the 12
@@ -145,5 +149,5 @@ checkpoint preserves nuclear positions, cell, constraints and finite momenta,
 including zero momenta. The resumed output keeps global step/time numbering.
 Stochastic thermostat continuation does not restore the random-generator
 state bit for bit. See the
-[MD configuration contract](../../docs/user/CONFIG_REFERENCE.md#experimental-constant-potential-md)
+[MD configuration contract](../../docs/user/CONFIG_REFERENCE.md#constant-potential-md)
 for accepted integrators, strict SCF/CP convergence and failure behavior.

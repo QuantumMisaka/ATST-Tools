@@ -8,7 +8,7 @@ fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import path
 forward to the same installed implementation for existing callers. Version
 1.2.1 supplies the explicit `energy_without_entropy` metadata used for
 reference-only constant-potential comparisons; see the
-[energy definitions](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate).
+[energy definitions](CONFIG_REFERENCE.md#211-constant-potential-evaluation).
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow

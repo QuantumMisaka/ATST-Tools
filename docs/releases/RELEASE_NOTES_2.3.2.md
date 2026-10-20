@@ -105,3 +105,18 @@ Raw logs, tag artifacts, consumer report and PyPI metadata are retained as
 The original checkout and scientific evidence remain in place. This release
 does not update downstream Toolbox deployments. Publication records added to
 main after the tag do not alter the tagged artifacts.
+
+
+## Post-release support-status clarification (2026-10-20)
+
+Current main documentation describes the implemented compensated-gate single
+point/scan, fixed-cell relax/serial-NEB and ASE MD contracts as **Supported**,
+with their numerical validation scope recorded separately. This replaces the
+blanket development-candidate/experimental software label used at publication.
+The [support assessment](../reports/ATST_CP_SUPPORT_ASSESSMENT_2026-10-20.md)
+recovers historical optimization/restart evidence and keeps the short-MD,
+parallel-execution and application-specific limitations explicit.
+
+This documentation reassessment changes no code, numerical default, YAML/CLI/API
+contract or facts-v1 compatibility value. The 2.3.2 tag, uploaded distributions
+and the dated validation conclusions above remain unchanged.
