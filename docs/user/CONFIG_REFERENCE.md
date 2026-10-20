@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.3.1
+**Version**: 2.3.2
 **Last Updated**: 2026-10-20
-**Status**: Reference for the 2.3.1 release
+**Status**: Reference for the 2.3.2 release
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -80,7 +80,7 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 **Type**: `neb`
 
 The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
-described below are part of the current 2.3.1 release (introduced in 2.2.9).
+described below are part of the current 2.3.2 release (introduced in 2.2.9).
 
 Fixed-cell input preparation compares the complete cell matrix in Angstrom
 with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
@@ -285,8 +285,7 @@ default. Trajectory conversion is opt-in in YAML or can be run later with
 
 #### Experimental constant-potential MD
 
-This extension is available in the development source and is not included in
-the published 2.3.1 package.
+Added in 2.3.2, this extension retains experimental status.
 
 Set `calculation.type: md`, `driver: ase`, `calculator.name: abacus`, and
 `calculator.constant_potential` with `energy_boundary: compensated_gate`,
@@ -697,7 +696,7 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `keep_going` | bool | `false` | Forwarded to `sella.IRC`. |
 | `directory` | string | `irc_run` | Calculator working directory. |
 
-Unreleased fixes (2026-10-16): the combined Sella run accepts an omitted or
+Fixes (2026-10-16): the combined Sella run accepts an omitted or
 null `normalized_trajectory` and preserves an explicit filename. Descent IRC
 keeps valid frozen energy and force results on its returned endpoints and in
 the main and normalized trajectories, matching the direction-specific files.
@@ -932,7 +931,7 @@ moving an unchanged asset file is allowed because content hashes, not paths,
 define the physical identity. Reference-fcp facts remain reference-only and
 must not be used to claim optimization energy/force consistency.
 
-Unreleased facts-v1 compatibility fix (2026-10-16): new persisted facts again
+Facts-v1 compatibility fix (2026-10-16): new persisted facts again
 include the historical `profile_status` field required by the 2.2.8 reader.
 Its values remain `reference_only_unvalidated` for `reference_fcp` and
 `compensated_gate_pending_scientific_acceptance` for `compensated_gate`; these

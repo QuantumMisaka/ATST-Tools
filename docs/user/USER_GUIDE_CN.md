@@ -7,7 +7,7 @@
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
-本指南对应 [2.3.1](../releases/RELEASE_NOTES_2.3.1.md)，ABACUS 通过独立安装的
+本指南对应 [2.3.2](../releases/RELEASE_NOTES_2.3.2.md)，ABACUS 通过独立安装的
 abacuslite 接入。使用 `atst` 命令和 YAML 配置可运行 NEB、AutoNEB、Dimer、Sella、
 CCQN、D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 和恒电势工作流。
 各方法的适用范围见下文「支持的工作流」。
@@ -101,7 +101,7 @@ ATST-Tools 只安装 Python 工作流层。真实计算还需要后端运行时�
 首次使用请先取得与安装版本对应的示例；已经在仓库中的用户无需重复克隆：
 
 ```bash
-git clone --branch v2.3.1 https://github.com/QuantumMisaka/atst-tools.git
+git clone --branch v2.3.2 https://github.com/QuantumMisaka/atst-tools.git
 cd atst-tools
 atst --version
 atst run --list-types
@@ -242,7 +242,7 @@ D2S、CCQN 和 IRC 已纳入 2.0.x schema 与示例，不再是待集成状态�
 `relax`/`neb` 和实验性 ASE 驱动 `md` 只接受 `energy_boundary: compensated_gate`、
 `reference_electrode: custom` 及单一 `target_mu_ev`。MD 支持固定晶胞的
 VelocityVerlet（`nve` 选择器）和 Bussi、Langevin、NVTBerendsen（`nvt`）。
-恒电势 MD 需安装包含此扩展的开发源码，已发布的 2.3.1 尚不包含此功能。
+恒电势 MD 从 2.3.2 起提供，仍为实验功能。
 电子与库交换，因此 `nve` 不代表固定电子数微正则系综。每次给出核力前均要求
 SCF 和恒电势残差收敛；未收敛的状态不会写成已完成帧。MD 的每步诊断和续跑
 checkpoint 位于 `calculation.directory`，`restart: true` 从最后完成步继续，
@@ -267,7 +267,7 @@ fail-closed 并给出诊断，不会用较早的合法帧掩盖损坏输出。�
 `write_input` 的自定义 `stru_file`，检查会读取同一文件名；未调用 `write_input` 时
 仍使用默认 `STRU`。
 
-当前 2.3.1 使用独立 abacuslite（验证基线 1.2.1）的 SCF 帧匹配行为：按
+当前 2.3.2 使用独立 abacuslite（验证基线 1.2.1）的 SCF 帧匹配行为：按
 `1e-5 Å、rtol=0` 比较晶胞分量和周期等价的 Cartesian 坐标残差；旧默认 `1e-4 Å`
 能接受的较大误差现在可能被拒绝。这是几何匹配容差，不是 SCF 或力收敛阈值；
 ATST 不再维护或修改 vendored 匹配器。

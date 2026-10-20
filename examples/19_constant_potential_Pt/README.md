@@ -107,8 +107,7 @@ chain do not establish a production H diffusion barrier.
 
 ## Experimental fixed-cell CP MD input
 
-Install the development source containing this extension before running CP MD;
-published ATST 2.3.1 does not include it.
+CP MD requires ATST 2.3.2 or later and retains experimental status.
 
 `materialize_md.py` creates a new, self-contained LCAO fixture and
 `config_md.yaml`; it does not run ABACUS. It fixes the bottom eight of the 12
