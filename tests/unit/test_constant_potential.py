@@ -647,6 +647,64 @@ def test_constant_potential_factory_rejects_unsupported_workflows(tmp_path, work
         CalculatorFactory.get_calculator("abacus", config, directory=tmp_path)
 
 
+def test_constant_potential_factory_accepts_fixed_cell_md(tmp_path):
+    from atst_tools.calculators.factory import CalculatorFactory
+
+    config = {
+        "calculation": {
+            "type": "md", "driver": "ase", "ensemble": "nve",
+            "algorithm": "velocityverlet",
+        },
+        "calculator": {
+            "name": "abacus", "abacus": {"parameters": {"nelec": 8.5}},
+            "constant_potential": {
+                "energy_boundary": "compensated_gate", "reference_electrode": "custom",
+                "target_mu_ev": -15.0, "reference_electrons": 10.0,
+            },
+        },
+    }
+
+    calculator = CalculatorFactory.get_calculator("abacus", config, directory=tmp_path)
+    assert isinstance(calculator, ConstantPotentialCalculator)
+    assert calculator.target_mu_ev == -15.0
+
+
+@pytest.mark.parametrize(
+    ("calculation_patch", "cp_patch", "message"),
+    [
+        ({"driver": "abacus_native"}, {}, "driver=ase"),
+        ({"ensemble": "npt", "algorithm": "nptberendsen"}, {}, "fixed-cell"),
+        ({}, {"target_mu_ev": None, "target_mu_values_ev": [-15.0]}, "scalar target"),
+        ({}, {"potential_v": 0.0}, "not valid for energy_boundary=compensated_gate"),
+        ({}, {"energy_boundary": "reference_fcp", "target_mu_ev": None,
+              "potential_v": 0.0, "work_ref": 4.6, "work_ref_source": "fixture",
+              "reference_electrode": "SHE"}, "compensated_gate"),
+    ],
+)
+def test_constant_potential_factory_rejects_unsupported_md_before_backend(
+    tmp_path, monkeypatch, calculation_patch, cp_patch, message
+):
+    from atst_tools.calculators.factory import AbacusFactory, CalculatorFactory
+
+    calculation = {"type": "md"}
+    calculation.update(calculation_patch)
+    cp = {
+        "energy_boundary": "compensated_gate", "reference_electrode": "custom",
+        "target_mu_ev": -15.0, "reference_electrons": 10.0,
+    }
+    cp.update(cp_patch)
+    config = {
+        "calculation": calculation,
+        "calculator": {"name": "abacus", "abacus": {"parameters": {"nelec": 8.5}},
+                       "constant_potential": cp},
+    }
+    monkeypatch.setattr(AbacusFactory, "get_calculator", lambda *a, **k: pytest.fail("backend built"))
+
+    with pytest.raises(ValueError, match=message):
+        CalculatorFactory.get_calculator("abacus", config, directory=tmp_path)
+    assert not list(tmp_path.iterdir())
+
+
 def test_compensated_gate_uses_density_conjugate_mu_and_raw_forces(tmp_path, monkeypatch):
     class GateCalculator(Calculator):
         implemented_properties = ["energy", "free_energy", "forces"]

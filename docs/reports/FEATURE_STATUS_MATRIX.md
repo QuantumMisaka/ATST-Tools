@@ -1,11 +1,11 @@
 # ATST-Tools Feature Status Matrix
 
-**Version**: 2.3.1
+**Version**: 2.3.1 + unreleased CP MD
 **Last Updated**: 2026-10-20
-**Status**: Published on PyPI and GitHub
+**Status**: 2.3.1 is published; the CP MD extension is implemented and validated on this development branch
 **Owner**: ATST-Tools maintainers
 
-This matrix describes the current package's supported, experimental and
+This matrix describes the current source tree's supported, experimental and
 unsupported capabilities. Configuration details belong in the
 [user reference](../user/CONFIG_REFERENCE.md); source, artifact and
 installed-package verification belong in the
@@ -18,7 +18,7 @@ evidence. Constant-potential and DMF retain their experimental scope.
 | Feature | Status | Description | Notes |
 | :--- | :--- | :--- | :--- |
 | **Relax** | ✅ Supported | Geometry Optimization | Uses ASE optimizers. |
-| **Constant-potential** | 🧪 Development candidate | ABACUS fixed-geometry single points/serial scans; fixed-cell `relax`/`neb` with `compensated_gate`. | `reference_fcp` is reference-only. Compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, MD, two-Fermi or explicit `nupdown`. [Configuration](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate); [validation scope](#constant-potential-validation). |
+| **Constant-potential** | 🧪 Development candidate | ABACUS fixed-geometry single points/serial scans; fixed-cell `relax`/`neb` and ASE `md` with `compensated_gate` (MD unreleased). | `reference_fcp` is reference-only. Compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, native/NPT CP MD, two-Fermi or explicit `nupdown`. [Configuration](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate); [validation scope](#constant-potential-validation). |
 | **Vibration** | ✅ Supported | Frequency Analysis and TS validation | Finite difference method with JSON results, TS validation, and artifact manifest support. |
 | **NEB** | ✅ Supported | Nudged Elastic Band | CI-NEB, two-stage NEB, endpoint single-point repair, optional endpoint relaxation, native ASE selector, artifact manifest, ABACUS STRU inputs for `atst neb make`, and MPI image-level parallelism are supported. |
 | **AutoNEB** | ✅ Supported | Automated NEB | Adaptive image handling, native ASE selector, endpoint single-point repair, and MPI image-level parallelism are supported. |
@@ -64,6 +64,12 @@ the reference convention. Historical GPU runs do not certify the corrected
 release or a converged reaction barrier. CP facts-v1 compatibility and the
 `profile_status` label are described in the
 [configuration reference](../user/CONFIG_REFERENCE.md#31a-constant-potential-decorator).
+
+The unreleased fixed-cell ASE CP MD extension adds per-force electronic
+convergence, complete-step checkpoints, validated restart and offline CP
+trajectory diagnostics. Its independent analytical tests and dated GPU
+observations are recorded in the [MD validation report](ATST_CP_MD_VALIDATION_2026-10-20.md).
+Published 2.3.1 artifacts do not include this extension.
 
 ## Runtime and downstream validation
 

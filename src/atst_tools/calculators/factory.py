@@ -22,6 +22,10 @@ from atst_tools.calculators.constant_potential import (
 from atst_tools.calculators.dp import DeepPotentialFactory
 from atst_tools.runtime import counters as runtime_counters
 from atst_tools.runtime import launch as runtime_launch
+from atst_tools.utils.config_schema import (
+    ConstantPotentialConfig,
+    validate_constant_potential_md_scope,
+)
 from atst_tools.utils.mpi import mpi_launcher_detected
 
 
@@ -228,14 +232,18 @@ def _constant_potential_calculator(
     config: Dict[str, Any], cp_config: Dict[str, Any], kwargs: Dict[str, Any]
 ) -> ConstantPotentialCalculator:
     """Build one CP decorator around fresh, unwrapped ABACUS calculators."""
-    supported_workflows = {"constant_potential", "relax", "neb"}
-    workflow = config.get("calculation", {}).get("type") if isinstance(config.get("calculation"), dict) else None
+    supported_workflows = {"constant_potential", "relax", "neb", "md"}
+    calculation = config.get("calculation", {})
+    workflow = calculation.get("type") if isinstance(calculation, dict) else None
     if workflow is not None and workflow not in supported_workflows:
         raise ValueError(
             "calculator.constant_potential is supported only for calculation.type in "
             f"{sorted(supported_workflows)}; got {workflow!r}"
         )
     options = dict(cp_config)
+    if workflow == "md":
+        validate_constant_potential_md_scope(calculation, options)
+        options = ConstantPotentialConfig.model_validate(options).model_dump(mode="python")
     energy_boundary = str(options.get("energy_boundary", "reference_fcp"))
     if energy_boundary not in {"reference_fcp", "compensated_gate"}:
         raise ValueError("calculator.constant_potential.energy_boundary is unsupported")

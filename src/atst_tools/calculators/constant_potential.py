@@ -1074,6 +1074,14 @@ class ConstantPotentialCalculator(Calculator):
             identity["fixed_hamiltonian"] = copy.deepcopy(self._fixed_hamiltonian_identity)
         return identity
 
+    def stage_initial_electrons(self, nelec: float) -> None:
+        """Stage a validated next-solve guess without clearing current results.
+
+        This is for sequential CP MD evaluations. The electron count is only
+        an initial guess; the next geometry still runs the complete CP loop.
+        """
+        self.initial_electrons = self._validate_candidate(_finite(nelec, "initial_electrons"))
+
     def set(self, **kwargs: Any) -> dict[str, Any]:
         """Update CP parameters and invalidate cached ASE results."""
         changed = super().set(**kwargs)

@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from ase.io import read, write
 
+from atst_tools.calculators.constant_potential import (
+    CP_FACTS_INFO_KEY,
+    CP_IDENTITY_INFO_KEY,
+    read_constant_potential_facts,
+)
 from atst_tools.utils.summary import max_force, energy, write_summary_json
 
 
@@ -36,6 +42,70 @@ def _write_md_summary(summary: dict[str, Any], output: str | Path) -> None:
     write_summary_json(summary, output)
 
 
+def _saved_step_time(atoms: Any, frame_index: int) -> dict[str, Any]:
+    """Return saved MD progress, falling back to frame index for old trajectories."""
+    step_key = "atst_md_step"
+    time_key = "atst_md_time_fs"
+    has_step = step_key in atoms.info
+    has_time = time_key in atoms.info
+    if not has_step and not has_time:
+        return {"step": frame_index}
+    if not has_step:
+        raise ValueError(f"saved MD frame is missing {step_key}")
+    if not has_time:
+        raise ValueError(f"saved MD frame is missing {time_key}")
+    step = atoms.info[step_key]
+    if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 0:
+        raise ValueError(f"saved MD frame has invalid {step_key}")
+    time_fs = atoms.info[time_key]
+    if (
+        isinstance(time_fs, (bool, np.bool_))
+        or not isinstance(time_fs, (int, float, np.integer, np.floating))
+        or not math.isfinite(float(time_fs))
+        or time_fs < 0
+    ):
+        raise ValueError(f"saved MD frame has invalid {time_key}")
+    return {"step": int(step), "time_fs": float(time_fs)}
+
+
+def _saved_constant_potential(atoms: Any) -> dict[str, Any] | None:
+    """Summarize only a complete CP facts envelope for the saved geometry."""
+    if CP_FACTS_INFO_KEY not in atoms.info and CP_IDENTITY_INFO_KEY not in atoms.info:
+        return None
+    payload = read_constant_potential_facts(atoms)
+    if payload is None:
+        raise ValueError("saved MD frame has malformed or stale constant-potential facts")
+    facts = payload["facts"]
+    return {
+        "energy_boundary": facts["energy_boundary"],
+        "energy_definition": payload["identity"]["energy_definition"],
+        "nelec": float(facts["nelec"]),
+        "mu_target_ev": float(facts["mu_target"]),
+        "mu_calc_ev": float(facts["mu_calc"]),
+        "residual_mu_ev": float(facts["residual_mu"]),
+        "cp_iterations": int(facts["cp_iterations"]),
+        "raw_energy_eV": float(facts["raw_energy"]),
+        "raw_free_energy_eV": float(facts["raw_free_energy"]),
+        "grand_potential_eV": float(facts["energy"]),
+        "grand_potential_free_energy_eV": float(facts["free_energy"]),
+    }
+
+
+def _frame_summary(atoms: Any, frame_index: int) -> dict[str, Any]:
+    """Return one trajectory frame summary from saved nuclear and CP state."""
+    progress = _saved_step_time(atoms, frame_index)
+    cp = _saved_constant_potential(atoms)
+    summary = {
+        **progress,
+        "energy_eV": energy(atoms),
+        "temperature_K": _temperature(atoms),
+        "max_force_eV_per_A": max_force(atoms),
+    }
+    if cp is not None:
+        summary["constant_potential"] = cp
+    return summary
+
+
 def summarize_md_trajectory(
     traj_file: str | Path,
     *,
@@ -44,15 +114,7 @@ def summarize_md_trajectory(
 ) -> dict[str, Any]:
     """Read and summarize an MD trajectory."""
     frames = read(str(traj_file), index=":")
-    frame_summaries = [
-        {
-            "step": index,
-            "energy_eV": energy(atoms),
-            "temperature_K": _temperature(atoms),
-            "max_force_eV_per_A": max_force(atoms),
-        }
-        for index, atoms in enumerate(frames)
-    ]
+    frame_summaries = [_frame_summary(atoms, index) for index, atoms in enumerate(frames)]
     selected = frame_summaries[-tail:] if tail and tail > 0 else frame_summaries
     latest = dict(frame_summaries[-1]) if frame_summaries else {}
     return {

@@ -99,3 +99,9 @@ references named in the former ledger.
 - `trae/documents/NEB_parallel_imple.md` — temporary MPI implementation plan.
 - `trae/zn-neb/README.md`, `Zn-NEB.md`, `checklist.md`, `spec.md`, `tasks.md` —
   superseded Zn planning material.
+
+## Completed CP MD implementation
+
+The [2026-10-20 implementation plan](developer/2026-10-20-constant-potential-md.md)
+records the unreleased fixed-cell ASE CP MD delivery. Lasting contracts are in
+the configuration reference and the dated MD validation report.

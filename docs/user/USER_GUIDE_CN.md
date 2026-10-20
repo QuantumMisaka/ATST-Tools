@@ -239,11 +239,16 @@ D2S、CCQN 和 IRC 已纳入 2.0.x schema 与示例，不再是待集成状态�
 
 `constant_potential` 当前是开发候选。它通过 `calculator.constant_potential`
 装饰 ABACUS calculator，可运行固定几何的单点或串行目标扫描；固定晶胞的
-`relax`/`neb` 只接受 `energy_boundary: compensated_gate` 的单一
-`target_mu_ev`。`reference_fcp` 仅用于参考算法复现和诊断，不可用于这些核优化
-工作流。恒电势结果需要同一轮 SCF 的有限 Fermi/边界事实和可验证的 CP 身份；失败
-或身份不匹配时不会把旧能量/力交给优化器。该候选不覆盖 cell-relax、stress、
-AutoNEB、D2S、MD、两 Fermi 或显式 `nupdown`。参数、能量定义和产物见
+`relax`/`neb` 和实验性 ASE 驱动 `md` 只接受 `energy_boundary: compensated_gate`、
+`reference_electrode: custom` 及单一 `target_mu_ev`。MD 支持固定晶胞的
+VelocityVerlet（`nve` 选择器）和 Bussi、Langevin、NVTBerendsen（`nvt`）。
+恒电势 MD 需安装包含此扩展的开发源码，已发布的 2.3.1 尚不包含此功能。
+电子与库交换，因此 `nve` 不代表固定电子数微正则系综。每次给出核力前均要求
+SCF 和恒电势残差收敛；未收敛的状态不会写成已完成帧。MD 的每步诊断和续跑
+checkpoint 位于 `calculation.directory`，`restart: true` 从最后完成步继续，
+`steps` 表示新增步数。`reference_fcp` 仅用于固定几何参考算法复现和诊断。
+该候选不覆盖 cell-relax、stress、AutoNEB、D2S、ABACUS 原生恒电势 MD、
+两 Fermi 或显式 `nupdown`。参数、能量定义和产物见
 [配置参考](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)。
 
 ## 5. ABACUS / abacuslite 集成

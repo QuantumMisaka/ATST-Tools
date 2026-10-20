@@ -269,8 +269,8 @@ Calculator backend variables are documented separately in `CONFIG_REFERENCE.md`.
 | calculation.md.driver | calculation.type=md | `'ase' \| 'abacus_native'` | `'ase'` | MD driver: ASE dynamics or ABACUS native MD. |
 | calculation.md.init_structure | calculation.type=md | `str` | `required` | Initial structure file. |
 | calculation.md.steps | calculation.type=md | `int` | `100` | Number of MD steps. |
-| calculation.md.ensemble | calculation.type=md | `'nve' \| 'nvt' \| 'npt'` | `'nvt'` | ASE MD ensemble. |
-| calculation.md.algorithm | calculation.type=md | `str` | `'bussi'` | ASE MD algorithm. |
+| calculation.md.ensemble | calculation.type=md | `'nve' \| 'nvt' \| 'npt'` | `'nvt'` | ASE MD ensemble; CP MD supports fixed-cell nve and nvt only. |
+| calculation.md.algorithm | calculation.type=md | `str` | `'bussi'` | ASE MD algorithm; CP MD supports velocityverlet, bussi, langevin and nvtberendsen. |
 | calculation.md.timestep_fs | calculation.type=md | `float` | `1.0` | ASE MD timestep in fs. |
 | calculation.md.temperature_K | calculation.type=md | `float` | `300.0` | Target or initial temperature in K. |
 | calculation.md.seed | calculation.type=md | `int \| NoneType` | `null` | Random seed for initial velocities. |

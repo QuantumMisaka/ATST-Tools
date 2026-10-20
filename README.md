@@ -32,8 +32,10 @@ Examples: [GitHub](https://github.com/QuantumMisaka/atst-tools/tree/main/example
 | Experimental Direct MaxFlux path search | `dmf` |
 | Experimental ABACUS constant-potential single points and serial scans | `constant_potential` |
 
-Constant-potential fixed-cell relaxation and NEB use the explicit
-`compensated_gate` boundary. See the [configuration reference](docs/user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+Experimental constant-potential fixed-cell relaxation and NEB use the explicit
+`compensated_gate` boundary. Development source also adds ASE-driven CP MD
+(not included in published 2.3.1). See the
+[configuration reference](docs/user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
 for setup and supported boundaries.
 
 Local commands prepare paths and ABACUS inputs, inspect trajectories, and

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from types import UnionType
-from typing import Annotated, Any, Dict, Literal, Union, get_args, get_origin
+from typing import Annotated, Any, Dict, Literal, Mapping, Union, get_args, get_origin
 
 from pydantic import (
     AliasChoices,
@@ -144,7 +144,7 @@ class ConstantPotentialConfig(StrictConfig):
     target_mu_ev: float | None = Field(
         default=None,
         allow_inf_nan=False,
-        description="Target conjugate electron chemical potential in eV for compensated_gate.",
+        description="Scalar target chemical potential in eV for compensated_gate; required for CP MD.",
     )
     target_mu_values_ev: list[float] | None = Field(
         default=None,
@@ -868,8 +868,12 @@ class MDCalculation(StrictConfig):
     )
     init_structure: str = Field(description="Initial structure file.")
     steps: int = Field(default=100, gt=0, description="Number of MD steps.")
-    ensemble: Literal["nve", "nvt", "npt"] = Field(default="nvt", description="ASE MD ensemble.")
-    algorithm: str = Field(default="bussi", description="ASE MD algorithm.")
+    ensemble: Literal["nve", "nvt", "npt"] = Field(
+        default="nvt", description="ASE MD ensemble; CP MD supports fixed-cell nve and nvt only."
+    )
+    algorithm: str = Field(
+        default="bussi", description="ASE MD algorithm; CP MD supports velocityverlet, bussi, langevin and nvtberendsen."
+    )
     timestep_fs: float = Field(default=1.0, gt=0, description="ASE MD timestep in fs.")
     temperature_K: float = Field(default=300.0, gt=0, description="Target or initial temperature in K.")
     seed: int | None = Field(default=None, description="Random seed for initial velocities.")
@@ -909,6 +913,46 @@ class MDCalculation(StrictConfig):
                 f"calculation.algorithm={self.algorithm!r} is not supported for ensemble={self.ensemble!r}"
             )
         return self
+
+
+def validate_constant_potential_md_scope(
+    calculation: Mapping[str, Any], constant_potential: Mapping[str, Any]
+) -> None:
+    """Reject MD/CP combinations outside the fixed-cell ASE contract.
+
+    Args:
+        calculation: Raw or normalized MD calculation settings.
+        constant_potential: Raw or normalized CP decorator settings.
+
+    Raises:
+        ValueError: If the MD driver, integrator, or electronic boundary is unsupported.
+    """
+    if calculation.get("driver", "ase") != "ase":
+        raise ValueError("constant-potential MD requires calculation.driver=ase")
+    ensemble = calculation.get("ensemble", "nvt")
+    if ensemble not in {"nve", "nvt"}:
+        raise ValueError("constant-potential MD requires a fixed-cell nve or nvt ensemble")
+    algorithm = str(calculation.get("algorithm", "bussi")).lower()
+    allowed = {"nve": {"velocityverlet"}, "nvt": {"bussi", "langevin", "nvtberendsen"}}
+    if algorithm not in allowed[ensemble]:
+        raise ValueError(
+            f"calculation.algorithm={algorithm!r} is not supported for constant-potential MD ensemble={ensemble!r}"
+        )
+    if constant_potential.get("energy_boundary") != "compensated_gate":
+        raise ValueError("constant-potential MD requires energy_boundary=compensated_gate")
+    if str(constant_potential.get("reference_electrode", "SHE")).strip().lower() != "custom":
+        raise ValueError("constant-potential MD requires reference_electrode=custom")
+    target = constant_potential.get("target_mu_ev")
+    if constant_potential.get("target_mu_values_ev") is not None or constant_potential.get("potentials_v") is not None:
+        raise ValueError("constant-potential MD requires one scalar target_mu_ev, not a target list")
+    if target is None or isinstance(target, (bool, list, tuple, dict)):
+        raise ValueError("constant-potential MD requires one scalar target_mu_ev")
+    try:
+        finite_target = math.isfinite(float(target))
+    except (TypeError, ValueError):
+        finite_target = False
+    if not finite_target:
+        raise ValueError("constant-potential MD requires one finite scalar target_mu_ev")
 
 
 CalculationConfig = Annotated[
@@ -1075,7 +1119,7 @@ class CalculatorConfig(StrictConfig):
     dp: DPConfig | None = Field(default=None, description="DeepMD-kit calculator settings.")
     constant_potential: ConstantPotentialConfig | None = Field(
         default=None,
-        description="Optional strict constant-potential decorator settings.",
+        description="Optional strict constant-potential decorator settings; MD requires ASE fixed-cell compensated_gate with one scalar target.",
     )
 
     @model_validator(mode="after")
@@ -1233,10 +1277,14 @@ class ATSTConfig(StrictConfig):
                 if merged_parameters.get("two_fermi"):
                     raise ValueError("calculator.constant_potential does not support two_fermi")
             workflow = self.calculation.type
-            if workflow not in {"constant_potential", "relax", "neb"}:
+            if workflow not in {"constant_potential", "relax", "neb", "md"}:
                 raise ValueError(
                     "calculator.constant_potential is supported only for calculation.type="
-                    "constant_potential, relax, or neb"
+                    "constant_potential, relax, neb, or md"
+                )
+            if workflow == "md":
+                validate_constant_potential_md_scope(
+                    self.calculation.model_dump(mode="python"), cp.model_dump(mode="python")
                 )
             if workflow in {"relax", "neb"} and (
                 cp.potentials_v is not None or cp.target_mu_values_ev is not None

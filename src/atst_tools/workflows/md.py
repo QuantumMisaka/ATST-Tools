@@ -30,7 +30,7 @@ from atst_tools.runtime.launch import resolve_calculator_omp
 from atst_tools.utils.abacus_io import _as_mp_kpts, _input_parameters, _merged_abacus_parameters
 from atst_tools.utils.artifacts import write_artifact_manifest
 from atst_tools.utils.convergence import StageRecord
-from atst_tools.utils.config_schema import apply_calculation_defaults
+from atst_tools.utils.config_schema import apply_calculation_defaults, validate_constant_potential_md_scope
 from atst_tools.utils.io import read_structure
 from atst_tools.utils.md_post import run_md_workflow_postprocess
 from atst_tools.utils.restart_helpers import get_last_frame
@@ -54,6 +54,20 @@ def _abacus_section(config: dict[str, Any]) -> dict[str, Any]:
     return dict(config.get("abacus", {}) or {})
 
 
+def _validate_md_cp(config: dict[str, Any], calc_name: str, calc_config: dict[str, Any]) -> bool:
+    """Validate a CP decorator before either MD driver touches a structure."""
+    calculator = config.get("calculator", {})
+    cp = calculator.get("constant_potential") if isinstance(calculator, dict) else None
+    if cp is None:
+        return False
+    if not isinstance(cp, dict):
+        raise ValueError("calculator.constant_potential must be a mapping")
+    if calc_name != "abacus":
+        raise ValueError("constant-potential MD requires calculator.name=abacus")
+    validate_constant_potential_md_scope(calc_config, cp)
+    return True
+
+
 def _json_write(path: str | Path, data: dict[str, Any]) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
@@ -69,6 +83,7 @@ class MDWorkflow:
 
     def run(self) -> None:
         """Execute the configured MD workflow."""
+        _validate_md_cp(self.config, self.calc_name, self.calc_config)
         driver = self.calc_config.get("driver", "ase")
         if driver == "ase":
             AseMDRunner(self.config, self.calc_name, self.calc_config).run()
@@ -108,11 +123,11 @@ class AseMDRunner:
         if self.calc_config.get("zero_rotation", False):
             ZeroRotation(atoms)
 
-    def _build_dynamics(self, atoms: Atoms):
+    def _build_dynamics(self, atoms: Atoms, *, managed_output: bool = False):
         timestep = self.calc_config["timestep_fs"] * units.fs
         common = {
-            "trajectory": self.calc_config["trajectory"],
-            "logfile": self.calc_config["logfile"],
+            "trajectory": None if managed_output else self.calc_config["trajectory"],
+            "logfile": None if managed_output else self.calc_config["logfile"],
             "loginterval": self.calc_config["loginterval"],
         }
         algorithm = self.calc_config["algorithm"].lower()
@@ -184,6 +199,16 @@ class AseMDRunner:
         }
 
     def run(self) -> None:
+        if _validate_md_cp(self.config, self.calc_name, self.calc_config):
+            from atst_tools.workflows.cp_md import ConstantPotentialMD
+
+            ConstantPotentialMD(
+                self.config,
+                self.calc_config,
+                lambda atoms: self._build_dynamics(atoms, managed_output=True),
+                self._initialize_velocities,
+            ).run(lambda: read_structure(self.calc_config["init_structure"]), self.calc_name)
+            return
         atoms = self._read_atoms()
         atoms.calc = CalculatorFactory.get_calculator(
             self.calc_name,
@@ -426,6 +451,10 @@ class AbacusNativeMDRunner:
         )
 
     def run(self) -> None:
+        calculator = self.config.get("calculator", {})
+        if isinstance(calculator, dict) and calculator.get("constant_potential") is not None:
+            raise ValueError("constant-potential MD requires calculation.driver=ase")
+        _validate_md_cp(self.config, self.calc_name, self.calc_config)
         self._validate()
         self._prepare_inputs()
         process = self._start_process()

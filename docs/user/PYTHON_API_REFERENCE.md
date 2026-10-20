@@ -165,11 +165,15 @@ result = run_workflow("config.yaml", RunOptions(dry_run=True))
 print(result.status, result.artifact_manifest)
 ```
 
-The `constant_potential` mapping uses the same `run_workflow` route and strict
-schema as the CLI; it does not add a new stable root import. It is currently
-limited to fixed-geometry serial evaluations/scans and fixed-cell
-`compensated_gate` `relax`/`neb` calls. The `reference_fcp` boundary is
-reference-only and cannot be used for those optimization workflows. See the
+The `calculator.constant_potential` mapping uses the same `run_workflow` route
+and strict schema as the CLI; it does not add a new stable root import. It
+supports fixed-geometry serial evaluations/scans and fixed-cell
+`compensated_gate` `relax`/`neb` calls. Experimental fixed-cell ASE MD also uses
+`calculation.type: md` with this decorator and one scalar `target_mu_ev`.
+CP MD requires the development source; published 2.3.1 does not include it.
+`reference_fcp` remains limited to fixed-geometry evaluations. CP MD writes a
+per-step checkpoint and diagnostics under `calculation.directory`; a restart
+adds the requested `steps` to the saved global step. See the
 [CP configuration reference](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
 for target units, energy definitions and restart requirements.
 
