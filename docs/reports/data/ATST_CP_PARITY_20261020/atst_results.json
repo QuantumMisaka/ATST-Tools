@@ -1,0 +1,447 @@
+{
+  "analysis": null,
+  "calculator_identity": {
+    "boundary_parameters": {
+      "cal_force": 1,
+      "nspin": 1,
+      "out_pot": 2
+    },
+    "calculator": "constant_potential",
+    "energy_boundary": "reference_fcp",
+    "energy_definition": "omega_aligned",
+    "fixed_hamiltonian": {
+      "assets": {
+        "kpoints": {
+          "specification": [
+            1,
+            1,
+            1
+          ]
+        },
+        "orbitals": [
+          {
+            "kind": "orbital",
+            "provenance": {
+              "configured_name": "Pt_gga_7au_100Ry_4s2p2d1f.orb",
+              "path": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/case/Pt_gga_7au_100Ry_4s2p2d1f.orb"
+            },
+            "sha256": "0459f24abe5e4252e81d84c3e3e551bae302b5b3dc96547f9f87e4b7794089c6",
+            "species": "Pt"
+          }
+        ],
+        "pseudopotentials": [
+          {
+            "kind": "pseudopotential",
+            "provenance": {
+              "configured_name": "Pt_ONCV_PBE-1.0.upf",
+              "path": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/case/Pt_ONCV_PBE-1.0.upf"
+            },
+            "sha256": "ce2828782414e48b4b9613700e29f218d1b3a74dd5ca34f89cdcb0695e471719",
+            "species": "Pt"
+          }
+        ]
+      },
+      "boundary_parameters": {
+        "cal_force": 1,
+        "nspin": 1,
+        "out_pot": 2
+      },
+      "parameters": {
+        "basis_type": "lcao",
+        "cal_force": 1,
+        "cal_stress": 1,
+        "calculation": "scf",
+        "dft_functional": "pbe",
+        "ecutwfc": 100,
+        "kpts": [
+          1,
+          1,
+          1
+        ],
+        "ks_solver": "cusolver",
+        "mixing_beta": 0.1,
+        "mixing_type": "broyden",
+        "nbands": 130,
+        "nspin": 1,
+        "out_pot": 2,
+        "scf_nmax": 200,
+        "scf_thr": 1e-09,
+        "smearing_method": "gauss",
+        "smearing_sigma": 0.015,
+        "symmetry": 0
+      }
+    },
+    "potential_v": 0.4,
+    "reference_electrode": "SHE",
+    "reference_electrons": 216.0,
+    "reference_pH": null,
+    "target_mu_ev": null,
+    "temperature_K": null,
+    "work_ref": 4.6,
+    "work_ref_source": "FCP v2 reference parity"
+  },
+  "energy_boundary": "reference_fcp",
+  "points": [
+    {
+      "boundary_parameters": {
+        "nspin": 1,
+        "out_pot": 2
+      },
+      "capacitance_e_per_V": 0.198502026335202,
+      "compensation": null,
+      "cp_converged": true,
+      "cp_history": [
+        {
+          "boundary_parameters": {
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "candidate_nelec": 215.33431597026473,
+          "candidate_unbounded": 215.33431597026473,
+          "compensation": null,
+          "converged": false,
+          "delta_nelec": 1.0,
+          "derivative_eV_per_e": 3.000697529647533,
+          "derivative_source": "initial_capacitance",
+          "directory": "cp_eval/point_0000_0d4/batch_0001/evaluation_0001",
+          "efermi": 7.5372743486,
+          "energy": -39567.4341548051,
+          "energy_boundary": "reference_fcp",
+          "evaluation_index": 1,
+          "fermishift": -7.5390603954,
+          "fit_degree": null,
+          "fit_rss_eV2": null,
+          "fit_status": "not_attempted",
+          "free_energy": -39568.5762771756,
+          "mu_calc": -0.0017860468000003848,
+          "mu_target": -5.0,
+          "nelec": 217.0,
+          "omega_correction": -2.5390603954,
+          "potential_calc": -4.598213953199999,
+          "potential_target": 0.4,
+          "raw_energy": -39564.8950944097,
+          "raw_free_energy": -39566.0372167802,
+          "reference_electrons": 216.0,
+          "residual_mu": 4.9982139532,
+          "residual_v": -4.9982139532,
+          "scf_converged": true,
+          "vacuum_level": 7.5390603954,
+          "valid": true
+        },
+        {
+          "boundary_parameters": {
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "candidate_nelec": 216.0137231406112,
+          "candidate_unbounded": 216.0137231406112,
+          "compensation": null,
+          "converged": false,
+          "delta_nelec": -0.6656840297352744,
+          "derivative_eV_per_e": 5.0677595287140775,
+          "derivative_source": "chebyshev_forward_difference",
+          "directory": "cp_eval/point_0000_0d4/batch_0001/evaluation_0002",
+          "efermi": 3.2494048016,
+          "energy": -39569.70610460546,
+          "energy_boundary": "reference_fcp",
+          "evaluation_index": 2,
+          "fermishift": -11.692476963,
+          "fit_degree": 1,
+          "fit_rss_eV2": 0.0,
+          "fit_status": "accepted",
+          "free_energy": -39570.72622243296,
+          "mu_calc": -8.4430721614,
+          "mu_target": -5.0,
+          "nelec": 215.33431597026473,
+          "omega_correction": 4.455075033640331,
+          "potential_calc": 3.8430721614000003,
+          "potential_target": 0.4,
+          "raw_energy": -39574.1611796391,
+          "raw_free_energy": -39575.1812974666,
+          "reference_electrons": 216.0,
+          "residual_mu": -3.4430721614,
+          "residual_v": 3.4430721614000004,
+          "scf_converged": true,
+          "vacuum_level": 11.692476963,
+          "valid": true
+        },
+        {
+          "boundary_parameters": {
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "candidate_nelec": 215.96641188961243,
+          "candidate_unbounded": 215.96641188961243,
+          "compensation": null,
+          "converged": false,
+          "delta_nelec": 0.013723140611205054,
+          "derivative_eV_per_e": 5.0503383921540745,
+          "derivative_source": "chebyshev_forward_difference",
+          "directory": "cp_eval/point_0000_0d4/batch_0001/evaluation_0003",
+          "efermi": 5.1552200012,
+          "energy": -39571.24376184015,
+          "energy_boundary": "reference_fcp",
+          "evaluation_index": 3,
+          "fermishift": -9.9162821739,
+          "fit_degree": 1,
+          "fit_rss_eV2": 0.03763506797577614,
+          "fit_status": "accepted",
+          "free_energy": -39572.369352201655,
+          "mu_calc": -4.761062172700001,
+          "mu_target": -5.0,
+          "nelec": 216.0137231406112,
+          "omega_correction": -0.06746683155679056,
+          "potential_calc": 0.16106217270000123,
+          "potential_target": 0.4,
+          "raw_energy": -39571.1762950086,
+          "raw_free_energy": -39572.3018853701,
+          "reference_electrons": 216.0,
+          "residual_mu": 0.23893782729999913,
+          "residual_v": -0.2389378272999988,
+          "scf_converged": true,
+          "vacuum_level": 9.9162821739,
+          "valid": true
+        },
+        {
+          "boundary_parameters": {
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "candidate_nelec": 215.96601378859785,
+          "candidate_unbounded": 215.96601378859785,
+          "compensation": null,
+          "converged": false,
+          "delta_nelec": -0.03358811038756926,
+          "derivative_eV_per_e": 5.037731948949187,
+          "derivative_source": "chebyshev_forward_difference",
+          "directory": "cp_eval/point_0000_0d4/batch_0001/evaluation_0004",
+          "efermi": 5.0354180472,
+          "energy": -39571.25571372052,
+          "energy_boundary": "reference_fcp",
+          "evaluation_index": 4,
+          "fermishift": -10.033412521,
+          "fit_degree": 1,
+          "fit_rss_eV2": 0.056493313983378146,
+          "fit_status": "accepted",
+          "free_energy": -39572.37389360342,
+          "mu_calc": -4.9979944738,
+          "mu_target": -5.0,
+          "nelec": 215.96641188961243,
+          "omega_correction": 0.1690628153815213,
+          "potential_calc": 0.39799447380000075,
+          "potential_target": 0.4,
+          "raw_energy": -39571.4247765359,
+          "raw_free_energy": -39572.5429564188,
+          "reference_electrons": 216.0,
+          "residual_mu": 0.0020055261999996077,
+          "residual_v": -0.0020055261999992746,
+          "scf_converged": true,
+          "vacuum_level": 10.033412521,
+          "valid": true
+        },
+        {
+          "boundary_parameters": {
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "compensation": null,
+          "converged": true,
+          "delta_nelec": -0.03398621140215141,
+          "directory": "cp_eval/point_0000_0d4/batch_0001/evaluation_0005",
+          "efermi": 5.0344042895,
+          "energy": -39571.25574509269,
+          "energy_boundary": "reference_fcp",
+          "evaluation_index": 5,
+          "fermishift": -10.03440101,
+          "free_energy": -39572.37386060419,
+          "mu_calc": -4.9999967204999995,
+          "mu_target": -5.0,
+          "nelec": 215.96601378859785,
+          "omega_correction": 0.17110021700906458,
+          "potential_calc": 0.3999967204999999,
+          "potential_target": 0.4,
+          "raw_energy": -39571.4268453097,
+          "raw_free_energy": -39572.5449608212,
+          "reference_electrons": 216.0,
+          "residual_mu": 3.2795000004526287e-06,
+          "residual_v": -3.2795000001195618e-06,
+          "scf_converged": true,
+          "vacuum_level": 10.03440101,
+          "valid": true
+        }
+      ],
+      "cp_identity": {
+        "boundary_parameters": {
+          "cal_force": 1,
+          "nspin": 1,
+          "out_pot": 2
+        },
+        "calculator": "constant_potential",
+        "energy_boundary": "reference_fcp",
+        "energy_definition": "omega_aligned",
+        "fixed_hamiltonian": {
+          "assets": {
+            "kpoints": {
+              "specification": [
+                1,
+                1,
+                1
+              ]
+            },
+            "orbitals": [
+              {
+                "kind": "orbital",
+                "provenance": {
+                  "configured_name": "Pt_gga_7au_100Ry_4s2p2d1f.orb",
+                  "path": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/case/Pt_gga_7au_100Ry_4s2p2d1f.orb"
+                },
+                "sha256": "0459f24abe5e4252e81d84c3e3e551bae302b5b3dc96547f9f87e4b7794089c6",
+                "species": "Pt"
+              }
+            ],
+            "pseudopotentials": [
+              {
+                "kind": "pseudopotential",
+                "provenance": {
+                  "configured_name": "Pt_ONCV_PBE-1.0.upf",
+                  "path": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/case/Pt_ONCV_PBE-1.0.upf"
+                },
+                "sha256": "ce2828782414e48b4b9613700e29f218d1b3a74dd5ca34f89cdcb0695e471719",
+                "species": "Pt"
+              }
+            ]
+          },
+          "boundary_parameters": {
+            "cal_force": 1,
+            "nspin": 1,
+            "out_pot": 2
+          },
+          "parameters": {
+            "basis_type": "lcao",
+            "cal_force": 1,
+            "cal_stress": 1,
+            "calculation": "scf",
+            "dft_functional": "pbe",
+            "ecutwfc": 100,
+            "kpts": [
+              1,
+              1,
+              1
+            ],
+            "ks_solver": "cusolver",
+            "mixing_beta": 0.1,
+            "mixing_type": "broyden",
+            "nbands": 130,
+            "nspin": 1,
+            "out_pot": 2,
+            "scf_nmax": 200,
+            "scf_thr": 1e-09,
+            "smearing_method": "gauss",
+            "smearing_sigma": 0.015,
+            "symmetry": 0
+          }
+        },
+        "potential_v": 0.4,
+        "reference_electrode": "SHE",
+        "reference_electrons": 216.0,
+        "reference_pH": null,
+        "target_mu_ev": null,
+        "temperature_K": null,
+        "work_ref": 4.6,
+        "work_ref_source": "FCP v2 reference parity"
+      },
+      "cp_iterations": 5,
+      "delta_nelec": -0.03398621140215141,
+      "efermi": 5.0344042895,
+      "energy": -39571.25574509269,
+      "energy_boundary": "reference_fcp",
+      "fermishift": -10.03440101,
+      "forces": [
+        [
+          -0.6746631247,
+          9.4423e-06,
+          1.86505e-05
+        ],
+        [
+          -0.6746527767,
+          2.20823e-05,
+          -2.00457e-05
+        ],
+        [
+          -0.6746483519,
+          -1.83002e-05,
+          2.15251e-05
+        ],
+        [
+          -0.6746377827,
+          -1.10067e-05,
+          -2.4047e-05
+        ],
+        [
+          0.0003207802,
+          6.1632e-06,
+          -5.6472e-06
+        ],
+        [
+          0.0003080475,
+          1.10072e-05,
+          2.55696e-05
+        ],
+        [
+          0.0003171819,
+          -1.45238e-05,
+          -2.10659e-05
+        ],
+        [
+          0.000305288,
+          -8.8286e-06,
+          1.03983e-05
+        ],
+        [
+          0.6743257647,
+          -2.06409e-05,
+          1.18728e-05
+        ],
+        [
+          0.6743361474,
+          -1.44642e-05,
+          -2.47712e-05
+        ],
+        [
+          0.6743391722,
+          1.64384e-05,
+          2.1802e-05
+        ],
+        [
+          0.6743496542,
+          2.26308e-05,
+          -1.42413e-05
+        ]
+      ],
+      "free_energy": -39572.37386060419,
+      "index": 0,
+      "mu_calc": -4.9999967204999995,
+      "mu_target": -5.0,
+      "nelec": 215.96601378859785,
+      "omega_correction": 0.17110021700906458,
+      "point_artifact": "cp_eval/point_0000_0d4/result.json",
+      "potential_calc": 0.3999967204999999,
+      "potential_target": 0.4,
+      "potential_v": 0.4,
+      "raw_energy": -39571.4268453097,
+      "raw_free_energy": -39572.5449608212,
+      "reference_electrons": 216.0,
+      "residual_mu": 3.2795000004526287e-06,
+      "residual_v": -3.2795000001195618e-06,
+      "scf_converged": true,
+      "structure": "/home/galileo-group/galileouser02/atst-cp-parity-20261019/case/STRU",
+      "vacuum_level": 10.03440101
+    }
+  ],
+  "schema": "atst-constant-potential-result-v1",
+  "status": "complete",
+  "targets_v": [
+    0.4
+  ],
+  "workflow": "constant_potential"
+}

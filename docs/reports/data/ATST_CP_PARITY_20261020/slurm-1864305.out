@@ -1,0 +1,7 @@
+/opt/modules/lmod/9.2.4/init/bash: line 93: LD_PRELOAD: unbound variable
+job=1864305 host=4v100n10.mr-sai.ai cvd=0
+/opt/apps/abacus/abacus-develop-LTSv3.10.1/bin_sm70_avx512/abacus
+ABACUS version v3.10.1
+fcp_status=0 atst_status=0 compare_status=0
+logs: /home/galileo-group/galileouser02/atst-cp-parity-20261019/logs
+results: /home/galileo-group/galileouser02/atst-cp-parity-20261019/results

@@ -1,0 +1,54 @@
+calculation:
+  type: constant_potential
+  init_structure: /home/galileo-group/galileouser02/atst-cp-parity-20261019/case/STRU
+  directory: cp_eval_latest
+  results_file: constant_potential_results_latest.json
+  log_file: constant_potential_latest.log
+  checkpoint_file: constant_potential_checkpoint_latest.json
+  artifact_manifest: atst_artifacts_latest.json
+
+calculator:
+  name: abacus
+  abacus:
+    command: abacus
+    mpi: 1
+    omp: 8
+    directory: abacus_work_latest
+    kpts: [1, 1, 1]
+    parameters:
+      calculation: scf
+      dft_functional: pbe
+      symmetry: 0
+      cal_force: 1
+      cal_stress: 1
+      ecutwfc: 100
+      scf_nmax: 200
+      scf_thr: 1e-9
+      basis_type: lcao
+      ks_solver: cusolver
+      nspin: 1
+      nbands: 130
+      smearing_method: gauss
+      smearing_sigma: 0.015
+      mixing_type: broyden
+      mixing_beta: 0.1
+      out_pot: 2
+      nelec: 217
+      pseudo_dir: /home/galileo-group/galileouser02/atst-cp-parity-20261019/case
+      orbital_dir: /home/galileo-group/galileouser02/atst-cp-parity-20261019/case
+      pseudopotentials:
+        Pt: Pt_ONCV_PBE-1.0.upf
+      basissets:
+        Pt: Pt_gga_7au_100Ry_4s2p2d1f.orb
+  constant_potential:
+    energy_boundary: reference_fcp
+    reference_electrode: SHE
+    reference_electrons: 216
+    potential_v: 0.4
+    work_ref: 4.6
+    work_ref_source: FCP v2 reference parity
+    potential_tolerance_v: 1e-4
+    max_iterations: 100
+    capacitance_initial: 0.0125
+    capacitance_unit: e/(V Angstrom^2)
+    vacuum_axis: 0

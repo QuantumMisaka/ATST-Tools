@@ -1,0 +1,92 @@
+{
+  "nelec": 215.966013,
+  "efermi_eV": 5.034403,
+  "vacuum_level_eV": 10.034402,
+  "fermishift_eV": -10.034402,
+  "mu_calc_eV": -5.0,
+  "mu_target_eV": -5.0,
+  "residual_mu_eV": 0.0,
+  "energy_eV": -39571.25574534141,
+  "free_energy_eV": -39572.37386075731,
+  "raw_energy_eV": -39572.544964,
+  "forces_eV_per_A": [
+    [
+      -0.6746628693,
+      9.4415e-06,
+      1.86511e-05
+    ],
+    [
+      -0.67465252,
+      2.20832e-05,
+      -2.00442e-05
+    ],
+    [
+      -0.6746480961,
+      -1.8301e-05,
+      2.15236e-05
+    ],
+    [
+      -0.6746375256,
+      -1.10058e-05,
+      -2.40476e-05
+    ],
+    [
+      0.0003205798,
+      6.1679e-06,
+      -5.6435e-06
+    ],
+    [
+      0.0003078415,
+      1.10022e-05,
+      2.55671e-05
+    ],
+    [
+      0.000316982,
+      -1.45183e-05,
+      -2.10638e-05
+    ],
+    [
+      0.0003050828,
+      -8.8338e-06,
+      1.0395e-05
+    ],
+    [
+      0.6743257113,
+      -2.06406e-05,
+      1.18717e-05
+    ],
+    [
+      0.6743360948,
+      -1.44642e-05,
+      -2.47724e-05
+    ],
+    [
+      0.6743391181,
+      1.64384e-05,
+      2.18032e-05
+    ],
+    [
+      0.6743496008,
+      2.26306e-05,
+      -1.42403e-05
+    ]
+  ],
+  "capacitance_e_per_V": 0.1991980521931316,
+  "iterations": 6,
+  "converged": true,
+  "reference_source": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/references/v2_FCPelectrochem.py",
+  "reference_sha256": "bd1cbf41abf34d68a41f6f1579275e6c082e8f0f8be09c2d629153c2aa745040",
+  "fcp_parameters": {
+    "U": 0.4,
+    "NELECT": 217,
+    "NELECT0": 216,
+    "C": 0.0125,
+    "FCPconv": 0.0001,
+    "work_ref": 4.6,
+    "max_FCP_iter": 100,
+    "always_adjust": false,
+    "adaptive_lr": false
+  },
+  "engine_command": "abacus",
+  "directory": "/org/galileo-group/galileouser02/atst-cp-parity-20261019/fcp_run"
+}

@@ -46,10 +46,10 @@ repository checkout at the tag matching your installed version. All paths below
 state their starting directory. For a first session without a backend, follow
 the local CLI path before selecting a real calculation.
 
-The **unreleased development tree** uses an absolute `1e-5 Å` cell tolerance.
+The **current 2.3.1 release** uses an absolute `1e-5 Å` cell tolerance.
 Preprocessing preserves rounding within that bound, and NEB runtime copies adapt
-periodic vectors only when required by ASE. This behavior is not part of PyPI
-2.2.8; see the [fixed-cell rules](../docs/user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
+periodic vectors only when required by ASE. See the
+[fixed-cell rules](../docs/user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
 
 1. Install Python 3.10+ and ATST-Tools. A real calculation additionally needs
    the selected ABACUS/DP runtime, input data and suitable compute resources.
@@ -135,7 +135,7 @@ D2S uses the configured calculator backend through `atst run`: rough NEB first,
 then Dimer, Sella, or CCQN, with optional vibration follow-up.
 Optimizer completion and its recorded convergence signal are execution facts;
 they do not automatically launch vibration or IRC and do not by themselves
-validate a transition state. The unreleased development tree provides an
+validate a transition state. The `atst vibration validate` command provides an
 explicit read-only screen for existing vibration results, documented in the
 [CLI reference](../docs/user/CLI_REFERENCE.md#vibration-tools).
 
@@ -255,7 +255,7 @@ with validation status or auxiliary output references.
 * `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs and the fixed-electron/force validation sequence.
 
 This is a development validation fixture, not a production benchmark. The
-constant-potential workflow code is included in 2.2.8 as a development candidate.
+constant-potential workflow code is included in 2.3.1 as a development candidate.
 Its `compensated_gate` inputs use a custom chemical-potential boundary and keep
 gate, blocking, field, dipole, PP, ORB, and KPT settings explicit. The fixture
 does not establish universal basis/cutoff convergence, a calibrated SHE/RHE

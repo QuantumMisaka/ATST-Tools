@@ -1,0 +1,6 @@
+1864431               atst-cp-develop      4V100  COMPLETED   00:01:40                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 
+1864431.bat+                    batch             COMPLETED   00:01:40                              cpu=8,gres/gpu=1,mem=22G,node=1 
+1864431.ext+                   extern             COMPLETED   00:01:40                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 
+1864468             atst-cp-dev-beta9      4V100  COMPLETED   00:03:10                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 
+1864468.bat+                    batch             COMPLETED   00:03:10                              cpu=8,gres/gpu=1,mem=22G,node=1 
+1864468.ext+                   extern             COMPLETED   00:03:10                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 

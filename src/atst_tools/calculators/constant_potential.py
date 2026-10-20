@@ -1254,8 +1254,12 @@ class ConstantPotentialCalculator(Calculator):
             # consumes the published CP result.  Suppress them on this private
             # probe so Hookean/constraint energy and force contributions are
             # not applied a second time inside the electronic loop.
-            energy = float(probe.get_potential_energy(force_consistent=False, apply_constraint=False))
-            free_energy = float(probe.get_potential_energy(force_consistent=True, apply_constraint=False))
+            kohn_sham_energy = float(
+                probe.get_potential_energy(force_consistent=False, apply_constraint=False)
+            )
+            force_consistent_energy = float(
+                probe.get_potential_energy(force_consistent=True, apply_constraint=False)
+            )
             forces = np.asarray(probe.get_forces(apply_constraint=False), dtype=float)
         except ConstantPotentialError:
             raise
@@ -1274,12 +1278,17 @@ class ConstantPotentialCalculator(Calculator):
             raise ConstantPotentialEvaluationError(
                 f"fixed-electron evaluation at nelec={nelec} returned invalid forces"
             )
+        # Preserve the backend's ASE energy keys for the compensated boundary.
+        # The reference-only FCP convention uses the explicit no-entropy
+        # energy, without changing the force-consistent free energy.
         raw_energy = _first_finite(raw_results, ("energy",))
         raw_free_energy = _first_finite(raw_results, ("free_energy",))
         if raw_energy is None:
-            raw_energy = _finite(energy, "raw energy")
+            raw_energy = _finite(kohn_sham_energy, "raw energy")
         if raw_free_energy is None:
-            raw_free_energy = _finite(free_energy, "raw free energy")
+            raw_free_energy = _finite(force_consistent_energy, "raw free energy")
+        if self.energy_boundary == "reference_fcp" and "energy_without_entropy" in raw_results:
+            raw_energy = _finite(raw_results["energy_without_entropy"], "energy without entropy")
         efermi = _backend_efermi(inner, raw_results)
         if efermi is None:
             raise ConstantPotentialEvaluationError(
@@ -1534,6 +1543,7 @@ class ConstantPotentialCalculator(Calculator):
             "scf_converged": True,
             "cp_converged": True,
             "cp_iterations": int(final["evaluation_index"]),
+            "capacitance_e_per_V": float(capacitance),
             "cp_history": self._jsonable(self.evaluation_history),
             "cp_identity": self.constant_potential_identity,
         }

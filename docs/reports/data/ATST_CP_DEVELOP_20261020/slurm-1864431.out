@@ -1,0 +1,9 @@
+/opt/modules/lmod/9.2.4/init/bash: line 93: LD_PRELOAD: unbound variable
+job=1864431 host=4v100n08.mr-sai.ai cvd=0
+/opt/apps/abacus/abacus-develop-git-079fd0c-260724/bin/abacus
+ABACUS version v3.11.0-beta6
+reference status complete points 1
+  {'nelec': 215.96601378706222, 'efermi': 5.0344042855, 'mu_calc': -4.9999967285, 'residual_mu': 3.2714999997907057e-06, 'energy': -39571.25574509542, 'free_energy': -39572.37386060672, 'cp_iterations': 5, 'cp_converged': True}
+compensated status complete points 1
+  {'nelec': 217.0, 'efermi': 9.3259944391, 'mu_calc': 15.045970657749518, 'residual_mu': -1.7679191444130993e-10, 'energy': -39581.254151943525, 'free_energy': -39582.38405366563, 'cp_iterations': 1, 'cp_converged': True}
+reference_status=0 compensated_status=0

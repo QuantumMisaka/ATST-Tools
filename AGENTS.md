@@ -17,7 +17,7 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 ### 仓库设计
 - 优化 user interface，使用 CLI + YAML inputs 进行工作流交互，并在examples/目录下留下示例交互模式。
 - 对于 ABACUS 的 ASE interface，ATST-Tools 以独立安装的 abacuslite 为唯一 ASE calculator backend。ATST-Tools 的基本定位是 abacuslite CLI wrapper，通过 abacuslite 完成 ABACUS 相关设置，并配合 ASE 开展计算任务；尽可能不重写 ASE 的已有实现，做到 ASE-native。
-- temp_repos 不同步到 git 仓库，其中放置开发时可参考代码仓库（不保证存在于任意 checkout；依赖它的快照 drift-check 需先准备对应上游树）。
+- temp_repos 不同步到 git 仓库，其中放置开发时可参考代码仓库（不保证存在于任意 checkout；历史快照审计需先准备对应上游树）。
 
 ### 版本号语义
 
@@ -37,7 +37,7 @@ ATST-Tools (ASE Transition State Tools for ABACUS and ML potentials)：建立用
 
 ### 基本边界
 - abacuslite 是项目的 ABACUS-ASE backend，`pyproject.toml` 声明
-  `abacuslite>=1.2.0,<2`。独立包由 `QuantumMisaka/abacuslite` 维护；缺包或已安装包
+  `abacuslite>=1.2.1,<2`。独立包由 `QuantumMisaka/abacuslite` 维护；缺包或已安装包
   损坏均应失败，不回退到旧实现。`src/atst_tools/external/ASE_interface/abacuslite`
   仅保留薄转发模块供 Paimon 等既有调用方使用，计算器和 parser 类对象仍来自
   独立包。原 vendored 基线、补丁登记和双环境验收记录是历史审计证据，

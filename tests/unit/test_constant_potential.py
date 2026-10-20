@@ -122,6 +122,50 @@ def test_constant_potential_newton_uses_measured_residual_and_publishes_omega(tm
     assert len(calculator.evaluation_history) == 2
 
 
+def test_reference_fcp_uses_explicit_internal_energy_like_fcp_v2(tmp_path):
+    """Only the reference energy uses the explicit no-entropy value."""
+
+    class SplitEnergyCalculator(Calculator):
+        implemented_properties = ["energy", "free_energy", "forces"]
+
+        def __init__(self, nelec):
+            super().__init__()
+            self.nelec = float(nelec)
+
+        def calculate(self, atoms=None, properties=("energy",), system_changes=all_changes):
+            super().calculate(atoms, properties, system_changes)
+            self.results.update(
+                {
+                    "energy": -100.0,
+                    "free_energy": -100.0,
+                    "energy_without_entropy": -99.0,
+                    "forces": np.zeros((len(atoms), 3)),
+                    "efermi": 5.0,
+                    "vacuum_level": 10.0,
+                    "scf_converged": True,
+                }
+            )
+
+    atoms = Atoms("H", positions=[[0.0, 0.0, 0.0]], cell=[10.0, 10.0, 10.0], pbc=True)
+    calculator = ConstantPotentialCalculator(
+        lambda nelec, directory: SplitEnergyCalculator(nelec),
+        potential_v=0.4,
+        reference_electrons=10.0,
+        initial_electrons=10.0,
+        work_ref=4.6,
+        work_ref_source="test",
+        potential_tolerance_v=1e-12,
+        directory=tmp_path,
+    )
+    atoms.calc = calculator
+
+    assert atoms.get_potential_energy() == pytest.approx(-99.0)
+    assert calculator.results["raw_energy"] == pytest.approx(-99.0)
+    assert calculator.results["raw_free_energy"] == pytest.approx(-100.0)
+    assert calculator.results["energy"] == pytest.approx(-99.0)
+    assert calculator.results["free_energy"] == pytest.approx(-100.0)
+
+
 def test_constant_potential_requires_an_explicit_initial_electron_guess(tmp_path):
     with pytest.raises(ValueError, match="initial_electrons is required"):
         ConstantPotentialCalculator(
@@ -616,7 +660,8 @@ def test_compensated_gate_uses_density_conjugate_mu_and_raw_forces(tmp_path, mon
             self.results.update(
                 {
                     "energy": 0.5 * self.nelec**2,
-                    "free_energy": 0.5 * self.nelec**2,
+                    "free_energy": 0.5 * self.nelec**2 - 0.2,
+                    "energy_without_entropy": 0.5 * self.nelec**2 + 0.3,
                     "forces": np.ones((len(atoms), 3)) * 0.37,
                     "efermi": 2.0 + 0.1 * self.nelec,
                     "scf_converged": True,
@@ -667,6 +712,8 @@ def test_compensated_gate_uses_density_conjugate_mu_and_raw_forces(tmp_path, mon
     assert calculator.results["vacuum_level"] is None
     assert calculator.results["potential_calc"] is None
     assert calculator.results["energy"] == pytest.approx(calculator.results["raw_energy"])
+    assert atoms.get_potential_energy(force_consistent=True) == pytest.approx(49.8)
+    assert calculator.results["raw_free_energy"] == pytest.approx(49.8)
     assert len(calls) == 2
 
 

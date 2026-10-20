@@ -1,0 +1,3 @@
+1864773           abacus-latest-build      4V100  COMPLETED   00:05:01                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 
+1864773.bat+                    batch             COMPLETED   00:05:01                              cpu=8,gres/gpu=1,mem=22G,node=1 
+1864773.ext+                   extern             COMPLETED   00:05:01                  billing=194,cpu=8,gres/gpu=1,mem=22G,node=1 

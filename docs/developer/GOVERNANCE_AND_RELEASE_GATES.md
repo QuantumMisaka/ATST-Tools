@@ -27,7 +27,7 @@ After deliberate creation of the intended local release tag, run the readiness
 check from that commit, for example:
 
 ```bash
-conda run -n atst-dev python scripts/check_release_readiness.py --tag v2.3.0
+conda run -n atst-dev python scripts/check_release_readiness.py --tag v2.3.1
 ```
 
 The checker requires the existing tag's peeled commit to equal `HEAD` and

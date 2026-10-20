@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.3.0
-**Last Updated**: 2026-10-19
-**Status**: Reference for the published 2.3.0 release
+**Version**: 2.3.1
+**Last Updated**: 2026-10-20
+**Status**: Reference for the 2.3.1 source candidate
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -80,7 +80,7 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 **Type**: `neb`
 
 The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
-described below are included in 2.2.9, and are absent from PyPI 2.2.8.
+described below are part of the current 2.3.1 release (introduced in 2.2.9).
 
 Fixed-cell input preparation compares the complete cell matrix in Angstrom
 with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
@@ -101,11 +101,11 @@ records the reference and adjustments, also retained in image
 This is fixed-cell preparation, not variable-cell NEB or an ASE source patch;
 no additional YAML tolerance field is introduced.
 
-The vendored abacuslite SCF frame matcher also defaults to `1e-5` Angstrom for
-cell components and periodic Cartesian residuals, with no relative term. The
-former `1e-4` default accepted mismatches in the `1e-5`–`1e-4` interval that are
-now rejected. This change does not set SCF/fmax convergence thresholds and
-does not alter an independently installed external abacuslite package.
+The installed abacuslite SCF frame matcher defaults to `1e-5` Angstrom for cell
+components and periodic Cartesian residuals, with no relative term. The former
+`1e-4` default accepted mismatches in the `1e-5`–`1e-4` interval that are now
+rejected. This change does not set SCF/fmax convergence thresholds; ATST does
+not patch the installed abacuslite parser.
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -190,7 +190,7 @@ mpirun -np <number-of-interior-images> atst run config.yaml
 When `parallel: true` and ASE sees `world.size > 1`, ATST-Tools requires the MPI
 rank count to equal `len(init_chain) - 2`. Each active image gets its own ABACUS
 calculator directory such as `run_neb/image_001`, following the same
-image-isolated directory model used by the vendored abacuslite NEB example.
+image-isolated directory model used by the abacuslite NEB example.
 This outer MPI layer is separate from `calculator.abacus.mpi`, which controls
 the ABACUS subprocess count for one image. ATST-Tools does not run or generate
 Slurm submission commands; use your site launch script to start the outer Python
@@ -643,10 +643,10 @@ Saving these results does not request another backend evaluation.
 ### 2.11 Constant-Potential Evaluation (development candidate)
 **Type**: `constant_potential`
 
-`constant_potential` is an ABACUS-only development candidate included in 2.2.8;
-package inclusion is not a production or platform acceptance claim. It
-evaluates one fixed structure at one target or scans an ordered list of targets
-serially. The electronic-number loop is supplied by the
+`constant_potential` is an ABACUS-only development candidate included in the
+current 2.3.1 package; package inclusion is not a production or platform
+acceptance claim. It evaluates one fixed structure at one target or scans an
+ordered list of targets serially. The electronic-number loop is supplied by the
 `calculator.constant_potential` decorator; target units and boundary-specific
 fields are documented in [§3.1a](#31a-constant-potential-decorator).
 
@@ -675,6 +675,20 @@ The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
 fixed-cell `relax` and ordinary `neb`. Those optimization workflows require one
 scalar target and do not support a target list, cell relaxation, or CP stress.
+For `reference_fcp`, CP `energy` uses the explicit no-entropy energy
+(`E_KohnSham - E_entropy(-TS)`, exposed by abacuslite 1.2.1 as
+`energy_without_entropy`); CP `free_energy` retains the backend's
+force-consistent `E_KohnSham`, with the reference grand-potential correction
+applied to both. The no-entropy value is not itself force-consistent.
+`compensated_gate` preserves the backend's standard `energy`/`free_energy`
+relationship and adds its own grand-potential correction. If no explicit
+no-entropy fact is available, `reference_fcp` retains the backend energy;
+parity for a smeared calculation requires the explicit entropy fact.
+The workflow is not hard-wired to LTS: abacuslite selects `legacyio` for LTS
+3.10.1 and `latestio` for v3.11/develop. Single-point `reference_fcp` and
+`compensated_gate` runs completed on site develop/latest-format builds
+v3.11.0-beta6, v3.11.0-beta9, and a locally built `origin/develop`
+`7be5df975` (`v3.11.0-beta11`).
 The density reader accepts one complete cube naming family per evaluation:
 `SPIN1_CHG.cube`/`SPIN2_CHG.cube` (LTS), or `chg.cube` for one spin and
 `chgs1.cube`/`chgs2.cube` for two spins (current ABACUS). Mixed or incomplete
@@ -716,9 +730,9 @@ The `calculator` section configures the underlying compute engine (DFT or ML Pot
 > **Note**: For backward compatibility, parameters can also be placed under an `abacus` root key instead of `calculator.abacus`.
 > For GPU LCAO calculations, choose a site-compatible GPU solver according to
 > the documentation for the installed ABACUS version.
-> ATST-Tools requires the independently installed `abacuslite>=1.2.0,<2` package.
-> Historical vendored import paths forward to that package; a missing or broken
-> installation fails instead of selecting a second implementation.
+> ATST-Tools requires the independently installed `abacuslite>=1.2.1,<2` package.
+> Historical compatibility import paths forward to that package; a missing or
+> broken installation fails instead of selecting a second implementation.
 
 For `calculation: scf`, abacuslite automatically identifies the latest running
 log frame corresponding to the current STRU, accepting periodic-equivalent
