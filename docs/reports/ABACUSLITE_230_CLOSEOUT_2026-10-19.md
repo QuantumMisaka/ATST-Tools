@@ -129,3 +129,8 @@ relax/band/DOS acceptance. Its SIF contains abacuslite 1.2.0 and ATST is
 delivered with the Toolbox. These facts supersede the earlier parent-pin and
 general deployment blockers; they do not close P6's 1/4-card NEB comparison.
 The 1.2.1 / 2.3.1 package closeout does not update those downstream pins or SIF.
+
+The coordinated abacuslite 1.2.1 / ATST 2.3.1 publication is complete on
+2026-10-20. Final tags, artifacts, CI and installed-consumer evidence are in
+the [2.3.1 release notes](../releases/RELEASE_NOTES_2.3.1.md). The downstream
+rollout and P6 boundaries above remain unchanged.

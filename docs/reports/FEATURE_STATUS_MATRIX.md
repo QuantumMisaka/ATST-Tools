@@ -2,17 +2,19 @@
 
 **Version**: 2.3.1
 **Last Updated**: 2026-10-20
-**Status**: Source candidate (unpublished)
+**Status**: Published on PyPI and GitHub
 **Owner**: ATST-Tools maintainers
 
 Release 2.3.0 made the independently installed `abacuslite` package the sole
 ABACUS ASE backend. 2.3.1 requires `abacuslite>=1.2.1` for the explicit
 `energy_without_entropy` handoff. The vendored snapshot is retired as a runtime fallback;
 historical imports forward to the installed package. The latest published
-package remains 2.3.0.
+package is 2.3.1, verified with published abacuslite 1.2.1.
 
-Current distribution acceptance and development-branch disposition are tracked
-in the [2.3.0 integration closeout](ABACUSLITE_230_CLOSEOUT_2026-10-19.md).
+Current distribution acceptance is tracked in the
+[2.3.1 release notes](../releases/RELEASE_NOTES_2.3.1.md). Historical
+development-branch disposition remains in the
+[2.3.0 integration closeout](ABACUSLITE_230_CLOSEOUT_2026-10-19.md).
 The old rc1 integration worktree is a retained historical candidate; its
 scientific changes are absorbed and it is not a pending main-branch merge.
 

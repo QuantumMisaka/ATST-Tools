@@ -110,7 +110,8 @@ CLI 和 Python API 共用内部执行实现 `atst_tools.workflows.execution`；�
 
 ## 5. 新增或修改 calculator backend
 
-2.3.1 的当前交付证据和历史工作树处置见
+2.3.1 的发布与安装验证证据见
+[发布说明](../releases/RELEASE_NOTES_2.3.1.md)；历史工作树处置见
 [集成收尾记录](../reports/ABACUSLITE_230_CLOSEOUT_2026-10-19.md)。
 旧 `integrate/abacuslite-atst229-20261017` 已被主线方案取代，其科学修复已经吸收；
 后续工作从当前主线开展，不恢复该分支的 vendored 回退。
