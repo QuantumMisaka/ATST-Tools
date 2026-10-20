@@ -9,7 +9,7 @@
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
 本指南对应 [2.3.2](../releases/RELEASE_NOTES_2.3.2.md)，ABACUS 通过独立安装的
 abacuslite 接入。使用 `atst` 命令和 YAML 配置可运行 NEB、AutoNEB、Dimer、Sella、
-CCQN、D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 和恒电势工作流。
+CCQN、D2S、结构优化、振动分析、IRC、MD、恒电势工作流，以及实验性的 DMF。
 各方法的适用范围见下文「支持的工作流」。
 
 ATST-Tools 的边界是工作流编排、配置校验、calculator 构造、轨迹命名、
@@ -212,7 +212,7 @@ atst run --show-template d2s --calculator dp
 | `irc` | Sella IRC 正向、反向或双向路径 | `atst run config.yaml` |
 | `md` | 分子动力学；支持 ASE 驱动和 ABACUS 原生 MD | `atst run config.yaml` |
 | `dmf` | Direct MaxFlux 实验性 TS candidate / path optimizer | `atst run config.yaml` |
-| `constant_potential` | ABACUS 恒电势固定几何单点/串行扫描（开发候选） | `atst run config.yaml` |
+| `constant_potential` | ABACUS 恒电势固定几何单点/串行扫描 | `atst run config.yaml` |
 
 常规 workflow 交付结构、阶段执行状态和 optimizer 已提供的收敛事实；完成计算
 不会自动运行 IRC，也不等于过渡态已验证。振动/IRC 等额外计算仍由 YAML 中明确配置。
@@ -237,19 +237,19 @@ D2S、CCQN 和 IRC 已纳入 2.0.x schema 与示例，不再是待集成状态�
 验证边界和暂不支持项目以
 [FEATURE_STATUS_MATRIX.md](../reports/FEATURE_STATUS_MATRIX.md) 为准。
 
-`constant_potential` 当前是开发候选。它通过 `calculator.constant_potential`
+恒电势功能通过 `calculator.constant_potential`
 装饰 ABACUS calculator，可运行固定几何的单点或串行目标扫描；固定晶胞的
-`relax`/`neb` 和实验性 ASE 驱动 `md` 只接受 `energy_boundary: compensated_gate`、
+`relax`、串行 `neb` 和 ASE 驱动 `md` 只接受 `energy_boundary: compensated_gate`、
 `reference_electrode: custom` 及单一 `target_mu_ev`。MD 支持固定晶胞的
 VelocityVerlet（`nve` 选择器）和 Bussi、Langevin、NVTBerendsen（`nvt`）。
-恒电势 MD 从 2.3.2 起提供，仍为实验功能。
+恒电势 MD 从 2.3.2 起支持，真实后端验证目前覆盖短程轨迹。
 电子与库交换，因此 `nve` 不代表固定电子数微正则系综。每次给出核力前均要求
 SCF 和恒电势残差收敛；未收敛的状态不会写成已完成帧。MD 的每步诊断和续跑
 checkpoint 位于 `calculation.directory`，`restart: true` 从最后完成步继续，
 `steps` 表示新增步数。`reference_fcp` 仅用于固定几何参考算法复现和诊断。
-该候选不覆盖 cell-relax、stress、AutoNEB、D2S、ABACUS 原生恒电势 MD、
+恒电势功能不覆盖 cell-relax、stress、AutoNEB、D2S、ABACUS 原生恒电势 MD、
 两 Fermi 或显式 `nupdown`。参数、能量定义和产物见
-[配置参考](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)。
+[配置参考](CONFIG_REFERENCE.md#211-constant-potential-evaluation)。
 
 ## 5. ABACUS / abacuslite 集成
 

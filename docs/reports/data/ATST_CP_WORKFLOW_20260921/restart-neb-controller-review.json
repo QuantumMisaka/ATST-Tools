@@ -1,0 +1,62 @@
+{
+  "behavior_accepted": true,
+  "scientific_precision_assessed": false,
+  "job_id": 1426458,
+  "frames": 28,
+  "bands": 7,
+  "actual_neb_fmax_ev_A": 0.07793873212772837,
+  "fixed_Pt_max_displacement_A": 4.440892098500626e-16,
+  "relative_omega_ev": [
+    0.0,
+    -0.07122315315791639,
+    0.0037388456039479934,
+    8.191418601199985e-07
+  ],
+  "comparison": [
+    {
+      "image": 0,
+      "warmstart_required": false,
+      "checkpoint_nelec": 217.0995450433891,
+      "first_evaluated_nelec": 217.1,
+      "final_nelec": 217.09954504338884,
+      "residual_mu_ev": 6.7160037531266426e-09,
+      "geometry_max_change_A": 0.0,
+      "omega_difference_ev": 9.19681042432785e-09,
+      "force_max_difference_ev_A": 1.387999999935552e-07
+    },
+    {
+      "image": 1,
+      "warmstart_required": true,
+      "checkpoint_nelec": 217.09925109630518,
+      "first_evaluated_nelec": 217.09925109630518,
+      "final_nelec": 217.09928247921997,
+      "residual_mu_ev": 1.130768414991934e-05,
+      "geometry_max_change_A": 0.011888047431893867,
+      "omega_difference_ev": -0.002673146766028367,
+      "force_max_difference_ev_A": 0.0457547346
+    },
+    {
+      "image": 2,
+      "warmstart_required": true,
+      "checkpoint_nelec": 217.10048061190778,
+      "first_evaluated_nelec": 217.10048061190778,
+      "final_nelec": 217.10049776970908,
+      "residual_mu_ev": 6.66524579528982e-06,
+      "geometry_max_change_A": 0.031864066820736614,
+      "omega_difference_ev": -0.0025345055109937675,
+      "force_max_difference_ev_A": 0.0244738682
+    },
+    {
+      "image": 3,
+      "warmstart_required": false,
+      "checkpoint_nelec": 217.09954500220778,
+      "first_evaluated_nelec": 217.1,
+      "final_nelec": 217.09954500220746,
+      "residual_mu_ev": -6.2775313836027635e-09,
+      "geometry_max_change_A": 0.0,
+      "omega_difference_ev": -1.7025740817189217e-09,
+      "force_max_difference_ev_A": 4.700000000301685e-08
+    }
+  ],
+  "scope": "Complete SCF/trajectory boundary SIGINT and per-image Ne warm-start; fresh FIRE optimizer, no optimizer-state or half-SCF continuation; numerical differences reported without a new precision threshold."
+}

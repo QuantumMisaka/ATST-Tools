@@ -41,9 +41,8 @@ prints supported workflow types. `--show-template` accepts
 `--calculator {abacus,dp}` to choose the template backend. `--log-level`
 accepts `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
 
-`constant_potential` is an ABACUS-only development candidate included in the
-current 2.3.2 package; package inclusion is not a production or platform
-acceptance claim. The template is a schema skeleton: fill the strict boundary
+`constant_potential` supports ABACUS fixed-geometry single points and serial
+target scans. The template is a schema skeleton: fill the strict boundary
 fields and the prepared ABACUS gate/dipole parameters before running it. See the
 [configuration reference](CONFIG_REFERENCE.md) for target units, workflow
 restrictions, failure artifacts, and the distinction between the legacy

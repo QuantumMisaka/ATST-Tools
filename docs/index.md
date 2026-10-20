@@ -43,7 +43,7 @@ from installation to result inspection and troubleshooting, use the
 ## Status and Releases
 
 - [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md): the current
-  supported/partial/experimental boundary.
+  supported/partial/experimental boundary and per-capability validation scope.
 - [2.3.2 release notes](releases/RELEASE_NOTES_2.3.2.md): latest published release,
   constant-potential MD and artifact verification.
 - [2.3.1 release notes](releases/RELEASE_NOTES_2.3.1.md): FCP reference parity

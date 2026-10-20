@@ -2,7 +2,7 @@
 
 **Version**: 2.3.2
 **Last Updated**: 2026-10-20
-**Status**: 2.3.2 is published on PyPI and GitHub; constant-potential workflows remain experimental
+**Status**: 2.3.2 is published on PyPI and GitHub; support and validation scope are distinguished below
 **Owner**: ATST-Tools maintainers
 
 This matrix describes the current source tree's supported, experimental and
@@ -13,12 +13,16 @@ installed-package verification belong in the
 
 “Supported” describes implemented workflow behavior. Scientific convergence,
 transition-state validation and downstream deployment each require their own
-evidence. Constant-potential and DMF retain their experimental scope.
+evidence. The validation scope qualifies each supported capability; it is not
+a universal accuracy guarantee. DMF retains its experimental status.
 
 | Feature | Status | Description | Notes |
 | :--- | :--- | :--- | :--- |
 | **Relax** | ✅ Supported | Geometry Optimization | Uses ASE optimizers. |
-| **Constant-potential** | 🧪 Development candidate | ABACUS fixed-geometry single points/serial scans; fixed-cell `relax`/`neb` and ASE `md` with `compensated_gate` (MD added in 2.3.2). | `reference_fcp` is reference-only. Compensated targets use custom `mu` in eV and same-run gate/dipole density facts. No cell-relax/stress, AutoNEB, D2S, native/NPT CP MD, two-Fermi or explicit `nupdown`. [Configuration](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate); [validation scope](#constant-potential-validation). |
+| **CP single points and serial scans** | ✅ Supported | ABACUS fixed-geometry evaluations under `compensated_gate`, with completed-point restart. | Real GPU single-point/scan and runtime checks; custom target `mu` in eV. [Configuration](../user/CONFIG_REFERENCE.md#211-constant-potential-evaluation); [validation scope](#constant-potential-validation). |
+| **CP relaxation and serial NEB** | ✅ Supported | Fixed-cell `compensated_gate` optimization, constraints, per-image electronic convergence and restart. | Historical real relax/NEB and interruption/restart acceptance; current regression coverage. CP-specific real image-parallel verification remains open. [Support assessment](ATST_CP_SUPPORT_ASSESSMENT_2026-10-20.md). |
+| **CP ASE MD** | ✅ Supported | Fixed-cell `compensated_gate` VelocityVerlet, Bussi, Langevin and NVTBerendsen, with complete-step checkpoints; added in 2.3.2. | Analytical integration/force/restart tests and final-source short GPU trajectories. Longer real-backend integration and sampling validation remain open. [MD validation](ATST_CP_MD_VALIDATION_2026-10-20.md). |
+| **CP reference_fcp** | Reference-only | Fixed-geometry reference-algorithm reproduction. | Historical parity and corrected energy-handoff evidence; rejected for optimization and MD. [Reference parity](ATST_CP_PARITY_2026-10-20.md). |
 | **Vibration** | ✅ Supported | Frequency Analysis and TS validation | Finite difference method with JSON results, TS validation, and artifact manifest support. |
 | **NEB** | ✅ Supported | Nudged Elastic Band | CI-NEB, two-stage NEB, endpoint single-point repair, optional endpoint relaxation, native ASE selector, artifact manifest, ABACUS STRU inputs for `atst neb make`, and MPI image-level parallelism are supported. |
 | **AutoNEB** | ✅ Supported | Automated NEB | Adaptive image handling, native ASE selector, endpoint single-point repair, and MPI image-level parallelism are supported. |
@@ -49,27 +53,28 @@ evidence. Constant-potential and DMF retain their experimental scope.
 
 ## Constant-potential validation
 
-The [Pt example](../../examples/19_constant_potential_Pt/README.md) records
-bounded energy-derivative and force checks for the compensated boundary,
-including numerical and physical-confinement limitations. The
-[CP/runtime joint report](ATST_CP_RUNTIME_JOINT_VALIDATION_2026-09-21.md)
-records a gate single point and three-point scan with runtime evidence.
+The [support assessment](ATST_CP_SUPPORT_ASSESSMENT_2026-10-20.md) distinguishes
+software support, numerical validation and downstream deployment. It includes
+the historical real relax/serial-NEB and interruption/restart evidence that was
+previously recorded only in the parent project's acceptance material.
 
-The [2026-10-20 parity report](ATST_CP_PARITY_2026-10-20.md) distinguishes
-historical LTS `reference_fcp` single-point agreement and develop beta6/beta9/
-beta11 execution checks from the corrected release. Those GPU runs used the
-pre-review energy mapping. The released abacuslite 1.2.1 preserves ASE free
-energy and exposes explicit no-entropy metadata; offline trace replay verifies
-the reference convention. Historical GPU runs do not certify the corrected
-release or a converged reaction barrier. CP facts-v1 compatibility and the
-`profile_status` label are described in the
-[configuration reference](../user/CONFIG_REFERENCE.md#31a-constant-potential-decorator).
+- [Pt boundary/force checks](../../examples/19_constant_potential_Pt/README.md)
+  and the [runtime joint report](ATST_CP_RUNTIME_JOINT_VALIDATION_2026-09-21.md)
+  cover compensated-boundary consistency and real single-point/scan execution.
+- [Reference parity](ATST_CP_PARITY_2026-10-20.md) separates historical engine
+  runs from the subsequent corrected energy handoff. It does not validate
+  `reference_fcp` for nuclear optimization.
+- [MD validation](ATST_CP_MD_VALIDATION_2026-10-20.md) covers analytical
+  production-path tests and short GPU runs of the final reviewed source.
+  Long-time sampling and clean real-backend timestep convergence remain open.
 
-The 2.3.2 fixed-cell ASE CP MD extension adds per-force electronic
-convergence, complete-step checkpoints, validated restart and offline CP
-trajectory diagnostics. Its independent analytical tests and dated GPU
-observations are recorded in the [MD validation report](ATST_CP_MD_VALIDATION_2026-10-20.md).
-The extension retains experimental status; the GPU evidence covers short runs.
+Supported CP nuclear workflows use fixed cell, a single custom target and the
+explicit `compensated_gate` boundary. Cell-relax/stress, AutoNEB, D2S,
+native/NPT CP MD, two-Fermi and explicit `nupdown` remain outside the supported
+configuration. Scientific model convergence and SHE/RHE calibration are
+application-specific. The historical `profile_status` values are retained for
+[data compatibility](../user/CONFIG_REFERENCE.md#31a-constant-potential-decorator),
+not as current support ratings.
 
 ## Runtime and downstream validation
 
@@ -87,7 +92,10 @@ The parent merged the P6 handoff fixes and deployed Toolbox 1.2.76 to dev/prod,
 with GaN relax/band/DOS Agent/Flow acceptance. Same-input 1/4-card NEB,
 mixed-parallel exploration and remaining default-path acceptance stay open.
 The ATST 2.3.1 / abacuslite 1.2.1 package release does not update that runtime.
-Constant-potential Paimon/public tool-chain acceptance is not established.
+Historical CP prepare/run/summary handoff was verified on SAI, as recorded in
+the [support assessment](ATST_CP_SUPPORT_ASSESSMENT_2026-10-20.md#downstream-and-compatibility-boundaries).
+Current CP platform deployment/Flow acceptance is separate from that evidence
+and from ATST software support.
 
 ## Earlier implementation and release evidence
 

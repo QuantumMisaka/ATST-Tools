@@ -30,11 +30,11 @@ Examples: [GitHub](https://github.com/QuantumMisaka/atst-tools/tree/main/example
 | Intrinsic reaction coordinates | `irc` |
 | ASE-driven or ABACUS-native molecular dynamics | `md` |
 | Experimental Direct MaxFlux path search | `dmf` |
-| Experimental ABACUS constant-potential single points and serial scans | `constant_potential` |
+| ABACUS constant-potential single points and serial scans | `constant_potential` |
 
-Experimental constant-potential fixed-cell relaxation, NEB and ASE-driven MD
+Constant-potential fixed-cell relaxation, serial NEB and ASE-driven MD
 use the explicit `compensated_gate` boundary. See the
-[configuration reference](docs/user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+[configuration reference](docs/user/CONFIG_REFERENCE.md#211-constant-potential-evaluation)
 for setup and supported boundaries.
 
 Local commands prepare paths and ABACUS inputs, inspect trajectories, and

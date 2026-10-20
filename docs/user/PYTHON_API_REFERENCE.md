@@ -128,8 +128,7 @@ print(config["calculation"]["type"])
 Runs a validated YAML path or equivalent mapping and returns a
 `WorkflowResult`. It supports every current `calculation.type`: the released
 NEB, AutoNEB, Dimer, Sella, CCQN, D2S, Relax, Vibration, IRC, MD, and
-experimental DMF workflows, plus the ABACUS-only
-`constant_potential` development candidate.
+experimental DMF workflows, plus ABACUS-only `constant_potential` evaluations.
 `RunOptions` exposes the CLI-equivalent controls:
 
 - `dry_run`, `restart`, `check_input`, and `check_input_timeout` select the
@@ -168,13 +167,13 @@ print(result.status, result.artifact_manifest)
 The `calculator.constant_potential` mapping uses the same `run_workflow` route
 and strict schema as the CLI; it does not add a new stable root import. It
 supports fixed-geometry serial evaluations/scans and fixed-cell
-`compensated_gate` `relax`/`neb` calls. Experimental fixed-cell ASE MD also uses
+`compensated_gate` `relax`/serial `neb` calls. Fixed-cell ASE MD also uses
 `calculation.type: md` with this decorator and one scalar `target_mu_ev`.
-CP MD is available since 2.3.2 and retains experimental status.
+CP MD is supported since 2.3.2; real-backend validation covers short trajectories.
 `reference_fcp` remains limited to fixed-geometry evaluations. CP MD writes a
 per-step checkpoint and diagnostics under `calculation.directory`; a restart
 adds the requested `steps` to the saved global step. See the
-[CP configuration reference](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+[CP configuration reference](CONFIG_REFERENCE.md#211-constant-potential-evaluation)
 for target units, energy definitions and restart requirements.
 
 ### Process runner for external hosts
