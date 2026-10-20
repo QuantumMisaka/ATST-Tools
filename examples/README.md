@@ -46,7 +46,7 @@ repository checkout at the tag matching your installed version. All paths below
 state their starting directory. For a first session without a backend, follow
 the local CLI path before selecting a real calculation.
 
-The **current 2.3.1 release** uses an absolute `1e-5 Å` cell tolerance.
+The **current 2.3.2 release** uses an absolute `1e-5 Å` cell tolerance.
 Preprocessing preserves rounding within that bound, and NEB runtime copies adapt
 periodic vectors only when required by ASE. See the
 [fixed-cell rules](../docs/user/CONFIG_REFERENCE.md#22-nudged-elastic-band-neb).
@@ -213,7 +213,7 @@ mpirun -np <number-of-interior-images> atst run config.yaml
 | `16_dmf_nonperiodic` | H2 non-periodic endpoint pair | H | DMF |
 | `17_dmf_pbc_cartesian_unwrapped` | H2 fixed-cell toy endpoint pair | H | DMF PBC guard |
 | `18_dmf_production_validation` | Li-Si and H2-Au staged P3 validation cases | Li, Si, H, Au | DMF validation |
-| `19_constant_potential_Pt` | Pt slab gate/dipole fixture and fixed-electron diagnostics | Pt | Experimental CP validation inputs |
+| `19_constant_potential_Pt` | Pt slab gate/dipole fixture, force diagnostics and fixed-cell MD materializer | Pt | Experimental CP validation inputs |
 
 ## Reference Results
 
@@ -258,7 +258,7 @@ with validation status or auxiliary output references.
 
 ### Constant-potential validation
 
-* `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs and the fixed-electron/force validation sequence.
+* `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs, the fixed-electron/force validation sequence, and a fixed-cell CP MD materializer requiring a target measured for the same Hamiltonian.
 
 The experimental `compensated_gate` inputs use a custom chemical-potential
 boundary with explicit gate, blocking, field, dipole, PP, ORB and KPT settings.

@@ -289,6 +289,64 @@ def test_validate_accepts_ase_md_defaults():
     assert config["calculation"]["postprocess"]["convert"]["enabled"] is False
 
 
+@pytest.mark.parametrize(
+    ("ensemble", "algorithm"),
+    [
+        ("nve", "velocityverlet"),
+        ("nvt", "bussi"),
+        ("nvt", "langevin"),
+        ("nvt", "nvtberendsen"),
+    ],
+)
+def test_validate_accepts_fixed_cell_compensated_gate_md(ensemble, algorithm):
+    config = {
+        "calculation": {
+            "type": "md", "driver": "ase", "init_structure": "init.stru",
+            "ensemble": ensemble, "algorithm": algorithm,
+        },
+        "calculator": {
+            "name": "abacus", "abacus": {"parameters": {"nelec": 10}},
+            "constant_potential": {
+                "energy_boundary": "compensated_gate", "reference_electrode": "custom",
+                "target_mu_ev": -15.0, "reference_electrons": 10,
+            },
+        },
+    }
+
+    normalized = ConfigLoader.normalize(config)
+    assert normalized["calculator"]["constant_potential"]["target_mu_ev"] == -15.0
+    assert normalized["calculation"]["algorithm"] == algorithm
+
+
+@pytest.mark.parametrize(
+    ("calculation_patch", "cp_patch", "message"),
+    [
+        ({"driver": "abacus_native"}, {}, "driver=ase"),
+        ({"ensemble": "npt", "algorithm": "nptberendsen"}, {}, "fixed-cell"),
+        ({}, {"target_mu_ev": None, "target_mu_values_ev": [-15.0]}, "scalar target"),
+        ({}, {"energy_boundary": "reference_fcp", "target_mu_ev": None,
+              "potential_v": 0.0, "work_ref": 4.6, "work_ref_source": "fixture",
+              "reference_electrode": "SHE"}, "compensated_gate"),
+    ],
+)
+def test_validate_rejects_unsupported_constant_potential_md(
+    calculation_patch, cp_patch, message
+):
+    calculation = {"type": "md", "init_structure": "init.stru"}
+    calculation.update(calculation_patch)
+    cp = {
+        "energy_boundary": "compensated_gate", "reference_electrode": "custom",
+        "target_mu_ev": -15.0, "reference_electrons": 10,
+    }
+    cp.update(cp_patch)
+    with pytest.raises(ValueError, match=message):
+        ConfigLoader.validate({
+            "calculation": calculation,
+            "calculator": {"name": "abacus", "abacus": {"parameters": {"nelec": 10}},
+                           "constant_potential": cp},
+        })
+
+
 def test_validate_accepts_md_postprocess_conversion_config():
     config = ConfigLoader.normalize(
         {

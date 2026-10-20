@@ -19,7 +19,7 @@ or a calculator runtime. For command syntax, see the maintained
 [CLI reference](CLI_REFERENCE.md). For project installation, examples, and
 source, see the [repository README](../../README.md) and the
 [ATST-Tools repository](https://github.com/QuantumMisaka/atst-tools).
-This reference describes the published [2.3.1 API](../releases/RELEASE_NOTES_2.3.1.md).
+This reference describes the [2.3.2 API](../releases/RELEASE_NOTES_2.3.2.md).
 Additions since 2.2.0
 (progress events, plotting helpers, and the profiles/plots result extensions)
 are marked "(2.2.1)".
@@ -45,7 +45,7 @@ responsibility.
 
 ## Stable imports
 
-The stable root imports in the current 2.3.1 release are:
+The stable root imports in the current 2.3.2 release are:
 
 ```python
 from atst_tools.api import (
@@ -165,11 +165,15 @@ result = run_workflow("config.yaml", RunOptions(dry_run=True))
 print(result.status, result.artifact_manifest)
 ```
 
-The `constant_potential` mapping uses the same `run_workflow` route and strict
-schema as the CLI; it does not add a new stable root import. It is currently
-limited to fixed-geometry serial evaluations/scans and fixed-cell
-`compensated_gate` `relax`/`neb` calls. The `reference_fcp` boundary is
-reference-only and cannot be used for those optimization workflows. See the
+The `calculator.constant_potential` mapping uses the same `run_workflow` route
+and strict schema as the CLI; it does not add a new stable root import. It
+supports fixed-geometry serial evaluations/scans and fixed-cell
+`compensated_gate` `relax`/`neb` calls. Experimental fixed-cell ASE MD also uses
+`calculation.type: md` with this decorator and one scalar `target_mu_ev`.
+CP MD is available since 2.3.2 and retains experimental status.
+`reference_fcp` remains limited to fixed-geometry evaluations. CP MD writes a
+per-step checkpoint and diagnostics under `calculation.directory`; a restart
+adds the requested `steps` to the saved global step. See the
 [CP configuration reference](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
 for target units, energy definitions and restart requirements.
 
@@ -286,7 +290,7 @@ manifest, while a valid manifest written by that run is preserved. The CLI
 adapter deliberately does not synthesize or replace manifests for legacy
 workflows that did not write them themselves.
 
-Unreleased path fix (2026-10-16): artifact paths remain relative to the run
+Path fix (2026-10-16): artifact paths remain relative to the run
 workdir. When the manifest is stored elsewhere, including an absolute output
 location, it records an optional top-level `path_base`: the relative path from
 the manifest directory to that workdir. Manifest consumers resolve relative
@@ -425,7 +429,7 @@ Backend delegation has four invariants:
 
 ### `validate_ts(vibration_results, *, structure=None, fmax_threshold=0.05, imaginary_cutoff_cm1=50.0, output=None)`
 
-The current 2.3.1 release exposes `validate_ts` as a lazy root import from
+The current 2.3.2 release exposes `validate_ts` as a lazy root import from
 `atst_tools.api`. It screens stored vibration results and optional frozen
 structure facts. It never calls a live calculator or starts new force or
 vibration calculations. An ASE structure path supplies force evidence only

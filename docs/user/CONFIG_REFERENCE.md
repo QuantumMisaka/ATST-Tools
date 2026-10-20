@@ -1,8 +1,8 @@
 # ATST-Tools Configuration Reference
 
-**Version**: 2.3.1
+**Version**: 2.3.2
 **Last Updated**: 2026-10-20
-**Status**: Reference for the 2.3.1 release
+**Status**: Reference for the 2.3.2 release
 
 This document is the hand-written semantic reference for `config.yaml` files
 used by `atst run`. It explains workflow behavior, common configuration
@@ -80,7 +80,7 @@ Other common names such as `fmax`, `max_steps`, `optimizer`, `trajectory`, and `
 **Type**: `neb`
 
 The fixed-cell preparation, cache invalidation and `1e-5` matcher behavior
-described below are part of the current 2.3.1 release (introduced in 2.2.9).
+described below are part of the current 2.3.2 release (introduced in 2.2.9).
 
 Fixed-cell input preparation compares the complete cell matrix in Angstrom
 with `atol=1e-5`, `rtol=0`. The initial endpoint or first loaded band image
@@ -254,6 +254,7 @@ ATST-Tools supports two MD drivers:
 | `temperature_K` | float | `300.0` | Initial or target temperature. |
 | `trajectory` | string | `md.traj` | ASE trajectory written by either driver. |
 | `logfile` | string | `md.log` | ASE MD log file for `driver: ase`. |
+| `loginterval` | int | `1` | Positive interval for regular trajectory and MD log records. CP MD still checkpoints and diagnoses every completed step. |
 | `summary_file` | string | `md_summary.json` | JSON summary output. |
 | `final_structure` | string | `md_final.traj` | Final structure output. |
 | `artifact_manifest` | string | `atst_artifacts.json` | Workflow artifact manifest JSON output. |
@@ -265,6 +266,7 @@ ATST-Tools supports two MD drivers:
 | `postprocess.convert.frame` | int/null | `null` | Optional single frame index to convert. |
 | `postprocess.convert.stride` | int | `1` | Frame stride for conversion. |
 | `directory` | string | `md_run` | ASE calculator directory or ABACUS native run directory. |
+| `restart` | bool | `false` | Resume the selected MD driver; CP MD uses its validated per-step checkpoint. |
 | `poll_interval_seconds` | float | `5.0` | ABACUS native process polling interval. |
 
 For `driver: ase`, algorithm compatibility is explicit: `nve` uses
@@ -280,6 +282,63 @@ variables.
 After successful MD workflows, ATST-Tools writes a post-processing summary by
 default. Trajectory conversion is opt-in in YAML or can be run later with
 `atst md post`.
+
+#### Experimental constant-potential MD
+
+Added in 2.3.2, this extension retains experimental status.
+
+Set `calculation.type: md`, `driver: ase`, `calculator.name: abacus`, and
+`calculator.constant_potential` with `energy_boundary: compensated_gate`,
+`reference_electrode: custom`, and exactly one finite scalar `target_mu_ev`.
+The ABACUS gate/dipole setup and declared `reference_electrons` (`N0`) follow
+[§3.1a](#31a-constant-potential-decorator). The cell is fixed: `nve` selects
+VelocityVerlet; `nvt` selects Bussi, Langevin, or NVTBerendsen. Native ABACUS
+MD, NPT/variable-cell dynamics, target lists, and `reference_fcp` are rejected
+before MD begins. The `nve` selector names the unthermostatted integrator;
+electron exchange with the reservoir means it is not fixed-electron-number
+NVE. NVTBerendsen retains its usual thermostat behavior and does not imply
+exact canonical sampling.
+
+Every geometry that supplies nuclear forces must pass a fresh SCF solve and
+converge the CP residual within the configured tolerance. The previous
+completed electron count is only the next initial guess. For the compensated
+gate boundary, the effective surface is
+`Omega = E_KohnSham - target_mu_ev * (N - N0)`; the diagnostics use the
+force-consistent grand potential, including supported nuclear constraint
+energy once. For unthermostatted fixed-target runs, inspect
+`conserved_quantity_eV` (that grand potential plus nuclear kinetic energy),
+not raw ABACUS energy plus kinetic energy.
+
+CP MD keeps the configured `md.traj`, `md.log`, `md_summary.json`, final
+structure and artifact manifest paths. It also writes
+`<directory>/cp_md_checkpoint.traj` atomically and appends
+`<directory>/cp_md_diagnostics.jsonl` after every complete step, including
+validated step zero. Each diagnostic row records global step/time, electron
+count, target/calculated chemical potential and residual, CP iterations, raw
+backend energy, force-consistent grand potential, nuclear kinetic energy and
+temperature. Regular trajectory/log records follow `loginterval`; the
+checkpoint and diagnostics do not. The manifest assigns explicit roles to
+both CP artifacts. `md_summary.json` records requested/completed steps,
+status, final global step/time and energy definitions. Post-processing reports
+saved global step/time and validated CP facts under each frame's
+`constant_potential` mapping; old ordinary MD trajectories continue to use
+frame indexes when those saved coordinates are absent.
+
+With `restart: true`, `steps` means *additional* integration steps. The run
+reads the single-frame checkpoint and validates its geometry, CP identity,
+target, residual, fixed assets, timestep/integrator settings and finite saved
+momenta; zero momenta remain valid. It checks the trajectory, log and
+diagnostic tails before appending. Global step/time continue without a
+duplicate initial frame, and regular output remains aligned to global
+`loginterval` multiples. This restores the complete nuclear state and last
+converged electron count, not a partial SCF or thermostat random-generator
+state; stochastic continuations are not guaranteed bitwise identical. On an
+electronic failure, the last complete checkpoint and frames remain, a failed
+summary/manifest is written, and CLI/API execution raises an error.
+
+The [Pt slab MD materializer](../../examples/19_constant_potential_Pt/README.md#experimental-fixed-cell-cp-md-input)
+provides a pinned, constrained LCAO starting configuration with an explicitly
+supplied target for the same Hamiltonian.
 
 ### 2.3c Direct MaxFlux (DMF, experimental)
 **Type**: `dmf`
@@ -637,7 +696,7 @@ IRC supports the Sella backend and an opt-in descent backend. The Sella backend 
 | `keep_going` | bool | `false` | Forwarded to `sella.IRC`. |
 | `directory` | string | `irc_run` | Calculator working directory. |
 
-Unreleased fixes (2026-10-16): the combined Sella run accepts an omitted or
+Fixes (2026-10-16): the combined Sella run accepts an omitted or
 null `normalized_trajectory` and preserves an explicit filename. Descent IRC
 keeps valid frozen energy and force results on its returned endpoints and in
 the main and normalized trajectories, matching the direction-specific files.
@@ -674,11 +733,13 @@ its own SCF/CP identity and result.
 
 `reference_fcp` is retained for reproducing the frozen vacuum/work-reference
 algorithm and is marked reference-only. It may be used by this fixed-geometry
-workflow for algorithm comparison, but it is rejected for `relax` and `neb`.
+workflow for algorithm comparison, but it is rejected for `relax`, `neb` and
+`md`.
 The `compensated_gate` boundary consumes the same-run gate/dipole density terms,
 uses a custom target chemical potential, and is the only CP boundary accepted by
-fixed-cell `relax` and ordinary `neb`. Those optimization workflows require one
-scalar target and do not support a target list, cell relaxation, or CP stress.
+fixed-cell `relax`, ordinary `neb`, and experimental ASE-driven `md`. These
+nuclear workflows require one scalar target and do not support a target list,
+cell relaxation, or CP stress.
 For `reference_fcp`, CP `energy` uses the explicit no-entropy energy
 (`E_KohnSham - E_entropy(-TS)`, exposed by abacuslite 1.2.1 as
 `energy_without_entropy`); CP `free_energy` retains the backend's
@@ -716,7 +777,8 @@ manifest; the run remains failed and no incomplete energy/force state is
 published for optimization.
 
 The factory rejects CP for `autoneb`, `dimer`, `sella`, `ccqn`, `d2s`,
-`vibration`, `irc`, `md`, and `dmf`. This candidate also rejects explicit
+`vibration`, `irc`, and `dmf`; the restricted MD combinations above are
+accepted. This candidate also rejects explicit
 `nupdown` (including `0`) and `two_fermi`; supported profiles use one common
 Fermi level.
 
@@ -810,7 +872,7 @@ factory keeps the two values separate).
 | `reference_electrons` | float | **Required** | Model-zero-charge electron count `N0`; finite and non-negative. |
 | `potential_v` | float | `null` | One target electrode potential in V; reference boundary only and mutually exclusive with `potentials_v`. |
 | `potentials_v` | list[float] | `null` | Ordered non-empty voltage scan in V; reference boundary only. |
-| `target_mu_ev` | float | `null` | One custom conjugate chemical-potential target in eV; compensated boundary only and mutually exclusive with `target_mu_values_ev`. |
+| `target_mu_ev` | float | `null` | One custom conjugate chemical-potential target in eV; compensated boundary only, required for CP MD, and mutually exclusive with `target_mu_values_ev`. |
 | `target_mu_values_ev` | list[float] | `null` | Ordered non-empty custom chemical-potential scan in eV; compensated boundary only. |
 | `reference_electrode` | string | `SHE` | Named reference for `reference_fcp`; must be `custom` for `compensated_gate`. This label does not calibrate a compensated target to SHE/RHE. |
 | `work_ref` | float | `null` | Explicit reference-electrode work function in eV; required for `reference_fcp`. `work_ref_eV` is an accepted input alias. |
@@ -869,7 +931,7 @@ moving an unchanged asset file is allowed because content hashes, not paths,
 define the physical identity. Reference-fcp facts remain reference-only and
 must not be used to claim optimization energy/force consistency.
 
-Unreleased facts-v1 compatibility fix (2026-10-16): new persisted facts again
+Facts-v1 compatibility fix (2026-10-16): new persisted facts again
 include the historical `profile_status` field required by the 2.2.8 reader.
 Its values remain `reference_only_unvalidated` for `reference_fcp` and
 `compensated_gate_pending_scientific_acceptance` for `compensated_gate`; these

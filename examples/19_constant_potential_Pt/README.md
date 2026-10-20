@@ -104,3 +104,46 @@ endpoint through the public tool before preparing the NEB. This fixture tests
 constrained optimization, CP facts persistence and per-image electronic
 convergence. Gamma sampling, the fixed thin substrate and the finite image
 chain do not establish a production H diffusion barrier.
+
+## Experimental fixed-cell CP MD input
+
+CP MD requires ATST 2.3.2 or later and retains experimental status.
+
+`materialize_md.py` creates a new, self-contained LCAO fixture and
+`config_md.yaml`; it does not run ABACUS. It fixes the bottom eight of the 12
+Pt atoms and leaves four mobile. The YAML keeps the same PP/ORB, Gamma mesh,
+gate/block/dipole boundary and `ks_solver: cusolver` for each electronic solve.
+The initial ABACUS electron guess is 217 and the separately declared neutral
+reference is 216. Use a target chemical potential measured or chosen for this
+exact LCAO/gate/dipole/block Hamiltonian. Do not reuse a target from a PW,
+different block, or different geometry fixture.
+
+From this example directory, set `MU_TARGET_EV` to that target and create a
+new isolated destination:
+
+```bash
+python materialize_md.py /path/to/new-cp-md --target-mu "$MU_TARGET_EV" --steps 5
+cd /path/to/new-cp-md
+atst run config_md.yaml
+```
+
+Run the ABACUS step only in an allocation with the required accelerator and
+engine resources; this project's SAI validation uses a 4V100 GPU node and the
+installed ABACUS LTS. The generated path is a short Langevin NVT example with
+0.25 fs steps. Its five-step setting is for inspecting electronic convergence,
+forces and output handling, not long-time sampling. Confirm that the slab
+charge stays confined and mobile Pt atoms remain outside the gate/block
+region throughout the trajectory.
+
+`run_md/cp_md_checkpoint.traj` holds the last complete step, beginning at
+step zero. `run_md/cp_md_diagnostics.jsonl` records every complete step's
+electron count, potential residual, raw energy, force-consistent grand
+potential, kinetic energy and temperature. `run_md/md.traj` and `run_md/md.log`
+follow the configured output interval. To continue, set `restart: true` in
+`config_md.yaml` and set `steps` to the number of *additional* steps; the
+checkpoint preserves nuclear positions, cell, constraints and finite momenta,
+including zero momenta. The resumed output keeps global step/time numbering.
+Stochastic thermostat continuation does not restore the random-generator
+state bit for bit. See the
+[MD configuration contract](../../docs/user/CONFIG_REFERENCE.md#experimental-constant-potential-md)
+for accepted integrators, strict SCF/CP convergence and failure behavior.

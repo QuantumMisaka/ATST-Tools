@@ -44,8 +44,10 @@ from installation to result inspection and troubleshooting, use the
 
 - [Feature status matrix](reports/FEATURE_STATUS_MATRIX.md): the current
   supported/partial/experimental boundary.
-- [2.3.1 release notes](releases/RELEASE_NOTES_2.3.1.md): latest published
-  release, including tagged artifacts and installed-package verification.
+- [2.3.2 release notes](releases/RELEASE_NOTES_2.3.2.md): constant-potential MD,
+  validation scope and publication status.
+- [2.3.1 release notes](releases/RELEASE_NOTES_2.3.1.md): FCP reference parity
+  and installed-package verification.
 - [2.3.0 release notes](releases/RELEASE_NOTES_2.3.0.md): external-backend migration release.
 - Historical notes: [2.2.5](archive/releases/RELEASE_NOTES_2.2.5.md),
   [2.2.4](archive/releases/RELEASE_NOTES_2.2.4.md).

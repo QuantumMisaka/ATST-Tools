@@ -42,7 +42,7 @@ prints supported workflow types. `--show-template` accepts
 accepts `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
 
 `constant_potential` is an ABACUS-only development candidate included in the
-current 2.3.1 package; package inclusion is not a production or platform
+current 2.3.2 package; package inclusion is not a production or platform
 acceptance claim. The template is a schema skeleton: fill the strict boundary
 fields and the prepared ABACUS gate/dipole parameters before running it. See the
 [configuration reference](CONFIG_REFERENCE.md) for target units, workflow
