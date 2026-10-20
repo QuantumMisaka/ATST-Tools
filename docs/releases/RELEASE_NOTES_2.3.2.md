@@ -2,8 +2,9 @@
 
 **Version**: 2.3.2
 **Date**: 2026-10-20
-**Status**: Release candidate; publication pending
-**Tag**: `v2.3.2` (pending)
+**Status**: Published on PyPI and GitHub
+**Source**: `main`, release commit `05773588e8722a7d45c249cf32480f7ece8e2066`
+**Tag**: `v2.3.2`
 
 ## Summary
 
@@ -70,7 +71,37 @@ experimental status.
 
 ## Publication
 
-Candidate CI, exact-tag readiness, tagged publication and indexed-install
-verification are pending. Publication evidence will be recorded here after
-those operations complete. The original checkout and scientific evidence are
-retained; this release does not update downstream Toolbox deployments.
+- [PR #47](https://github.com/QuantumMisaka/atst-tools/pull/47) merged after all
+  six required checks passed in [candidate CI](https://github.com/QuantumMisaka/atst-tools/actions/runs/39392303090).
+  The merged tree equals reviewed candidate `ab45fc6`.
+- [Main CI](https://github.com/QuantumMisaka/atst-tools/actions/runs/39392582246)
+  passed on release commit `0577358`. The local exact-tag readiness check passed.
+- [Tagged publication](https://github.com/QuantumMisaka/atst-tools/actions/runs/39392692089)
+  passed readiness, full tests, documentation governance, build, strict Twine
+  and clean-wheel API checks. PyPI upload completed after the existing
+  five-minute environment timer.
+- [PyPI 2.3.2](https://pypi.org/project/atst-tools/2.3.2/) was uploaded on
+  2026-10-20 at 08:27 UTC (16:27 UTC+08:00). Indexed artifact sizes and SHA256
+  digests match the downloaded tag artifacts. The
+  [GitHub release](https://github.com/QuantumMisaka/atst-tools/releases/tag/v2.3.2)
+  carries those same files.
+- The tag wheel's 93 Python files match the release source. With abacuslite
+  1.2.1 and ASE 3.28.0 in an isolated Python 3.10 environment, its full
+  installed-consumer suite collected 1487 tests: **1452 passed, 35 skipped**,
+  zero failures or deselections. Installed-origin/report verification passed.
+- A separate no-cache PyPI install into a new Python 3.10 environment passed
+  `pip check`, CLI/API version checks (`2.3.2`), external-backend identity and
+  comparison of all 93 installed Python files against the tag wheel. This
+  unpinned dependency resolution selected abacuslite 1.2.2 and ASE 3.29.0;
+  the lower-bound consumer and GPU evidence above used abacuslite 1.2.1.
+
+| Artifact | Bytes | SHA256 |
+| --- | ---: | --- |
+| `atst_tools-2.3.2-py3-none-any.whl` | 362240 | `25eaa0f4619d96c1d8540a9cc266196a1b0816feb3d3063c34cda1a5a7f32a83` |
+| `atst_tools-2.3.2.tar.gz` | 321117 | `d5565bf75becba3757422ca58e8c4897e0c48e1fd30ac38a12a2a631160d7f15` |
+
+Raw logs, tag artifacts, consumer report and PyPI metadata are retained as
+`release232-*` under `/home/james/scratch/atst-abacuslite-release-20261020/`.
+The original checkout and scientific evidence remain in place. This release
+does not update downstream Toolbox deployments. Publication records added to
+main after the tag do not alter the tagged artifacts.

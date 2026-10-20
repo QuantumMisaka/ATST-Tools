@@ -2,7 +2,7 @@
 
 **Version**: 2.3.2
 **Last Updated**: 2026-10-20
-**Status**: 2.3.2 release candidate; publication status is tracked in the release notes
+**Status**: 2.3.2 is published on PyPI and GitHub; constant-potential workflows remain experimental
 **Owner**: ATST-Tools maintainers
 
 This matrix describes the current source tree's supported, experimental and
