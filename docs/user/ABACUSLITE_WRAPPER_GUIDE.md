@@ -5,10 +5,10 @@
 ATST-Tools uses the independently installed `abacuslite>=1.2.1,<2` package
 for every ABACUS calculator and file reader/writer. Missing or broken imports
 fail visibly. The old `atst_tools.external.ASE_interface.abacuslite` import paths
-forward to the same installed implementation for existing callers, including
-Paimon; they do not select a separate backend. 2.3.0 introduced this
-required-dependency cutover; 2.3.1 requires `abacuslite>=1.2.1` for the
-explicit `energy_without_entropy` handoff for reference-only comparisons.
+forward to the same installed implementation for existing callers. Version
+1.2.1 supplies the explicit `energy_without_entropy` metadata used for
+reference-only constant-potential comparisons; see the
+[energy definitions](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate).
 
 This means ABACUS-backed workflows can run through ASE calculators without
 requiring users to write Python calculator boilerplate. The supported workflow

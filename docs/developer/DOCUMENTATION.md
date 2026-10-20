@@ -22,6 +22,13 @@ Validation and site operations are documented in
 ## Rules
 
 - Keep one current guide per topic and link instead of duplicating it.
+- Keep the README focused on project purpose, capabilities, installation and a
+  first example. Put detailed YAML/backend/API instructions in their user
+  references and link to them from the README and documentation index.
+- Keep current capability status in the feature matrix and dated execution or
+  downstream platform acceptance in reports. User guides retain the scientific
+  limits needed to configure a calculation, without repeating platform delivery
+  disclaimers or historical run logs.
 - User pages describe installation, configuration, running and results.
   Maintainer commands, CI configuration and site operations belong in
   `docs/developer/`.

@@ -15,6 +15,8 @@
 - **Runtime consumes normalized config**: `atst run` 必须先调用 `ConfigLoader.normalize()`，workflow/calculator 读取规范化后的字段。
 - **Document from schema**: 非 calculator YAML 变量表由 schema 自动生成，不手工维护。
 
+用户 YAML 不包含 `config_version`，按已安装包的 schema 校验；未知顶层字段会被拒绝。
+
 ABACUS INPUT 变量是唯一例外：它们统一放在 `calculator.abacus.parameters` 中透传给 ABACUS，不逐项纳入 ATST-Tools schema。
 
 ## 2. 关键入口

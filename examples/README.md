@@ -207,7 +207,7 @@ mpirun -np <number-of-interior-images> atst run config.yaml
 | `16_dmf_nonperiodic` | H2 non-periodic endpoint pair | H | DMF |
 | `17_dmf_pbc_cartesian_unwrapped` | H2 fixed-cell toy endpoint pair | H | DMF PBC guard |
 | `18_dmf_production_validation` | Li-Si and H2-Au staged P3 validation cases | Li, Si, H, Au | DMF validation |
-| `19_constant_potential_Pt` | Pt slab gate/dipole fixture and fixed-electron diagnostics | Pt | Unreleased CP validation inputs |
+| `19_constant_potential_Pt` | Pt slab gate/dipole fixture and fixed-electron diagnostics | Pt | Experimental CP validation inputs |
 
 ## Reference Results
 
@@ -254,11 +254,9 @@ with validation status or auxiliary output references.
 
 * `19_constant_potential_Pt/`: Reproducible PW/LCAO Pt gate-field inputs and the fixed-electron/force validation sequence.
 
-This is a development validation fixture, not a production benchmark. The
-constant-potential workflow code is included in 2.3.1 as a development candidate.
-Its `compensated_gate` inputs use a custom chemical-potential boundary and keep
-gate, blocking, field, dipole, PP, ORB, and KPT settings explicit. The fixture
-does not establish universal basis/cutoff convergence, a calibrated SHE/RHE
-potential, a production barrier, or Paimon/public tool-chain acceptance; read
-its local README together with the [configuration reference](../docs/user/CONFIG_REFERENCE.md)
-before reusing it.
+The experimental `compensated_gate` inputs use a custom chemical-potential
+boundary with explicit gate, blocking, field, dipole, PP, ORB and KPT settings.
+Basis/cutoff convergence, SHE/RHE calibration and a converged reaction barrier
+need system-specific checks. Follow the [example instructions](19_constant_potential_Pt/README.md)
+and [configuration reference](../docs/user/CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)
+for input preparation and analysis.

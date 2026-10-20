@@ -104,3 +104,13 @@ remaining mixed-parallel/default-path acceptance stay open. The parent
 Toolbox's 1.2.76 dev/prod GaN acceptance is recorded separately; this package
 release does not update its dependency gitlinks, SIF or deployed runtime.
 The original checkouts and retained scientific worktrees remain in place.
+
+## Documentation follow-up (2026-10-20)
+
+The repository README now focuses on capabilities, installation and a first
+example. Detailed setup stays in the user references; current support and
+historical/platform evidence are linked from the feature matrix. User/API
+references now identify 2.3.1 and stored-data TS screening as released, while
+retaining the experimental constant-potential and DMF boundaries. This is a
+documentation-only follow-up on main; the published tag and artifacts are
+unchanged, and no CLI, YAML or Python API behavior changes.

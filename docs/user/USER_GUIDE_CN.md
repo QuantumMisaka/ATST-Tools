@@ -3,14 +3,10 @@
 ## 1. 项目定位
 
 ATST-Tools 是面向 ABACUS 和 DeePMD-kit 后端的 ASE 过渡态工作流工具。
-当前 `main` 与最新发布版本均为 2.3.1（详见
-[release notes](../releases/RELEASE_NOTES_2.3.1.md)），把独立维护的 abacuslite
-设为唯一 ABACUS ASE backend。包升级不会自动更新既有部署环境。
-项目把原 main branch 的脚本集合整理为可安装 Python package，
-统一通过 `atst` 命令和 YAML 配置运行 NEB、AutoNEB、Dimer、Sella、CCQN、
-D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 候选路径任务。
-当前 2.3.1 包还包含 ABACUS 恒电势**开发候选**（`calculation.type: constant_potential`）；它的边界和验收状态见
-[功能状态矩阵](../reports/FEATURE_STATUS_MATRIX.md)，该候选代码随当前 2.3.1 包提供，但不代表成熟生产支持，也没有平台/公共工具链验收声明。
+本指南对应 [2.3.1](../releases/RELEASE_NOTES_2.3.1.md)，ABACUS 通过独立安装的
+abacuslite 接入。使用 `atst` 命令和 YAML 配置可运行 NEB、AutoNEB、Dimer、Sella、
+CCQN、D2S、结构优化、振动分析、IRC、MD，以及实验性的 DMF 和恒电势工作流。
+各方法的适用范围见下文「支持的工作流」。
 
 ATST-Tools 的边界是工作流编排、配置校验、calculator 构造、轨迹命名、
 重启辅助、ABACUS 常见前后处理和示例文档。ABACUS、DeePMD-kit、ASE、Sella
@@ -193,7 +189,7 @@ atst run --show-template d2s --calculator dp
 | 找不到 `inputs/...`、模型或赝势 | 当前目录是否为算例目录；配置中的相对路径是否存在。 |
 | 配置通过但无法启动 ABACUS | 普通 dry-run 只校验配置；检查后端命令、MPI、GPU solver 和资源。 |
 | 优化结束但 `converged: false` | 查看步数、阈值及后端错误；短示例的步数上限可能只够展示流程。 |
-| 已安装包没有 `vibration validate` | 该入口属于未发布开发树，使用当前发行版已有的振动结果与后处理入口。 |
+| 已安装包没有 `vibration validate` | 用 `atst --version` 核对版本；2.3.1 已包含该命令，检查命令与包是否来自同一 Python 环境。 |
 
 ## 4. 支持的工作流
 
@@ -216,14 +212,14 @@ atst run --show-template d2s --calculator dp
 
 常规 workflow 交付结构、阶段执行状态和 optimizer 已提供的收敛事实；完成计算
 不会自动运行 IRC，也不等于过渡态已验证。振动/IRC 等额外计算仍由 YAML 中明确配置。
-开发版提供独立只读筛查，消费已保存的振动结果和可选冻结结构证据：
+可使用独立只读筛查，检查已保存的振动结果和可选冻结结构证据：
 
 ```bash
 atst vibration validate vibration_results.json --structure frozen_ts.traj
 ```
 
 它不会启动 calculator 或新振动计算。缺少检查范围或冻结力证据时保持 `unknown`；
-筛查结果不证明 IRC 连通性。此功能属于未发布开发内容，命令和 Python 入口见
+筛查结果不证明 IRC 连通性。命令和 Python 入口见
 [CLI 参考](CLI_REFERENCE.md#vibration-tools)与
 [Python API 参考](PYTHON_API_REFERENCE.md)。
 
@@ -240,11 +236,11 @@ D2S、CCQN 和 IRC 已纳入 2.0.x schema 与示例，不再是待集成状态�
 `constant_potential` 当前是开发候选。它通过 `calculator.constant_potential`
 装饰 ABACUS calculator，可运行固定几何的单点或串行目标扫描；固定晶胞的
 `relax`/`neb` 只接受 `energy_boundary: compensated_gate` 的单一
-`target_mu_ev`。`reference_fcp` 仅用于旧算法复现和诊断，不可用于这些核优化
+`target_mu_ev`。`reference_fcp` 仅用于参考算法复现和诊断，不可用于这些核优化
 工作流。恒电势结果需要同一轮 SCF 的有限 Fermi/边界事实和可验证的 CP 身份；失败
 或身份不匹配时不会把旧能量/力交给优化器。该候选不覆盖 cell-relax、stress、
-AutoNEB、D2S、MD、两 Fermi 或显式 `nupdown`，也不表示 Paimon/public 工具链
-已经通过验收。参数和产物见 [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md)。
+AutoNEB、D2S、MD、两 Fermi 或显式 `nupdown`。参数、能量定义和产物见
+[配置参考](CONFIG_REFERENCE.md#211-constant-potential-evaluation-development-candidate)。
 
 ## 5. ABACUS / abacuslite 集成
 
