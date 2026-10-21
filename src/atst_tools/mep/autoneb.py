@@ -22,6 +22,7 @@ from ase.optimize import FIRE, BFGS
 
 from atst_tools.mep.neb import AbacusNEB
 from atst_tools.calculators.factory import CalculatorFactory
+from atst_tools.calculators.constant_potential import read_constant_potential_facts
 from atst_tools.calculators.dp import is_dp_calculator, should_share_calculator
 from atst_tools.utils.artifacts import write_artifact_manifest
 from atst_tools.utils.geometry import prepare_fixed_cell_images, fixed_cell_metadata
@@ -32,8 +33,13 @@ from atst_tools.utils.convergence import (
     as_step_count,
     emit_unconverged_advisory,
 )
-from atst_tools.utils.neb_endpoints import endpoint_policy, ensure_neb_endpoint_results
+from atst_tools.utils.neb_endpoints import (
+    endpoint_policy,
+    ensure_neb_endpoint_results,
+    expected_cp_endpoint_identity,
+)
 from atst_tools.utils.neb_endpoints import freeze_current_results, freeze_results, get_endpoint_results
+from atst_tools.workflows.endpoint_relax import relax_neb_endpoints
 from atst_tools.utils.mpi import (
     get_ase_world,
     rank_owns_local_image,
@@ -813,6 +819,7 @@ class AutoNEBRunner:
             raise initial_chain_error
         self._image_index_by_id = {id(image): index for index, image in enumerate(self.init_chain)}
         self._active_autoneb = None
+        self._endpoint_stages = []
         self._apply_legacy_endpoint_conditions()
 
     def _apply_legacy_endpoint_conditions(self):
@@ -827,6 +834,7 @@ class AutoNEBRunner:
                     results[0],
                     results[1],
                     self.init_chain[index].info.get("atst_endpoint_result"),
+                    read_constant_potential_facts(self.init_chain[index], check_geometry=False),
                 )
         reference = self.init_chain[len(self.init_chain) // 2]
         magmoms = reference.get_initial_magnetic_moments()
@@ -835,8 +843,8 @@ class AutoNEBRunner:
             endpoint.set_initial_magnetic_moments(magmoms)
             if constraints:
                 endpoint.set_constraint(deepcopy(constraints))
-        for index, (energy, forces, status) in endpoint_results.items():
-            freeze_results(self.init_chain[index], energy, forces, status=status)
+        for index, (energy, forces, status, cp_facts) in endpoint_results.items():
+            freeze_results(self.init_chain[index], energy, forces, status=status, cp_facts=cp_facts)
 
     def _base_directory(self):
         base_dir = self.calc_config['directory']
@@ -910,17 +918,39 @@ class AutoNEBRunner:
         self.attach_calculators(images, synchronize=False)
 
     def _prepare_endpoint_results(self):
-        """Prepare endpoint single-point results once and synchronize images."""
+        """Relax missing-result endpoints, then synchronize their results."""
         base_dir = self._base_directory()
         policy = endpoint_policy(self.calc_config, default="auto")
+        cp_identity = expected_cp_endpoint_identity(self.config)
+        endpoint_config = self.calc_config["endpoint_optimization"]
+        self._endpoint_stages = []
 
         def prepare():
+            if endpoint_config["enabled"]:
+                if policy == "never":
+                    ensure_neb_endpoint_results(
+                        self.init_chain,
+                        lambda directory: None,
+                        policy="never",
+                        context="AutoNEB",
+                        constant_potential_identity=cp_identity,
+                    )
+                self._endpoint_stages = relax_neb_endpoints(
+                    self.init_chain,
+                    endpoint_config,
+                    lambda label, atoms: self._get_calculator(
+                        f"{base_dir}/endpoint_{label}_relax"
+                    ),
+                    self._get_optimizer(),
+                    constant_potential_identity=cp_identity,
+                )
             ensure_neb_endpoint_results(
                 self.init_chain,
                 lambda directory: self._get_calculator(f"{base_dir}/{directory}"),
                 policy=policy,
                 directories=("endpoint_initial", "endpoint_final"),
                 context="AutoNEB",
+                constant_potential_identity=cp_identity,
             )
 
         if not self.parallel:
@@ -1167,7 +1197,8 @@ class AutoNEBRunner:
                 workflow="autoneb",
                 world=self.world,
             )
-        stages = [record.to_manifest() for record in iteration_records]
+        stages = [record.to_manifest() for record in self._endpoint_stages]
+        stages.extend(record.to_manifest() for record in iteration_records)
         if final_record is not None:
             stages.append(final_record.to_manifest())
 

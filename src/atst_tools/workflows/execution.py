@@ -14,7 +14,6 @@ from ase.optimize import FIRE, BFGS, LBFGS, QuasiNewton
 
 from atst_tools.calculators.factory import CalculatorFactory
 from atst_tools.calculators.constant_potential import (
-    constant_potential_identity_for_config,
     constant_potential_restart_initial_electrons_for_config,
 )
 from atst_tools.calculators.dp import is_dp_calculator, should_share_calculator
@@ -29,14 +28,13 @@ from atst_tools.workflows.d2s import D2SWorkflow
 from atst_tools.workflows.irc import IRCWorkflow
 from atst_tools.workflows.md import MDWorkflow
 from atst_tools.workflows.dmf import DMFWorkflow
+from atst_tools.workflows.endpoint_relax import relax_neb_endpoints
 from atst_tools.utils.config_schema import apply_calculation_defaults
 from atst_tools.utils.io import read_structure
 from atst_tools.utils.neb_endpoints import (
-    ENDPOINT_OPTIMIZED,
     endpoint_policy,
     ensure_neb_endpoint_results,
-    freeze_current_results,
-    has_endpoint_results,
+    expected_cp_endpoint_identity,
 )
 from atst_tools.utils.restart_helpers import get_last_frame, get_last_neb_band
 from atst_tools.utils.idpp import generate
@@ -125,48 +123,12 @@ def _normalized_calculation(config, calc_config):
     return apply_calculation_defaults(calc_config)
 
 
-def _relax_neb_endpoints(init_chain, config, calc_name, calc_config, base_dir, optimizer_class):
-    """Relax the two NEB endpoints before the band relaxation starts.
-
-    Endpoint facts are reported as :class:`StageRecord` objects so the caller can
-    persist them in the artifact manifest.  A skipped endpoint (its results
-    already exist and ``skip_if_has_results`` is enabled) produces a record with
-    ``status="skipped"`` and no optimizer-owned facts, because no optimizer ran
-    for it; an attempted endpoint carries the ``opt.run()`` return value and the
-    observed step count.  Endpoints receive no convergence advisory of their own.
-
-    Args:
-        init_chain: NEB band images; ``init_chain[0]`` and ``init_chain[-1]`` are
-            the relaxed endpoints.
-        config: Full configuration dictionary.
-        calc_name: Name of the calculator backend.
-        calc_config: Calculation-specific configuration, read for the
-            ``endpoint_optimization`` section.
-        base_dir: Base output directory for the endpoint working directories.
-        optimizer_class: ASE optimizer class used for the endpoint relaxations.
-
-    Returns:
-        One :class:`StageRecord` per endpoint, in ``initial``/``final`` order, or
-        an empty list when endpoint optimization is disabled.
-    """
-    endpoint_config = calc_config.get("endpoint_optimization") or {}
-    if not endpoint_config.get("enabled"):
-        return []
-    skip_existing = endpoint_config.get("skip_if_has_results", True)
-    endpoint_fmax = endpoint_config.get("fmax", 0.05)
-    endpoint_steps = endpoint_config.get("max_steps", 100)
-    stages: list[StageRecord] = []
-    for label, atoms in (("initial", init_chain[0]), ("final", init_chain[-1])):
-        if skip_existing and has_endpoint_results(atoms):
-            stages.append(
-                StageRecord(
-                    name=f"endpoint_{label}_relax",
-                    role="endpoint",
-                    criterion="ase_optimizer",
-                    status="skipped",
-                )
-            )
-            continue
+def _relax_neb_endpoints(
+    init_chain, config, calc_name, calc_config, base_dir, optimizer_class,
+    constant_potential_identity=None,
+):
+    """Run the shared NEB endpoint Relax stage with workflow calculator setup."""
+    def endpoint_calculator(label, atoms):
         calculator_kwargs = {"directory": f"{base_dir}/endpoint_{label}_relax"}
         if calc_config.get("restart"):
             initial_electrons = constant_potential_restart_initial_electrons_for_config(
@@ -174,30 +136,25 @@ def _relax_neb_endpoints(init_chain, config, calc_name, calc_config, base_dir, o
             )
             if initial_electrons is not None:
                 calculator_kwargs["constant_potential_initial"] = initial_electrons
-        atoms.calc = _get_workflow_calculator(calc_name, config, **calculator_kwargs)
-        opt = optimizer_class(atoms, trajectory=f"endpoint_{label}_relax.traj")
-        stage_converged = opt.run(fmax=endpoint_fmax, steps=endpoint_steps)
-        freeze_current_results(atoms, status=ENDPOINT_OPTIMIZED)
-        stages.append(
-            StageRecord(
-                name=f"endpoint_{label}_relax",
-                role="endpoint",
-                criterion="ase_optimizer",
-                converged=stage_converged,
-                fmax=as_finite_float(endpoint_fmax),
-                steps=as_step_count(endpoint_steps),
-                actual_steps=as_step_count(getattr(opt, "nsteps", None)),
-            )
-        )
-    return stages
+        return _get_workflow_calculator(calc_name, config, **calculator_kwargs)
+
+    return relax_neb_endpoints(
+        init_chain,
+        calc_config.get("endpoint_optimization") or {},
+        endpoint_calculator,
+        optimizer_class,
+        constant_potential_identity=constant_potential_identity,
+    )
 
 
 def _sync_parallel_endpoint_results(images, world, prepare_endpoints):
-    """Run endpoint preparation on rank 0 and share frozen results via a temp chain."""
+    """Prepare endpoints on rank 0 and share frozen images and stage facts."""
     sync_file = ".atst_neb_endpoint_synced.traj"
+    endpoint_stages: list[StageRecord] = []
 
     def prepare_and_write():
-        prepare_endpoints(images)
+        nonlocal endpoint_stages
+        endpoint_stages = prepare_endpoints(images)
         write(sync_file, images, parallel=False)
 
     run_rank_zero_section(
@@ -232,7 +189,7 @@ def _sync_parallel_endpoint_results(images, world, prepare_endpoints):
     )
     if hasattr(world, "barrier"):
         world.barrier()
-    return synced_images
+    return synced_images, endpoint_stages
 
 
 def run_neb(config, calc_name, calc_config, world=None):
@@ -263,6 +220,24 @@ def run_neb(config, calc_name, calc_config, world=None):
             "Image-level NEB parallelism requires MPI-launched atst run; running images serially."
         )
 
+    base_dir = _abacus_base_directory(config, 'run_atst')
+    policy = endpoint_policy(calc_config, default="auto")
+    endpoint_optimization_enabled = calc_config["endpoint_optimization"]["enabled"]
+    optimizer = get_optimizer(calc_config['optimizer'])
+    make_endpoint_stages: list[StageRecord] = []
+    cp_identity = expected_cp_endpoint_identity(config)
+
+    def require_results_before_never(endpoints):
+        """Prevent an enabled endpoint relax from bypassing explicit `never`."""
+        if policy == "never":
+            ensure_neb_endpoint_results(
+                endpoints,
+                lambda directory: None,
+                policy="never",
+                context="NEB",
+                constant_potential_identity=cp_identity,
+            )
+
     if has_make:
         make_config = calc_config.get('make') or {}
         init_chain_file = make_config['output']
@@ -270,6 +245,16 @@ def run_neb(config, calc_name, calc_config, world=None):
         mag_ele, mag_num = _parse_make_mag(make_config.get('magmom'))
         if not restart:
             def generate_initial_chain():
+                def prepare_make_endpoints(initial, final):
+                    endpoints = [initial, final]
+                    require_results_before_never(endpoints)
+                    make_endpoint_stages.extend(
+                        _relax_neb_endpoints(
+                            endpoints, config, calc_name, calc_config, base_dir, optimizer,
+                            constant_potential_identity=cp_identity,
+                        )
+                    )
+
                 generate(
                     method=make_config['method'],
                     n_images=make_config['n_images'],
@@ -283,6 +268,7 @@ def run_neb(config, calc_name, calc_config, world=None):
                     mag_num=mag_num,
                     no_align=make_config['no_align'],
                     ts_file=make_config.get('ts_guess'),
+                    endpoint_prepare=prepare_make_endpoints if endpoint_optimization_enabled else None,
                 )
             if effective_parallel:
                 run_rank_zero_section(
@@ -336,7 +322,6 @@ def run_neb(config, calc_name, calc_config, world=None):
     k = calc_config['k']
     algorism = calc_config['algorism']
     max_steps = calc_config['max_steps']
-    opt_name = calc_config['optimizer']
     two_stage = calc_config.get("two_stage", False)
     if effective_parallel:
         validate_image_parallel_world(world, len(init_chain) - 2, "NEB")
@@ -345,10 +330,6 @@ def run_neb(config, calc_name, calc_config, world=None):
             world.size,
             len(init_chain) - 2,
         )
-
-    base_dir = _abacus_base_directory(config, 'run_atst')
-    policy = endpoint_policy(calc_config, default="auto")
-    optimizer = get_optimizer(opt_name)
 
     def prepare_endpoints(images):
         """Prepare both NEB endpoints and return their endpoint stage records.
@@ -361,24 +342,14 @@ def run_neb(config, calc_name, calc_config, world=None):
             by this call, or an empty list when endpoint optimization is
             disabled.
         """
-        endpoint_records = _relax_neb_endpoints(
-            images, config, calc_name, calc_config, base_dir, optimizer
-        )
-        cp_identity = None
-        cp_section = config.get("calculator", {}).get("constant_potential")
-        if isinstance(cp_section, dict):
-            boundary = cp_section.get("energy_boundary", "reference_fcp")
-            target = (
-                cp_section.get("target_mu_ev")
-                if boundary == "compensated_gate"
-                else cp_section.get("potential_v")
-            )
+        if endpoint_optimization_enabled and policy == "never":
+            require_results_before_never(images)
+        if has_make and not restart and endpoint_optimization_enabled:
+            endpoint_records = make_endpoint_stages
         else:
-            boundary = None
-            target = None
-        if isinstance(cp_section, dict) and target is not None:
-            cp_identity = constant_potential_identity_for_config(
-                config, target=target
+            endpoint_records = _relax_neb_endpoints(
+                images, config, calc_name, calc_config, base_dir, optimizer,
+                constant_potential_identity=cp_identity,
             )
         ensure_neb_endpoint_results(
             images,
@@ -396,7 +367,7 @@ def run_neb(config, calc_name, calc_config, world=None):
 
     endpoint_stages: list[StageRecord] = []
     if effective_parallel:
-        init_chain = _sync_parallel_endpoint_results(init_chain, world, prepare_endpoints)
+        init_chain, endpoint_stages = _sync_parallel_endpoint_results(init_chain, world, prepare_endpoints)
     else:
         endpoint_stages = prepare_endpoints(init_chain)
     allow_shared = should_share_calculator(calc_name, config, parallel=effective_parallel)
@@ -523,19 +494,23 @@ def run_neb(config, calc_name, calc_config, world=None):
         converged=stage1_converged,
         actual_steps=as_step_count(stage1_actual_steps),
     )
-    # Image-parallel runs must keep every rank's stage list identical, so the
-    # endpoint records (built on rank 0 only) are persisted in the serial path
-    # only; the endpoint facts travel to the other ranks via the synchronized
-    # chain instead.
-    stages: list[StageRecord] = list(endpoint_stages) if not effective_parallel else []
+    # Rank 0 owns the endpoint optimizer facts and the manifest in MPI runs.
+    # Other ranks receive only the endpoint images needed by the NEB engine.
+    stages: list[StageRecord] = list(endpoint_stages)
     stages.extend((warmup_record, final_record))
-    write_artifact_manifest(
-        calc_config.get("artifact_manifest", "atst_artifacts.json"),
-        workflow="neb",
-        artifacts=[{"role": "trajectory", "path": traj_file}],
-        stages=[record.to_manifest() for record in stages],
-        metadata={"fixed_cell": fixed_cell_metadata(init_chain)},
-    )
+    def write_manifest():
+        write_artifact_manifest(
+            calc_config.get("artifact_manifest", "atst_artifacts.json"),
+            workflow="neb",
+            artifacts=[{"role": "trajectory", "path": traj_file}],
+            stages=[record.to_manifest() for record in stages],
+            metadata={"fixed_cell": fixed_cell_metadata(init_chain)},
+        )
+
+    if effective_parallel:
+        run_rank_zero_section(world, write_manifest, context="NEB manifest write")
+    else:
+        write_manifest()
     LOGGER.info("NEB calculation finished")
     return init_chain if world.rank == 0 else None
 

@@ -359,7 +359,8 @@ def _same_finite_float(left: Any, right: Any) -> bool:
 
 
 def _constant_potential_facts_error(
-    atoms: Any, payload: Any, *, require_duplicate_identity: bool = True
+    atoms: Any, payload: Any, *, require_duplicate_identity: bool = True,
+    check_geometry: bool = True,
 ) -> str | None:
     """Return a fail-closed validation error for one durable CP envelope."""
     if atoms is None or not hasattr(atoms, "info"):
@@ -370,12 +371,13 @@ def _constant_potential_facts_error(
         return "constant-potential facts schema or workflow is unsupported"
     if payload.get("status") != "complete" or payload.get("cp_converged") is not True:
         return "constant-potential facts are not a complete converged result"
-    try:
-        geometry_fingerprint = constant_potential_geometry_fingerprint(atoms)
-    except (AttributeError, TypeError, ValueError):
-        return "constant-potential facts geometry cannot be fingerprinted"
-    if payload.get("geometry_fingerprint") != geometry_fingerprint:
-        return "constant-potential facts geometry fingerprint does not match"
+    if check_geometry:
+        try:
+            geometry_fingerprint = constant_potential_geometry_fingerprint(atoms)
+        except (AttributeError, TypeError, ValueError):
+            return "constant-potential facts geometry cannot be fingerprinted"
+        if payload.get("geometry_fingerprint") != geometry_fingerprint:
+            return "constant-potential facts geometry fingerprint does not match"
 
     identity = payload.get("identity")
     facts = payload.get("facts")
@@ -612,12 +614,14 @@ def publish_constant_potential_facts(
     return copy.deepcopy(payload)
 
 
-def read_constant_potential_facts(atoms: Any) -> dict[str, Any] | None:
-    """Read and validate CP facts persisted on an ASE atoms object."""
+def read_constant_potential_facts(
+    atoms: Any, *, check_geometry: bool = True
+) -> dict[str, Any] | None:
+    """Read valid CP facts; restart checks geometry while NEB may use ASE state."""
     if atoms is None or not hasattr(atoms, "info"):
         return None
     payload = atoms.info.get(CP_FACTS_INFO_KEY)
-    if _constant_potential_facts_error(atoms, payload) is not None:
+    if _constant_potential_facts_error(atoms, payload, check_geometry=check_geometry) is not None:
         return None
     return copy.deepcopy(dict(payload))
 

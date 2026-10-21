@@ -98,18 +98,19 @@ workflow settings before launching expensive ABACUS or DP calculations.
 ```bash
 atst prepare run_dir --workflow neb \
   --init-structure init/STRU --final-structure final/STRU \
-  --n-images 5 --no-gate -o atst_neb.yaml
+  --n-images 5 -o atst_neb.yaml
 ```
 
-`atst prepare` reverse-generates a runnable ATST workflow YAML from a completed
-ABACUS run directory (`INPUT`/`STRU`/`KPT`/`PP`/`ORB`). It does not run ABACUS.
+`atst prepare` reverse-generates a runnable ATST workflow YAML from ABACUS
+inputs (`INPUT`/`STRU`/`KPT`/`PP`/`ORB`). It does not run ABACUS.
 `--workflow` currently accepts `neb` (the default). For NEB,
 `--init-structure` and `--final-structure` select the endpoint structure files
 (default: the run directory's `STRU` for both), `--n-images` sets the number of
 interior images (default 5), and `-o/--output` chooses the output YAML path
-(without it the YAML is printed to stdout). By default the command requires the
-endpoint directory to carry parseable last-frame energy and forces (the
-endpoint gate); pass `--no-gate` to skip that check.
+(without it the YAML is printed to stdout). Endpoint E/F is optional. The
+generated NEB configuration relaxes endpoints with missing E/F before building
+the initial path. The former `--no-gate` option remains accepted by older scripts
+but is no longer needed.
 
 The generated config keeps user-controlled ABACUS values verbatim and applies
 three technical floors required by NEB interior single-point force evaluation:

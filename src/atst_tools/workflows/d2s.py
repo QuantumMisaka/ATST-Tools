@@ -14,6 +14,7 @@ from ase.optimize import FIRE, QuasiNewton
 from ase.vibrations import Vibrations
 
 from atst_tools.calculators.factory import CalculatorFactory
+from atst_tools.calculators.constant_potential import read_constant_potential_facts
 from atst_tools.calculators.dp import is_dp_calculator, should_share_calculator
 from atst_tools.mep.dimer import AbacusDimer
 from atst_tools.mep.sella import AbacusSella
@@ -33,10 +34,11 @@ from atst_tools.utils.neb_endpoints import (
     ENDPOINT_PROVIDED,
     endpoint_policy,
     ensure_neb_endpoint_results,
+    expected_cp_endpoint_identity,
     freeze_current_results,
     freeze_results,
     get_endpoint_results,
-    has_endpoint_results,
+    has_compatible_cp_endpoint_results,
 )
 from atst_tools.utils.restart_helpers import get_last_frame, get_last_neb_band
 from atst_tools.utils.thermochemistry import compute_vibration_thermochemistry
@@ -188,6 +190,7 @@ class D2SWorkflow:
                 [init_atoms, final_atoms], context="D2S endpoints", runtime=True
             )
         endpoint_config = self._endpoint_optimization_config()
+        cp_identity = expected_cp_endpoint_identity(self.config)
         fmax = endpoint_config["fmax"]
         max_steps = endpoint_config["max_steps"]
 
@@ -200,6 +203,7 @@ class D2SWorkflow:
                 policy=endpoint_policy(self.calc_config, default="auto"),
                 directories=("IS_SP", "FS_SP"),
                 context="D2S",
+                constant_potential_identity=cp_identity,
             )
             self._endpoint_records = [
                 StageRecord(name="endpoint_optimization", status="skipped")
@@ -210,10 +214,22 @@ class D2SWorkflow:
         skip_if_has_results = endpoint_config["skip_if_has_results"]
         records: list[StageRecord] = []
 
+        if endpoint_policy(self.calc_config, default="auto") == "never":
+            for label, atoms, restart_file in (
+                ("initial", init_atoms, "IS_opt.traj"),
+                ("final", final_atoms, "FS_opt.traj"),
+            ):
+                if not (self.restart and os.path.exists(restart_file)) and not has_compatible_cp_endpoint_results(atoms, cp_identity):
+                    raise ValueError(
+                        f"D2S {label} endpoint lacks meaningful energy/force results. "
+                        "Relax the endpoint to obtain energy/forces or use "
+                        "endpoint_singlepoint=auto."
+                    )
+
         if self.restart and os.path.exists("IS_opt.traj"):
             init_atoms = get_last_frame("IS_opt.traj")
             records.append(self._skipped_endpoint_record("initial"))
-        elif skip_if_has_results and has_endpoint_results(init_atoms):
+        elif skip_if_has_results and has_compatible_cp_endpoint_results(init_atoms, cp_identity):
             print("=== Initial endpoint already has energy/force results; skipping endpoint optimization ===")
             records.append(self._skipped_endpoint_record("initial"))
         else:
@@ -232,7 +248,7 @@ class D2SWorkflow:
         if self.restart and os.path.exists("FS_opt.traj"):
             final_atoms = get_last_frame("FS_opt.traj")
             records.append(self._skipped_endpoint_record("final"))
-        elif skip_if_has_results and has_endpoint_results(final_atoms):
+        elif skip_if_has_results and has_compatible_cp_endpoint_results(final_atoms, cp_identity):
             print("=== Final endpoint already has energy/force results; skipping endpoint optimization ===")
             records.append(self._skipped_endpoint_record("final"))
         else:
@@ -301,6 +317,7 @@ class D2SWorkflow:
                     results[0],
                     results[1],
                     atoms.info.get("atst_endpoint_result"),
+                    read_constant_potential_facts(atoms, check_geometry=False),
                 )
                 if results is not None
                 else None
@@ -313,8 +330,8 @@ class D2SWorkflow:
         )
         for index, cached in zip((0, -1), input_endpoint_results):
             if cached is not None:
-                energy, forces, status = cached
-                freeze_results(images[index], energy, forces, status=status)
+                energy, forces, status, cp_facts = cached
+                freeze_results(images[index], energy, forces, status=status, cp_facts=cp_facts)
 
         images = prepare_fixed_cell_images(
             images, context="D2S rough DyNEB", runtime=True
@@ -327,6 +344,7 @@ class D2SWorkflow:
             policy=endpoint_policy(self.calc_config, default="auto"),
             directories=("endpoint_initial", "endpoint_final"),
             context="D2S rough DyNEB",
+            constant_potential_identity=expected_cp_endpoint_identity(self.config),
         )
         allow_shared = should_share_calculator(self.calc_name, self.config, parallel=False)
         shared_calc = self._get_calc("NEB/shared", shared=True) if allow_shared else None

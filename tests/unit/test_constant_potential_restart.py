@@ -302,7 +302,7 @@ def test_neb_restart_warm_starts_each_image_from_its_own_facts(monkeypatch, tmp_
     monkeypatch.setattr(main, "ensure_neb_endpoint_results", lambda *args, **kwargs: None)
     # Endpoint collective synchronization has separate MPI tests; this probe
     # exercises CP calculator attachment and rank-owned electronic state.
-    monkeypatch.setattr(main, "_sync_parallel_endpoint_results", lambda images, *args: images)
+    monkeypatch.setattr(main, "_sync_parallel_endpoint_results", lambda images, *args: (images, []))
     monkeypatch.setattr(main, "write_artifact_manifest", lambda *args, **kwargs: None)
     monkeypatch.setattr(main.CalculatorFactory, "get_calculator", fake_factory)
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)

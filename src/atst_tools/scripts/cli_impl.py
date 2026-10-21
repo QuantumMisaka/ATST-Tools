@@ -153,8 +153,8 @@ def _add_prepare_parser(subparsers):
         "prepare",
         help="Generate an ATST transition YAML from an ABACUS run directory",
         description=(
-            "Reverse-generate a runnable ATST workflow config from a "
-            "completed ABACUS run directory (INPUT/STRU/KPT/PP/ORB)."
+            "Reverse-generate a runnable ATST workflow config from ABACUS "
+            "inputs (INPUT/STRU/KPT/PP/ORB). Endpoint results are optional."
         ),
         epilog=dedent(
             """\
@@ -171,7 +171,7 @@ def _add_prepare_parser(subparsers):
     parser.add_argument("--init-structure", default=None, help="NEB initial structure file")
     parser.add_argument("--final-structure", default=None, help="NEB final structure file")
     parser.add_argument("--n-images", type=int, default=5, help="Number of interior NEB images")
-    parser.add_argument("--no-gate", action="store_true", help="Skip the endpoint energy+forces gate")
+    parser.add_argument("--no-gate", action="store_true", help="Legacy option; endpoint results are no longer required")
     parser.add_argument("-o", "--output", default=None, help="Output YAML path")
     parser.set_defaults(func=_prepare_command)
 
@@ -185,7 +185,6 @@ def _prepare_command(args):
         init_structure=args.init_structure,
         final_structure=args.final_structure,
         n_images=args.n_images,
-        gate_dirs=None if args.no_gate else [args.abacus_run_dir],
     )
     _write_yaml(config, args.output)
     if args.output:

@@ -304,9 +304,9 @@ class NEBMakeConfig(StrictConfig):
 
 
 class NEBEndpointOptimizationConfig(StrictConfig):
-    """Ordinary NEB endpoint optimization configuration."""
+    """NEB-family endpoint optimization configuration."""
 
-    enabled: bool = Field(default=False, description="Relax endpoints before ordinary NEB.")
+    enabled: bool = Field(default=False, description="Relax endpoints before the NEB-family workflow.")
     skip_if_has_results: bool = Field(default=True, description="Skip endpoints that already have energy and forces.")
     fmax: float = Field(default=0.05, gt=0, description="Endpoint optimization force threshold.")
     max_steps: int = Field(default=100, gt=0, description="Endpoint optimization step limit.")
@@ -349,11 +349,10 @@ class NEBCalculation(StrictConfig):
     endpoint_singlepoint: Literal["auto", "always", "never"] = Field(
         default="auto",
         description=(
-            "Endpoint result policy before NEB starts: `auto` trusts only ATST-marked "
-            "endpoint results (computed/optimized/provided) and recomputes missing, "
-            "placeholder, or unmarked (e.g. uploaded-chain/foreign) ones with the current "
-            "calculator; `always` recomputes both endpoints; `never` preserves "
-            "user-provided readable endpoint results."
+            "Endpoint result policy before NEB starts: `auto` reuses finite readable "
+            "energy/forces regardless of origin and computes missing results; `always` "
+            "recomputes both endpoints; `never` requires existing results. For missing "
+            "results that need a geometry optimization, enable endpoint_optimization."
         ),
     )
     endpoint_optimization: NEBEndpointOptimizationConfig = Field(
@@ -407,11 +406,14 @@ class AutoNEBCalculation(StrictConfig):
     endpoint_singlepoint: Literal["auto", "always", "never"] = Field(
         default="auto",
         description=(
-            "Endpoint result policy: `auto` trusts only ATST-marked endpoint results "
-            "(computed/optimized/provided) and recomputes missing, placeholder, or unmarked "
-            "(e.g. uploaded-chain/foreign) ones with the current calculator; `always` "
-            "recomputes both endpoints; `never` preserves user-provided readable endpoint results."
+            "Endpoint result policy: `auto` reuses finite readable E/F regardless of "
+            "origin and computes missing results; `always` recomputes both endpoints; "
+            "`never` requires existing results."
         ),
+    )
+    endpoint_optimization: NEBEndpointOptimizationConfig = Field(
+        default_factory=NEBEndpointOptimizationConfig,
+        description="Optional endpoint Relax for missing E/F before AutoNEB.",
     )
 
     @field_validator("fmax")
@@ -783,10 +785,9 @@ class D2SCalculation(StrictConfig):
     endpoint_singlepoint: Literal["auto", "always", "never"] = Field(
         default="auto",
         description=(
-            "Endpoint result policy: `auto` trusts only ATST-marked endpoint results "
-            "(computed/optimized/provided) and recomputes missing, placeholder, or unmarked "
-            "(e.g. uploaded-chain/foreign) ones with the current calculator; `always` "
-            "recomputes both endpoints; `never` preserves user-provided readable endpoint results."
+            "Endpoint result policy: `auto` reuses finite readable E/F regardless of "
+            "origin and computes missing results; `always` recomputes both endpoints; "
+            "`never` requires existing results."
         ),
     )
     endpoint_optimization: EndpointOptimizationConfig = Field(

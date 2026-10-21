@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 from ase.constraints import FixAtoms, FixCartesian
+from ase.calculators.singlepoint import SinglePointCalculator
 from ase.io import read, write
 
 import pytest
@@ -322,6 +323,61 @@ def test_generate_idpp_applies_fix_height_before_solver(tmp_path):
     for image in path[1:-1]:
         np.testing.assert_allclose(image.positions[0], start.positions[0], atol=0.0)
     assert any(not np.allclose(image.positions[1], start.positions[1]) for image in path[1:-1])
+
+
+def test_generate_prepares_endpoint_conditions_before_relax_and_interpolation(tmp_path):
+    start = Atoms("FeH", positions=[[0, 1, 0], [2, 8, 0]], cell=[10, 10, 10], pbc=True)
+    end = start.copy()
+    end.positions[1, 0] = 3
+    start_path, end_path, output_path = (tmp_path / name for name in ("start.traj", "end.traj", "path.traj"))
+    write(start_path, start)
+    write(end_path, end)
+    observed = []
+
+    def prepare(initial, final):
+        for endpoint in (initial, final):
+            observed.append((endpoint.constraints[0].get_indices().tolist(), endpoint.get_initial_magnetic_moments().tolist()))
+            endpoint.positions[1, 0] += 0.25
+            endpoint.calc = SinglePointCalculator(endpoint, energy=1, forces=np.zeros((2, 3)))
+
+    idpp.generate(
+        method="IDPP", n_images=1, is_file=str(start_path), fs_file=str(end_path),
+        output_file=str(output_path), format=None, fix_height=0.2, fix_dir=1,
+        mag_ele=["Fe"], mag_num=[2.5], no_align=True, endpoint_prepare=prepare,
+    )
+    assert observed == [([0], [2.5, 0.0]), ([0], [2.5, 0.0])]
+    path = read(output_path, index=":")
+    assert path[0].positions[1, 0] == pytest.approx(2.25)
+    assert path[-1].positions[1, 0] == pytest.approx(3.25)
+    assert path[1].positions[1, 0] == pytest.approx(2.75)
+
+
+def test_generate_magmom_does_not_discard_existing_endpoint_results(tmp_path):
+    from atst_tools.utils.neb_endpoints import get_endpoint_results
+
+    initial = Atoms("H", positions=[[0, 0, 0]], cell=[10, 10, 10], pbc=True)
+    final = Atoms("H", positions=[[1, 0, 0]], cell=[10, 10, 10], pbc=True)
+    for atoms in (initial, final):
+        atoms.calc = SinglePointCalculator(atoms, energy=-1, forces=np.zeros((1, 3)))
+    initial_path, final_path, output_path = (tmp_path / name for name in ("initial.traj", "final.traj", "path.traj"))
+    write(initial_path, initial)
+    write(final_path, final)
+    observed = []
+
+    def prepare(start, end):
+        for atoms in (start, end):
+            observed.append((atoms.get_initial_magnetic_moments().tolist(), get_endpoint_results(atoms)))
+
+    idpp.generate(
+        method="linear", n_images=1, is_file=str(initial_path), fs_file=str(final_path),
+        output_file=str(output_path), format=None, no_align=True,
+        mag_ele=["H"], mag_num=[1.0], endpoint_prepare=prepare,
+    )
+    assert len(observed) == 2
+    for magmoms, results in observed:
+        assert magmoms == [1.0]
+        assert results is not None
+        assert results[0] == pytest.approx(-1.0)
 
 
 def test_generate_pt13_idpp_keeps_fixed_slab_and_moves_h_without_dft(tmp_path):

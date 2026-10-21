@@ -519,43 +519,30 @@ def test_run_neb_passes_supplied_world_to_constructed_engine(monkeypatch, tmp_pa
     assert constructed[0]["world"] is supplied_world
 
 
-@pytest.mark.parametrize(
-    ("parallel", "world_size", "expected_stage_names"),
-    (
-        # Image-parallel runs must persist one rank-independent stage list, so
-        # the rank-0-only endpoint facts never reach the manifest.
-        (True, 2, ["ordinary_neb_warmup", "ci_neb"]),
-        # Serial endpoint optimization keeps its endpoint records in front of
-        # the two band stages.
-        (
-            False,
-            1,
-            [
-                "endpoint_initial_relax",
-                "endpoint_final_relax",
-                "ordinary_neb_warmup",
-                "ci_neb",
-            ],
-        ),
-    ),
-)
+@pytest.mark.parametrize(("parallel", "world_size"), ((True, 2), (False, 1)))
 def test_run_neb_manifest_stage_names_follow_the_rank_topology(
-    monkeypatch, tmp_path, parallel, world_size, expected_stage_names
+    monkeypatch, tmp_path, parallel, world_size
 ):
-    """The persisted NEB stage records are identical on every image-parallel rank."""
+    """Rank 0 persists the same factual endpoint stages in serial and MPI."""
     from atst_tools.workflows import execution as main
 
     chain = [_atoms(0.0), _atoms(0.1), _atoms(0.2), _atoms(0.3)]
+    chain[-1].calc = None
 
     class FakeNEB:
         def __init__(self, *args, **kwargs):
             return None
 
     class FakeOptimizer:
-        def __init__(self, *args, **kwargs):
+        def __init__(self, subject, *args, **kwargs):
+            self.subject = subject
             self.nsteps = 3
 
         def run(self, *args, **kwargs):
+            if isinstance(self.subject, Atoms):
+                self.subject.get_potential_energy()
+                self.subject.get_forces()
+                return False
             return True
 
     monkeypatch.setattr(main, "read", lambda *args, **kwargs: chain)
@@ -565,35 +552,24 @@ def test_run_neb_manifest_stage_names_follow_the_rank_topology(
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
     monkeypatch.setattr(main, "get_optimizer", lambda *args, **kwargs: FakeOptimizer)
 
-    stages_per_rank = []
-    for rank in range(world_size):
-        rank_dir = tmp_path / f"rank{rank}"
-        rank_dir.mkdir()
-        monkeypatch.chdir(rank_dir)
-        main.run_neb(
-            {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
-            "abacus",
-            {
-                "type": "neb",
-                "init_chain": "chain.traj",
-                "parallel": parallel,
-                "climb": True,
-                # Enabled on purpose: the image-parallel path may create these
-                # records on rank 0 only, so they must not enter the manifest.
-                "endpoint_optimization": {"enabled": True},
-            },
-            world=FakeWorld(size=world_size, rank=rank),
-        )
-        manifest = json.loads(
-            (rank_dir / "atst_artifacts.json").read_text(encoding="utf-8")
-        )
-        stages_per_rank.append(manifest["stages"])
-
-    expected = stages_per_rank[0]
-    assert [stage["name"] for stage in expected] == expected_stage_names
-    assert expected[-1]["converged"] is True
-    for stages in stages_per_rank[1:]:
-        assert stages == expected
+    monkeypatch.chdir(tmp_path)
+    main.run_neb(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {
+            "type": "neb", "init_chain": "chain.traj", "parallel": parallel,
+            "climb": True, "endpoint_optimization": {"enabled": True},
+        },
+        world=FakeWorld(size=world_size, rank=0),
+    )
+    stages = json.loads((tmp_path / "atst_artifacts.json").read_text(encoding="utf-8"))["stages"]
+    assert [stage["name"] for stage in stages] == [
+        "endpoint_initial_relax", "endpoint_final_relax", "ordinary_neb_warmup", "ci_neb"
+    ]
+    assert stages[0]["status"] == "skipped"
+    assert stages[1]["converged"] is False
+    assert stages[1]["actual_steps"] == 3
+    assert stages[-1]["converged"] is True
 
 
 def test_autoneb_parallel_requires_world_size_equal_n_simul(monkeypatch):
@@ -1016,6 +992,7 @@ def test_run_neb_parallel_endpoint_preparation_only_on_rank_zero(monkeypatch, tm
     )
 
     assert ("ensure", "NEB") not in calls
+    assert not (tmp_path / "atst_artifacts.json").exists()
 
 
 def test_run_neb_parallel_endpoint_sync_reads_without_ase_parallel(monkeypatch, tmp_path):
@@ -1042,10 +1019,10 @@ def test_run_neb_parallel_endpoint_sync_reads_without_ase_parallel(monkeypatch, 
     synced = main._sync_parallel_endpoint_results(
         chain,
         FakeWorld(size=2, rank=0),
-        lambda images: None,
+        lambda images: [],
     )
 
-    assert synced == chain
+    assert synced == (chain, [])
     assert write_kwargs == [{"parallel": False}]
     assert read_kwargs == [{"index": ":", "parallel": False}]
     assert deleted == [".atst_neb_endpoint_synced.traj"]
@@ -1072,7 +1049,7 @@ def test_run_neb_synchronizes_each_pre_collective_construction_stage(monkeypatch
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(main, "read", lambda *args, **kwargs: chain)
     monkeypatch.setattr(main, "ensure_neb_endpoint_results", lambda *args, **kwargs: None)
-    monkeypatch.setattr(main, "_sync_parallel_endpoint_results", lambda images, *args: images)
+    monkeypatch.setattr(main, "_sync_parallel_endpoint_results", lambda images, *args: (images, []))
     monkeypatch.setattr(main, "_get_workflow_calculator", lambda *args, **kwargs: DummyCalc())
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
     monkeypatch.setattr(main, "get_optimizer", lambda *args, **kwargs: FakeOptimizer)

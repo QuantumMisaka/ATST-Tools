@@ -86,7 +86,7 @@ def test_public_api_has_only_the_supported_contract():
 
 def test_api_exposes_build_config_from_abacus_dir(tmp_path):
     from atst_tools.api import build_config_from_abacus_dir, validate_config
-    from tests.unit.test_reverse_config import _write_minimal_run
+    from test_reverse_config import _write_minimal_run
 
     run = _write_minimal_run(tmp_path)
     config = build_config_from_abacus_dir(run, gate_dirs=[])

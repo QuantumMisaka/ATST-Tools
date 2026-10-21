@@ -13,6 +13,7 @@ from atst_tools.calculators.constant_potential import (
     CP_IDENTITY_INFO_KEY,
     _mapping_contains,
     clear_constant_potential_facts,
+    constant_potential_identity_for_config,
     publish_constant_potential_facts,
     read_constant_potential_facts,
 )
@@ -37,17 +38,25 @@ def is_placeholder_endpoint(atoms) -> bool:
 
 
 def get_endpoint_results(atoms) -> tuple[float, np.ndarray] | None:
-    """Return endpoint energy and forces if both are readable."""
+    """Return existing endpoint energy and forces without starting a calculation."""
     if is_placeholder_endpoint(atoms):
         return None
-    if CP_FACTS_INFO_KEY in atoms.info and read_constant_potential_facts(atoms) is None:
+    # ASE owns validity of cached E/F for the current atoms. The CP geometry
+    # fingerprint is a restart checkpoint guard, not an NEB admission proof.
+    if CP_FACTS_INFO_KEY in atoms.info and read_constant_potential_facts(atoms, check_geometry=False) is None:
+        return None
+    calculator = atoms.calc
+    results = getattr(calculator, "results", None)
+    if not isinstance(results, dict) or not {"energy", "forces"}.issubset(results):
         return None
     try:
+        if calculator.calculation_required(atoms, ["energy", "forces"]):
+            return None
         energy = float(atoms.get_potential_energy())
         forces = np.asarray(atoms.get_forces(), dtype=float)
     except Exception:
         return None
-    if forces.shape != (len(atoms), 3):
+    if not np.isfinite(energy) or forces.shape != (len(atoms), 3) or not np.all(np.isfinite(forces)):
         return None
     return energy, forces
 
@@ -58,23 +67,59 @@ def has_endpoint_results(atoms) -> bool:
 
 
 def has_trusted_endpoint_results(atoms) -> bool:
-    """Return whether an endpoint carries ATST-marked trustworthy results.
+    """Compatibility alias for usable endpoint results regardless of origin."""
+    return has_endpoint_results(atoms)
 
-    Only endpoints explicitly marked as ``provided``, ``computed``, or
-    ``optimized`` by this tool are trusted. Readable results without such a
-    marker (e.g. foreign/uploaded-chain values) are not trusted so that the
-    ``auto`` policy can recompute them with the current run's calculator.
+
+def expected_cp_endpoint_identity(config: dict[str, Any]) -> dict[str, Any] | None:
+    """Return CP energy-definition context for NEB-family endpoint results."""
+    cp_section = config.get("calculator", {}).get("constant_potential")
+    if not isinstance(cp_section, dict):
+        return None
+    boundary = cp_section.get("energy_boundary", "reference_fcp")
+    target = (
+        cp_section.get("target_mu_ev")
+        if boundary == "compensated_gate"
+        else cp_section.get("potential_v")
+    )
+    return constant_potential_identity_for_config(config, target=target) if target is not None else None
+
+
+def has_compatible_cp_endpoint_results(atoms, expected: dict[str, Any] | None) -> bool:
+    """Check that endpoint E/F use the requested CP energy definition.
+
+    CP endpoint energies need a complete CP result envelope and the same energy
+    quantity as the requested run. Ordinary NEB cannot reuse a CP grand
+    potential. Calculator settings and source provenance do not decide whether
+    otherwise usable endpoint results may be reused.
     """
-    return (
-        atoms.info.get(ENDPOINT_RESULT_KEY)
-        in {ENDPOINT_PROVIDED, ENDPOINT_COMPUTED, ENDPOINT_OPTIMIZED}
-        and get_endpoint_results(atoms) is not None
+    endpoint_results = get_endpoint_results(atoms)
+    if endpoint_results is None:
+        return False
+    if expected is None:
+        return CP_FACTS_INFO_KEY not in atoms.info
+    payload = read_constant_potential_facts(atoms, check_geometry=False)
+    if payload is None:
+        return False
+    identity = payload.get("identity")
+    facts = payload.get("facts")
+    if not isinstance(facts, dict):
+        return False
+    try:
+        facts_energy = float(facts["energy"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    if not np.isclose(facts_energy, endpoint_results[0], rtol=1e-10, atol=1e-12):
+        return False
+    return isinstance(identity, dict) and all(
+        identity.get(key) == expected.get(key)
+        for key in ("energy_boundary", "energy_definition")
     )
 
 
 def endpoint_constant_potential_identity(atoms) -> dict[str, Any] | None:
     """Return the CP identity staged with an endpoint, when present."""
-    facts = read_constant_potential_facts(atoms)
+    facts = read_constant_potential_facts(atoms, check_geometry=False)
     if facts is not None and isinstance(facts.get("identity"), dict):
         return dict(facts["identity"])
     value = atoms.info.get(CP_ENDPOINT_IDENTITY_KEY)
@@ -82,7 +127,10 @@ def endpoint_constant_potential_identity(atoms) -> dict[str, Any] | None:
 
 
 def constant_potential_identity_matches(atoms, expected: dict[str, Any] | None) -> bool:
-    """Return whether endpoint results carry the requested CP identity."""
+    """Return whether staged CP facts carry the requested full identity.
+
+    This legacy checkpoint helper is not used for NEB endpoint admission.
+    """
     if expected is None:
         return True
     facts = read_constant_potential_facts(atoms)
@@ -115,11 +163,13 @@ def freeze_current_results(atoms, status: str = ENDPOINT_COMPUTED):
     return atoms
 
 
-def freeze_results(atoms, energy: float, forces, status: str | None):
-    """Freeze explicit endpoint results using SinglePointCalculator."""
+def freeze_results(atoms, energy: float, forces, status: str | None, *, cp_facts: dict[str, Any] | None = None):
+    """Freeze explicit endpoint results, preserving supplied CP facts when present."""
     clear_constant_potential_facts(atoms)
     atoms.calc = SinglePointCalculator(atoms, energy=float(energy), forces=np.asarray(forces, dtype=float))
     mark_endpoint_result(atoms, status)
+    if cp_facts is not None:
+        publish_constant_potential_facts(atoms, cp_facts["facts"], cp_facts["identity"])
     return atoms
 
 
@@ -145,12 +195,10 @@ def ensure_neb_endpoint_results(
         images: NEB chain including endpoints.
         get_calculator: Callable receiving a directory suffix and returning an
             ASE calculator.
-        policy: ``auto`` only trusts endpoints explicitly marked by ATST as
-            ``provided``/``computed``/``optimized`` and recomputes missing,
-            placeholder, or unmarked (e.g. uploaded-chain/foreign) results with
-            the current run's calculator; ``always`` recomputes both endpoints;
-            ``never`` preserves user-provided readable endpoints (and raises only
-            when an endpoint lacks meaningful energy/force results).
+        policy: ``auto`` reuses readable finite endpoint energy/forces regardless
+            of their origin and computes missing results with the current run's
+            calculator; ``always`` recomputes both endpoints; ``never`` requires
+            existing meaningful energy/force results.
         directories: Directory suffixes for initial and final endpoint
             calculations.
         context: Text used in warning/error messages.
@@ -170,29 +218,34 @@ def ensure_neb_endpoint_results(
             if not has_endpoint_results(atoms):
                 raise ValueError(
                     f"{context} {label} endpoint lacks meaningful energy/force results. "
-                    "Run endpoint single-point/optimization first or set endpoint_singlepoint=auto."
+                    "Relax the endpoint to obtain energy/forces, or allow endpoint "
+                    "optimization before NEB."
                 )
-            if not constant_potential_identity_matches(atoms, constant_potential_identity):
+            if not has_compatible_cp_endpoint_results(atoms, constant_potential_identity):
+                if constant_potential_identity is None:
+                    raise ValueError(
+                        f"{context} {label} endpoint carries a constant-potential "
+                        "energy definition; set endpoint_singlepoint=auto to compute "
+                        "ordinary endpoint energy/forces."
+                    )
                 raise ValueError(
-                    f"{context} {label} endpoint lacks matching constant-potential identity; "
-                    "set endpoint_singlepoint=auto to recompute it."
+                    f"{context} {label} endpoint lacks complete constant-potential "
+                    "results with the requested energy definition; set "
+                    "endpoint_singlepoint=auto to compute them."
                 )
             continue  # never = explicit preserve of user-provided readable endpoints
-        if (
-            policy == "auto"
-            and has_trusted_endpoint_results(atoms)
-            and constant_potential_identity_matches(atoms, constant_potential_identity)
-        ):
+        if policy == "auto" and has_compatible_cp_endpoint_results(atoms, constant_potential_identity):
             continue
         if policy == "auto":
             print(
-                f"Warning: {context} {label} endpoint has missing, placeholder, or "
-                "untrusted (unmarked) energy/force results; running an endpoint "
-                "single-point calculation."
+                f"Warning: {context} {label} endpoint lacks usable energy/force "
+                "results; running an endpoint single-point calculation."
             )
         elif policy == "always":
             print(f"Warning: {context} {label} endpoint is being recomputed by endpoint_singlepoint=always.")
 
         atoms.calc = get_calculator(directory)
         freeze_current_results(atoms, status=ENDPOINT_COMPUTED)
+        if not has_compatible_cp_endpoint_results(atoms, constant_potential_identity):
+            raise ValueError(f"{context} {label} endpoint calculation did not provide usable results")
     return images

@@ -486,7 +486,7 @@ class NoopCalculator(Calculator):
 if {workflow!r} == 'neb':
     from atst_tools.workflows import execution as runner_module
     runner_module.ensure_neb_endpoint_results = lambda *args, **kwargs: None
-    runner_module._sync_parallel_endpoint_results = lambda images, *args: images
+    runner_module._sync_parallel_endpoint_results = lambda images, *args: (images, [])
     class FakeNEB:
         def __init__(self, *args, **kwargs):
             MPI.COMM_WORLD.Barrier()
@@ -573,7 +573,7 @@ from atst_tools.workflows import execution as main
 
 rank = MPI.COMM_WORLD.rank
 main.ensure_neb_endpoint_results = lambda *args, **kwargs: None
-main._sync_parallel_endpoint_results = lambda images, *args: images
+main._sync_parallel_endpoint_results = lambda images, *args: (images, [])
 
 class NoopCalculator(Calculator):
     implemented_properties = []

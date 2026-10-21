@@ -245,6 +245,10 @@ def build_config_from_abacus_dir(
             "parallel": True,
             "max_steps": 100,
             "optimizer": "FIRE",
+            "endpoint_optimization": {
+                "enabled": True,
+                "skip_if_has_results": True,
+            },
         }
     else:
         raise ValueError(f"Unsupported workflow: {workflow} (P0 supports neb)")

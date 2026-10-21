@@ -3,7 +3,7 @@ import io
 
 import numpy as np
 import warnings
-from typing import List
+from typing import Callable, List
 
 # ASE Imports
 from ase import Atoms
@@ -11,10 +11,13 @@ from ase.io import write
 from ase.constraints import FixAtoms
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.geometry import find_mic
+from atst_tools.calculators.constant_potential import read_constant_potential_facts
 from atst_tools.utils.geometry import prepare_fixed_cell_images
 from atst_tools.utils.neb_endpoints import (
     ENDPOINT_PLACEHOLDER,
     ENDPOINT_PROVIDED,
+    freeze_results,
+    get_endpoint_results,
     mark_endpoint_result,
 )
 from atst_tools.utils.io import read_structure
@@ -679,7 +682,14 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
              fix_height: float=None, fix_dir: int=None,
              mag_ele: list=None, mag_num: list=None,
              no_align: bool=False, tol: float=0.05,
-             ts_file: str=None):
+             ts_file: str=None,
+             endpoint_prepare: Callable[[Atoms, Atoms], None] | None=None):
+    """Generate a band, optionally preparing aligned endpoints before interpolation.
+
+    ``endpoint_prepare`` is used by the NEB workflow to relax endpoints when
+    their energy/force results are missing. Direct path generation remains a
+    calculation-free operation when no callback is supplied.
+    """
 
     # 1. Read files
     print(f'Reading files: {is_file} and {fs_file}')
@@ -695,6 +705,25 @@ def generate(method:str, n_images:int, is_file:str, fs_file:str,
         fs_atom = align_atom_indices(is_atom, fs_atom)
     else:
         print("Skipping atom index alignment.")
+
+    if endpoint_prepare is not None:
+        # The run-time endpoint Relax must see the same explicit fixed-atom and
+        # magnetic setup requested for this path before it evaluates forces.
+        # ASE invalidates a SinglePointCalculator when initial magmoms change;
+        # this is not evidence that otherwise usable input E/F need Relax.
+        for endpoint in (is_atom, fs_atom):
+            cached = get_endpoint_results(endpoint)
+            cp_facts = (
+                read_constant_potential_facts(endpoint, check_geometry=False)
+                if cached is not None else None
+            )
+            if fix_height is not None:
+                set_fix_for_Atoms(endpoint, fix_height, fix_dir)
+            if mag_ele is not None:
+                set_magmom_for_Atoms(endpoint, mag_ele, mag_num)
+            if cached is not None:
+                freeze_results(endpoint, *cached, status=ENDPOINT_PROVIDED, cp_facts=cp_facts)
+        endpoint_prepare(is_atom, fs_atom)
     
     # Store single point calculation results if available
     try:

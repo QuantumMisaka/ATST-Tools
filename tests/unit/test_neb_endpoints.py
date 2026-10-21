@@ -17,9 +17,14 @@ from atst_tools.utils.neb_endpoints import (
     CP_ENDPOINT_IDENTITY_KEY,
     ensure_neb_endpoint_results,
     freeze_current_results,
+    freeze_results,
+    get_endpoint_results,
     mark_endpoint_result,
 )
-from atst_tools.calculators.constant_potential import publish_constant_potential_facts
+from atst_tools.calculators.constant_potential import (
+    publish_constant_potential_facts,
+    read_constant_potential_facts,
+)
 
 
 class DummyCalc(Calculator):
@@ -51,6 +56,16 @@ class EnergyForceOnlyCalc(Calculator):
     def get_stress(self, atoms=None):
         self.stress_calls += 1
         raise RuntimeError("stress should not be requested")
+
+
+class CPDummyCalc(DummyCalc):
+    def __init__(self, identity, energy=7.0):
+        super().__init__(energy=energy)
+        self.constant_potential_identity = identity
+
+    def calculate(self, atoms=None, properties=("energy",), system_changes=all_changes):
+        super().calculate(atoms, properties, system_changes)
+        self.results.update(_complete_cp_results(atoms, self.constant_potential_identity, self.energy))
 
 
 def _atoms(energy=0.0, x=0.0, with_calc=True):
@@ -190,7 +205,7 @@ def test_endpoint_helper_recomputes_placeholder_endpoint(capsys):
     assert chain[0].get_potential_energy() == 5.0
     assert chain[-1].get_potential_energy() == 6.0
     assert chain[0].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
-    assert "placeholder" in capsys.readouterr().out
+    assert "lacks usable energy/force" in capsys.readouterr().out
 
 
 def test_freeze_current_results_does_not_request_missing_stress():
@@ -223,7 +238,7 @@ def test_auto_keeps_atst_marked_endpoint(status):
     assert chain[-1].get_potential_energy() == 3.0
 
 
-def test_auto_recomputes_unmarked_readable_endpoint():
+def test_auto_reuses_unmarked_readable_endpoint_without_provenance_gate():
     chain = [_atoms(1.0), _atoms(2.0), _atoms(3.0)]
     calls = []
 
@@ -233,11 +248,23 @@ def test_auto_recomputes_unmarked_readable_endpoint():
 
     ensure_neb_endpoint_results(chain, get_calculator, policy="auto")
 
-    assert calls == ["endpoint_initial", "endpoint_final"]
+    assert calls == []
+    assert chain[0].get_potential_energy() == 1.0
+    assert chain[-1].get_potential_energy() == 3.0
+
+
+def test_auto_recomputes_nonfinite_endpoint_values():
+    chain = [_atoms(float("nan")), _atoms(2.0), _atoms(3.0)]
+    calls = []
+
+    ensure_neb_endpoint_results(
+        chain,
+        lambda directory: calls.append(directory) or DummyCalc(energy=9.0),
+        policy="auto",
+    )
+
+    assert calls == ["endpoint_initial"]
     assert chain[0].get_potential_energy() == 9.0
-    assert chain[-1].get_potential_energy() == 9.0
-    assert chain[0].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
-    assert chain[-1].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
 
 
 def test_never_preserves_unmarked_readable_endpoint():
@@ -263,6 +290,17 @@ def test_endpoint_helper_never_rejects_placeholder():
         ensure_neb_endpoint_results(chain, lambda directory: DummyCalc(), policy="never")
 
 
+def test_never_does_not_trigger_attached_live_calculator():
+    chain = [_atoms(with_calc=False), _atoms(1.0), _atoms(3.0)]
+    live = DummyCalc()
+    chain[0].calc = live
+
+    with pytest.raises(ValueError, match="lacks meaningful"):
+        ensure_neb_endpoint_results(chain, lambda directory: pytest.fail("never must not compute"), policy="never")
+
+    assert live.results == {}
+
+
 def test_endpoint_helper_always_recomputes_valid_endpoint():
     chain = [_atoms(1.0), _atoms(2.0), _atoms(3.0)]
 
@@ -272,7 +310,7 @@ def test_endpoint_helper_always_recomputes_valid_endpoint():
     assert chain[-1].get_potential_energy() == 9.0
 
 
-def test_cp_identity_mismatch_recomputes_auto_and_never_rejects():
+def test_cp_result_definition_required_but_target_change_does_not_invalidate():
     identity = {
         "energy_boundary": "compensated_gate",
         "potential_v": None,
@@ -295,16 +333,19 @@ def test_cp_identity_mismatch_recomputes_auto_and_never_rejects():
             _complete_cp_results(endpoint, identity, endpoint.get_potential_energy()),
             identity,
         )
-    chain[-1].info[CP_ENDPOINT_IDENTITY_KEY]["target_mu_ev"] = -14.0
-    chain[-1].info["atst_constant_potential_facts"]["identity"]["target_mu_ev"] = -14.0
+    changed_target = {**identity, "target_mu_ev": -14.0}
+    publish_constant_potential_facts(
+        chain[-1],
+        _complete_cp_results(chain[-1], changed_target, chain[-1].get_potential_energy()),
+        changed_target,
+    )
 
-    with pytest.raises(ValueError, match="lacks meaningful"):
-        ensure_neb_endpoint_results(
-            chain,
-            lambda directory: DummyCalc(energy=9.0),
-            policy="never",
-            constant_potential_identity=identity,
-        )
+    ensure_neb_endpoint_results(
+        chain,
+        lambda directory: pytest.fail("CP target change must not force recalculation"),
+        policy="never",
+        constant_potential_identity=identity,
+    )
 
     calls = []
 
@@ -318,9 +359,152 @@ def test_cp_identity_mismatch_recomputes_auto_and_never_rejects():
         policy="auto",
         constant_potential_identity=identity,
     )
-    assert calls == ["endpoint_final"]
+    assert calls == []
     assert chain[0].info[CP_ENDPOINT_IDENTITY_KEY] == identity
-    assert CP_ENDPOINT_IDENTITY_KEY not in chain[-1].info
+    assert chain[-1].info[CP_ENDPOINT_IDENTITY_KEY] == changed_target
+
+    ordinary = _atoms(5.0)
+    with pytest.raises(ValueError, match="constant-potential results"):
+        ensure_neb_endpoint_results(
+            [ordinary, _atoms(2.0), chain[-1]],
+            lambda directory: pytest.fail("never must not compute"),
+            policy="never",
+            constant_potential_identity=identity,
+        )
+    ensure_neb_endpoint_results(
+        [ordinary, _atoms(2.0), chain[-1]],
+        lambda directory: CPDummyCalc(identity, energy=8.0),
+        policy="auto",
+        constant_potential_identity=identity,
+    )
+    assert ordinary.get_potential_energy() == 8.0
+    assert ordinary.info[CP_ENDPOINT_IDENTITY_KEY] == identity
+
+
+def test_cp_neb_reuses_valid_ase_results_without_geometry_provenance_gate():
+    identity = {
+        "energy_boundary": "compensated_gate",
+        "potential_v": None,
+        "target_mu_ev": -15.0,
+        "reference_electrode": "custom",
+        "work_ref": None,
+        "work_ref_source": None,
+        "reference_pH": None,
+        "temperature_K": None,
+        "reference_electrons": 216.0,
+        "boundary_parameters": {},
+        "energy_definition": "omega_compensated_gate",
+        "calculator": "constant_potential",
+    }
+    chain = [_atoms(1.0), _atoms(2.0), _atoms(3.0)]
+    for atoms in (chain[0], chain[-1]):
+        publish_constant_potential_facts(
+            atoms,
+            _complete_cp_results(atoms, identity, atoms.get_potential_energy()),
+            identity,
+        )
+        atoms.info["atst_constant_potential_facts"]["geometry_fingerprint"] = "legacy-source"
+        assert read_constant_potential_facts(atoms) is None
+
+    ensure_neb_endpoint_results(
+        chain,
+        lambda directory: pytest.fail("ASE-valid E/F must not be recomputed"),
+        policy="never",
+        constant_potential_identity=identity,
+    )
+
+    # Re-staging an endpoint for a chain must carry its CP energy facts along
+    # with the cached E/F; the original fingerprint is not an admission gate.
+    restaged = chain[0].copy()
+    energy, forces = get_endpoint_results(chain[0])
+    freeze_results(
+        restaged, energy, forces, status=None,
+        cp_facts=read_constant_potential_facts(chain[0], check_geometry=False),
+    )
+    ensure_neb_endpoint_results(
+        [restaged, chain[1], chain[-1]],
+        lambda directory: pytest.fail("restaged CP endpoint should be reused"),
+        policy="never", constant_potential_identity=identity,
+    )
+
+
+def test_ordinary_neb_recomputes_cp_energy_quantity():
+    identity = {
+        "energy_boundary": "compensated_gate", "potential_v": None,
+        "target_mu_ev": -15.0, "reference_electrode": "custom",
+        "work_ref": None, "work_ref_source": None, "reference_pH": None,
+        "temperature_K": None, "reference_electrons": 216.0,
+        "boundary_parameters": {}, "energy_definition": "omega_compensated_gate",
+        "calculator": "constant_potential",
+    }
+    cp_endpoint = _atoms(1.0)
+    publish_constant_potential_facts(
+        cp_endpoint, _complete_cp_results(cp_endpoint, identity, 1.0), identity
+    )
+    chain = [cp_endpoint, _atoms(2.0), _atoms(3.0)]
+
+    with pytest.raises(ValueError, match="constant-potential energy definition"):
+        ensure_neb_endpoint_results(chain, lambda directory: pytest.fail("never must not compute"), policy="never")
+
+    ensure_neb_endpoint_results(chain, lambda directory: DummyCalc(energy=9.0), policy="auto")
+    assert cp_endpoint.get_potential_energy() == 9.0
+    assert CP_ENDPOINT_IDENTITY_KEY not in cp_endpoint.info
+
+
+def test_endpoint_relax_uses_same_energy_definition_as_neb_consumption(tmp_path, monkeypatch):
+    from atst_tools.workflows.endpoint_relax import relax_neb_endpoints
+
+    identity = {
+        "energy_boundary": "compensated_gate", "target_mu_ev": -15.0,
+        "reference_electrons": 216.0, "energy_definition": "omega_compensated_gate",
+        "potential_v": None, "reference_electrode": "custom", "work_ref": None,
+        "work_ref_source": None, "reference_pH": None, "temperature_K": None,
+        "boundary_parameters": {}, "calculator": "constant_potential",
+    }
+    cp_endpoint = _atoms(1.0)
+    publish_constant_potential_facts(
+        cp_endpoint, _complete_cp_results(cp_endpoint, identity, 1.0), identity
+    )
+    ordinary_endpoint = _atoms(2.0)
+    chain = [cp_endpoint, ordinary_endpoint]
+    calls = []
+
+    class FakeOptimizer:
+        def __init__(self, atoms, trajectory=None):
+            self.atoms = atoms
+            self.nsteps = 1
+
+        def run(self, fmax, steps):
+            self.atoms.get_potential_energy()
+            self.atoms.get_forces()
+            return True
+
+    monkeypatch.chdir(tmp_path)
+    stages = relax_neb_endpoints(
+        chain, {"enabled": True, "skip_if_has_results": True},
+        lambda label, atoms: calls.append(label) or DummyCalc(energy=4.0),
+        FakeOptimizer,
+    )
+    assert calls == ["initial"]
+    assert [stage.status for stage in stages] == ["complete", "skipped"]
+    assert chain[0].get_potential_energy() == pytest.approx(4.0)
+
+    cp_again = _atoms(1.0)
+    publish_constant_potential_facts(
+        cp_again, _complete_cp_results(cp_again, identity, 1.0), identity
+    )
+    cp_final = _atoms(2.0)
+    publish_constant_potential_facts(
+        cp_final, _complete_cp_results(cp_final, identity, 2.0), identity
+    )
+    calls.clear()
+    stages = relax_neb_endpoints(
+        [cp_again, cp_final], {"enabled": True, "skip_if_has_results": True},
+        lambda label, atoms: calls.append(label) or pytest.fail("CP results should be reused"),
+        FakeOptimizer, constant_potential_identity=identity,
+    )
+    assert calls == []
+    assert [stage.status for stage in stages] == ["skipped", "skipped"]
 
 
 def test_cp_facts_round_trip_and_geometry_staleness_are_endpoint_gated(tmp_path):
@@ -387,7 +571,12 @@ def test_cp_facts_round_trip_and_geometry_staleness_are_endpoint_gated(tmp_path)
         },
     }
     loaded_again = read(path)
-    final_again = final.copy()
+    final_again = _atoms(3.0)
+    publish_constant_potential_facts(
+        final_again,
+        _complete_cp_results(final_again, identity, 3.0),
+        identity,
+    )
     calls = []
     ensure_neb_endpoint_results(
         [loaded_again, _atoms(2.0), final_again],
@@ -395,7 +584,7 @@ def test_cp_facts_round_trip_and_geometry_staleness_are_endpoint_gated(tmp_path)
         policy="auto",
         constant_potential_identity=changed_identity,
     )
-    assert calls == ["endpoint_initial", "endpoint_final"]
+    assert calls == []
 
 
 def test_neb_make_marks_pure_structure_endpoints_as_placeholder(tmp_path, monkeypatch):

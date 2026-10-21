@@ -125,7 +125,7 @@ not patch the installed abacuslite parser.
 | `max_steps` | int | `100` | Maximum optimizer steps. |
 | `fmax` | float | `0.05` | Force convergence threshold. |
 | `endpoint_singlepoint` | string | `auto` | Endpoint result policy: `auto`, `always`, or `never`. |
-| `endpoint_optimization` | dict | disabled | Optional endpoint relaxation before ordinary NEB. |
+| `endpoint_optimization` | dict | disabled | Optional endpoint relaxation before ordinary NEB; enable it to optimize endpoints with missing E/F. |
 
 `init_chain` and `make` are mutually exclusive. Use `init_chain` when the chain already exists; use nested `make` when `atst run` should generate the chain immediately before launching NEB:
 
@@ -155,28 +155,33 @@ paths and rejects incomplete bands. Keep the original `make` configuration
 when resuming its trajectory. For example, `n_images: 3` with a TS guess
 produces and restores six images per band.
 
-ASE NEB/DyNEB does not optimize endpoint images, but tangent and barrier analysis use endpoint energies. If a chain was made from pure structures, `atst neb make` writes placeholder endpoint results. `atst run` repairs these by default with endpoint single-point calculations before constructing NEB:
+ASE NEB/DyNEB does not optimize endpoint images, but tangent and barrier analysis use endpoint energies. If a chain was made from pure structures, `atst neb make` writes placeholder endpoint results. Enable endpoint optimization when missing E/F should be obtained by Relax:
 
 ```yaml
 calculation:
   type: neb
   init_chain: inputs/init_neb_chain.traj
+  endpoint_optimization:
+    enabled: true
+    skip_if_has_results: true
+    fmax: 0.05
+    max_steps: 100
   endpoint_singlepoint: auto  # auto, always, or never
 ```
 
-`auto` (default) trusts only endpoint results explicitly marked by ATST as
-`computed`/`optimized`/`provided`; missing, placeholder, or unmarked (e.g.
-uploaded-chain/foreign) results are recomputed with the current run's calculator so
-the path and its endpoints stay consistent. `always` recomputes both endpoints.
-`never` preserves user-provided readable endpoint results and raises only when an
-endpoint lacks meaningful energy/force results.
+With optimization enabled, endpoints with readable finite E/F are reused and
+missing ones are relaxed. For nested `make`, relaxation happens before path
+interpolation, so the generated images use the optimized endpoints. An explicit
+`init_chain` retains its interior images while its missing-result endpoints are
+optimized. Optimizer convergence is recorded separately in the artifact manifest.
+The endpoint result marker records origin but is not required for reuse.
 
-The trust marker is the per-image `atst_endpoint_result` attribute that ATST
-workflows write (`computed` after a single-point, `optimized` after endpoint
-relaxation, `provided` when readable input results are adopted). A foreign chain
-(e.g. an uploaded trajectory) carries no such marker and its readable values are
-therefore recomputed under `auto` — this prevents stale/foreign endpoint energies
-from poisoning the path profile (a known AutoNEB climbing-image phase crash root cause).
+With optimization disabled, `auto` (default) computes missing endpoint E/F in
+place; `always` recomputes both endpoints. `never` requires existing E/F and
+does not silently invoke endpoint optimization for a missing endpoint. Constant
+potential endpoints additionally need complete CP facts with the requested
+energy definition; ATST does not compare source markers or calculator parameter
+identities as a condition for reuse.
 
 For CI-NEB stability, `two_stage: true` first constructs the band with `climb=False`, runs ordinary NEB with `stage1_fmax` and `stage1_steps`, then sets `neb.climb = climb` and runs the final stage with `fmax` and `max_steps`. The first stage uses ASE optimizer stop semantics: it stops when either `stage1_fmax` is reached or `stage1_steps` is exhausted. The default `stage1_steps: 20` is a bounded warm-up, not a guarantee that the ordinary NEB stage will reach `stage1_fmax`. Set `stage1_steps: null` only when you intentionally want the first stage to rely on `stage1_fmax` and ASE's very large default optimizer step limit; this can be expensive for ABACUS.
 
@@ -221,6 +226,13 @@ with the site's `mpicc`.
 | `climb` | bool | `true` | Enable climbing image refinement. |
 | `fmax` | float/list[float] | `0.05` | Force threshold or AutoNEB threshold schedule. |
 | `endpoint_singlepoint` | string | `auto` | Same endpoint result policy as ordinary NEB. |
+| `endpoint_optimization` | dict | disabled | Optional endpoint Relax before AutoNEB; `enabled: true` relaxes endpoints lacking usable E/F, while `skip_if_has_results: true` reuses valid results. |
+
+As with ordinary NEB, `endpoint_singlepoint: never` requires usable endpoint
+energy and forces before AutoNEB starts, even when endpoint optimization is
+enabled. With optimization enabled and `endpoint_singlepoint: auto`, missing
+results trigger Relax before the band is consumed. The endpoint stages record
+the optimizer's actual convergence signal and step count.
 
 For MPI AutoNEB, launch with one Python rank per simultaneously optimized
 image. If `n_simul` is set, `world.size` must equal `n_simul`; if `n_simul` is
@@ -865,7 +877,7 @@ outside ATST-Tools.
 
 `pseudopotentials`, `basissets`, `pseudo_dir`, and `orbital_dir` are ABACUS
 top-level fields, not `parameters` entries. `atst prepare` (reverse
-configuration generation from a completed ABACUS run directory) resolves
+configuration generation from an ABACUS input directory) resolves
 `pseudo_dir`/`orbital_dir` and the STRU-derived
 `pseudopotentials`/`basissets` into these top-level fields, and the active
 `abacuslite` writer injects them into the generated `INPUT` accordingly. Only

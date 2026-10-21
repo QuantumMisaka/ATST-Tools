@@ -21,6 +21,122 @@ def _atoms(energy=0.0):
     return atoms
 
 
+def test_neb_make_interpolates_after_missing_endpoint_relax(monkeypatch, tmp_path):
+    """A generated band must use the positions produced by endpoint Relax."""
+    from ase.io import read
+    from atst_tools.workflows import execution as main
+
+    monkeypatch.chdir(tmp_path)
+    write("initial.traj", Atoms("H", positions=[[0.0, 0.0, 0.0]]))
+    write("final.traj", Atoms("H", positions=[[4.0, 0.0, 0.0]]))
+    endpoint_calls = []
+
+    class FakeOptimizer:
+        def __init__(self, subject, trajectory=None, **kwargs):
+            self.subject = subject
+            self.nsteps = 1
+
+        def run(self, fmax=None, steps=None):
+            if isinstance(self.subject, Atoms):
+                old_x = self.subject.positions[0, 0]
+                endpoint_calls.append(old_x)
+                self.subject.positions[0, 0] = 1.0 if old_x == 0 else 5.0
+            return True
+
+    class FakeNEB:
+        def __init__(self, images, **kwargs):
+            self.images = images
+
+    monkeypatch.setattr(main.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc(3.0))
+    monkeypatch.setattr(main, "get_optimizer", lambda name: FakeOptimizer)
+    monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
+
+    chain = main.run_neb(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {
+            "type": "neb", "parallel": False,
+            "make": {
+                "init_structure": "initial.traj", "final_structure": "final.traj",
+                "n_images": 1, "method": "linear", "output": "generated.traj", "no_align": True,
+            },
+            "endpoint_optimization": {"enabled": True, "skip_if_has_results": True},
+        },
+    )
+
+    assert endpoint_calls == [0.0, 4.0]
+    assert [frame.positions[0, 0] for frame in chain] == pytest.approx([1.0, 3.0, 5.0])
+    assert [frame.positions[0, 0] for frame in read("generated.traj", index=":")] == pytest.approx([1.0, 3.0, 5.0])
+
+
+def test_neb_never_missing_results_rejects_before_enabled_relax(monkeypatch, tmp_path):
+    from atst_tools.workflows import execution as main
+
+    monkeypatch.chdir(tmp_path)
+    write("initial.traj", Atoms("H", positions=[[0.0, 0.0, 0.0]]))
+    write("final.traj", Atoms("H", positions=[[4.0, 0.0, 0.0]]))
+    calls = []
+    monkeypatch.setattr(main.CalculatorFactory, "get_calculator", lambda *args, **kwargs: calls.append(1) or DummyCalc(3.0))
+
+    with pytest.raises(ValueError, match="Relax the endpoint"):
+        main.run_neb(
+            {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+            "abacus",
+            {
+                "type": "neb", "parallel": False,
+                "make": {
+                    "init_structure": "initial.traj", "final_structure": "final.traj",
+                    "n_images": 1, "method": "linear", "output": "generated.traj", "no_align": True,
+                },
+                "endpoint_optimization": {"enabled": True},
+                "endpoint_singlepoint": "never",
+            },
+        )
+    assert calls == []
+
+
+def test_neb_make_never_reuses_existing_results_after_magmom_setup(monkeypatch, tmp_path):
+    from atst_tools.workflows import execution as main
+
+    monkeypatch.chdir(tmp_path)
+    for name, x in (("initial.traj", 0.0), ("final.traj", 2.0)):
+        atoms = Atoms("H", positions=[[x, 0, 0]])
+        atoms.calc = SinglePointCalculator(atoms, energy=-1, forces=np.zeros((1, 3)))
+        write(name, atoms)
+    calculator_directories = []
+
+    class FakeNEB:
+        def __init__(self, images, **kwargs):
+            self.images = images
+
+    class FakeOptimizer:
+        def __init__(self, subject, trajectory=None, **kwargs):
+            assert not isinstance(subject, Atoms), "valid endpoint results should skip Relax"
+
+        def run(self, fmax=None, steps=None):
+            return True
+
+    def calculator(*args, **kwargs):
+        calculator_directories.append(kwargs["directory"])
+        return DummyCalc(3.0)
+
+    monkeypatch.setattr(main.CalculatorFactory, "get_calculator", calculator)
+    monkeypatch.setattr(main, "get_optimizer", lambda name: FakeOptimizer)
+    monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
+    chain = main.run_neb(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {"type": "neb", "parallel": False, "endpoint_singlepoint": "never",
+         "make": {"init_structure": "initial.traj", "final_structure": "final.traj",
+                  "n_images": 1, "method": "linear", "output": "generated.traj",
+                  "no_align": True, "magmom": {"H": 1.0}},
+         "endpoint_optimization": {"enabled": True, "skip_if_has_results": True}},
+    )
+    assert calculator_directories == ["run_atst/image_001"]
+    assert [image.get_potential_energy() for image in (chain[0], chain[-1])] == [-1, -1]
+    assert [image.get_initial_magnetic_moments().tolist() for image in (chain[0], chain[-1])] == [[1], [1]]
+
+
 @pytest.mark.parametrize("backend", ["ase", "atst"])
 @pytest.mark.parametrize("restart", [False, True])
 def test_neb_runtime_cell_adaptation_preserves_input_and_recomputes_changed_endpoint(
@@ -760,8 +876,7 @@ def test_run_neb_serial_endpoint_relaxation_records_stage_facts(monkeypatch, tmp
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(main, "read", lambda *args, **kwargs: chain)
     # Only the initial endpoint already carries results, so only it is skipped.
-    chain[0].info["test_endpoint"] = "initial"
-    monkeypatch.setattr(main, "has_endpoint_results", lambda atoms: atoms.info.get("test_endpoint") == "initial")
+    chain[-1].calc = None
     monkeypatch.setattr(main, "ensure_neb_endpoint_results", lambda *args, **kwargs: None)
     monkeypatch.setattr(main.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc(1.0))
     monkeypatch.setattr(main, "AbacusNEB", FakeNEB)
@@ -1400,13 +1515,11 @@ def test_autoneb_runner_preserves_endpoint_results_when_copying_middle_condition
     assert runner.init_chain[-1].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
 
 
-def test_autoneb_runner_keeps_unmarked_endpoints_untrusted_and_auto_recomputes(monkeypatch):
+def test_autoneb_runner_reuses_unmarked_readable_endpoints(monkeypatch):
     from atst_tools.mep import autoneb
     from atst_tools.utils.neb_endpoints import (
-        ENDPOINT_COMPUTED,
         ENDPOINT_RESULT_KEY,
         ensure_neb_endpoint_results,
-        has_trusted_endpoint_results,
     )
 
     # Uploaded chain: endpoints carry readable foreign SPC results but no ATST marker.
@@ -1419,14 +1532,11 @@ def test_autoneb_runner_keeps_unmarked_endpoints_untrusted_and_auto_recomputes(m
         {"type": "autoneb", "init_chain": "chain.traj", "parallel": False},
     )
 
-    # The legacy condition copy must NOT invent a "provided" marker for unmarked
-    # readable endpoints; they must stay untrusted so auto recomputes them.
+    # Condition copying preserves readable results without inventing provenance.
     assert runner.init_chain[0].info.get(ENDPOINT_RESULT_KEY) is None
     assert runner.init_chain[-1].info.get(ENDPOINT_RESULT_KEY) is None
-    assert not has_trusted_endpoint_results(runner.init_chain[0])
-    assert not has_trusted_endpoint_results(runner.init_chain[-1])
 
-    # auto policy recomputes unmarked endpoints with the run calculator.
+    # The auto policy accepts finite E/F without a source marker.
     calls = []
 
     def get_calculator(directory):
@@ -1435,11 +1545,70 @@ def test_autoneb_runner_keeps_unmarked_endpoints_untrusted_and_auto_recomputes(m
 
     ensure_neb_endpoint_results(runner.init_chain, get_calculator, policy="auto", context="AutoNEB")
 
-    assert calls == ["endpoint_initial", "endpoint_final"]
-    assert runner.init_chain[0].get_potential_energy() == pytest.approx(9.0)
-    assert runner.init_chain[-1].get_potential_energy() == pytest.approx(9.0)
-    assert runner.init_chain[0].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
-    assert runner.init_chain[-1].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
+    assert calls == []
+    assert runner.init_chain[0].get_potential_energy() == pytest.approx(1.0)
+    assert runner.init_chain[-1].get_potential_energy() == pytest.approx(2.0)
+
+
+def test_autoneb_relaxes_missing_endpoint_results_before_neb(monkeypatch, tmp_path):
+    from atst_tools.mep import autoneb
+
+    chain = [_atoms(1.0), _atoms(0.1), _atoms(0.2), _atoms(2.0)]
+    chain[-1].calc = None
+    optimizer_inputs = []
+    calculator_calls = []
+
+    class FakeOptimizer:
+        def __init__(self, atoms, trajectory=None):
+            self.atoms = atoms
+            self.nsteps = 3
+
+        def run(self, fmax, steps):
+            optimizer_inputs.append((fmax, steps, self.atoms.calc is not None))
+            self.atoms.get_potential_energy()
+            self.atoms.get_forces()
+            return False
+
+    def get_calculator(calc_name, config, **kwargs):
+        calculator_calls.append(kwargs["directory"])
+        return DummyCalc(5.0)
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(autoneb, "read", lambda *args, **kwargs: chain)
+    monkeypatch.setattr(autoneb.CalculatorFactory, "get_calculator", get_calculator)
+    runner = autoneb.AutoNEBRunner(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {"type": "autoneb", "init_chain": "chain.traj", "parallel": False,
+         "endpoint_optimization": {"enabled": True, "fmax": 0.03, "max_steps": 8}},
+    )
+    monkeypatch.setattr(runner, "_get_optimizer", lambda: FakeOptimizer)
+
+    runner._prepare_endpoint_results()
+
+    assert optimizer_inputs == [(0.03, 8, True)]
+    assert calculator_calls == ["autoneb_run/endpoint_final_relax"]
+    assert runner.init_chain[-1].get_potential_energy() == pytest.approx(5.0)
+    assert [stage.status for stage in runner._endpoint_stages] == ["skipped", "complete"]
+    assert runner._endpoint_stages[-1].converged is False
+
+
+def test_autoneb_never_rejects_missing_endpoint_before_calculator(monkeypatch):
+    from atst_tools.mep import autoneb
+
+    chain = [_atoms(1.0), _atoms(0.1), _atoms(0.2), _atoms(2.0)]
+    chain[-1].calc = None
+    monkeypatch.setattr(autoneb, "read", lambda *args, **kwargs: chain)
+    runner = autoneb.AutoNEBRunner(
+        {"calculator": {"name": "abacus", "abacus": {"parameters": {}}}},
+        "abacus",
+        {"type": "autoneb", "init_chain": "chain.traj", "parallel": False,
+         "endpoint_singlepoint": "never", "endpoint_optimization": {"enabled": True}},
+    )
+    monkeypatch.setattr(runner, "_get_calculator", lambda *args, **kwargs: pytest.fail("calculator called"))
+
+    with pytest.raises(ValueError, match="final endpoint lacks meaningful energy/force"):
+        runner._prepare_endpoint_results()
 
 
 def test_autoneb_runner_passes_optimizer_kwargs_to_optimizer(monkeypatch):
@@ -1729,13 +1898,13 @@ def test_d2s_rough_neb_preserves_endpoint_results_after_idpp(monkeypatch, tmp_pa
     assert chain[-1].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
 
 
-def test_d2s_rough_neb_recomputes_unmarked_endpoints_after_idpp(monkeypatch, tmp_path):
-    """auto policy must not re-apply stale cached results after recomputing unmarked endpoints."""
+def test_d2s_rough_neb_reuses_unmarked_endpoints_after_idpp(monkeypatch, tmp_path):
+    """IDPP preserves readable external endpoint results without a source gate."""
     from atst_tools.workflows import d2s
-    from atst_tools.utils.neb_endpoints import ENDPOINT_COMPUTED, ENDPOINT_RESULT_KEY
+    from atst_tools.utils.neb_endpoints import ENDPOINT_RESULT_KEY
 
     monkeypatch.chdir(tmp_path)
-    # Unmarked (foreign/uploaded) readable endpoints: stale energies 1.0 / 2.0.
+    # Unmarked readable external endpoints with E/F.
     init = _atoms(1.0)
     final = _atoms(2.0)
 
@@ -1751,7 +1920,8 @@ def test_d2s_rough_neb_recomputes_unmarked_endpoints_after_idpp(monkeypatch, tmp
             return None
 
     monkeypatch.setattr(d2s.Fast_IDPPSolver, "from_endpoints", lambda *args, **kwargs: FakeSolver())
-    monkeypatch.setattr(d2s.CalculatorFactory, "get_calculator", lambda *args, **kwargs: DummyCalc(9.0))
+    calls = []
+    monkeypatch.setattr(d2s.CalculatorFactory, "get_calculator", lambda *args, **kwargs: calls.append(kwargs) or DummyCalc(9.0))
     monkeypatch.setattr(d2s, "DyNEB", lambda images, **kwargs: images)
     monkeypatch.setattr(d2s, "FIRE", FakeOptimizer)
 
@@ -1775,12 +1945,12 @@ def test_d2s_rough_neb_recomputes_unmarked_endpoints_after_idpp(monkeypatch, tmp
 
     chain = workflow.run_rough_neb(init, final)
 
-    # Unmarked readable endpoints must be recomputed with the run calculator, not
-    # re-frozen with the stale cached values after ensure already recomputed them.
-    assert chain[0].get_potential_energy() == pytest.approx(9.0)
-    assert chain[-1].get_potential_energy() == pytest.approx(9.0)
-    assert chain[0].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
-    assert chain[-1].info[ENDPOINT_RESULT_KEY] == ENDPOINT_COMPUTED
+    assert chain[0].get_potential_energy() == pytest.approx(1.0)
+    assert chain[-1].get_potential_energy() == pytest.approx(2.0)
+    assert chain[0].info[ENDPOINT_RESULT_KEY] is None
+    assert chain[-1].info[ENDPOINT_RESULT_KEY] is None
+    # The rough band still constructs a calculator for its interior image.
+    assert len(calls) == 1
 
 
 def test_d2s_rough_neb_forwards_scale_fmax(monkeypatch, tmp_path):
@@ -2695,6 +2865,27 @@ def test_d2s_endpoint_optimization_disabled_never_rejects_missing_results(tmp_pa
     )
 
     with pytest.raises(ValueError, match="lacks meaningful"):
+        workflow.optimize_endpoints(
+            Atoms("H", positions=[[0.0, 0.0, 0.0]]),
+            Atoms("H", positions=[[1.0, 0.0, 0.0]]),
+        )
+
+
+def test_d2s_enabled_optimization_respects_never_for_missing_results(monkeypatch):
+    from atst_tools.workflows import d2s
+
+    workflow = d2s.D2SWorkflow(
+        {"calculator": {"name": "dp", "dp": {"model": "model.pb"}}},
+        "dp",
+        {
+            "type": "d2s", "method": "dimer",
+            "endpoint_optimization": {"enabled": True},
+            "endpoint_singlepoint": "never",
+        },
+    )
+    monkeypatch.setattr(workflow, "_get_calc", lambda *args: pytest.fail("never must not compute"))
+
+    with pytest.raises(ValueError, match="Relax the endpoint"):
         workflow.optimize_endpoints(
             Atoms("H", positions=[[0.0, 0.0, 0.0]]),
             Atoms("H", positions=[[1.0, 0.0, 0.0]]),

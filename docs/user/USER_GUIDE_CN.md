@@ -309,7 +309,7 @@ ATST-Tools 是分层 wrapper：
 - 简单前处理通过 `atst abacus prepare` 生成 `INPUT`、`KPT`、`STRU`。
 - 简单后处理通过 `atst abacus collect` 生成只读 JSON 摘要，并在文件齐全时
   解析最终结构。
-- 反向生成通过 `atst prepare` 从已完成 ABACUS 运行目录（`INPUT`/`STRU`/`KPT`/
+- 反向生成通过 `atst prepare` 从 ABACUS 输入目录（`INPUT`/`STRU`/`KPT`/
   `PP`/`ORB`）生成可运行的过渡态 YAML，无需手工编写配置。
 - ATST-Tools 不替代 ABACUS CLI，不负责站点调度提交策略，不承诺覆盖全部
   abacuslite IO API。
@@ -324,8 +324,9 @@ atst prepare run_dir --workflow neb \
 
 `--workflow` 当前支持 `neb`（默认）；`--init-structure`/`--final-structure`
 指定端点结构（默认取运行目录 `STRU`），`--n-images` 设置内点个数（默认 5）。
-默认会校验端点目录含可解析的末帧 energy+forces（端点门控），可用 `--no-gate`
-跳过；`-o` 指定输出 YAML 路径。生成时用户可控的 ABACUS 值原样带入，仅施加三个
+默认允许只有结构、尚无能量和受力的端点；生成的 YAML 会启用端点优化，运行时
+对缺 E/F 的端点先做 Relax，再以优化后的端点插值建链。`--no-gate` 作为旧命令的
+兼容选项保留，已无需指定；`-o` 指定输出 YAML 路径。生成时用户可控的 ABACUS 值原样带入，仅施加三个
 技术地板：`calculation` 归一化为 `scf`、`cal_force` 归一化为 `1`、KPT 拒绝
 line 模式（接受 Gamma/MP 网格与 point 显式 K 点）。等价能力也可通过 Python
 API `atst_tools.api.build_config_from_abacus_dir` 调用。
