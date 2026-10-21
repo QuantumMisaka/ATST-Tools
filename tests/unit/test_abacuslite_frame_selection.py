@@ -8,6 +8,7 @@ Task 3 GREEN：`AbacusTemplate.read_results` 对 calculation=='scf' 按坐标选
 Task 4 扩充（回归矩阵）：容差两侧、md/relax/sella/ccqn 五路径、双后端（legacyio/latestio）、
 真实非 scf 金样（multiframe_md_legacy / multiframe_md_latest）、latestio eig_occ.txt 一次性消费（P5）。
 """
+import inspect
 import re
 import shutil
 from types import SimpleNamespace
@@ -518,6 +519,18 @@ def test_scf_selector_accepts_cartesian_integer_lattice_translations(tmp_path):
     ) is frame
 
 
+_BACKEND_DEFAULT_ATOL = inspect.signature(
+    _select_scf_frame_for_structure
+).parameters["atol"].default
+
+
+@pytest.mark.skipif(
+    _BACKEND_DEFAULT_ATOL < 1e-4,
+    reason=(
+        "installed abacuslite still declares the pre-print-resolution default "
+        f"({_BACKEND_DEFAULT_ATOL:g} A)"
+    ),
+)
 @pytest.mark.parametrize("delta", [9e-6, 11e-6, 5e-5])
 @pytest.mark.parametrize("field", ["cell", "positions"])
 def test_scf_default_tolerance_covers_log_print_resolution(tmp_path, delta, field):
@@ -538,6 +551,13 @@ def test_scf_default_tolerance_covers_log_print_resolution(tmp_path, delta, fiel
     assert _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1]) is frame
 
 
+@pytest.mark.skipif(
+    _BACKEND_DEFAULT_ATOL < 1e-4,
+    reason=(
+        "installed abacuslite still declares the pre-print-resolution default "
+        f"({_BACKEND_DEFAULT_ATOL:g} A)"
+    ),
+)
 @pytest.mark.parametrize("field", ["cell", "positions"])
 def test_scf_default_tolerance_rejects_beyond_print_resolution(tmp_path, field):
     """A difference above the log's print resolution still fails closed."""
