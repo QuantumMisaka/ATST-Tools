@@ -520,8 +520,13 @@ def test_scf_selector_accepts_cartesian_integer_lattice_translations(tmp_path):
 
 @pytest.mark.parametrize("delta", [9e-6, 11e-6, 5e-5])
 @pytest.mark.parametrize("field", ["cell", "positions"])
-def test_scf_default_tolerance_accepts_rounding_and_rejects_old_loose_interval(tmp_path, delta, field):
-    """The default is an absolute Angstrom bound for cells and Cartesian residuals."""
+def test_scf_default_tolerance_covers_log_print_resolution(tmp_path, delta, field):
+    """The 1e-4 default is an absolute Angstrom bound that matches log printing.
+
+    ABACUS prints lattice vectors at six significant digits, so a component in
+    ``[10, 100)`` Angstrom can differ by up to ``5e-5`` Angstrom from the exact
+    STRU cell.  The former ``1e-5`` default sat below that print resolution.
+    """
     _, cell, frac, symbols = _synthetic_direct_case(tmp_path)
     frame_cell = cell.copy()
     frame_frac = frac.copy()
@@ -530,11 +535,23 @@ def test_scf_default_tolerance_accepts_rounding_and_rejects_old_loose_interval(t
     else:
         frame_frac[0] += np.array([delta, 0, 0]) @ np.linalg.inv(cell)
     frame = Atoms(symbols=symbols, positions=frame_frac, cell=frame_cell, pbc=True)
-    if delta < 1e-5:
-        assert _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1]) is frame
+    assert _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1]) is frame
+
+
+@pytest.mark.parametrize("field", ["cell", "positions"])
+def test_scf_default_tolerance_rejects_beyond_print_resolution(tmp_path, field):
+    """A difference above the log's print resolution still fails closed."""
+    delta = 2e-4
+    _, cell, frac, symbols = _synthetic_direct_case(tmp_path)
+    frame_cell = cell.copy()
+    frame_frac = frac.copy()
+    if field == "cell":
+        frame_cell[0, 0] += delta
     else:
-        with pytest.raises(RuntimeError):
-            _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1])
+        frame_frac[0] += np.array([delta, 0, 0]) @ np.linalg.inv(cell)
+    frame = Atoms(symbols=symbols, positions=frame_frac, cell=frame_cell, pbc=True)
+    with pytest.raises(RuntimeError):
+        _select_scf_frame_for_structure([frame], LOG, tmp_path, [0, 1])
 
 
 def test_latest_coordinate_parser_uses_periodic_matcher(tmp_path, monkeypatch):
