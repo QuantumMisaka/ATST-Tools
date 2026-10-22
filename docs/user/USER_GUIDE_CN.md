@@ -314,6 +314,12 @@ ATST-Tools 是分层 wrapper：
 - ATST-Tools 不替代 ABACUS CLI，不负责站点调度提交策略，不承诺覆盖全部
   abacuslite IO API。
 
+读取 ABACUS `STRU` 时，晶胞矢量始终按 `LATTICE_CONSTANT × Bohr` 换算；
+原子坐标则依 `ATOMIC_POSITIONS` 的模式分别解释：`Direct` 为分数坐标，
+`Cartesian` 按晶格常数换算，`Cartesian_au` 为 Bohr，
+`Cartesian_angstrom` 为 Å。Relax、MD、恒电势和过渡态工作流共用此读取语义；
+详见[配置参考](CONFIG_REFERENCE.md)。
+
 从 ABACUS 运行目录生成 NEB 配置（`atst prepare` 不运行 ABACUS）：
 
 ```bash

@@ -26,6 +26,14 @@ through the stable [Python API reference](PYTHON_API_REFERENCE.md). Both
 interfaces preserve existing schema defaults and interpret relative paths from
 the process current working directory rather than the YAML file's parent.
 
+When an input structure is an ABACUS `STRU`, its `LATTICE_VECTORS` are scaled
+by `LATTICE_CONSTANT` in Bohr. `ATOMIC_POSITIONS` uses the mode written in the
+file: `Direct` is fractional, `Cartesian` is scaled by the lattice constant
+in Bohr, `Cartesian_au` is in Bohr, and `Cartesian_angstrom` is in Angstrom.
+The shared structure reader applies these units for Relax, MD, constant
+potential and transition-state workflows; mobility and magnetic moments are
+preserved.
+
 ---
 
 ## 1. Top-Level Structure

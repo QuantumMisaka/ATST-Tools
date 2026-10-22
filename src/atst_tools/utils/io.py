@@ -22,7 +22,7 @@ def read_structure(filename: str | Path, format: str | None = None, *, parallel:
 
 
 def read_abacus_stru(filename: str | Path) -> Atoms:
-    """Convert an ABACUS STRU file into an ASE Atoms object."""
+    """Convert an ABACUS STRU file into ASE atoms with mode-specific units."""
     data = import_generalio().read_stru(str(filename))
     scale = float(data["lat"].get("const", 1.0)) * Bohr
     cell = np.array(data["lat"]["vec"], dtype=float) * scale
@@ -57,6 +57,10 @@ def read_abacus_stru(filename: str | Path) -> Atoms:
     coords_array = np.array(coords, dtype=float)
     if coord_type.startswith("direct"):
         atoms.set_scaled_positions(coords_array)
+    elif coord_type == "cartesian_angstrom":
+        atoms.set_positions(coords_array)
+    elif coord_type == "cartesian_au":
+        atoms.set_positions(coords_array * Bohr)
     else:
         atoms.set_positions(coords_array * scale)
 
@@ -67,5 +71,10 @@ def read_abacus_stru(filename: str | Path) -> Atoms:
     if constraints:
         atoms.set_constraint(constraints)
     if magmoms:
+        if any(isinstance(magmom, (list, tuple)) for magmom in magmoms):
+            magmoms = [
+                magmom if isinstance(magmom, (list, tuple)) else [0.0, 0.0, magmom]
+                for magmom in magmoms
+            ]
         atoms.set_initial_magnetic_moments(magmoms)
     return atoms

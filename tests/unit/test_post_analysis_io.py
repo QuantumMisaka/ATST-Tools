@@ -7,10 +7,12 @@ from ase import Atoms
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.constraints import FixAtoms, FixCartesian
 from ase.io import read, write
+from ase.units import Bohr
 
 from atst_tools.utils.analysis import get_displacement_analysis
 from atst_tools.utils.io import read_structure
 from atst_tools.utils.post import NEBPost
+from atst_tools.workflows.md import AseMDRunner
 
 
 def _atoms(symbols="H", energy=0.0, positions=None, forces=None):
@@ -222,6 +224,8 @@ H
 
     assert parsed.get_chemical_symbols() == ["H", "H"]
     assert parsed.pbc.all()
+    np.testing.assert_allclose(parsed.cell.array, np.eye(3) * 8.0 * 1.889726 * Bohr)
+    np.testing.assert_allclose(parsed.positions[1], [4.0 * 1.889726 * Bohr, 0, 0])
     assert parsed.constraints
     np.testing.assert_allclose(parsed.get_initial_magnetic_moments(), [1.0, 0.0])
 
@@ -266,6 +270,38 @@ He
     np.testing.assert_allclose(parsed.get_scaled_positions(), [[0.2, 0.0, 0.0], [0.0, 1 / 3, 0.0]])
 
 
+@pytest.mark.parametrize(
+    ("coordinate_mode", "position_scale"),
+    [
+        ("Cartesian", 2.0 * Bohr),
+        ("Cartesian_au", Bohr),
+        ("Cartesian_angstrom", 1.0),
+    ],
+)
+def test_stru_coordinate_units_reach_ase_md_workflow(
+    tmp_path, coordinate_mode, position_scale
+):
+    """Read real ABACUS position modes through the shared MD initialization."""
+    structure = tmp_path / "STRU"
+    structure.write_text(
+        "ATOMIC_SPECIES\nH 1 H.upf\n"
+        "LATTICE_CONSTANT\n2.0\n"
+        "LATTICE_VECTORS\n5 0 0\n0 6 0\n0 0 7\n"
+        f"ATOMIC_POSITIONS\n{coordinate_mode}\nH\n0\n1\n1 2 3 m 0 1 0 mag 1.0\n",
+        encoding="utf-8",
+    )
+
+    runner = AseMDRunner({}, "abacus", {"init_structure": str(structure), "restart": False})
+    atoms = runner._read_atoms()
+
+    np.testing.assert_allclose(atoms.cell.array, np.diag([5, 6, 7]) * 2.0 * Bohr)
+    np.testing.assert_allclose(atoms.positions, np.array([[1, 2, 3]]) * position_scale)
+    np.testing.assert_allclose(atoms.get_initial_magnetic_moments(), [1.0])
+    assert len(atoms.constraints) == 1
+    assert isinstance(atoms.constraints[0], FixCartesian)
+    np.testing.assert_array_equal(atoms.constraints[0].mask, [True, False, True])
+
+
 def test_read_structure_supports_vector_magnetic_moments(tmp_path):
     (tmp_path / "vector_mag.stru").write_text(
         """ATOMIC_SPECIES
@@ -299,6 +335,21 @@ He
     parsed = read_structure(tmp_path / "vector_mag.stru")
 
     np.testing.assert_allclose(parsed.get_initial_magnetic_moments(), [[1.0, 0.0, 0.0], [0.0, 2.0, 0.0]])
+
+
+def test_read_structure_mixes_scalar_and_cartesian_vector_moments(tmp_path):
+    structure = tmp_path / "STRU"
+    structure.write_text(
+        "ATOMIC_SPECIES\nH 1 H.upf\n"
+        "LATTICE_CONSTANT\n1\nLATTICE_VECTORS\n10 0 0\n0 10 0\n0 0 10\n"
+        "ATOMIC_POSITIONS\nDirect\nH\n0\n2\n"
+        "0 0 0 mag 2.0\n0.5 0 0 mag 1.0 0.0 0.0\n",
+        encoding="utf-8",
+    )
+
+    parsed = read_structure(structure)
+
+    np.testing.assert_allclose(parsed.get_initial_magnetic_moments(), [[0, 0, 2], [1, 0, 0]])
 
 
 def test_read_structure_preserves_mobility_constraints_and_drops_velocities(tmp_path):
