@@ -20,12 +20,12 @@ def _load_abacuslite_backend():
             "abacuslite is required by ATST-Tools; install abacuslite>=1.2.1,<2",
             name="abacuslite",
         )
-    from abacuslite import Abacus, AbacusProfile
+    from abacuslite import Abacus, AbacusProfile, AbacusSocketIO
 
-    return Abacus, AbacusProfile, "external"
+    return Abacus, AbacusProfile, AbacusSocketIO, "external"
 
 
-Abacus, AbacusProfile, BACKEND_SOURCE = _load_abacuslite_backend()
+Abacus, AbacusProfile, AbacusSocketIO, BACKEND_SOURCE = _load_abacuslite_backend()
 
 
 def import_generalio():
@@ -131,6 +131,7 @@ class ATSTAbacusProfile(AbacusProfile):
 __all__ = [
     "Abacus",
     "AbacusProfile",
+    "AbacusSocketIO",
     "ATSTAbacusProfile",
     "BACKEND_SOURCE",
     "BackendSource",
