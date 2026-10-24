@@ -881,9 +881,16 @@ calculator:
     # socket:               # or a mapping
     #   unixsocket: h2au    # -> /tmp/ipi_h2au; exclusive with port
     #   port: 31415         # TCP on localhost
-    #   timeout: 600        # seconds
     #   enabled: true
 ```
+
+`socket.timeout` (seconds) is passed unchanged to ASE's `SocketIOCalculator`
+and is unset by default, i.e. ATST waits indefinitely. It bounds each socket
+read, so once ABACUS is connected it covers a whole SCF plus force evaluation;
+the first step also includes ABACUS initialization. A value shorter than the
+slowest step aborts a healthy run, so set it only as a guard against a hung
+ABACUS process and size it well above the slowest expected step. A crash during
+ABACUS start-up is detected without a timeout.
 
 Restrictions: only `calculation.type` in `relax`, `md` (with `driver: ase`),
 `vibration`, `dimer` and `sella` (single fixed-cell calculator per run); it
