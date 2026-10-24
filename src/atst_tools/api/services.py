@@ -24,6 +24,7 @@ from atst_tools.api.models import (
     WorkflowResult,
 )
 from atst_tools.calculators.abacuslite_backend import BACKEND_SOURCE
+from atst_tools.calculators.factory import close_socket_calculators
 from atst_tools.utils.artifacts import (
     SCHEMA_VERSION,
     add_backend_identity_to_manifest,
@@ -927,6 +928,9 @@ def _run_workflow(
             else:
                 failure = WorkflowExecutionError(str(exc), workflow=workflow)
             failure.__cause__ = exc
+        finally:
+            # Persistent ABACUS socket clients must not outlive the workflow.
+            close_socket_calculators()
         _synchronize_rank_failure(world, workflow, failure)
         aggregated_counters = _aggregate_runtime_counters(world, workflow)
         profiles = ()

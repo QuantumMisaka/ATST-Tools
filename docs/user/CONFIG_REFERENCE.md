@@ -855,6 +855,48 @@ configuration field or user-selectable tolerance.
 | `pseudo_dir` | string | `.` | Directory containing pseudopotential files. |
 | `orbital_dir` | string | `.` | Directory containing basis set files. |
 | `parameters` | dict | `{}` | Key-value pairs for ABACUS `INPUT` file (e.g., `ecutwfc`, `scf_thr`). |
+| `socket` | bool \| dict | `false` | Run ABACUS as a persistent i-PI socket client (see below). |
+
+**Socket mode (`socket`).** By default every ASE force call starts a new
+ABACUS process (FileIO). With `socket: true`, one ABACUS process stays alive
+for the whole workflow and receives updated positions through the i-PI
+protocol (`socket_driver = 1`, `calculation = scf`), avoiding repeated start-up
+and initialization; ABACUS also extrapolates the charge density between steps
+(`chg_extrap` defaults to `first-order` in socket mode). It requires an ABACUS
+build with `socket_driver`; the client side is abacuslite's `AbacusSocketIO`,
+already provided by the required `abacuslite` dependency.
+
+Energies returned through the socket are converted from Hartree with ASE's
+CODATA constant, while ABACUS prints eV with its own constant, so absolute
+socket energies differ from FileIO energies by a relative ~4e-7 (about 0.09 eV
+for a 2.4e5 eV cell). Energy differences and forces are unaffected; do not mix
+absolute energies from the two modes.
+
+```yaml
+calculator:
+  name: abacus
+  abacus:
+    mpi: 16
+    socket: true            # unique Unix socket /tmp/ipi_atst_<pid>_<n>
+    # socket:               # or a mapping
+    #   unixsocket: h2au    # -> /tmp/ipi_h2au; exclusive with port
+    #   port: 31415         # TCP on localhost
+    #   enabled: true
+```
+
+`socket.timeout` (seconds) is passed unchanged to ASE's `SocketIOCalculator`
+and is unset by default, i.e. ATST waits indefinitely. It bounds each socket
+read, so once ABACUS is connected it covers a whole SCF plus force evaluation;
+the first step also includes ABACUS initialization. A value shorter than the
+slowest step aborts a healthy run, so set it only as a guard against a hung
+ABACUS process and size it well above the slowest expected step. A crash during
+ABACUS start-up is detected without a timeout.
+
+Restrictions: only `calculation.type` in `relax`, `md` (with `driver: ase`),
+`vibration`, `dimer` and `sella` (single fixed-cell calculator per run); it
+cannot be combined with `calculator.constant_potential`; the cell must stay
+fixed. The ABACUS client is shut down when the workflow ends, including on
+failure.
 
 `command` may be a bare executable (`abacus`), an explicit launcher
 (`mpirun -np 4 abacus`, `srun -n 4 abacus`), or a template using `{mpi}` such
